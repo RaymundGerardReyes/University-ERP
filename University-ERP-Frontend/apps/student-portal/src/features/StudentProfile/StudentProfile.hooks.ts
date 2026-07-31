@@ -1,10 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchStudentProfile } from './StudentProfile.api';
+import { studentInformationApi } from '@university-erp/api-clients';
+import { useAuth } from '@university-erp/auth-sdk';
 
-export const useStudentProfile = (studentId?: string) => {
+export const useStudentProfile = () => {
+  const { user } = useAuth();
+
   return useQuery({
-    queryKey: ['studentProfile', studentId],
-    queryFn: () => fetchStudentProfile(studentId!),
-    enabled: !!studentId
+    queryKey: ['studentProfile', user?.id],
+    queryFn: () => studentInformationApi.getProfile(user!.id),
+    // Only execute the query if we successfully have a logged-in user
+    enabled: !!user?.id,
+    staleTime: 1000 * 60 * 5, // Cache the profile for 5 minutes
   });
 };

@@ -1,10 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchHealthAppointments } from './HealthRecords.api';
+import { healthCenterApi } from '@university-erp/api-clients';
+import { useAuth } from '@university-erp/auth-sdk';
 
-export const useHealthRecords = (studentId?: string) => {
+export const useHealthAppointments = () => {
+  const { user } = useAuth();
   return useQuery({
-    queryKey: ['healthAppointments', studentId],
-    queryFn: () => fetchHealthAppointments(studentId!),
-    enabled: !!studentId
+    queryKey: ['healthAppointments', user?.id],
+    queryFn: () => healthCenterApi.getAppointments(user!.id),
+    enabled: !!user?.id,
   });
 };

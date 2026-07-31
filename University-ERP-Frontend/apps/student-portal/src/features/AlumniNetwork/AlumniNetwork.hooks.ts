@@ -1,10 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchAlumniStatus } from './AlumniNetwork.api';
+import { alumniApi } from '@university-erp/api-clients';
+import { useAuth } from '@university-erp/auth-sdk';
 
-export const useAlumniStatus = (studentId?: string) => {
+export const useAlumniStatus = () => {
+  const { user } = useAuth();
   return useQuery({
-    queryKey: ['alumniStatus', studentId],
-    queryFn: () => fetchAlumniStatus(studentId!),
-    enabled: !!studentId
+    queryKey: ['alumniStatus', user?.id],
+    queryFn: () => alumniApi.getAlumniStatus(user!.id),
+    enabled: !!user?.id,
   });
 };

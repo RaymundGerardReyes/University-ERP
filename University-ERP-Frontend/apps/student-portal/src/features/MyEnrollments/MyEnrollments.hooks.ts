@@ -1,10 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchEnrollments } from './MyEnrollments.api';
+import { studentInformationApi } from '@university-erp/api-clients';
+import { useAuth } from '@university-erp/auth-sdk';
 
-export const useMyEnrollments = (studentId?: string) => {
+export const useMyEnrollments = () => {
+  const { user } = useAuth();
+
   return useQuery({
-    queryKey: ['enrollments', studentId],
-    queryFn: () => fetchEnrollments(studentId!),
-    enabled: !!studentId
+    queryKey: ['studentEnrollments', user?.id],
+    queryFn: () => studentInformationApi.getEnrollments(user!.id),
+    enabled: !!user?.id,
   });
 };

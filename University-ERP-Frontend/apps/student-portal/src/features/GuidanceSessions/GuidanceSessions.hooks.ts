@@ -1,10 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchGuidanceSessions } from './GuidanceSessions.api';
+import { guidanceApi } from '@university-erp/api-clients';
+import { useAuth } from '@university-erp/auth-sdk';
 
-export const useGuidanceSessions = (studentId?: string) => {
+export const useGuidanceSessions = () => {
+  const { user } = useAuth();
   return useQuery({
-    queryKey: ['guidanceSessions', studentId],
-    queryFn: () => fetchGuidanceSessions(studentId!),
-    enabled: !!studentId
+    queryKey: ['guidanceSessions', user?.id],
+    queryFn: () => guidanceApi.getSessions(user!.id),
+    enabled: !!user?.id,
   });
 };

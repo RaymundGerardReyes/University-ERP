@@ -1,44 +1,29 @@
+import { Badge, Card, PageHeader } from '@university-erp/ui-kit';
 import React from 'react';
-import { useAuth } from '@university-erp/auth-sdk';
-import { Card, PageHeader, Button, Badge } from '@university-erp/ui-kit';
-import { useHealthRecords } from './HealthRecords.hooks';
+import { useHealthAppointments } from './HealthRecords.hooks';
 
-export default function HealthRecords() {
-  const { user } = useAuth();
-  const { data: appointments, isLoading, error } = useHealthRecords(user?.id);
+export const HealthRecordsPage: React.FC = () => {
+  const { data: appointments, isLoading, isError } = useHealthAppointments();
 
-  if (isLoading) return <div style={{ color: '#aaa' }}>Loading health records...</div>;
-  if (error) return <div style={{ color: 'hsl(0, 70%, 60%)' }}>Error loading data.</div>;
+  if (isLoading) return <div style={{ color: 'white' }}>Loading health records...</div>;
+  if (isError || !appointments) return <div style={{ color: 'red' }}>Failed to load health records.</div>;
 
   return (
     <div>
-      <PageHeader 
-        title="Health Records & Appointments" 
-        action={<Button variant="primary">Book Appointment</Button>}
-      />
-      
-      {!appointments || appointments.length === 0 ? (
-        <div style={{ color: '#888' }}>No appointments found.</div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {appointments.map(appt => (
-            <Card key={appt.id}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div>
-                  <div style={{ color: 'hsl(220, 90%, 75%)', fontWeight: 600, marginBottom: '0.5rem' }}>{appt.date} at {appt.time}</div>
-                  <div style={{ color: 'white', fontSize: '1.2rem', marginBottom: '0.2rem' }}>{appt.doctorName}</div>
-                  <div style={{ color: '#aaa', fontSize: '0.9rem' }}>{appt.specialty}</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <Badge colorScheme={appt.status === 'Scheduled' ? 'info' : 'default'}>
-                    {appt.status}
-                  </Badge>
-                </div>
+      <PageHeader title="Health Center Appointments" />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {appointments.map(apt => (
+          <Card key={apt.id}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div>
+                <h3 style={{ color: 'white', margin: '0 0 0.5rem 0' }}>{apt.doctorName}</h3>
+                <p style={{ color: '#aaa', margin: 0 }}>{apt.specialty} • {apt.date} at {apt.time}</p>
               </div>
-            </Card>
-          ))}
-        </div>
-      )}
+              <Badge colorScheme={apt.status === 'Scheduled' ? 'info' : 'default'}>{apt.status}</Badge>
+            </div>
+          </Card>
+        ))}
+      </div>
     </div>
   );
-}
+};

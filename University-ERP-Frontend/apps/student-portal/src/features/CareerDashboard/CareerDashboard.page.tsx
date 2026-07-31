@@ -1,42 +1,30 @@
+import { Badge, Button, Card, PageHeader } from '@university-erp/ui-kit';
 import React from 'react';
-import { Card, PageHeader, Button } from '@university-erp/ui-kit';
-import { useCareerJobs } from './CareerDashboard.hooks';
+import { useJobPostings } from './CareerDashboard.hooks';
 
-export default function CareerDashboard() {
-  const { data: jobs, isLoading, error } = useCareerJobs();
+export const CareerDashboardPage: React.FC = () => {
+  const { data: jobs, isLoading, isError } = useJobPostings();
 
-  if (isLoading) return <div style={{ color: '#aaa' }}>Loading job postings...</div>;
-  if (error) return <div style={{ color: 'hsl(0, 70%, 60%)' }}>Error loading data.</div>;
+  if (isLoading) return <div style={{ color: 'white' }}>Loading career opportunities...</div>;
+  if (isError || !jobs) return <div style={{ color: 'red' }}>Failed to load job postings.</div>;
 
   return (
     <div>
       <PageHeader title="Career & Placement Dashboard" />
-
-      {!jobs || jobs.length === 0 ? (
-        <div style={{ color: '#888' }}>No job postings available at this time.</div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
-          {jobs.map(job => (
-            <Card key={job.id} style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ flex: 1 }}>
-                <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.5rem 0', color: 'white' }}>{job.jobTitle}</h3>
-                <div style={{ color: 'hsl(220, 90%, 75%)', fontWeight: 500, marginBottom: '1rem' }}>{job.companyName}</div>
-                <div style={{ color: '#aaa', fontSize: '0.9rem', marginBottom: '0.5rem' }}>📍 {job.location}</div>
-                <div style={{ color: '#aaa', fontSize: '0.9rem', marginBottom: '1.5rem' }}>⏳ Deadline: {new Date(job.deadline).toLocaleDateString()}</div>
-                
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
-                  {job.tags.map(tag => (
-                    <span key={tag} style={{
-                      background: 'rgba(255, 255, 255, 0.1)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem', color: '#ccc'
-                    }}>{tag}</span>
-                  ))}
-                </div>
-              </div>
-              <Button variant="outline" style={{ width: '100%' }}>Apply Now</Button>
-            </Card>
-          ))}
-        </div>
-      )}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+        {jobs.map(job => (
+          <Card key={job.id}>
+            <h3 style={{ color: 'white', marginTop: 0 }}>{job.jobTitle}</h3>
+            <h4 style={{ color: '#ccc', margin: '0 0 1rem 0' }}>{job.companyName}</h4>
+            <p style={{ color: '#aaa', fontSize: '0.9rem' }}>📍 {job.location}</p>
+            <p style={{ color: '#aaa', fontSize: '0.9rem' }}>📅 Apply by: {new Date(job.deadline).toLocaleDateString()}</p>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', margin: '1rem 0' }}>
+              {job.tags.map(tag => <Badge key={tag} colorScheme="info">{tag}</Badge>)}
+            </div>
+            <Button variant="outline" style={{ width: '100%' }}>Apply Now</Button>
+          </Card>
+        ))}
+      </div>
     </div>
   );
-}
+};

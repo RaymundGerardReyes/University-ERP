@@ -1,39 +1,31 @@
+import { Badge, Card, PageHeader } from '@university-erp/ui-kit';
 import React from 'react';
-import { useAuth } from '@university-erp/auth-sdk';
-import { Card, PageHeader, Badge } from '@university-erp/ui-kit';
 import { useAdmissionStatus } from './AdmissionStatus.hooks';
 
-export default function AdmissionStatus() {
-  const { user } = useAuth();
-  const { data: applications, isLoading, error } = useAdmissionStatus(user?.id);
+export const AdmissionStatusPage: React.FC = () => {
+  const { data: applications, isLoading, isError } = useAdmissionStatus();
 
-  if (isLoading) return <div style={{ color: '#aaa' }}>Loading applications...</div>;
-  if (error) return <div style={{ color: 'hsl(0, 70%, 60%)' }}>Error loading data.</div>;
-  if (!applications || applications.length === 0) return <div style={{ color: '#888' }}>No applications found.</div>;
+  if (isLoading) return <div style={{ color: 'white' }}>Loading admission status...</div>;
+  if (isError || !applications) return <div style={{ color: 'red' }}>Failed to load admission data.</div>;
 
   return (
     <div>
       <PageHeader title="Admission Status" />
-      
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        {applications.map(app => (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {applications.map((app) => (
           <Card key={app.id}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ color: '#888', fontSize: '0.9rem', marginBottom: '0.25rem' }}>Application ID: {app.id}</div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 600, color: 'white' }}>{app.programName}</div>
+                <h3 style={{ color: 'white', margin: '0 0 0.5rem 0' }}>{app.programName}</h3>
+                <span style={{ color: '#aaa', fontSize: '0.9rem' }}>Application ID: {app.id} • Submitted: {new Date(app.submittedDate).toLocaleDateString()}</span>
               </div>
-              <Badge colorScheme={app.status === 'Enrolled' ? 'success' : 'warning'}>
+              <Badge colorScheme={app.status === 'Enrolled' || app.status === 'Accepted' ? 'success' : 'warning'}>
                 {app.status}
               </Badge>
-            </div>
-            
-            <div style={{ color: '#aaa', fontSize: '0.9rem' }}>
-              Submitted: {new Date(app.submittedDate).toLocaleDateString()}
             </div>
           </Card>
         ))}
       </div>
     </div>
   );
-}
+};

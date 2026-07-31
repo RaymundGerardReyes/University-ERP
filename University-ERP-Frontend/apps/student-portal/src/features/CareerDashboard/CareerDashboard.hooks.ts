@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchJobPostings } from './CareerDashboard.api';
+import { careerApi } from '@university-erp/api-clients';
 
-export const useCareerJobs = () => {
+export const useJobPostings = () => {
   return useQuery({
-    queryKey: ['careerJobs'],
-    queryFn: fetchJobPostings
+    queryKey: ['jobPostings'],
+    queryFn: () => careerApi.getJobPostings(),
   });
 };
