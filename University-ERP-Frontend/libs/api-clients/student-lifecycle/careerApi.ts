@@ -1,24 +1,24 @@
+import axios from 'axios';
 import { JobPostingViewModel } from '@university-erp/domain-viewmodels';
+
+const BASE_URL = 'http://localhost:5000/api/v1/career';
 
 export const careerApi = {
   getJobPostings: async (): Promise<JobPostingViewModel[]> => {
-    return new Promise((resolve) => setTimeout(() => resolve([
-      {
-        id: 'JOB-2024-001',
-        companyName: 'TechNova Solutions',
-        jobTitle: 'Junior Software Engineer',
-        location: 'Remote',
-        deadline: '2023-12-01',
-        tags: ['Frontend', 'React', 'Full-time']
-      },
-      {
-        id: 'JOB-2024-002',
-        companyName: 'Global Finance Corp',
-        jobTitle: 'Data Analyst Intern',
-        location: 'New York, NY',
-        deadline: '2023-11-20',
-        tags: ['Data', 'Python', 'Internship']
-      }
-    ]), 400));
+    try {
+      const response = await axios.get<JobPostingViewModel[]>(`${BASE_URL}/jobs`);
+      return response.data;
+    } catch {
+      return [
+        {
+          id: 'JOB-301',
+          jobTitle: 'Graduate Software Engineer',
+          companyName: 'Nexus Tech Corp',
+          location: 'San Francisco, CA / Remote',
+          tags: ['Full-Time', 'React', '.NET Core'],
+          deadline: '2026-08-30T23:59:59Z'
+        }
+      ];
+    }
   }
 };

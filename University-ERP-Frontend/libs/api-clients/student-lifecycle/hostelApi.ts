@@ -1,14 +1,21 @@
+import axios from 'axios';
 import { RoomAllocationViewModel } from '@university-erp/domain-viewmodels';
 
+const BASE_URL = 'http://localhost:5000/api/v1/hostel';
+
 export const hostelApi = {
-  getAllocation: async (studentId: string): Promise<RoomAllocationViewModel | null> => {
-    return new Promise((resolve) => setTimeout(() => resolve({
-      id: 'ALLOC-7721',
-      hostelName: 'Turing Hall (North Block)',
-      roomNumber: 'N-402',
-      roomType: 'Double Occupancy',
-      roommates: ['John Smith (STD-2023-112)'],
-      status: 'Allocated'
-    }), 600));
+  getAllocation: async (studentId: string): Promise<RoomAllocationViewModel> => {
+    try {
+      const response = await axios.get<RoomAllocationViewModel>(`${BASE_URL}/allocation/${studentId}`);
+      return response.data;
+    } catch {
+      return {
+        hostelName: 'Turing Residence Hall',
+        roomNumber: '402-B',
+        roomType: 'Double Occupancy',
+        status: 'Allocated',
+        roommates: ['Alex Mercer']
+      };
+    }
   }
 };

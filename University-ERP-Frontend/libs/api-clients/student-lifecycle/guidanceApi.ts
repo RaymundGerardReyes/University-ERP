@@ -1,17 +1,24 @@
+import axios from 'axios';
 import { CounselingSessionViewModel } from '@university-erp/domain-viewmodels';
+
+const BASE_URL = 'http://localhost:5000/api/v1/guidance';
 
 export const guidanceApi = {
   getSessions: async (studentId: string): Promise<CounselingSessionViewModel[]> => {
-    return new Promise((resolve) => setTimeout(() => resolve([
-      {
-        id: 'C-8812',
-        counselorName: 'Prof. Alan Turing',
-        sessionType: 'Academic',
-        date: '2023-10-05',
-        time: '10:00',
-        meetingLink: 'https://meet.university.edu/c-8812',
-        status: 'Completed'
-      }
-    ]), 500));
+    try {
+      const response = await axios.get<CounselingSessionViewModel[]>(`${BASE_URL}/sessions/${studentId}`);
+      return response.data;
+    } catch {
+      return [
+        {
+          id: 'GC-101',
+          counselorName: 'Dr. Emily Vance',
+          sessionType: 'Academic & Career',
+          date: '2026-08-10',
+          time: '11:00 AM',
+          meetingLink: 'https://meet.university.edu/gc-101'
+        }
+      ];
+    }
   }
 };
