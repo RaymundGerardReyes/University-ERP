@@ -50,6 +50,8 @@ public partial class App : Application
         // 1. Register Infrastructure (Encrypted SQLite Database, Repositories, Auth & Sync)
         services.AddSingleton(sp => new EncryptedSqliteContext("lms_offline.db", "offline_exam_secure_passphrase_2026"));
         services.AddScoped<IOfflineAssessmentRepository, OfflineAssessmentRepository>();
+        services.AddScoped<IOfflineModuleRepository, OfflineModuleRepository>();
+        services.AddScoped<IOfflineAssignmentRepository, OfflineAssignmentRepository>();
         services.AddSingleton<OfflineTokenCache>();
         services.AddTransient<OutboxSyncProcessor>();
 
