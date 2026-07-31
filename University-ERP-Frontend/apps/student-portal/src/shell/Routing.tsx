@@ -7,14 +7,12 @@ import { useAuth } from '@university-erp/auth-sdk';
 // Lazy loaded features
 const StudentProfile = lazy(() => import('@features/StudentProfile/StudentProfile.page'));
 const MyEnrollments = lazy(() => import('@features/MyEnrollments/MyEnrollments.page'));
-
-// Placeholder components
-const Placeholder = ({ name }: { name: string }) => (
-  <div style={{ padding: '2rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}>
-    <h2>{name}</h2>
-    <p style={{ color: '#aaa' }}>This feature is coming soon.</p>
-  </div>
-);
+const AdmissionStatus = lazy(() => import('@features/AdmissionStatus/AdmissionStatus.page'));
+const HostelAllocation = lazy(() => import('@features/HostelAllocation/HostelAllocation.page'));
+const HealthRecords = lazy(() => import('@features/HealthRecords/HealthRecords.page'));
+const GuidanceSessions = lazy(() => import('@features/GuidanceSessions/GuidanceSessions.page'));
+const CareerDashboard = lazy(() => import('@features/CareerDashboard/CareerDashboard.page'));
+const AlumniNetwork = lazy(() => import('@features/AlumniNetwork/AlumniNetwork.page'));
 
 const LoginPage = () => {
   const { login, isAuthenticated } = useAuth();
@@ -31,14 +29,7 @@ const LoginPage = () => {
         <button 
           onClick={login}
           style={{
-            background: 'hsl(220, 90%, 55%)',
-            color: 'white',
-            border: 'none',
-            padding: '0.75rem 2rem',
-            fontSize: '1rem',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontWeight: 600
+            background: 'hsl(220, 90%, 55%)', color: 'white', border: 'none', padding: '0.75rem 2rem', fontSize: '1rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 600
           }}
         >
           Login via SSO
@@ -47,6 +38,8 @@ const LoginPage = () => {
     </div>
   );
 };
+
+const LoadingScreen = () => <div style={{ color: '#aaa' }}>Loading module...</div>;
 
 export const router = createBrowserRouter([
   {
@@ -57,31 +50,15 @@ export const router = createBrowserRouter([
     path: '/',
     element: <AuthGuard><AppShell /></AuthGuard>,
     children: [
-      {
-        index: true,
-        element: <Navigate to="/profile" replace />
-      },
-      {
-        path: 'profile',
-        element: (
-          <Suspense fallback={<div>Loading profile...</div>}>
-            <StudentProfile />
-          </Suspense>
-        )
-      },
-      {
-        path: 'enrollments',
-        element: (
-          <Suspense fallback={<div>Loading enrollments...</div>}>
-            <MyEnrollments />
-          </Suspense>
-        )
-      },
-      { path: 'admission', element: <Placeholder name="Admission Status" /> },
-      { path: 'hostel', element: <Placeholder name="Hostel Allocation" /> },
-      { path: 'health', element: <Placeholder name="Health Records" /> },
-      { path: 'guidance', element: <Placeholder name="Guidance Sessions" /> },
-      { path: 'career', element: <Placeholder name="Career Dashboard" /> }
+      { index: true, element: <Navigate to="/profile" replace /> },
+      { path: 'profile', element: <Suspense fallback={<LoadingScreen />}><StudentProfile /></Suspense> },
+      { path: 'enrollments', element: <Suspense fallback={<LoadingScreen />}><MyEnrollments /></Suspense> },
+      { path: 'admission', element: <Suspense fallback={<LoadingScreen />}><AdmissionStatus /></Suspense> },
+      { path: 'hostel', element: <Suspense fallback={<LoadingScreen />}><HostelAllocation /></Suspense> },
+      { path: 'health', element: <Suspense fallback={<LoadingScreen />}><HealthRecords /></Suspense> },
+      { path: 'guidance', element: <Suspense fallback={<LoadingScreen />}><GuidanceSessions /></Suspense> },
+      { path: 'career', element: <Suspense fallback={<LoadingScreen />}><CareerDashboard /></Suspense> },
+      { path: 'alumni', element: <Suspense fallback={<LoadingScreen />}><AlumniNetwork /></Suspense> }
     ]
   }
 ]);

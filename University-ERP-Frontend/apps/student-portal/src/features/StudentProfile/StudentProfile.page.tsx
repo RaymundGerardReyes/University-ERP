@@ -2,6 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { studentInformationApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
+import { Card, PageHeader } from '@university-erp/ui-kit';
 
 export default function StudentProfile() {
   const { user } = useAuth();
@@ -18,14 +19,9 @@ export default function StudentProfile() {
 
   return (
     <div>
-      <h1 style={{ fontSize: '2rem', marginBottom: '2rem', color: 'white' }}>Student Profile</h1>
+      <PageHeader title="Student Profile" />
       
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.05)',
-        backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        padding: '2rem',
-        borderRadius: '12px',
+      <Card style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
         gap: '1.5rem'
@@ -37,7 +33,7 @@ export default function StudentProfile() {
         <ProfileField label="Program" value={profile.program} />
         <ProfileField label="Academic Standing" value={profile.academicStanding} highlight={profile.academicStanding === 'Good'} />
         <ProfileField label="Enrollment Status" value={profile.enrollmentStatus} />
-      </div>
+      </Card>
     </div>
   );
 }

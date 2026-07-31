@@ -13,7 +13,8 @@ export const AppShell = () => {
     { label: 'Hostel', path: '/hostel' },
     { label: 'Health Center', path: '/health' },
     { label: 'Guidance', path: '/guidance' },
-    { label: 'Career', path: '/career' }
+    { label: 'Career', path: '/career' },
+    { label: 'Alumni Network', path: '/alumni' }
   ];
 
   return (

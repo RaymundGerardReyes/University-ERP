@@ -2,6 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { studentInformationApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
+import { Card, PageHeader } from '@university-erp/ui-kit';
 
 export default function MyEnrollments() {
   const { user } = useAuth();
@@ -18,22 +19,14 @@ export default function MyEnrollments() {
 
   return (
     <div>
-      <h1 style={{ fontSize: '2rem', marginBottom: '2rem', color: 'white' }}>My Enrollments</h1>
+      <PageHeader title="My Enrollments" />
       
       {enrollments.length === 0 ? (
         <div style={{ color: '#888' }}>No active enrollments found.</div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {enrollments.map(enrollment => (
-            <div key={enrollment.id} style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              padding: '1.5rem',
-              borderRadius: '8px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
+            <Card key={enrollment.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <div style={{ color: '#888', fontSize: '0.8rem', marginBottom: '0.25rem' }}>{enrollment.term}</div>
                 <div style={{ fontSize: '1.2rem', fontWeight: 600, color: 'white' }}>{enrollment.courseCode} - {enrollment.courseName}</div>
@@ -48,7 +41,7 @@ export default function MyEnrollments() {
                   {enrollment.grade || 'In Progress'}
                 </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}
