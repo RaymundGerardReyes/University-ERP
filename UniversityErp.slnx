@@ -1,2 +1,269 @@
 <Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Bootstrap/">
+    <Project Path="University-ERP-Backend/src/Bootstrap/UniversityErp.Api/UniversityErp.Api.csproj" />
+    <Project Path="University-ERP-Backend/src/Bootstrap/UniversityErp.Migrator/UniversityErp.Migrator.csproj" />
+    <Project Path="University-ERP-Backend/src/Bootstrap/UniversityErp.Worker/UniversityErp.Worker.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/SharedKernel/">
+    <Project Path="University-ERP-Backend/src/SharedKernel/SharedKernel.Application/SharedKernel.Application.csproj" />
+    <Project Path="University-ERP-Backend/src/SharedKernel/SharedKernel.Domain/SharedKernel.Domain.csproj" />
+    <Project Path="University-ERP-Backend/src/SharedKernel/SharedKernel.Infrastructure/SharedKernel.Infrastructure.csproj" />
+    <Project Path="University-ERP-Backend/src/SharedKernel/SharedKernel.Observability/SharedKernel.Observability.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Academic/">
+    <Folder Name="/src/Modules/Academic/AcademicScheduling/">
+      <Project Path="University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Application/AcademicScheduling.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Contracts/AcademicScheduling.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Domain/AcademicScheduling.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Infrastructure/AcademicScheduling.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Presentation/AcademicScheduling.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Academic/Examination/">
+      <Project Path="University-ERP-Backend/src/Modules/Academic/Examination/Examination.Application/Examination.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/Examination/Examination.Contracts/Examination.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/Examination/Examination.Domain/Examination.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/Examination/Examination.Infrastructure/Examination.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/Examination/Examination.Presentation/Examination.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Academic/LearningManagement/">
+      <Project Path="University-ERP-Backend/src/Modules/Academic/LearningManagement/LearningManagement.Application/LearningManagement.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/LearningManagement/LearningManagement.Contracts/LearningManagement.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/LearningManagement/LearningManagement.Domain/LearningManagement.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/LearningManagement/LearningManagement.Infrastructure/LearningManagement.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/LearningManagement/LearningManagement.Presentation/LearningManagement.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Academic/Registrar/">
+      <Project Path="University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Application/Registrar.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Contracts/Registrar.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Domain/Registrar.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Infrastructure/Registrar.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Presentation/Registrar.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Academic/StudentInformation/">
+      <Project Path="University-ERP-Backend/src/Modules/Academic/StudentInformation/StudentInformation.Application/StudentInformation.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/StudentInformation/StudentInformation.Contracts/StudentInformation.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/StudentInformation/StudentInformation.Domain/StudentInformation.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/StudentInformation/StudentInformation.Infrastructure/StudentInformation.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Academic/StudentInformation/StudentInformation.Presentation/StudentInformation.Presentation.csproj" />
+    </Folder>
+  </Folder>
+  <Folder Name="/src/Modules/Administration/">
+    <Folder Name="/src/Modules/Administration/AssetManagement/">
+      <Project Path="University-ERP-Backend/src/Modules/Administration/AssetManagement/AssetManagement.Application/AssetManagement.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/AssetManagement/AssetManagement.Contracts/AssetManagement.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/AssetManagement/AssetManagement.Domain/AssetManagement.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/AssetManagement/AssetManagement.Infrastructure/AssetManagement.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/AssetManagement/AssetManagement.Presentation/AssetManagement.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Administration/Facilities/">
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Facilities/Facilities.Application/Facilities.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Facilities/Facilities.Contracts/Facilities.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Facilities/Facilities.Domain/Facilities.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Facilities/Facilities.Infrastructure/Facilities.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Facilities/Facilities.Presentation/Facilities.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Administration/Finance/">
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Finance/Finance.Application/Finance.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Finance/Finance.Contracts/Finance.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Finance/Finance.Domain/Finance.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Finance/Finance.Infrastructure/Finance.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Finance/Finance.Presentation/Finance.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Administration/HumanResources/">
+      <Project Path="University-ERP-Backend/src/Modules/Administration/HumanResources/HumanResources.Application/HumanResources.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/HumanResources/HumanResources.Contracts/HumanResources.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/HumanResources/HumanResources.Domain/HumanResources.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/HumanResources/HumanResources.Infrastructure/HumanResources.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/HumanResources/HumanResources.Presentation/HumanResources.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Administration/Inventory/">
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Inventory/Inventory.Application/Inventory.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Inventory/Inventory.Contracts/Inventory.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Inventory/Inventory.Domain/Inventory.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Inventory/Inventory.Infrastructure/Inventory.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Inventory/Inventory.Presentation/Inventory.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Administration/Library/">
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Library/Library.Application/Library.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Library/Library.Contracts/Library.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Library/Library.Domain/Library.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Library/Library.Infrastructure/Library.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Library/Library.Presentation/Library.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Administration/MessCanteen/">
+      <Project Path="University-ERP-Backend/src/Modules/Administration/MessCanteen/MessCanteen.Application/MessCanteen.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/MessCanteen/MessCanteen.Contracts/MessCanteen.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/MessCanteen/MessCanteen.Domain/MessCanteen.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/MessCanteen/MessCanteen.Infrastructure/MessCanteen.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/MessCanteen/MessCanteen.Presentation/MessCanteen.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Administration/Payroll/">
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Payroll/Payroll.Application/Payroll.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Payroll/Payroll.Contracts/Payroll.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Payroll/Payroll.Domain/Payroll.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Payroll/Payroll.Infrastructure/Payroll.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Payroll/Payroll.Presentation/Payroll.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Administration/Procurement/">
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Procurement/Procurement.Application/Procurement.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Procurement/Procurement.Contracts/Procurement.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Procurement/Procurement.Domain/Procurement.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Procurement/Procurement.Infrastructure/Procurement.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Procurement/Procurement.Presentation/Procurement.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Administration/Transport/">
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Transport/Transport.Application/Transport.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Transport/Transport.Contracts/Transport.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Transport/Transport.Domain/Transport.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Transport/Transport.Infrastructure/Transport.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Administration/Transport/Transport.Presentation/Transport.Presentation.csproj" />
+    </Folder>
+  </Folder>
+  <Folder Name="/src/Modules/Governance/">
+    <Folder Name="/src/Modules/Governance/EventManagement/">
+      <Project Path="University-ERP-Backend/src/Modules/Governance/EventManagement/EventManagement.Application/EventManagement.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/EventManagement/EventManagement.Contracts/EventManagement.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/EventManagement/EventManagement.Domain/EventManagement.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/EventManagement/EventManagement.Infrastructure/EventManagement.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/EventManagement/EventManagement.Presentation/EventManagement.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Governance/GrievanceManagement/">
+      <Project Path="University-ERP-Backend/src/Modules/Governance/GrievanceManagement/GrievanceManagement.Application/GrievanceManagement.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/GrievanceManagement/GrievanceManagement.Contracts/GrievanceManagement.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/GrievanceManagement/GrievanceManagement.Domain/GrievanceManagement.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/GrievanceManagement/GrievanceManagement.Infrastructure/GrievanceManagement.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/GrievanceManagement/GrievanceManagement.Presentation/GrievanceManagement.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Governance/Helpdesk/">
+      <Project Path="University-ERP-Backend/src/Modules/Governance/Helpdesk/Helpdesk.Application/Helpdesk.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/Helpdesk/Helpdesk.Contracts/Helpdesk.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/Helpdesk/Helpdesk.Domain/Helpdesk.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/Helpdesk/Helpdesk.Infrastructure/Helpdesk.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/Helpdesk/Helpdesk.Presentation/Helpdesk.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Governance/QualityAccreditation/">
+      <Project Path="University-ERP-Backend/src/Modules/Governance/QualityAccreditation/QualityAccreditation.Application/QualityAccreditation.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/QualityAccreditation/QualityAccreditation.Contracts/QualityAccreditation.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/QualityAccreditation/QualityAccreditation.Domain/QualityAccreditation.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/QualityAccreditation/QualityAccreditation.Infrastructure/QualityAccreditation.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/QualityAccreditation/QualityAccreditation.Presentation/QualityAccreditation.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Governance/VisitorManagement/">
+      <Project Path="University-ERP-Backend/src/Modules/Governance/VisitorManagement/VisitorManagement.Application/VisitorManagement.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/VisitorManagement/VisitorManagement.Contracts/VisitorManagement.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/VisitorManagement/VisitorManagement.Domain/VisitorManagement.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/VisitorManagement/VisitorManagement.Infrastructure/VisitorManagement.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Governance/VisitorManagement/VisitorManagement.Presentation/VisitorManagement.Presentation.csproj" />
+    </Folder>
+  </Folder>
+  <Folder Name="/src/Modules/Platform/">
+    <Folder Name="/src/Modules/Platform/IdentityAccess/">
+      <Project Path="University-ERP-Backend/src/Modules/Platform/IdentityAccess/IdentityAccess.Application/IdentityAccess.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/IdentityAccess/IdentityAccess.Contracts/IdentityAccess.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/IdentityAccess/IdentityAccess.Domain/IdentityAccess.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/IdentityAccess/IdentityAccess.Infrastructure/IdentityAccess.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/IdentityAccess/IdentityAccess.Presentation/IdentityAccess.Presentation.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/IdentityAccess/IdentityAccess.Tests.Architecture/IdentityAccess.Tests.Architecture.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/IdentityAccess/IdentityAccess.Tests.Integration/IdentityAccess.Tests.Integration.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/IdentityAccess/IdentityAccess.Tests.Unit/IdentityAccess.Tests.Unit.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Platform/AnalyticsBI/">
+      <Project Path="University-ERP-Backend/src/Modules/Platform/AnalyticsBI/AnalyticsBI.Application/AnalyticsBI.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/AnalyticsBI/AnalyticsBI.Contracts/AnalyticsBI.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/AnalyticsBI/AnalyticsBI.Domain/AnalyticsBI.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/AnalyticsBI/AnalyticsBI.Infrastructure/AnalyticsBI.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/AnalyticsBI/AnalyticsBI.Presentation/AnalyticsBI.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Platform/Communication/">
+      <Project Path="University-ERP-Backend/src/Modules/Platform/Communication/Communication.Application/Communication.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/Communication/Communication.Contracts/Communication.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/Communication/Communication.Domain/Communication.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/Communication/Communication.Infrastructure/Communication.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/Communication/Communication.Presentation/Communication.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Platform/CRM/">
+      <Project Path="University-ERP-Backend/src/Modules/Platform/CRM/CRM.Application/CRM.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/CRM/CRM.Contracts/CRM.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/CRM/CRM.Domain/CRM.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/CRM/CRM.Infrastructure/CRM.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/CRM/CRM.Presentation/CRM.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Platform/DocumentManagement/">
+      <Project Path="University-ERP-Backend/src/Modules/Platform/DocumentManagement/DocumentManagement.Application/DocumentManagement.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/DocumentManagement/DocumentManagement.Contracts/DocumentManagement.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/DocumentManagement/DocumentManagement.Domain/DocumentManagement.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/DocumentManagement/DocumentManagement.Infrastructure/DocumentManagement.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/DocumentManagement/DocumentManagement.Presentation/DocumentManagement.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Platform/MultiCampus/">
+      <Project Path="University-ERP-Backend/src/Modules/Platform/MultiCampus/MultiCampus.Application/MultiCampus.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/MultiCampus/MultiCampus.Contracts/MultiCampus.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/MultiCampus/MultiCampus.Domain/MultiCampus.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/MultiCampus/MultiCampus.Infrastructure/MultiCampus.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/MultiCampus/MultiCampus.Presentation/MultiCampus.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/Platform/Notification/">
+      <Project Path="University-ERP-Backend/src/Modules/Platform/Notification/Notification.Application/Notification.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/Notification/Notification.Contracts/Notification.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/Notification/Notification.Domain/Notification.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/Notification/Notification.Infrastructure/Notification.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/Platform/Notification/Notification.Presentation/Notification.Presentation.csproj" />
+    </Folder>
+  </Folder>
+  <Folder Name="/src/Modules/StudentLifecycle/">
+    <Folder Name="/src/Modules/StudentLifecycle/Admissions/">
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Application/Admissions.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Contracts/Admissions.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Domain/Admissions.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Infrastructure/Admissions.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Presentation/Admissions.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/StudentLifecycle/Alumni/">
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/Alumni/Alumni.Application/Alumni.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/Alumni/Alumni.Contracts/Alumni.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/Alumni/Alumni.Domain/Alumni.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/Alumni/Alumni.Infrastructure/Alumni.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/Alumni/Alumni.Presentation/Alumni.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/StudentLifecycle/GuidanceCounseling/">
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/GuidanceCounseling/GuidanceCounseling.Application/GuidanceCounseling.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/GuidanceCounseling/GuidanceCounseling.Contracts/GuidanceCounseling.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/GuidanceCounseling/GuidanceCounseling.Domain/GuidanceCounseling.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/GuidanceCounseling/GuidanceCounseling.Infrastructure/GuidanceCounseling.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/GuidanceCounseling/GuidanceCounseling.Presentation/GuidanceCounseling.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/StudentLifecycle/HealthCenter/">
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/HealthCenter/HealthCenter.Application/HealthCenter.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/HealthCenter/HealthCenter.Contracts/HealthCenter.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/HealthCenter/HealthCenter.Domain/HealthCenter.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/HealthCenter/HealthCenter.Infrastructure/HealthCenter.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/HealthCenter/HealthCenter.Presentation/HealthCenter.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/StudentLifecycle/Hostel/">
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/Hostel/Hostel.Application/Hostel.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/Hostel/Hostel.Contracts/Hostel.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/Hostel/Hostel.Domain/Hostel.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/Hostel/Hostel.Infrastructure/Hostel.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/Hostel/Hostel.Presentation/Hostel.Presentation.csproj" />
+    </Folder>
+    <Folder Name="/src/Modules/StudentLifecycle/PlacementCareer/">
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/PlacementCareer/PlacementCareer.Application/PlacementCareer.Application.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/PlacementCareer/PlacementCareer.Contracts/PlacementCareer.Contracts.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/PlacementCareer/PlacementCareer.Domain/PlacementCareer.Domain.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/PlacementCareer/PlacementCareer.Infrastructure/PlacementCareer.Infrastructure.csproj" />
+      <Project Path="University-ERP-Backend/src/Modules/StudentLifecycle/PlacementCareer/PlacementCareer.Presentation/PlacementCareer.Presentation.csproj" />
+    </Folder>
+  </Folder>
+  <Folder Name="/Frontend/">
+    <Folder Name="/Frontend/lms-offline-avalonia/">
+      <Project Path="University-ERP-Frontend/clients/lms-offline-avalonia/LmsOffline.Presentation/LmsOffline.Presentation.csproj" />
+      <Project Path="University-ERP-Frontend/clients/lms-offline-avalonia/LmsOffline.Application/LmsOffline.Application.csproj" />
+      <Project Path="University-ERP-Frontend/clients/lms-offline-avalonia/LmsOffline.Infrastructure/LmsOffline.Infrastructure.csproj" />
+      <Project Path="University-ERP-Frontend/clients/lms-offline-avalonia/LmsOffline.Domain/LmsOffline.Domain.csproj" />
+      <Project Path="University-ERP-Frontend/clients/lms-offline-avalonia/LmsOffline.Contracts/LmsOffline.Contracts.csproj" />
+      <Project Path="University-ERP-Frontend/clients/lms-offline-avalonia/LmsOffline.Tests/LmsOffline.Tests.csproj" />
+    </Folder>
+  </Folder>
 </Solution>
