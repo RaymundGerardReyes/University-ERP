@@ -1,17 +1,11 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { guidanceApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
 import { Card, PageHeader, Button } from '@university-erp/ui-kit';
+import { useGuidanceSessions } from './GuidanceSessions.hooks';
 
 export default function GuidanceSessions() {
   const { user } = useAuth();
-  
-  const { data: sessions, isLoading, error } = useQuery({
-    queryKey: ['guidanceSessions', user?.id],
-    queryFn: () => guidanceApi.getSessions(user!.id),
-    enabled: !!user?.id
-  });
+  const { data: sessions, isLoading, error } = useGuidanceSessions(user?.id);
 
   if (isLoading) return <div style={{ color: '#aaa' }}>Loading guidance sessions...</div>;
   if (error) return <div style={{ color: 'hsl(0, 70%, 60%)' }}>Error loading data.</div>;

@@ -1,17 +1,11 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { admissionsApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
 import { Card, PageHeader, Badge } from '@university-erp/ui-kit';
+import { useAdmissionStatus } from './AdmissionStatus.hooks';
 
 export default function AdmissionStatus() {
   const { user } = useAuth();
-  
-  const { data: applications, isLoading, error } = useQuery({
-    queryKey: ['admissions', user?.id],
-    queryFn: () => admissionsApi.getApplicationStatus(user!.id),
-    enabled: !!user?.id
-  });
+  const { data: applications, isLoading, error } = useAdmissionStatus(user?.id);
 
   if (isLoading) return <div style={{ color: '#aaa' }}>Loading applications...</div>;
   if (error) return <div style={{ color: 'hsl(0, 70%, 60%)' }}>Error loading data.</div>;

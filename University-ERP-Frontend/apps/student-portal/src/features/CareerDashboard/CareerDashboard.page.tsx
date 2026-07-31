@@ -1,13 +1,9 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { careerApi } from '@university-erp/api-clients';
 import { Card, PageHeader, Button } from '@university-erp/ui-kit';
+import { useCareerJobs } from './CareerDashboard.hooks';
 
 export default function CareerDashboard() {
-  const { data: jobs, isLoading, error } = useQuery({
-    queryKey: ['careerJobs'],
-    queryFn: () => careerApi.getJobPostings()
-  });
+  const { data: jobs, isLoading, error } = useCareerJobs();
 
   if (isLoading) return <div style={{ color: '#aaa' }}>Loading job postings...</div>;
   if (error) return <div style={{ color: 'hsl(0, 70%, 60%)' }}>Error loading data.</div>;

@@ -2,5 +2,9 @@
   "name": "@university-erp/api-clients",
   "version": "0.1.0",
   "private": true,
-  "main": "index.ts"
+  "main": "index.ts",
+  "dependencies": {
+    "@university-erp/domain-viewmodels": "*",
+    "axios": "^1.6.0"
+  }
 }

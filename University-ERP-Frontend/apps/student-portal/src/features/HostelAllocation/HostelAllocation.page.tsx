@@ -1,17 +1,12 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { hostelApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
 import { Card, PageHeader } from '@university-erp/ui-kit';
+import { useHostelAllocation } from './HostelAllocation.hooks';
+import { InfoFieldProps } from './HostelAllocation.types';
 
 export default function HostelAllocation() {
   const { user } = useAuth();
-  
-  const { data: allocation, isLoading, error } = useQuery({
-    queryKey: ['hostelAllocation', user?.id],
-    queryFn: () => hostelApi.getAllocation(user!.id),
-    enabled: !!user?.id
-  });
+  const { data: allocation, isLoading, error } = useHostelAllocation(user?.id);
 
   if (isLoading) return <div style={{ color: '#aaa' }}>Loading allocation...</div>;
   if (error) return <div style={{ color: 'hsl(0, 70%, 60%)' }}>Error loading data.</div>;
@@ -42,7 +37,7 @@ export default function HostelAllocation() {
   );
 }
 
-function InfoField({ label, value, highlight }: { label: string, value: string, highlight?: boolean }) {
+function InfoField({ label, value, highlight }: InfoFieldProps) {
   return (
     <div>
       <div style={{ color: '#888', fontSize: '0.9rem', marginBottom: '0.4rem' }}>{label}</div>

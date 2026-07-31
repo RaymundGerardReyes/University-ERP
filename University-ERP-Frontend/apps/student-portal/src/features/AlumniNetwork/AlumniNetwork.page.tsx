@@ -1,60 +1,77 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { alumniApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
 import { Card, PageHeader, Badge, Button } from '@university-erp/ui-kit';
+import { useAlumniStatus } from './AlumniNetwork.hooks';
 
 export default function AlumniNetwork() {
   const { user } = useAuth();
-  
-  const { data: alumniInfo, isLoading, error } = useQuery({
-    queryKey: ['alumniStatus', user?.id],
-    queryFn: () => alumniApi.getAlumniStatus(user!.id),
-    enabled: !!user?.id
-  });
+  const { data: alumni, isLoading, error } = useAlumniStatus(user?.id);
 
-  if (isLoading) return <div style={{ color: '#aaa' }}>Loading alumni data...</div>;
+  if (isLoading) return <div style={{ color: '#aaa' }}>Loading alumni status...</div>;
   if (error) return <div style={{ color: 'hsl(0, 70%, 60%)' }}>Error loading data.</div>;
-  if (!alumniInfo) return <div style={{ color: '#888' }}>No alumni record found.</div>;
+  if (!alumni) return <div style={{ color: '#888' }}>Alumni records not found.</div>;
 
   return (
     <div>
-      <PageHeader title="Alumni Network & Clearance" />
+      <PageHeader 
+        title="Alumni Network" 
+        action={
+          alumni.graduationClearanceStatus !== 'Cleared' && 
+          <Button variant="primary">Start Clearance</Button>
+        }
+      />
 
-      <Card>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
-          <div>
-            <div style={{ color: '#888', fontSize: '0.9rem', marginBottom: '0.25rem' }}>Graduating Class of {alumniInfo.graduationYear}</div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 600, color: 'white' }}>Alumni Registration</div>
-          </div>
-          <Badge colorScheme={alumniInfo.alumniStatus === 'Pending Clearance' ? 'warning' : 'success'}>
-            {alumniInfo.alumniStatus}
-          </Badge>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
-          <div>
-            <div style={{ color: '#888', fontSize: '0.9rem', marginBottom: '0.4rem' }}>Regional Chapter</div>
-            <div style={{ color: 'white', fontSize: '1.1rem' }}>{alumniInfo.chapter || 'Not Assigned'}</div>
-          </div>
-          <div>
-            <div style={{ color: '#888', fontSize: '0.9rem', marginBottom: '0.4rem' }}>Alumni Benefits</div>
-            <div style={{ color: alumniInfo.benefitsActive ? 'hsl(160, 70%, 55%)' : '#aaa', fontSize: '1.1rem' }}>
-              {alumniInfo.benefitsActive ? 'Active' : 'Inactive'}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+        <Card>
+          <h3 style={{ marginTop: 0, color: 'white', marginBottom: '1.5rem' }}>Alumni Profile</h3>
+          <div style={{ display: 'grid', gap: '1rem' }}>
+            <div>
+              <div style={{ color: '#888', fontSize: '0.9rem' }}>Membership Status</div>
+              <Badge colorScheme={alumni.isRegisteredAlumni ? 'success' : 'default'}>
+                {alumni.isRegisteredAlumni ? 'Active Member' : 'Not Registered'}
+              </Badge>
+            </div>
+            <div>
+              <div style={{ color: '#888', fontSize: '0.9rem' }}>Graduation Clearance</div>
+              <Badge colorScheme={alumni.graduationClearanceStatus === 'Cleared' ? 'success' : 'warning'}>
+                {alumni.graduationClearanceStatus}
+              </Badge>
+            </div>
+            <div>
+              <div style={{ color: '#888', fontSize: '0.9rem' }}>Graduation Year</div>
+              <div style={{ color: 'white', fontSize: '1.1rem' }}>{alumni.graduationYear || 'N/A'}</div>
             </div>
           </div>
-        </div>
+        </Card>
 
-        {alumniInfo.alumniStatus === 'Pending Clearance' && (
-          <div style={{ background: 'rgba(255, 152, 0, 0.1)', padding: '1rem', borderRadius: '8px', borderLeft: '4px solid hsl(36, 100%, 50%)' }}>
-            <h4 style={{ margin: '0 0 0.5rem 0', color: 'hsl(36, 100%, 50%)' }}>Clearance Required</h4>
-            <p style={{ margin: '0 0 1rem 0', color: '#ccc', fontSize: '0.9rem' }}>
-              You must complete your departmental and library clearance before your alumni status can be fully registered.
-            </p>
-            <Button variant="primary">Start Clearance Workflow</Button>
+        <Card gradient>
+          <h3 style={{ marginTop: 0, color: 'white', marginBottom: '1.5rem' }}>Regional Chapter</h3>
+          <div style={{ fontSize: '1.5rem', fontWeight: 600, color: 'white', marginBottom: '0.5rem' }}>
+            {alumni.regionalChapter || 'Unassigned'}
           </div>
-        )}
-      </Card>
+          <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+            Connect with graduates in your area, attend networking events, and access exclusive regional benefits.
+          </p>
+          <Button variant="secondary" style={{ width: '100%' }}>View Chapter Events</Button>
+        </Card>
+      </div>
+
+      <div style={{ marginTop: '2rem' }}>
+        <h3 style={{ color: 'white', marginBottom: '1rem' }}>Active Benefits</h3>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          {alumni.activeBenefits.map(benefit => (
+            <div key={benefit} style={{ 
+              background: 'rgba(255,255,255,0.05)', 
+              border: '1px solid rgba(255,255,255,0.1)',
+              padding: '1rem',
+              borderRadius: '8px',
+              color: 'hsl(220, 90%, 80%)'
+            }}>
+              ✨ {benefit}
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

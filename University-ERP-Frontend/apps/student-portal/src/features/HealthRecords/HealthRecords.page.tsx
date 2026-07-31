@@ -1,17 +1,11 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { healthCenterApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
 import { Card, PageHeader, Button, Badge } from '@university-erp/ui-kit';
+import { useHealthRecords } from './HealthRecords.hooks';
 
 export default function HealthRecords() {
   const { user } = useAuth();
-  
-  const { data: appointments, isLoading, error } = useQuery({
-    queryKey: ['healthAppointments', user?.id],
-    queryFn: () => healthCenterApi.getAppointments(user!.id),
-    enabled: !!user?.id
-  });
+  const { data: appointments, isLoading, error } = useHealthRecords(user?.id);
 
   if (isLoading) return <div style={{ color: '#aaa' }}>Loading health records...</div>;
   if (error) return <div style={{ color: 'hsl(0, 70%, 60%)' }}>Error loading data.</div>;
