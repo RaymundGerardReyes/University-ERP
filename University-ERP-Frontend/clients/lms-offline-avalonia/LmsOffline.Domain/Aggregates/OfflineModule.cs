@@ -2,9 +2,6 @@ namespace LmsOffline.Domain.Aggregates;
 
 using System;
 
-/// <summary>
-/// Represents a downloaded course module package (e.g., "Week 1: Biology").
-/// </summary>
 public sealed class OfflineModule
 {
     public Guid Id { get; private set; }
@@ -20,5 +17,5 @@ public sealed class OfflineModule
         DownloadedAtUtc = DateTime.UtcNow;
     }
 
-    private OfflineModule() { } // Required for EF Core
+    private OfflineModule() { }
 }

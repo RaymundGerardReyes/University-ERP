@@ -3,9 +3,6 @@ namespace LmsOffline.Domain.Aggregates;
 using System;
 using LmsOffline.Domain.ValueObjects;
 
-/// <summary>
-/// Represents an offline assignment that a student drafts locally.
-/// </summary>
 public sealed class OfflineAssignment
 {
     public Guid Id { get; private set; }
@@ -24,20 +21,8 @@ public sealed class OfflineAssignment
         SyncState = SyncStatus.PendingSync;
     }
 
-    private OfflineAssignment() { } // Required for EF Core
+    private OfflineAssignment() { }
 
-    public void UpdateDraft(string content)
-    {
-        DraftContent = content;
-    }
-
-    public void MarkForSync()
-    {
-        SyncState = SyncStatus.PendingSync;
-    }
-
-    public void UpdateSyncStatus(SyncStatus newStatus)
-    {
-        SyncState = newStatus;
-    }
+    public void UpdateDraft(string content) => DraftContent = content;
+    public void UpdateSyncStatus(SyncStatus status) => SyncState = status;
 }

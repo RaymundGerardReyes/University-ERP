@@ -3,12 +3,7 @@ namespace LmsOffline.Domain.Aggregates;
 using System;
 using LmsOffline.Domain.ValueObjects;
 using LmsOffline.Domain.Policies;
-using LmsOffline.Domain.Exceptions;
 
-#region Aggregates
-/// <summary>
-/// The Aggregate Root representing an offline quiz or exam downloaded to the local device.
-/// </summary>
 public sealed class OfflineAssessment
 {
     public Guid Id { get; private set; }
@@ -17,12 +12,9 @@ public sealed class OfflineAssessment
     public AvailabilityWindow Window { get; private set; }
     public int MaxAttempts { get; private set; }
     
-    // Added the SyncState tracking mentioned in your summary
-    public SyncStatus SyncState { get; private set; }
-    
-    // Track the student's progress locally
     public bool IsStarted { get; private set; }
     public DateTime? StartedAtUtc { get; private set; }
+    public SyncStatus SyncState { get; private set; }
 
     public OfflineAssessment(Guid id, Guid moduleId, string title, AvailabilityWindow window, int maxAttempts)
     {
@@ -32,38 +24,20 @@ public sealed class OfflineAssessment
         Window = window ?? throw new ArgumentNullException(nameof(window));
         MaxAttempts = maxAttempts;
         IsStarted = false;
-        
-        // Configured default SyncState as specified in your summary
-        SyncState = SyncStatus.PendingSync; 
+        SyncState = SyncStatus.PendingSync;
     }
 
-    /// <summary>
-    /// Attempts to start the offline assessment, enforcing strict timing policies.
-    /// </summary>
+    private OfflineAssessment() { }
+
     public void Start(AttemptToken token, DateTime currentTimeUtc, WindowEnforcementPolicy policy)
     {
-        if (IsStarted)
-        {
-            throw new InvalidOperationException("This assessment has already been started.");
-        }
-
-        // Delegate the complex rule validation to the Domain Policy
+        if (IsStarted) throw new InvalidOperationException("Assessment already started.");
         if (!policy.CanStartAssessment(Window, token, currentTimeUtc))
-        {
-            throw new AssessmentWindowClosedException(
-                $"Cannot start assessment '{Title}'. The current time {currentTimeUtc:O} is outside the allowed window.");
-        }
-
+            throw new InvalidOperationException("Cannot start outside availability window.");
+            
         IsStarted = true;
         StartedAtUtc = currentTimeUtc;
     }
 
-    /// <summary>
-    /// Updates the synchronization status of the assessment.
-    /// </summary>
-    public void UpdateSyncStatus(SyncStatus newStatus)
-    {
-        SyncState = newStatus;
-    }
+    public void UpdateSyncStatus(SyncStatus status) => SyncState = status;
 }
-#endregion
