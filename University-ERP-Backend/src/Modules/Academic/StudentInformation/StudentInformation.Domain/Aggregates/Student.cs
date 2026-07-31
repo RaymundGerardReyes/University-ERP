@@ -15,6 +15,10 @@ public sealed class Student : AggregateRoot<StudentId>
     public EnrollmentStatus Status { get; private set; }
     public DateTime EnrolledOnUtc { get; private set; }
 
+public string PhoneNumber { get; private set; } = string.Empty;
+    public string EmergencyContactName { get; private set; } = string.Empty;
+    public string EmergencyContactNumber { get; private set; } = string.Empty;
+    
     private Student(StudentId id, Guid identityUserId, string enrollmentNumber, DateTime enrolledOnUtc)
         : base(id)
     {
@@ -61,5 +65,22 @@ public sealed class Student : AggregateRoot<StudentId>
     public void Suspend()
     {
         Status = EnrollmentStatus.Suspended;
+    }
+
+    public Result<bool> UpdateContactInformation(string phoneNumber, string emergencyName, string emergencyNumber)
+    {
+        if (string.IsNullOrWhiteSpace(phoneNumber))
+        {
+            return Result<bool>.Failure(new Error("Student.InvalidContact", "Primary phone number is required."));
+        }
+
+        PhoneNumber = phoneNumber;
+        EmergencyContactName = emergencyName;
+        EmergencyContactNumber = emergencyNumber;
+
+        // Raise domain event to notify CRM or Notification modules if necessary
+        // RaiseDomainEvent(new StudentContactUpdatedDomainEvent(Id));
+
+        return Result<bool>.Success(true);
     }
 }
