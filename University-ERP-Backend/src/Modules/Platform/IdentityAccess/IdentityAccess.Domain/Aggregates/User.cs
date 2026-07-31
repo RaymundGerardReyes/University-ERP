@@ -1,56 +1,38 @@
 namespace IdentityAccess.Domain.Aggregates;
 
 using SharedKernel.Domain.Primitives;
-using IdentityAccess.Domain.ValueObjects;
-using IdentityAccess.Domain.DomainEvents;
+using System;
 
-/// <summary>
-/// Aggregate root representing an authenticated user account.
-/// </summary>
-public sealed class User : AggregateRoot<UserId>
+public sealed class User : AggregateRoot<Guid>
 {
-    public Email Email { get; private set; } = null!;
-    public PersonName Name { get; private set; } = null!;
+    public string Email { get; private set; } = string.Empty;
+    public string FirstName { get; private set; } = string.Empty;
+    public string LastName { get; private set; } = string.Empty;
     public string PasswordHash { get; private set; } = string.Empty;
     public bool IsActive { get; private set; }
     public DateTime CreatedOnUtc { get; private set; }
 
-    private User(UserId id, Email email, PersonName name, string passwordHash, DateTime createdOnUtc)
-        : base(id)
+    private User() { }
+
+    private User(Guid id, string email, string firstName, string lastName, string passwordHash) : base(id)
     {
         Email = email;
-        Name = name;
+        FirstName = firstName;
+        LastName = lastName;
         PasswordHash = passwordHash;
         IsActive = true;
-        CreatedOnUtc = createdOnUtc;
+        CreatedOnUtc = DateTime.UtcNow;
     }
 
-    // Required by EF Core
-    private User() : base() { }
-
-    public static Result<User> Register(
-        UserId id,
-        Email email,
-        PersonName name,
-        string passwordHash,
-        DateTime createdOnUtc)
+    public static Result<User> Register(string email, string firstName, string lastName, string passwordHash)
     {
+        if (string.IsNullOrWhiteSpace(email))
+            return Result<User>.Failure(new Error("User.InvalidEmail", "Email is required."));
+            
         if (string.IsNullOrWhiteSpace(passwordHash))
-        {
-            return Result<User>.Failure(new Error(
-                "User.PasswordHashEmpty", 
-                "Password hash cannot be empty."));
-        }
+            return Result<User>.Failure(new Error("User.InvalidPassword", "Password hash cannot be empty."));
 
-        var user = new User(id, email, name, passwordHash, createdOnUtc);
-
-        user.RaiseDomainEvent(new UserRegisteredDomainEvent(
-            Guid.NewGuid(),
-            createdOnUtc,
-            user.Id,
-            user.Email));
-
-        return Result<User>.Success(user);
+        return Result<User>.Success(new User(Guid.NewGuid(), email, firstName, lastName, passwordHash));
     }
 
     public void Deactivate()
