@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
@@ -13,9 +13,16 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.8" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.1" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
     <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3">
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LmsOffline.Application\LmsOffline.Application.csproj" />
+    <ProjectReference Include="..\LmsOffline.Infrastructure\LmsOffline.Infrastructure.csproj" />
   </ItemGroup>
 </Project>
