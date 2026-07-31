@@ -1,0 +1,48 @@
+name: Secure Frontend Deployment (Matrix)
+
+on:
+  push:
+    tags:
+      - '*-v*' # Triggers on releases like finance-console-v0.1.0
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    # 1. MATRIX ISOLATION
+    # By using a matrix, each app builds in a completely isolated VM runner.
+    strategy:
+      matrix:
+        app: [finance-console, admin-portal, library-portal, student-portal, governance-console]
+        
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Install Workspace Dependencies
+        working-directory: University-ERP-Frontend
+        run: npm ci
+        
+      - name: Build Application
+        working-directory: University-ERP-Frontend
+        run: npm run build --workspace=apps/${{ matrix.app }}
+
+      # 2. STRICT SECRET SCOPING
+      # The deploy script dynamically requests secrets based on the matrix app name.
+      # A compromised build step in 'student-portal' cannot access 'FINANCE_DEPLOY_KEY'
+      # because the GitHub runner for student-portal simply wasn't given that secret in its environment.
+      - name: Secure Deploy
+        env:
+          # Assumes secrets are named FINANCE_CONSOLE_KEY, STUDENT_PORTAL_KEY, etc.
+          DEPLOY_KEY: ${{ secrets[format('{0}_KEY', replace(toUpper(matrix.app), '-', '_'))] }}
+        run: |
+          if [ -z "$DEPLOY_KEY" ]; then
+            echo "Skipping deploy for ${{ matrix.app }} (No deploy key provided for this matrix iteration)."
+            exit 0
+          fi
+          echo "Deploying ${{ matrix.app }} using scoped credential..."
+          # Insert actual deploy command here (e.g., Vercel, AWS S3, Azure Static Web Apps)

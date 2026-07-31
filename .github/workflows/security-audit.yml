@@ -1,0 +1,44 @@
+name: Monorepo Security Audit
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '0 2 * * *' # Run daily at 2am
+
+jobs:
+  audit-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Install Dependencies
+        working-directory: University-ERP-Frontend
+        run: npm ci
+        
+      - name: Run NPM Workspace Audit
+        working-directory: University-ERP-Frontend
+        run: npm run audit:all
+
+      - name: Verify Dependency Graph Integrity (Anti-Leakage)
+        working-directory: University-ERP-Frontend
+        run: npm run lint:deps
+
+  audit-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+          
+      - name: Run NuGet Vulnerability Audit
+        working-directory: University-ERP-Backend
+        run: dotnet list package --vulnerable --include-transitive
