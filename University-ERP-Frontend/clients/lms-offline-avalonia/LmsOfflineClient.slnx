@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="LmsOffline.Domain/LmsOffline.Domain.csproj" />
+  <Project Path="LmsOffline.Infrastructure/LmsOffline.Infrastructure.csproj" />
+  <Project Path="LmsOffline.Presentation/LmsOffline.Presentation.csproj" />
+</Solution>
