@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using MediatR;
 using SharedKernel.Domain.Primitives;
 using LmsOffline.Domain.Aggregates;
-using LmsOffline.Infrastructure.Data;
+using LmsOffline.Infrastructure.Persistence;
 
 public sealed class DownloadModulePackageCommandHandler : IRequestHandler<DownloadModulePackageCommand, Result<Guid>>
 {

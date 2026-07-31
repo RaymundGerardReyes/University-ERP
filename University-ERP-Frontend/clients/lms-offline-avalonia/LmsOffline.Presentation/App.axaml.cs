@@ -5,7 +5,7 @@ using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using MediatR;
 using LmsOffline.Application.Features.StartOfflineAssessment;
-using LmsOffline.Infrastructure.Data;
+using LmsOffline.Infrastructure.Persistence;
 using LmsOffline.Infrastructure.Repositories;
 using LmsOffline.Infrastructure.Auth;
 using LmsOffline.Infrastructure.Sync;

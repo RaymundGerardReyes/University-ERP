@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using LmsOffline.Domain.Aggregates;
 using LmsOffline.Application.Interfaces;
-using LmsOffline.Infrastructure.Data;
+using LmsOffline.Infrastructure.Persistence;
 
 public sealed class OfflineAssignmentRepository : IOfflineAssignmentRepository
 {

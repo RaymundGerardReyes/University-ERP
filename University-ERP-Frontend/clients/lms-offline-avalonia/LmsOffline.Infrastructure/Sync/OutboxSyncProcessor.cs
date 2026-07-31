@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using LmsOffline.Infrastructure.Data;
+using LmsOffline.Infrastructure.Persistence;
 using LmsOffline.Domain.ValueObjects;
 
 public sealed class OutboxSyncProcessor
