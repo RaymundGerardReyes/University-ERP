@@ -61,6 +61,8 @@ public partial class App : Application
 
         // 4. Register MVVM ViewModels
         services.AddTransient<AssessmentViewModel>();
+        services.AddTransient<AssignmentSubmissionViewModel>();
+        services.AddTransient<ModuleTimelineViewModel>();
 
         return services.BuildServiceProvider();
     }
