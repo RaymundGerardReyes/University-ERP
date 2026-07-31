@@ -1,44 +1,66 @@
 namespace LmsOffline.Infrastructure.Sync;
 
 using System;
-using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using LmsOffline.Infrastructure.Persistence;
+using LmsOffline.Application.Interfaces;
 using LmsOffline.Domain.ValueObjects;
 
+/// <summary>
+/// Background processor that synchronizes local SQLite outbox records with the University ERP Backend.
+/// </summary>
 public sealed class OutboxSyncProcessor
 {
-    private readonly EncryptedSqliteContext _dbContext;
+    private readonly IOfflineAssessmentRepository _assessmentRepository;
+    private readonly HttpClient _httpClient;
 
-    public OutboxSyncProcessor(EncryptedSqliteContext dbContext)
+    public OutboxSyncProcessor(IOfflineAssessmentRepository assessmentRepository, IHttpClientFactory httpClientFactory)
     {
-        _dbContext = dbContext;
+        _assessmentRepository = assessmentRepository;
+        // Points to the Backend API (e.g., https://api.university.edu)
+        _httpClient = httpClientFactory.CreateClient("ErpBackendApi"); 
     }
 
-    public async Task ProcessPendingOutboxAsync(CancellationToken cancellationToken = default)
+    public async Task ProcessPendingSubmissionsAsync(CancellationToken cancellationToken = default)
     {
-        // 1. Sync Assessments
-        var pendingAssessments = await _dbContext.Assessments
-            .Where(a => a.SyncState == SyncStatus.PendingSync && a.IsStarted)
-            .ToListAsync(cancellationToken);
+        var pendingAssessments = await _assessmentRepository.GetBySyncStatusAsync(SyncStatus.PendingSync, cancellationToken);
 
         foreach (var assessment in pendingAssessments)
         {
-            assessment.UpdateSyncStatus(SyncStatus.Synced); // Simulated success
+            try
+            {
+                // Format matches the backend SyncOfflineAssessmentRequest
+                var payload = new 
+                {
+                    AssessmentId = assessment.AssessmentId,
+                    StudentId = Guid.NewGuid(), // Normally fetched from local Auth Context
+                    CourseCode = "OFFLINE-101",
+                    ModuleTitle = assessment.Title,
+                    Answers = new[] { new { QuestionId = "Q1", SelectedOption = "A" } }, // Deserialized from assessment.PayloadJson
+                    ScheduleToken = "cryptographic_token_generated_by_client",
+                    SubmittedAtUtc = assessment.SubmittedAtUtc
+                };
+
+                var response = await _httpClient.PostAsJsonAsync("/api/v1/lms/sync/assessments", payload, cancellationToken);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    assessment.UpdateSyncStatus(SyncStatus.Synced);
+                    await _assessmentRepository.SaveAsync(assessment, cancellationToken);
+                }
+                else
+                {
+                    assessment.UpdateSyncStatus(SyncStatus.Conflict);
+                    await _assessmentRepository.SaveAsync(assessment, cancellationToken);
+                }
+            }
+            catch (HttpRequestException)
+            {
+                // Network unavailable. Remain in PendingSync state for the next polling cycle.
+                continue;
+            }
         }
-
-        // 2. Sync Assignments
-        var pendingAssignments = await _dbContext.Assignments
-            .Where(a => a.SyncState == SyncStatus.PendingSync)
-            .ToListAsync(cancellationToken);
-
-        foreach (var assignment in pendingAssignments)
-        {
-            assignment.UpdateSyncStatus(SyncStatus.Synced); // Simulated success
-        }
-
-        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

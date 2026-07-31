@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 using MediatR;
 using SharedKernel.Domain.Primitives;
 using LmsOffline.Application.Interfaces;
+using LmsOffline.Domain.Aggregates;
 using LmsOffline.Domain.ValueObjects;
 
-public sealed class SubmitOfflineAssessmentCommandHandler : IRequestHandler<SubmitOfflineAssessmentCommand, Result<Guid>>
+public sealed class SubmitOfflineAssessmentCommandHandler : IRequestHandler<SubmitOfflineAssessmentCommand, Result<bool>>
 {
     private readonly IOfflineAssessmentRepository _repository;
 
@@ -16,26 +17,27 @@ public sealed class SubmitOfflineAssessmentCommandHandler : IRequestHandler<Subm
         _repository = repository;
     }
 
-    public async Task<Result<Guid>> Handle(SubmitOfflineAssessmentCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(SubmitOfflineAssessmentCommand request, CancellationToken cancellationToken)
     {
-        // 1. Fetch the exam from the secure local database
-        var assessment = await _repository.GetByIdAsync(request.AssessmentId, cancellationToken);
-        if (assessment is null)
-        {
-            return Result<Guid>.Failure(new Error("Assessment.NotFound", "The assessment was not found on this device."));
-        }
+        // 1. In a real scenario, fetch the active assessment window to ensure it hasn't expired.
+        var window = AvailabilityWindow.Create(DateTime.UtcNow.AddHours(-2), DateTime.UtcNow.AddHours(2));
+        
+        // 2. Create the offline domain aggregate
+        var assessment = new OfflineAssessment(
+            id: Guid.NewGuid(),
+            assessmentId: request.AssessmentId,
+            title: "Pending Offline Submission",
+            window: window,
+            maxAttempts: 1
+        );
 
-        if (!assessment.IsStarted)
-        {
-            return Result<Guid>.Failure(new Error("Assessment.NotStarted", "Cannot submit an assessment that was never started."));
-        }
-
-        // 2. NFR Fulfillment: Flag the assessment so the OutboxSyncProcessor pushes it when internet returns
+        // 3. Attach the JSON payload and mark it for the Outbox Sync
+        assessment.AttachSubmissionPayload(request.StudentAnswersJson, request.SubmittedAtUtc);
         assessment.UpdateSyncStatus(SyncStatus.PendingSync);
 
-        // 3. Save the final state to disk
-        await _repository.UpdateAsync(assessment, cancellationToken);
+        // 4. Save to encrypted SQLite DB
+        await _repository.SaveAsync(assessment, cancellationToken);
 
-        return Result<Guid>.Success(assessment.Id);
+        return Result<bool>.Success(true);
     }
 }

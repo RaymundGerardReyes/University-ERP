@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LmsOffline.Presentation.ViewModels"
+             x:DataType="vm:CourseContentViewModel"
+             x:Class="LmsOffline.Presentation.Views.CourseContentView">
+    
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <Border Grid.Row="0" Background="DarkSlateBlue" Padding="20">
+            <TextBlock Text="{Binding ModuleTitle}" 
+                       Foreground="White" 
+                       FontSize="24" 
+                       FontWeight="Bold"/>
+        </Border>
+
+        <!-- Content Area -->
+        <ScrollViewer Grid.Row="1" Margin="20">
+            <StackPanel Spacing="15">
+                <TextBlock IsVisible="{Binding IsLoading}" 
+                           Text="Decrypting offline materials..." 
+                           FontStyle="Italic" 
+                           Foreground="Gray"/>
+                
+                <!-- In a full implementation, this could be a MarkdownViewer or HTML control -->
+                <TextBlock Text="{Binding TextContent}" 
+                           TextWrapping="Wrap" 
+                           FontSize="16" 
+                           LineHeight="24"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
