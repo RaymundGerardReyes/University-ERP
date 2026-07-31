@@ -16,7 +16,10 @@ public abstract class Entity<TId> : IEquatable<Entity<TId>>
     }
 
     // Required for Entity Framework Core parameterless initialization
-    protected Entity() { }
+    protected Entity()
+    {
+        Id = default!;
+    }
 
     public bool Equals(Entity<TId>? other)
     {

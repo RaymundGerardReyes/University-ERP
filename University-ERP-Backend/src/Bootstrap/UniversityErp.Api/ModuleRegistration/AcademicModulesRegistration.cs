@@ -1,5 +1,6 @@
 namespace UniversityErp.Api.ModuleRegistration;
 
+using LearningManagement.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StudentInformation.Infrastructure;
@@ -11,9 +12,10 @@ public static class AcademicModulesRegistration
     {
         // Register the StudentInformation bounded context
         services.AddStudentInformationModule(configuration);
-        
-        // Future academic modules (Registrar, Examination, etc.) will be added here
-        
+
+        // Register the LearningManagement bounded context (Offline LMS Sync ingestion)
+        services.AddLearningManagementModule(configuration);
+
         return services;
     }
 }

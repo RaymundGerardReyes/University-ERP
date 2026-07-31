@@ -4,15 +4,17 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <OpenApiGenerateXmlComments>false</OpenApiGenerateXmlComments>
+    <GenerateOpenApiXmlComments>false</GenerateOpenApiXmlComments>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
+    <PackageReference Include="Microsoft.OpenApi" Version="2.3.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.10">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.OpenApi" Version="3.9.0" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.16.17" />
     <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
   </ItemGroup>
@@ -20,6 +22,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Modules\Academic\StudentInformation\StudentInformation.Infrastructure\StudentInformation.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\Academic\StudentInformation\StudentInformation.Presentation\StudentInformation.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Academic\LearningManagement\LearningManagement.Infrastructure\LearningManagement.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Academic\LearningManagement\LearningManagement.Presentation\LearningManagement.Presentation.csproj" />
   </ItemGroup>
 
 </Project>
