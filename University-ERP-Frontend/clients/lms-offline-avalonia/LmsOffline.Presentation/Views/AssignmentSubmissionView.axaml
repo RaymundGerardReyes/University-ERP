@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="LmsOffline.Presentation.Views.AssignmentSubmissionView">
+    
+    <StackPanel Spacing="15" Padding="20">
+        <TextBlock Text="Offline Assignment Submission" 
+                   FontSize="22" 
+                   FontWeight="Bold" 
+                   Foreground="DarkSlateBlue"/>
+        
+        <TextBlock Text="Type your answers below. Your work is encrypted via SQLCipher and saved locally. It will auto-sync via the Outbox Processor when internet connectivity is restored." 
+                   TextWrapping="Wrap"/>
+        
+        <TextBox Height="250" 
+                 AcceptsReturn="True" 
+                 TextWrapping="Wrap" 
+                 Watermark="Enter your essay or answers here..."/>
+        
+        <Button Content="Save to Offline Outbox" 
+                Background="DarkBlue" 
+                Foreground="White" 
+                HorizontalAlignment="Right"
+                Padding="15,10"/>
+    </StackPanel>
+</UserControl>
