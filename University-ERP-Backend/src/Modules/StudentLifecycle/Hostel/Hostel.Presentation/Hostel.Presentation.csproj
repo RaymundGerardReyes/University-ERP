@@ -1,6 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="..\Hostel.Application\Hostel.Application.csproj" />
     <ProjectReference Include="..\Hostel.Contracts\Hostel.Contracts.csproj" />
   </ItemGroup>

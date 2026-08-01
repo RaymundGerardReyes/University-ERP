@@ -1,11 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <OpenApiGenerateXmlComments>false</OpenApiGenerateXmlComments>
-    <GenerateOpenApiXmlComments>false</GenerateOpenApiXmlComments>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,10 +18,34 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Academic Cluster -->
     <ProjectReference Include="..\..\Modules\Academic\StudentInformation\StudentInformation.Infrastructure\StudentInformation.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\Academic\StudentInformation\StudentInformation.Presentation\StudentInformation.Presentation.csproj" />
     <ProjectReference Include="..\..\Modules\Academic\LearningManagement\LearningManagement.Infrastructure\LearningManagement.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\Academic\LearningManagement\LearningManagement.Presentation\LearningManagement.Presentation.csproj" />
-  </ItemGroup>
+    <ProjectReference Include="..\..\Modules\Academic\Registrar\Registrar.Infrastructure\Registrar.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Academic\Registrar\Registrar.Presentation\Registrar.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Academic\Examination\Examination.Infrastructure\Examination.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Academic\Examination\Examination.Presentation\Examination.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Academic\AcademicScheduling\AcademicScheduling.Infrastructure\AcademicScheduling.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Academic\AcademicScheduling\AcademicScheduling.Presentation\AcademicScheduling.Presentation.csproj" />
 
+    <!-- Platform Cluster -->
+    <ProjectReference Include="..\..\Modules\Platform\IdentityAccess\IdentityAccess.Infrastructure\IdentityAccess.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Platform\IdentityAccess\IdentityAccess.Presentation\IdentityAccess.Presentation.csproj" />
+
+    <!-- StudentLifecycle Cluster -->
+    <ProjectReference Include="..\..\Modules\StudentLifecycle\Alumni\Alumni.Infrastructure\Alumni.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\StudentLifecycle\Alumni\Alumni.Presentation\Alumni.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\StudentLifecycle\PlacementCareer\PlacementCareer.Infrastructure\PlacementCareer.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\StudentLifecycle\PlacementCareer\PlacementCareer.Presentation\PlacementCareer.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\StudentLifecycle\GuidanceCounseling\GuidanceCounseling.Infrastructure\GuidanceCounseling.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\StudentLifecycle\GuidanceCounseling\GuidanceCounseling.Presentation\GuidanceCounseling.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\StudentLifecycle\HealthCenter\HealthCenter.Infrastructure\HealthCenter.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\StudentLifecycle\HealthCenter\HealthCenter.Presentation\HealthCenter.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\StudentLifecycle\Admissions\Admissions.Infrastructure\Admissions.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\StudentLifecycle\Admissions\Admissions.Presentation\Admissions.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\StudentLifecycle\Hostel\Hostel.Infrastructure\Hostel.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\StudentLifecycle\Hostel\Hostel.Presentation\Hostel.Presentation.csproj" />
+  </ItemGroup>
 </Project>
