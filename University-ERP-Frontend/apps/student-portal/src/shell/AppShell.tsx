@@ -8,8 +8,9 @@ export const AppShell = () => {
 
   const navItems = [
     { label: 'Profile', path: '/profile' },
+    { label: 'Grades & Transcript', path: '/transcript' },
     { label: 'My Enrollments', path: '/enrollments' },
-    { label: 'Admission Status', path: '/admission' },
+    { label: 'Admission Status', path: '/admissions' },
     { label: 'Hostel', path: '/hostel' },
     { label: 'Health Center', path: '/health' },
     { label: 'Guidance', path: '/guidance' },
