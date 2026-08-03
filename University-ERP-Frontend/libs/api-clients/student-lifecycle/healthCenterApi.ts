@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { HealthAppointmentViewModel } from '@university-erp/domain-viewmodels';
 
-const BASE_URL = 'http://localhost:5000/api/v1/health';
+const BASE_URL = '/api/v1/health';
 
 export const healthCenterApi = {
   getAppointments: async (studentId: string): Promise<HealthAppointmentViewModel[]> => {

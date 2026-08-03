@@ -5,6 +5,9 @@
   "main": "index.ts",
   "dependencies": {
     "@university-erp/domain-viewmodels": "*",
-    "axios": "^1.6.0"
+    "axios": "^1.19.0"
+  },
+  "scripts": {
+    "build": "echo 'No build step required for this library'"
   }
 }

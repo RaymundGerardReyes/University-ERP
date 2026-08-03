@@ -2,32 +2,37 @@ import React from 'react';
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   children: React.ReactNode;
-  colorScheme?: 'success' | 'warning' | 'info' | 'default';
+  colorScheme?: 'success' | 'warning' | 'info' | 'danger' | 'default';
 }
 
 export const Badge: React.FC<BadgeProps> = ({ children, colorScheme = 'default', style, ...props }) => {
-  let background = 'rgba(255, 255, 255, 0.1)';
-  let color = '#ccc';
+  let background = 'var(--bg-hover)';
+  let color = 'var(--text-secondary)';
 
   if (colorScheme === 'success') {
-    background = 'rgba(0, 200, 83, 0.2)';
-    color = 'hsl(160, 70%, 55%)';
+    background = 'var(--success-bg)';
+    color = 'var(--success-text)';
   } else if (colorScheme === 'warning') {
-    background = 'rgba(255, 152, 0, 0.2)';
-    color = 'hsl(36, 100%, 50%)';
+    background = 'var(--warning-bg)';
+    color = 'var(--warning-text)';
   } else if (colorScheme === 'info') {
-    background = 'rgba(33, 150, 243, 0.2)';
-    color = 'hsl(210, 100%, 65%)';
+    background = 'var(--info-bg)';
+    color = 'var(--info-text)';
+  } else if (colorScheme === 'danger') {
+    background = 'var(--danger-bg)';
+    color = 'var(--danger-text)';
   }
 
   const baseStyle: React.CSSProperties = {
-    display: 'inline-block',
-    padding: '0.3rem 0.8rem',
-    borderRadius: '12px',
-    fontSize: '0.8rem',
+    display: 'inline-flex',
+    alignItems: 'center',
+    padding: 'var(--space-1) var(--space-2)',
+    borderRadius: 'var(--radius-full)',
+    fontSize: '0.75rem',
     fontWeight: 600,
-    background,
-    color,
+    backgroundColor: background,
+    color: color,
+    letterSpacing: '0.01em',
     ...style
   };
 

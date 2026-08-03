@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ApplicationStatusViewModel } from '@university-erp/domain-viewmodels';
 
-const BASE_URL = 'http://localhost:5000/api/v1/admissions';
+const BASE_URL = '/api/v1/admissions';
 
 export const admissionsApi = {
   getApplicationStatus: async (studentId: string): Promise<ApplicationStatusViewModel[]> => {

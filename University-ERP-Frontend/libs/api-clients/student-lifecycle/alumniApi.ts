@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { AlumniViewModel } from '@university-erp/domain-viewmodels';
 
-const BASE_URL = 'http://localhost:5000/api/v1/alumni';
+const BASE_URL = '/api/v1/alumni';
 
 export const alumniApi = {
   getAlumniStatus: async (studentId: string): Promise<AlumniViewModel> => {
@@ -10,12 +10,11 @@ export const alumniApi = {
       return response.data;
     } catch {
       return {
-        studentId,
-        isRegisteredAlumni: true,
-        graduationClearanceStatus: 'Cleared',
-        graduationYear: 2026,
-        regionalChapter: 'North America Chapter',
-        activeBenefits: ['Library Access', 'Career Counseling', 'Alumni Directory']
+        id: 'ALUM-001',
+        alumniStatus: 'Registered',
+        benefitsActive: true,
+        graduationYear: '2026',
+        chapter: 'North America Chapter'
       };
     }
   }

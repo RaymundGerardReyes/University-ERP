@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { JobPostingViewModel } from '@university-erp/domain-viewmodels';
 
-const BASE_URL = 'http://localhost:5000/api/v1/career';
+const BASE_URL = '/api/v1/career';
 
 export const careerApi = {
   getJobPostings: async (): Promise<JobPostingViewModel[]> => {

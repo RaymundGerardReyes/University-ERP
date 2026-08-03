@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { StudentProfileViewModel, EnrollmentViewModel } from '@university-erp/domain-viewmodels';
+import { StudentProfileViewModel, CourseEnrollmentViewModel } from '@university-erp/domain-viewmodels';
 
-const BASE_URL = 'http://localhost:5000/api/v1/students';
+const BASE_URL = '/api/v1/students';
 
 export const studentInformationApi = {
   getProfile: async (studentId: string): Promise<StudentProfileViewModel> => {
@@ -11,37 +11,37 @@ export const studentInformationApi = {
     } catch {
       return {
         id: studentId,
+        studentNumber: studentId,
         firstName: 'Alex',
         lastName: 'Morgan',
         email: 'alex.morgan@university.edu',
-        programName: 'B.S. Computer Science & Engineering',
-        currentSemester: 6,
-        cgpa: 3.85,
-        totalCreditsEarned: 96,
-        enrollmentYear: 2023,
-        phoneNumber: '+1 (555) 234-5678'
+        program: 'B.S. Computer Science & Engineering',
+        academicStanding: 'Good Standing',
+        enrollmentStatus: 'Enrolled'
       };
     }
   },
 
-  getEnrollments: async (studentId: string): Promise<EnrollmentViewModel[]> => {
+  getEnrollmentHistory: async (studentId: string): Promise<CourseEnrollmentViewModel[]> => {
     try {
-      const response = await axios.get<EnrollmentViewModel[]>(`${BASE_URL}/enrollments/${studentId}`);
+      const response = await axios.get<CourseEnrollmentViewModel[]>(`${BASE_URL}/enrollments/${studentId}`);
       return response.data;
     } catch {
       return [
         {
+          id: crypto.randomUUID(),
           courseCode: 'CS-301',
           courseName: 'Distributed Systems & Architecture',
+          term: 'Fall 2026',
           credits: 4,
-          status: 'Active',
           grade: 'A'
         },
         {
+          id: crypto.randomUUID(),
           courseCode: 'CS-305',
           courseName: 'Database Management & DBMA',
+          term: 'Fall 2026',
           credits: 3,
-          status: 'Active',
           grade: 'A-'
         }
       ];

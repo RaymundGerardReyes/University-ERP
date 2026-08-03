@@ -1,0 +1,10 @@
+{
+  "name": "@university-erp/core-logger",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.ts",
+  "dependencies": {},
+  "scripts": {
+    "build": "echo 'No build step required for this library'"
+  }
+}
