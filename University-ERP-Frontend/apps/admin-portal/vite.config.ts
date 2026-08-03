@@ -6,14 +6,14 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@shell': path.resolve(__dirname, './src/shell'),
-      '@features': path.resolve(__dirname, './src/features'),
-      '@state': path.resolve(__dirname, './src/state'),
-      '@config': path.resolve(__dirname, './src/config'),
+      '@shell': path.resolve(import.meta.dirname, './src/shell'),
+      '@features': path.resolve(import.meta.dirname, './src/features'),
+      '@state': path.resolve(import.meta.dirname, './src/state'),
+      '@config': path.resolve(import.meta.dirname, './src/config'),
     },
   },
   server: {
-    port: 5174,
+    port: 5178,
     proxy: {
       '/api': {
         target: 'http://localhost:5191',

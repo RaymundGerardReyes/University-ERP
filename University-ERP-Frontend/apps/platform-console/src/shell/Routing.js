@@ -1,0 +1,13 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+// We will implement these pages next
+import NotificationPage from '../features/Notification/Notification.page';
+import CommunicationPage from '../features/Communication/Communication.page';
+import DocumentManagementPage from '../features/DocumentManagement/DocumentManagement.page';
+import AnalyticsBIPage from '../features/AnalyticsBI/AnalyticsBI.page';
+import CRMPage from '../features/CRM/CRM.page';
+import MultiCampusPage from '../features/MultiCampus/MultiCampus.page';
+const AppShell = ({ children }) => (_jsxs("div", { style: { display: 'flex', minHeight: '100vh', fontFamily: 'sans-serif' }, children: [_jsxs("nav", { style: { width: '250px', backgroundColor: '#1e293b', color: 'white', padding: '1rem' }, children: [_jsx("h2", { style: { fontSize: '1.2rem', marginBottom: '2rem' }, children: "Platform Console" }), _jsxs("ul", { style: { listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }, children: [_jsx("li", { children: _jsx(Link, { to: "/notifications", style: { color: 'white', textDecoration: 'none' }, children: "Notifications" }) }), _jsx("li", { children: _jsx(Link, { to: "/communications", style: { color: 'white', textDecoration: 'none' }, children: "Communications" }) }), _jsx("li", { children: _jsx(Link, { to: "/documents", style: { color: 'white', textDecoration: 'none' }, children: "Document Management" }) }), _jsx("li", { children: _jsx(Link, { to: "/analytics", style: { color: 'white', textDecoration: 'none' }, children: "Analytics & BI" }) }), _jsx("li", { children: _jsx(Link, { to: "/crm", style: { color: 'white', textDecoration: 'none' }, children: "CRM" }) }), _jsx("li", { children: _jsx(Link, { to: "/campus", style: { color: 'white', textDecoration: 'none' }, children: "Multi-Campus" }) })] })] }), _jsx("main", { style: { flex: 1, padding: '2rem', backgroundColor: '#f8fafc' }, children: children })] }));
+export const Routing = () => {
+    return (_jsx(BrowserRouter, { children: _jsx(AppShell, { children: _jsxs(Routes, { children: [_jsx(Route, { path: "/", element: _jsx("h1", { children: "Platform Dashboard Overview" }) }), _jsx(Route, { path: "/notifications", element: _jsx(NotificationPage, {}) }), _jsx(Route, { path: "/communications", element: _jsx(CommunicationPage, {}) }), _jsx(Route, { path: "/documents", element: _jsx(DocumentManagementPage, {}) }), _jsx(Route, { path: "/analytics", element: _jsx(AnalyticsBIPage, {}) }), _jsx(Route, { path: "/crm", element: _jsx(CRMPage, {}) }), _jsx(Route, { path: "/campus", element: _jsx(MultiCampusPage, {}) })] }) }) }));
+};

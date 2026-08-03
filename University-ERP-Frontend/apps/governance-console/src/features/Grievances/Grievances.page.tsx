@@ -1,26 +1,11 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-
-interface ComplaintPayload {
-    complainantId: string;
-    category: string;
-    description: string;
-}
+import { governanceApi } from '@university-erp/api-clients';
+import { SubmitGrievancePayload } from '@university-erp/domain-viewmodels';
 
 export const useSubmitComplaint = () => {
     return useMutation({
-        mutationFn: async (payload: ComplaintPayload) => {
-            const response = await fetch('/api/v1/governance/grievances', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to submit grievance');
-            }
-            return response.json();
-        },
+        mutationFn: (payload: SubmitGrievancePayload) => governanceApi.submitGrievance(payload),
     });
 };
 

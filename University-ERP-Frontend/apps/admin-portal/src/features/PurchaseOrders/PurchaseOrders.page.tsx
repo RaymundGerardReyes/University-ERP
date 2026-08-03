@@ -1,22 +1,11 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-
-interface CreateOrderPayload {
-    vendorId: string;
-    totalAmount: number;
-}
+import { procurementApi } from '@university-erp/api-clients';
+import { CreatePurchaseOrderPayload } from '@university-erp/domain-viewmodels';
 
 export const useCreatePurchaseOrder = () => {
     return useMutation({
-        mutationFn: async (payload: CreateOrderPayload) => {
-            const response = await fetch('/api/v1/procurement/orders', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            if (!response.ok) throw new Error('Failed to create purchase order');
-            return response.json();
-        },
+        mutationFn: (payload: CreatePurchaseOrderPayload) => procurementApi.createPurchaseOrder(payload),
     });
 };
 

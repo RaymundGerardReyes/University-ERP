@@ -1,0 +1,11 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { GrievancesPage } from '../features/Grievances/Grievances.page';
+import { HelpdeskPage } from '../features/Helpdesk/Helpdesk.page';
+import { EventsPage } from '../features/Events/Events.page';
+import { VisitorsPage } from '../features/Visitors/Visitors.page';
+import { QualityAccreditationPage } from '../features/QualityAccreditation/QualityAccreditation.page';
+const AppShell = ({ children }) => (_jsxs("div", { className: "flex h-screen bg-gray-50", children: [_jsxs("nav", { className: "w-64 bg-slate-900 text-white p-4", children: [_jsx("div", { className: "text-xl font-bold mb-8", children: "Governance Console" }), _jsxs("ul", { className: "space-y-2", children: [_jsx("li", { children: _jsx(Link, { to: "/grievances", className: "block p-2 rounded hover:bg-slate-800 text-red-300", children: "Grievances (Formal)" }) }), _jsx("li", { children: _jsx(Link, { to: "/helpdesk", className: "block p-2 rounded hover:bg-slate-800 text-blue-300", children: "IT Helpdesk" }) }), _jsx("li", { children: _jsx(Link, { to: "/events", className: "block p-2 rounded hover:bg-slate-800 text-indigo-300", children: "Events" }) }), _jsx("li", { children: _jsx(Link, { to: "/visitors", className: "block p-2 rounded hover:bg-slate-800 text-emerald-300", children: "Visitors" }) }), _jsx("li", { children: _jsx(Link, { to: "/accreditation", className: "block p-2 rounded hover:bg-slate-800 text-purple-300", children: "Quality QA" }) })] })] }), _jsx("main", { className: "flex-1 overflow-auto", children: children })] }));
+export const Routing = () => {
+    return (_jsx(BrowserRouter, { children: _jsx(AppShell, { children: _jsxs(Routes, { children: [_jsx(Route, { path: "/grievances", element: _jsx(GrievancesPage, {}) }), _jsx(Route, { path: "/helpdesk", element: _jsx(HelpdeskPage, {}) }), _jsx(Route, { path: "/events", element: _jsx(EventsPage, {}) }), _jsx(Route, { path: "/visitors", element: _jsx(VisitorsPage, {}) }), _jsx(Route, { path: "/accreditation", element: _jsx(QualityAccreditationPage, {}) }), _jsx(Route, { path: "*", element: _jsx("div", { className: "p-6", children: "Select a module from the sidebar." }) })] }) }) }));
+};

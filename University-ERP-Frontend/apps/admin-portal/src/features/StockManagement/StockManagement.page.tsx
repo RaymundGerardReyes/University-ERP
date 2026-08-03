@@ -1,23 +1,11 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-
-interface AdjustStockPayload {
-    stockItemId: string;
-    amount: number;
-    reason: string;
-}
+import { inventoryApi } from '@university-erp/api-clients';
+import { AdjustStockPayload } from '@university-erp/domain-viewmodels';
 
 export const useAdjustStock = () => {
     return useMutation({
-        mutationFn: async (payload: AdjustStockPayload) => {
-            const response = await fetch(`/api/v1/inventory/stock/${payload.stockItemId}/adjust`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount: payload.amount, reason: payload.reason }),
-            });
-            if (!response.ok) throw new Error('Failed to adjust stock');
-            return response.json();
-        },
+        mutationFn: (payload: AdjustStockPayload) => inventoryApi.adjustStock(payload),
     });
 };
 

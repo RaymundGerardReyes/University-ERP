@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { libraryCatalogApi } from '@university-erp/api-clients';
 
 export const useCheckoutItem = () => {
     return useMutation({
-        mutationFn: async (payload: any) => {
-            const response = await fetch(`/api/v1/library/catalog/${payload.itemId}/checkout`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ borrowerId: payload.borrowerId }),
-            });
-            if (!response.ok) throw new Error('Failed to checkout item');
-            return response.json();
-        },
+        mutationFn: (payload: { itemId: string, borrowerId: string }) => 
+            libraryCatalogApi.checkoutItem(payload.itemId, { borrowerId: payload.borrowerId }),
     });
 };
 

@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { transportApi } from '@university-erp/api-clients';
+import { AssignRoutePayload } from '@university-erp/domain-viewmodels';
 
 export const useAssignRoute = () => {
     return useMutation({
-        mutationFn: async (payload: any) => {
-            const response = await fetch(`/api/v1/transport/routes/${payload.routeId}/assign`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ driverId: payload.driverId }),
-            });
-            if (!response.ok) throw new Error('Failed to assign route');
-            return response.json();
-        },
+        mutationFn: (payload: AssignRoutePayload) => transportApi.assignRoute(payload),
     });
 };
 

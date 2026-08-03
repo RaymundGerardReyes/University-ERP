@@ -1,23 +1,11 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-
-interface EvidencePayload {
-    standardCode: string;
-    submitterId: string;
-    documentReference: string;
-}
+import { governanceApi } from '@university-erp/api-clients';
+import { SubmitEvidencePayload } from '@university-erp/domain-viewmodels';
 
 export const useSubmitEvidence = () => {
     return useMutation({
-        mutationFn: async (payload: EvidencePayload) => {
-            const response = await fetch('/api/v1/governance/accreditation/evidence', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            if (!response.ok) throw new Error('Failed to submit evidence');
-            return response.json();
-        },
+        mutationFn: (payload: SubmitEvidencePayload) => governanceApi.submitEvidence(payload),
     });
 };
 

@@ -1,24 +1,11 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-
-interface TicketPayload {
-    requesterId: string;
-    category: string;
-    issueDescription: string;
-    priority: string;
-}
+import { governanceApi } from '@university-erp/api-clients';
+import { CreateTicketPayload } from '@university-erp/domain-viewmodels';
 
 export const useCreateTicket = () => {
     return useMutation({
-        mutationFn: async (payload: TicketPayload) => {
-            const response = await fetch('/api/v1/governance/tickets', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            if (!response.ok) throw new Error('Failed to create ticket');
-            return response.json();
-        },
+        mutationFn: (payload: CreateTicketPayload) => governanceApi.createTicket(payload),
     });
 };
 

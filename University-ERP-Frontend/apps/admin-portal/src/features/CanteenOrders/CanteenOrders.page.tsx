@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { canteenApi } from '@university-erp/api-clients';
+import { ReserveMealPayload } from '@university-erp/domain-viewmodels';
 
 export const useReserveMeal = () => {
     return useMutation({
-        mutationFn: async (payload: any) => {
-            const response = await fetch('/api/v1/canteen/reservations', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            if (!response.ok) throw new Error('Failed to reserve meal');
-            return response.json();
-        },
+        mutationFn: (payload: ReserveMealPayload) => canteenApi.reserveMeal(payload),
     });
 };
 

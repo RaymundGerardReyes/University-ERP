@@ -1,27 +1,11 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-
-interface OnboardEmployeePayload {
-    firstName: string;
-    lastName: string;
-    role: string;
-    departmentId: string;
-}
+import { hrApi } from '@university-erp/api-clients';
+import { OnboardEmployeePayload } from '@university-erp/domain-viewmodels';
 
 export const useOnboardEmployee = () => {
     return useMutation({
-        mutationFn: async (payload: OnboardEmployeePayload) => {
-            const response = await fetch('/api/v1/hr/employees/onboard', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to onboard employee');
-            }
-            return response.json();
-        },
+        mutationFn: (payload: OnboardEmployeePayload) => hrApi.onboardEmployee(payload),
     });
 };
 

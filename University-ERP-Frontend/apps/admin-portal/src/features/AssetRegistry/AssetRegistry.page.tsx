@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { assetManagementApi } from '@university-erp/api-clients';
+import { RegisterAssetPayload } from '@university-erp/domain-viewmodels';
 
 export const useRegisterAsset = () => {
     return useMutation({
-        mutationFn: async (payload: any) => {
-            const response = await fetch('/api/v1/assets/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            if (!response.ok) throw new Error('Failed to register asset');
-            return response.json();
-        },
+        mutationFn: (payload: RegisterAssetPayload) => assetManagementApi.registerAsset(payload),
     });
 };
 

@@ -1,25 +1,11 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-
-interface EventPayload {
-    eventName: string;
-    organizerId: string;
-    venue: string;
-    scheduledDate: string;
-    maxCapacity: number;
-}
+import { governanceApi } from '@university-erp/api-clients';
+import { CreateEventPayload } from '@university-erp/domain-viewmodels';
 
 export const usePlanEvent = () => {
     return useMutation({
-        mutationFn: async (payload: EventPayload) => {
-            const response = await fetch('/api/v1/governance/events', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            if (!response.ok) throw new Error('Failed to plan event');
-            return response.json();
-        },
+        mutationFn: (payload: CreateEventPayload) => governanceApi.createEvent(payload),
     });
 };
 

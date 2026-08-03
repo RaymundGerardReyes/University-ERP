@@ -1,23 +1,11 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-
-interface VisitorPayload {
-    visitorName: string;
-    purpose: string;
-    hostId: string;
-}
+import { governanceApi } from '@university-erp/api-clients';
+import { LogVisitorPayload } from '@university-erp/domain-viewmodels';
 
 export const useRegisterVisitor = () => {
     return useMutation({
-        mutationFn: async (payload: VisitorPayload) => {
-            const response = await fetch('/api/v1/governance/visitors', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            if (!response.ok) throw new Error('Failed to register visitor');
-            return response.json();
-        },
+        mutationFn: (payload: LogVisitorPayload) => governanceApi.logVisitor(payload),
     });
 };
 
@@ -31,7 +19,7 @@ export const VisitorsPage: React.FC = () => {
         e.preventDefault();
         try {
             const result = await registerVisitor({ visitorName, purpose, hostId });
-            alert(`Visitor Registered! Log ID: ${result.visitorLogId}`);
+            alert(`Visitor Registered! Log ID: ${result.logId}`);
         } catch (err) {
             console.error(err);
         }
