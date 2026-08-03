@@ -1,12 +1,16 @@
 namespace UniversityErp.Api.ModuleRegistration;
 
-// Aggregates module self-registration calls for the Platform cluster.
-// Each module below must expose Add<ModuleName>Module(IServiceCollection) in its own ModuleRegistration.cs.
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using IdentityAccess.Infrastructure;
+
 public static class PlatformModulesRegistration
 {
-    public static IServiceCollection AddPlatformModules(this IServiceCollection services)
+    public static IServiceCollection AddPlatformModules(this IServiceCollection services, IConfiguration configuration)
     {
-        // TODO: services.AddXxxModule();
+        // Register IdentityAccess bounded context
+        services.AddIdentityAccessModule(configuration);
+        
         return services;
     }
 }

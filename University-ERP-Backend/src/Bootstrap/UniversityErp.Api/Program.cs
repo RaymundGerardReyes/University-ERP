@@ -51,6 +51,12 @@ try
 
     var app = builder.Build();
 
+    // 3. Replaces messy HTTP logs with a single, clean log per request
+    app.UseSerilogRequestLogging();
+    
+    // Add global exception handling
+    app.UseMiddleware<UniversityErp.Api.Middleware.GlobalExceptionMiddleware>();
+
     // =========================================================================
     // 4. HTTP Request Pipeline
     // =========================================================================
@@ -67,6 +73,16 @@ try
     app.UseAuthorization();
     app.MapControllers();
 
+    // Expose a dedicated health check endpoint for Docker
+    app.MapGet("/health", () => Microsoft.AspNetCore.Http.Results.Ok(new { status = "Healthy", timestamp = DateTime.UtcNow }));
+
+    // Telemetry endpoint for frontend production logs
+    app.MapPost("/api/v1/platform/telemetry/client-log", (ClientLogDto dto, ILogger<Program> logger) =>
+    {
+        logger.LogInformation("🖥️ [Frontend {Level}] {Prefix} {Message}", dto.Level, dto.Prefix, dto.Message);
+        return Microsoft.AspNetCore.Http.Results.Ok();
+    });
+
     app.Run();
 }
 catch (Exception ex)
@@ -77,3 +93,5 @@ finally
 {
     Log.CloseAndFlush();
 }
+
+public record ClientLogDto(string Level, string Prefix, string Message);
