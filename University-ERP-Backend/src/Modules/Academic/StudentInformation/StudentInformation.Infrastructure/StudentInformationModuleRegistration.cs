@@ -19,9 +19,9 @@ public static class StudentInformationModuleRegistration
         this IServiceCollection services, 
         IConfiguration configuration)
     {
-        // 1. Register the isolated DbContext using SQLite
+        // 1. Register the isolated DbContext using PostgreSQL
         services.AddDbContext<StudentInformationDbContext>(options =>
-            options.UseSqlite(configuration.GetConnectionString("UniversityErpDatabase")));
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
         // 2. Register Repositories
         services.AddScoped<IStudentRepository, StudentRepository>();

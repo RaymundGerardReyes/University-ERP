@@ -2,9 +2,11 @@ namespace Registrar.Application.Features.EvaluateGraduationClearance;
 
 using MediatR;
 using SharedKernel.Domain.Primitives;
+using Registrar.Domain.Aggregates; // <-- ADD THIS LINE
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+
 
 public sealed record EvaluateGraduationClearanceCommand(
     Guid ClearanceId, 
