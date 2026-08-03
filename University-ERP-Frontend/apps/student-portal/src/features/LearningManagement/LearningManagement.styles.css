@@ -1,0 +1,90 @@
+.lms-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  color: white;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.lms-back-btn {
+  align-self: flex-start;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #ccc;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.lms-back-btn:hover {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+.lms-overview-card {
+  background: linear-gradient(135deg, rgba(30,50,90,0.8), rgba(10,20,40,0.9));
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.lms-period-accordion {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.lms-period-accordion:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.15);
+}
+
+.lms-period-header {
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0,0,0,0.2);
+}
+.lms-period-header h3 { margin: 0; font-size: 1.2rem; color: hsl(210, 80%, 75%); }
+
+.lms-period-body {
+  padding: 1.5rem;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.lms-activities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.lms-activity-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 6px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.lms-activity-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  border-color: rgba(255,255,255,0.15);
+}
+
+.lms-act-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #888;
+  text-transform: uppercase;
+}
+.lms-act-type { color: hsl(45, 90%, 60%); font-weight: bold; }
+.lms-act-title { font-weight: 500; font-size: 0.95rem; }
+.lms-act-score { font-size: 1.2rem; font-weight: 700; color: hsl(140, 70%, 60%); margin-top: auto; }

@@ -1,0 +1,127 @@
+.timeline-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  animation: fadeIn 0.4s ease-out;
+}
+
+.timeline-header-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.timeline-header-card h2 { margin: 0 0 var(--space-2) 0; color: var(--text-primary); }
+.timeline-header-card p { margin: 0; color: var(--text-secondary); font-size: 0.95rem; }
+
+/* Level 1: Semester */
+.semester-accordion {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.semester-header {
+  padding: var(--space-4) var(--space-6);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-sidebar); /* Subtle separation from surface */
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+}
+
+.semester-body {
+  padding: var(--space-6);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Level 2: Subject/Course Offering (Concentric: md radius inside lg radius) */
+.subject-card {
+  background: var(--bg-base);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.subject-card-header {
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: background-color 0.2s;
+}
+
+.subject-card-header:hover { background: var(--bg-hover); }
+
+.subject-info h4 { margin: 0 0 var(--space-1) 0; font-size: 1rem; }
+.subject-meta { font-size: 0.85rem; color: var(--text-secondary); }
+
+.subject-body {
+  border-top: 1px solid var(--border-subtle);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Level 3: Learning Management Tabs */
+.tabs-header {
+  display: flex;
+  gap: var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: var(--space-2);
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  background: var(--bg-hover);
+  color: var(--brand-primary);
+}
+
+.tab-btn:hover:not(.active) { color: var(--text-primary); }
+
+/* Level 4: Period/Module Grid (Concentric: sm radius inside md radius) */
+.activities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+}
+
+.activity-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-sm);
+}
+
+.act-type { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.act-title { font-weight: 600; font-size: 0.95rem; margin: var(--space-2) 0; color: var(--text-primary); }
+.act-score { font-size: 1.25rem; font-weight: 700; color: var(--success-text); margin-top: auto; }

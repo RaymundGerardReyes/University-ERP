@@ -1,5 +1,5 @@
-import { EnrollmentViewModel } from '@university-erp/domain-viewmodels';
+import { CourseEnrollmentViewModel } from '@university-erp/domain-viewmodels';
 
 export interface MyEnrollmentsPageProps {}
 
-export type { EnrollmentViewModel };
+export type { CourseEnrollmentViewModel };
