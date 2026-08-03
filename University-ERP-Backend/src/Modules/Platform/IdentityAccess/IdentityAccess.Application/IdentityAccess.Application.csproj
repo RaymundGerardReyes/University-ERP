@@ -12,4 +12,8 @@
     <ProjectReference Include="..\..\..\..\SharedKernel\SharedKernel.Application\SharedKernel.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+  </ItemGroup>
+
 </Project>

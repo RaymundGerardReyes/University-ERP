@@ -6,4 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+<ItemGroup>
+  <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  <PackageReference Include="MediatR" Version="14.2.0" />
+</ItemGroup>  
+<ItemGroup>
+  <ProjectReference Include="..\IdentityAccess.Application\IdentityAccess.Application.csproj" />
+</ItemGroup>
+
 </Project>
