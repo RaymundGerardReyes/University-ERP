@@ -10,7 +10,7 @@ import MfaVerification from '@features/MfaVerification/MfaVerification.page';
 import SessionManagement from '@features/SessionManagement/SessionManagement.page';
 import SecuritySettings from '@features/SecuritySettings/SecuritySettings.page';
 
-export default function Routing() {
+export function Routing() {
   return (
     <BrowserRouter>
       <Routes>

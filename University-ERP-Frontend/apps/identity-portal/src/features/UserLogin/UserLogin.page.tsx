@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@university-erp/auth-sdk';
+
 import { Card, Button, PageHeader } from '@university-erp/ui-kit';
 import { useUserLogin } from './UserLogin.hooks';
 
 export default function UserLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { setToken, setUser } = useAuth();
+
   const navigate = useNavigate();
   const loginMutation = useUserLogin();
 
@@ -15,9 +15,19 @@ export default function UserLogin() {
     e.preventDefault();
     try {
       const response = await loginMutation.mutateAsync({ email, passwordHash: password });
-      setToken(response.token);
-      setUser(response.user);
-      navigate('/');
+      
+      // Establish Global SSO Session
+      localStorage.setItem('global_identity_token', response.token);
+      
+      // Handle OIDC Redirect Flow
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectUri = urlParams.get('redirect_uri');
+      
+      if (redirectUri) {
+        window.location.href = redirectUri + (redirectUri.includes('#') ? '&' : '#') + 'token=' + response.token;
+      } else {
+        navigate('/');
+      }
     } catch (error) {
       console.error('Login failed', error);
     }
@@ -30,7 +40,7 @@ export default function UserLogin() {
       <Card gradient style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginTop: '2rem' }}>
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label style={{ display: 'block', color: '#ccc', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Email Address</label>
+            <label style={{ display: 'block', color: 'var(--text-secondary)', marginBottom: 'var(--space-2)', fontSize: '0.9rem' }}>Email Address</label>
             <input 
               type="email" 
               value={email}
@@ -43,7 +53,7 @@ export default function UserLogin() {
             />
           </div>
           <div>
-            <label style={{ display: 'block', color: '#ccc', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Password</label>
+            <label style={{ display: 'block', color: 'var(--text-secondary)', marginBottom: 'var(--space-2)', fontSize: '0.9rem' }}>Password</label>
             <input 
               type="password" 
               value={password}
@@ -62,8 +72,8 @@ export default function UserLogin() {
         </form>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-          <a href="/forgot-password" style={{ color: 'hsl(220, 90%, 75%)', textDecoration: 'none' }}>Forgot Password?</a>
-          <a href="/register" style={{ color: 'hsl(220, 90%, 75%)', textDecoration: 'none' }}>Register Account</a>
+          <a href="/forgot-password" style={{ color: 'var(--brand-primary)', textDecoration: 'none' }}>Forgot Password?</a>
+          <a href="/register" style={{ color: 'var(--brand-primary)', textDecoration: 'none' }}>Register Account</a>
         </div>
       </Card>
     </div>

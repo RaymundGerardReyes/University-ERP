@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, PageHeader, Badge, Button } from '@university-erp/ui-kit';
+import { UserSessionViewModel } from '@university-erp/domain-viewmodels';
 import { useSessionManagement } from './SessionManagement.hooks';
 
 export default function SessionManagement() {
@@ -13,7 +14,7 @@ export default function SessionManagement() {
       <PageHeader title="Active Sessions" />
       
       <div style={{ display: 'grid', gap: '1rem', marginTop: '2rem' }}>
-        {sessions?.map((session) => (
+        {sessions?.map((session: UserSessionViewModel) => (
           <Card key={session.sessionId} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <h3 style={{ margin: '0 0 0.5rem 0', color: 'white' }}>{session.device}</h3>
@@ -22,8 +23,8 @@ export default function SessionManagement() {
               </p>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <Badge variant="success">Active</Badge>
-              <Button variant="danger">Revoke</Button>
+              <Badge colorScheme="info">Active</Badge>
+              <Button variant="primary">Revoke</Button>
             </div>
           </Card>
         ))}

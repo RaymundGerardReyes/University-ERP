@@ -12,14 +12,10 @@ export default function MfaVerification() {
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const isValid = await mfaMutation.mutateAsync(code);
-      if (isValid) {
-        navigate('/');
-      } else {
-        setError('Invalid verification code.');
-      }
+      await mfaMutation.mutateAsync(code);
+      navigate('/');
     } catch {
-      setError('Failed to verify code.');
+      setError('Invalid verification code or failed to verify.');
     }
   };
 

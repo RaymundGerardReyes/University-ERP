@@ -62,7 +62,7 @@ export default function SecuritySettings() {
       <Card style={{ marginTop: '2rem', maxWidth: '600px', borderColor: 'hsl(0, 50%, 30%)' }}>
         <h3 style={{ margin: '0 0 1rem 0', color: 'hsl(0, 70%, 70%)' }}>Danger Zone</h3>
         <p style={{ color: '#aaa', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Once you delete your account, there is no going back. Please be certain.</p>
-        <Button variant="danger">Delete Account</Button>
+        <Button variant="primary">Delete Account</Button>
       </Card>
     </div>
   );

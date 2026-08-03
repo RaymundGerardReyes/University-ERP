@@ -9,7 +9,7 @@ export default function UserRegistration() {
     email: '',
     firstName: '',
     lastName: '',
-    passwordHash: '',
+    password: '',
     role: 'Student'
   });
   const navigate = useNavigate();
@@ -56,7 +56,7 @@ export default function UserRegistration() {
 
           <div>
             <label style={{ display: 'block', color: '#ccc', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Password</label>
-            <input type="password" name="passwordHash" value={formData.passwordHash} onChange={handleChange} required
+            <input type="password" name="password" value={formData.password} onChange={handleChange} required
               style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
           </div>
 
