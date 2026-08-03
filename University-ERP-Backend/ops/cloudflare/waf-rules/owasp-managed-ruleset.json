@@ -1,0 +1,16 @@
+{
+  "rules": [
+    {
+      "action": "execute",
+      "expression": "(http.request.uri.path contains \"/\")",
+      "action_parameters": {
+        "id": "4814384a9e5d4991b9815dcfc25d2f1f",
+        "overrides": {
+          "action": "block",
+          "sensitivity_level": "medium"
+        }
+      },
+      "description": "OWASP Core Ruleset - Medium Sensitivity"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "rules": [
+    {
+      "description": "API Rate Limiting",
+      "expression": "(http.host eq \"api.university.edu\")",
+      "action": "block",
+      "action_parameters": {
+        "response": {
+          "status_code": 429,
+          "content": "Too Many Requests",
+          "content_type": "text/plain"
+        }
+      },
+      "ratelimit": {
+        "characteristics": ["ip.src"],
+        "period": 60,
+        "requests_per_period": 300,
+        "mitigation_timeout": 600
+      }
+    },
+    {
+      "description": "Auth Rate Limiting",
+      "expression": "(http.host eq \"auth.university.edu\" and http.request.uri.path contains \"/login\")",
+      "action": "block",
+      "action_parameters": {
+        "response": {
+          "status_code": 429,
+          "content": "Too Many Requests",
+          "content_type": "text/plain"
+        }
+      },
+      "ratelimit": {
+        "characteristics": ["ip.src"],
+        "period": 60,
+        "requests_per_period": 20,
+        "mitigation_timeout": 3600
+      }
+    }
+  ]
+}

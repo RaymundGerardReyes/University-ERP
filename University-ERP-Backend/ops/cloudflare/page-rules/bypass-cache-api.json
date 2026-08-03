@@ -1,0 +1,19 @@
+{
+  "targets": [
+    {
+      "target": "url",
+      "constraint": {
+        "operator": "matches",
+        "value": "api.university.edu/*"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "cache_level",
+      "value": "bypass"
+    }
+  ],
+  "priority": 1,
+  "status": "active"
+}

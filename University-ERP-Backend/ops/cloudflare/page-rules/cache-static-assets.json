@@ -1,0 +1,27 @@
+{
+  "targets": [
+    {
+      "target": "url",
+      "constraint": {
+        "operator": "matches",
+        "value": "*university.edu/*"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "cache_level",
+      "value": "cache_everything"
+    },
+    {
+      "id": "edge_cache_ttl",
+      "value": 86400
+    },
+    {
+      "id": "browser_cache_ttl",
+      "value": 14400
+    }
+  ],
+  "priority": 2,
+  "status": "active"
+}

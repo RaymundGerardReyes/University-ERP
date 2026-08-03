@@ -1,0 +1,31 @@
+tunnel: universityerp-tunnel
+credentials-file: /etc/cloudflared/universityerp-tunnel.json
+
+# Fallback for routing if not fully managed via Zero Trust Dashboard.
+# Since we use TUNNEL_TOKEN in docker-compose, this file acts as local override/documentation.
+ingress:
+  - hostname: student.university.edu
+    service: http://nginx:80
+  - hostname: faculty.university.edu
+    service: http://nginx:80
+  - hostname: admin.university.edu
+    service: http://nginx:80
+  - hostname: finance.university.edu
+    service: http://nginx:80
+  - hostname: library.university.edu
+    service: http://nginx:80
+  - hostname: governance.university.edu
+    service: http://nginx:80
+  - hostname: lms.university.edu
+    service: http://nginx:80
+  - hostname: portal.university.edu
+    service: http://nginx:80
+  - hostname: platform.university.edu
+    service: http://nginx:80
+  - hostname: applicant.university.edu
+    service: http://nginx:80
+  - hostname: auth.university.edu
+    service: http://nginx:80
+  - hostname: api.university.edu
+    service: http://nginx:80
+  - service: http_status:404
