@@ -1,0 +1,12 @@
+name: Selective Release
+on:
+  workflow_dispatch:
+    inputs:
+      app_name:
+        description: 'App to release'
+        required: true
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Releasing ${{ github.event.inputs.app_name }}"

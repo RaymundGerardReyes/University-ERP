@@ -1,0 +1,11 @@
+groups:
+  - name: finance-alerts
+    rules:
+      - alert: HighInvoiceFailureRate
+        expr: rate(finance_invoice_failures_total[5m]) / rate(finance_invoice_attempts_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High Invoice Failure Rate"
+          description: "Invoice failure rate is above 5% for the last 5 minutes."

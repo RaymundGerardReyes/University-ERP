@@ -1,0 +1,16 @@
+{
+  "title": "Academic Cluster Dashboard",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Student Enrollments",
+      "targets": [
+        {
+          "expr": "sum(rate(academic_student_enrollments_total[5m]))",
+          "legendFormat": "Enrollments per sec"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 36
+}

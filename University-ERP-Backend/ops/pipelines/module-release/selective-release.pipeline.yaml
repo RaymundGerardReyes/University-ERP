@@ -1,0 +1,12 @@
+name: Selective Module Release
+on:
+  workflow_dispatch:
+    inputs:
+      module_name:
+        description: 'Module to release'
+        required: true
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Releasing module ${{ github.event.inputs.module_name }}"

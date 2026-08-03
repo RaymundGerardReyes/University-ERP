@@ -1,0 +1,16 @@
+{
+  "title": "Finance Cluster Dashboard",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Invoice Processing Rate",
+      "targets": [
+        {
+          "expr": "sum(rate(finance_invoice_processing_total[5m]))",
+          "legendFormat": "Invoices per sec"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 36
+}

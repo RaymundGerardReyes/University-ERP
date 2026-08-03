@@ -1,0 +1,17 @@
+name: Sync Cloudflare & Nginx
+on:
+  push:
+    paths:
+      - 'University-ERP-Backend/ops/cloudflare/**'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform init
+        working-directory: University-ERP-Backend/ops/cloudflare/dns
+      - run: terraform apply -auto-approve
+        working-directory: University-ERP-Backend/ops/cloudflare/dns
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

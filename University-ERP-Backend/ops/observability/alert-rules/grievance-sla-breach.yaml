@@ -1,0 +1,11 @@
+groups:
+  - name: governance-alerts
+    rules:
+      - alert: GrievanceSLABreach
+        expr: sum(governance_grievances_open{status="breached"}) > 10
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Grievance SLA Breach"
+          description: "More than 10 grievances have breached their SLA."

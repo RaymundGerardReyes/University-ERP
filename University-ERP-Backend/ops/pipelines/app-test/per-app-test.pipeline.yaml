@@ -1,0 +1,12 @@
+name: Test React Portals
+on: [pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm ci
+        working-directory: University-ERP-Frontend
+      - run: npm test --workspaces
+        working-directory: University-ERP-Frontend

@@ -1,0 +1,15 @@
+name: Build Avalonia Client
+on:
+  push:
+    paths:
+      - 'clients/lms-offline-avalonia/**'
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - run: dotnet build clients/lms-offline-avalonia/LMSOffline.csproj -c Release

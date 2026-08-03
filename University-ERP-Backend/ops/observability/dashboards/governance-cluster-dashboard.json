@@ -1,0 +1,16 @@
+{
+  "title": "Governance Cluster Dashboard",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Open Grievances",
+      "targets": [
+        {
+          "expr": "sum(governance_grievances_open)",
+          "legendFormat": "Open Grievances"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 36
+}
