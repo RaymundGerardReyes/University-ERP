@@ -1,0 +1,33 @@
+# -----------------------------------------------------------------------------
+# University ERP - Frontend Builder (Pattern B)
+# -----------------------------------------------------------------------------
+# This Dockerfile builds all 8 Vite portals and copies their output into a
+# volume structure that matches the Nginx named volume expectations.
+# -----------------------------------------------------------------------------
+
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+COPY . .
+
+# Install dependencies
+RUN npm ci
+
+# Build all portals simultaneously
+RUN npm run build --workspaces --if-present
+
+# We do NOT run Nginx inside this container. 
+# This container's ONLY job is to copy the built files into named volumes 
+# before exiting (restart: "no" in docker-compose).
+CMD echo "🚚 Delivering compiled React files to Nginx volumes..." && \
+    cp -a /app/apps/identity-portal/dist/* /output/identity-portal/ && \
+    cp -a /app/apps/student-portal/dist/* /output/student-portal/ && \
+    cp -a /app/apps/faculty-portal/dist/* /output/faculty-portal/ && \
+    cp -a /app/apps/admin-portal/dist/* /output/admin-portal/ && \
+    cp -a /app/apps/lms-web/dist/* /output/lms-web/ && \
+    cp -a /app/apps/finance-console/dist/* /output/finance-console/ && \
+    cp -a /app/apps/library-portal/dist/* /output/library-portal/ && \
+    cp -a /app/apps/governance-console/dist/* /output/governance-console/ && \
+    cp -a /app/apps/platform-console/dist/* /output/platform-console/ && \
+    cp -a /app/apps/applicant-portal/dist/* /output/applicant-portal/ && \
+    echo "✅ Delivery complete! Container exiting successfully."

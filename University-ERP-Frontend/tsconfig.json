@@ -1,0 +1,33 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "jsx": "react-jsx",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "paths": {
+            "@university-erp/ui-kit": [
+                "./libs/ui-kit/src/index.ts"
+            ],
+            "@university-erp/auth-sdk": [
+                "./libs/auth-sdk/index.ts"
+            ],
+            "@university-erp/api-clients": [
+                "./libs/api-clients/index.ts"
+            ],
+            "@university-erp/domain-viewmodels": [
+                "./libs/domain-viewmodels/index.ts"
+            ],
+            "@university-erp/core-logger": [
+                "./libs/core-logger/index.ts"
+            ]
+        }
+    },
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}
