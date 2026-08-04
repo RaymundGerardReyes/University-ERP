@@ -1,56 +1,21 @@
 {
+  "extends": "../../tsconfig.app.base.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "useDefineForClassFields": true,
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
-    ],
-    "allowJs": false,
-    "skipLibCheck": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
     "paths": {
-      "@shell/*": [
-        "./src/shell/*"
-      ],
-      "@features/*": [
-        "./src/features/*"
-      ],
-      "@state/*": [
-        "./src/state/*"
-      ],
-      "@config/*": [
-        "./src/config/*"
-      ],
-      "@university-erp/domain-viewmodels": [
-        "../../libs/domain-viewmodels/index.ts"
-      ],
-      "@university-erp/api-clients": [
-        "../../libs/api-clients/index.ts"
-      ],
-      "@university-erp/ui-kit": [
-        "../../libs/ui-kit/index.ts"
-      ],
-      "@university-erp/auth-sdk": [
-        "../../libs/auth-sdk/index.ts"
-      ],
-      "@university-erp/core-logger": [
-        "../../libs/core-logger/index.ts"
-      ]
+      "@shell/*": ["./src/shell/*"],
+      "@features/*": ["./src/features/*"],
+      "@state/*": ["./src/state/*"],
+      "@config/*": ["./src/config/*"],
+      "@university-erp/ui-kit": ["../../libs/ui-kit/src/index.ts"],
+      "@university-erp/auth-sdk": ["../../libs/auth-sdk/index.ts"],
+      "@university-erp/api-clients": ["../../libs/api-clients/index.ts"],
+      "@university-erp/domain-viewmodels": ["../../libs/domain-viewmodels/index.ts"],
+      "@university-erp/core-logger": ["../../libs/core-logger/index.ts"],
+      "@university-erp/shell-kit": ["../../libs/shell-kit/index.ts"],
+      "@university-erp/vite-config": ["../../libs/vite-config/index.ts"]
     }
   },
-  "include": [
-    "src"
-  ],
+  "include": ["src"],
   "references": [
     {
       "path": "./tsconfig.node.json"
