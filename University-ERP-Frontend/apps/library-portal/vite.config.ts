@@ -1,24 +1,2 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
-
-export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      '@shell': path.resolve(import.meta.dirname, './src/shell'),
-      '@features': path.resolve(import.meta.dirname, './src/features'),
-      '@state': path.resolve(import.meta.dirname, './src/state'),
-      '@config': path.resolve(import.meta.dirname, './src/config'),
-    },
-  },
-  server: {
-    port: 5179,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:5191',
-        changeOrigin: true,
-      },
-    },
-  },
-});
+import { createPortalConfig } from '../../libs/vite-config';
+export default createPortalConfig({ port: 5179, title: 'Library Portal' });
