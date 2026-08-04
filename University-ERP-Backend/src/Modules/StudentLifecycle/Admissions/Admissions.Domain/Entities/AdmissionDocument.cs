@@ -4,11 +4,11 @@ using SharedKernel.Domain.Primitives;
 
 public sealed class AdmissionDocument : Entity<string>
 {
-    public string Name { get; private set; }
-    public string Status { get; private set; }
+    public string Name { get; private set; } = string.Empty;
+    public string Status { get; private set; } = string.Empty;
     public string? Feedback { get; private set; }
     public DateTime? UploadedAt { get; private set; }
-    public string AdmissionApplicationId { get; private set; }
+    public string AdmissionApplicationId { get; private set; } = string.Empty;
 
     private AdmissionDocument() : base() { }
 

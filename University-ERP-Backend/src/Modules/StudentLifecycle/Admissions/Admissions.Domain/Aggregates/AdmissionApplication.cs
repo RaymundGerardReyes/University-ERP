@@ -5,9 +5,9 @@ using Admissions.Domain.Entities;
 
 public sealed class AdmissionApplication : AggregateRoot<string>
 {
-    public string ApplicantId { get; private set; }
-    public string ProgramId { get; private set; }
-    public string Status { get; private set; }
+    public string ApplicantId { get; private set; } = string.Empty;
+    public string ProgramId { get; private set; } = string.Empty;
+    public string Status { get; private set; } = string.Empty;
     public DateTime SubmittedDate { get; private set; }
     
     private readonly List<AdmissionDocument> _documents = new();

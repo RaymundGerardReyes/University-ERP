@@ -31,6 +31,14 @@ public sealed class AdmissionApplicationRepository : IAdmissionApplicationReposi
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<AdmissionApplication>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Applications
+            .Include(a => a.Documents)
+            .Include(a => a.TimelineEvents)
+            .ToListAsync(cancellationToken);
+    }
+
     public void Add(AdmissionApplication application)
     {
         _dbContext.Applications.Add(application);

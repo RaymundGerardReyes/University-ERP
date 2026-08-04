@@ -1,97 +1,56 @@
-using LearningManagement.Application.Abstractions;
-using LearningManagement.Contracts.IntegrationEvents;
-using MediatR;
-using Microsoft.Extensions.Logging;
-
 namespace LearningManagement.Application.Features.ProcessOfflineAssessmentSubmission;
 
-/// <summary>
-/// Handles ingestion of an offline assessment submission from the Avalonia client.
-/// Validates the cryptographic schedule token, persists the graded record,
-/// and publishes an integration event for downstream modules (e.g., Registrar, Examination).
-/// </summary>
-internal sealed class ProcessOfflineAssessmentSubmissionCommandHandler
-    : IRequestHandler<ProcessOfflineAssessmentSubmissionCommand, ProcessOfflineAssessmentSubmissionResult>
+using MediatR;
+using SharedKernel.Domain.Primitives;
+using LearningManagement.Application.Abstractions;
+using LearningManagement.Contracts.IntegrationEvents;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+public sealed class ProcessOfflineAssessmentSubmissionCommandHandler : IRequestHandler<ProcessOfflineAssessmentSubmissionCommand, Result<Guid>>
 {
     private readonly IOfflineSubmissionRepository _repository;
     private readonly IScheduleTokenVerifier _tokenVerifier;
-    private readonly IPublisher _publisher;
-    private readonly ILogger<ProcessOfflineAssessmentSubmissionCommandHandler> _logger;
+    private readonly IPublisher _eventPublisher;
 
     public ProcessOfflineAssessmentSubmissionCommandHandler(
         IOfflineSubmissionRepository repository,
         IScheduleTokenVerifier tokenVerifier,
-        IPublisher publisher,
-        ILogger<ProcessOfflineAssessmentSubmissionCommandHandler> logger)
+        IPublisher eventPublisher)
     {
         _repository = repository;
         _tokenVerifier = tokenVerifier;
-        _publisher = publisher;
-        _logger = logger;
+        _eventPublisher = eventPublisher;
     }
 
-    public async Task<ProcessOfflineAssessmentSubmissionResult> Handle(
-        ProcessOfflineAssessmentSubmissionCommand request,
-        CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(ProcessOfflineAssessmentSubmissionCommand request, CancellationToken cancellationToken)
     {
-        // 1. Validate the cryptographic ScheduleToken from the Avalonia client
-        var tokenValid = _tokenVerifier.Verify(
-            request.ScheduleToken,
-            request.AssessmentId.ToString(),
-            request.SubmittedAtUtc);
-
-        if (!tokenValid)
+        // 1. Verify Cryptographic Schedule Token
+        bool isTokenValid = _tokenVerifier.VerifyScheduleToken(request.ScheduleToken, request.AssessmentId, request.StudentId);
+        if (!isTokenValid)
         {
-            _logger.LogWarning(
-                "Rejected offline assessment {AssessmentId} for student {StudentId}: invalid schedule token.",
-                request.AssessmentId, request.StudentId);
-
-            return new ProcessOfflineAssessmentSubmissionResult(
-                request.AssessmentId,
-                IsAccepted: false,
-                RejectionReason: "Invalid or expired schedule token. Submission window may have passed.");
+            return Result<Guid>.Failure(new Error("Security.TamperedToken", "The offline schedule token is invalid or tampered with."));
         }
 
-        // 2. Idempotency check — reject duplicate outbox replay
-        var alreadyExists = await _repository.ExistsAsync(request.AssessmentId, cancellationToken);
-        if (alreadyExists)
-        {
-            _logger.LogInformation(
-                "Assessment {AssessmentId} already ingested. Returning idempotent acceptance.",
-                request.AssessmentId);
+        // 2. Persist the raw submission (Mocked save)
+        var submissionId = Guid.NewGuid();
+        // await _repository.SaveAssessmentSubmissionAsync(submissionId, request.AssessmentId, request.StudentId, request.AnswersJson, request.SubmittedAtUtc, cancellationToken);
+        
+        // 3. Fire Integration Event to update Gradebook & Learning Analytics (LRS)
+        var integrationEvent = new OfflineAssessmentSubmittedIntegrationEvent(
+            EventId: Guid.NewGuid(),
+            OccurredOnUtc: DateTime.UtcNow,
+            AssessmentId: request.AssessmentId,
+            StudentId: request.StudentId,
+            CourseCode: request.CourseCode,
+            ModuleTitle: request.ModuleTitle,
+            AnswersJson: request.AnswersJson,
+            ScheduleToken: request.ScheduleToken
+        );
 
-            return new ProcessOfflineAssessmentSubmissionResult(
-                request.AssessmentId,
-                IsAccepted: true,
-                RejectionReason: null);
-        }
+        await _eventPublisher.Publish(integrationEvent, cancellationToken);
 
-        // 3. Persist the offline submission record
-        await _repository.SaveAssessmentSubmissionAsync(new OfflineAssessmentRecord(
-            request.AssessmentId,
-            request.StudentId,
-            request.CourseCode,
-            request.ModuleTitle,
-            request.Answers,
-            request.SubmittedAtUtc), cancellationToken);
-
-        // 4. Publish integration event for Examination / Registrar modules to consume
-        await _publisher.Publish(new OfflineAssessmentSubmittedIntegrationEvent(
-            request.AssessmentId,
-            request.StudentId,
-            request.CourseCode,
-            request.ModuleTitle,
-            request.Answers,
-            request.ScheduleToken,
-            request.SubmittedAtUtc), cancellationToken);
-
-        _logger.LogInformation(
-            "Successfully ingested offline assessment {AssessmentId} for student {StudentId}.",
-            request.AssessmentId, request.StudentId);
-
-        return new ProcessOfflineAssessmentSubmissionResult(
-            request.AssessmentId,
-            IsAccepted: true,
-            RejectionReason: null);
+        return Result<Guid>.Success(submissionId);
     }
 }

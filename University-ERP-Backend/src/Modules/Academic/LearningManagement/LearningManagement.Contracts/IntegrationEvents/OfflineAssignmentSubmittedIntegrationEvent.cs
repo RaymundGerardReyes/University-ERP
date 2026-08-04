@@ -1,15 +1,15 @@
 namespace LearningManagement.Contracts.IntegrationEvents;
 
-/// <summary>
-/// Published when a student's offline assignment (essay/long-form) is submitted
-/// from the Avalonia LmsOffline client via the sync endpoint.
-/// </summary>
+using MediatR;
+using System;
+
 public sealed record OfflineAssignmentSubmittedIntegrationEvent(
+    Guid EventId,
+    DateTime OccurredOnUtc,
     Guid AssignmentId,
     Guid StudentId,
     string CourseCode,
     string AssignmentTitle,
     string EssayContent,
-    string ScheduleToken,
-    DateTimeOffset SubmittedAtUtc
-);
+    string ScheduleToken
+) : INotification;

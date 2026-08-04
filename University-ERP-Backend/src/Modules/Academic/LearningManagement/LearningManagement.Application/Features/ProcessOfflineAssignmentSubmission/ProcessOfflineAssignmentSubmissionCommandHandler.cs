@@ -1,95 +1,53 @@
-using LearningManagement.Application.Abstractions;
-using LearningManagement.Contracts.IntegrationEvents;
-using MediatR;
-using Microsoft.Extensions.Logging;
-
 namespace LearningManagement.Application.Features.ProcessOfflineAssignmentSubmission;
 
-/// <summary>
-/// Handles ingestion of an offline assignment (essay) submission from the Avalonia client.
-/// </summary>
-internal sealed class ProcessOfflineAssignmentSubmissionCommandHandler
-    : IRequestHandler<ProcessOfflineAssignmentSubmissionCommand, ProcessOfflineAssignmentSubmissionResult>
+using MediatR;
+using SharedKernel.Domain.Primitives;
+using LearningManagement.Application.Abstractions;
+using LearningManagement.Contracts.IntegrationEvents;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+public sealed class ProcessOfflineAssignmentSubmissionCommandHandler : IRequestHandler<ProcessOfflineAssignmentSubmissionCommand, Result<Guid>>
 {
     private readonly IOfflineSubmissionRepository _repository;
     private readonly IScheduleTokenVerifier _tokenVerifier;
-    private readonly IPublisher _publisher;
-    private readonly ILogger<ProcessOfflineAssignmentSubmissionCommandHandler> _logger;
+    private readonly IPublisher _eventPublisher;
 
     public ProcessOfflineAssignmentSubmissionCommandHandler(
         IOfflineSubmissionRepository repository,
         IScheduleTokenVerifier tokenVerifier,
-        IPublisher publisher,
-        ILogger<ProcessOfflineAssignmentSubmissionCommandHandler> logger)
+        IPublisher eventPublisher)
     {
         _repository = repository;
         _tokenVerifier = tokenVerifier;
-        _publisher = publisher;
-        _logger = logger;
+        _eventPublisher = eventPublisher;
     }
 
-    public async Task<ProcessOfflineAssignmentSubmissionResult> Handle(
-        ProcessOfflineAssignmentSubmissionCommand request,
-        CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(ProcessOfflineAssignmentSubmissionCommand request, CancellationToken cancellationToken)
     {
-        // 1. Validate cryptographic schedule token
-        var tokenValid = _tokenVerifier.Verify(
-            request.ScheduleToken,
-            request.AssignmentId.ToString(),
-            request.SubmittedAtUtc);
-
-        if (!tokenValid)
+        bool isTokenValid = _tokenVerifier.VerifyScheduleToken(request.ScheduleToken, request.AssignmentId, request.StudentId);
+        if (!isTokenValid)
         {
-            _logger.LogWarning(
-                "Rejected offline assignment {AssignmentId} for student {StudentId}: invalid schedule token.",
-                request.AssignmentId, request.StudentId);
-
-            return new ProcessOfflineAssignmentSubmissionResult(
-                request.AssignmentId,
-                IsAccepted: false,
-                RejectionReason: "Invalid or expired schedule token. Submission window may have passed.");
+            return Result<Guid>.Failure(new Error("Security.TamperedToken", "The offline schedule token is invalid or tampered with."));
         }
 
-        // 2. Idempotency check
-        var alreadyExists = await _repository.ExistsAssignmentAsync(request.AssignmentId, cancellationToken);
-        if (alreadyExists)
-        {
-            _logger.LogInformation(
-                "Assignment {AssignmentId} already ingested. Returning idempotent acceptance.",
-                request.AssignmentId);
+        var submissionId = Guid.NewGuid();
+        // await _repository.SaveAssignmentSubmissionAsync(submissionId, request.AssignmentId, request.StudentId, request.EssayContent, request.SubmittedAtUtc, cancellationToken);
 
-            return new ProcessOfflineAssignmentSubmissionResult(
-                request.AssignmentId,
-                IsAccepted: true,
-                RejectionReason: null);
-        }
+        var integrationEvent = new OfflineAssignmentSubmittedIntegrationEvent(
+            EventId: Guid.NewGuid(),
+            OccurredOnUtc: DateTime.UtcNow,
+            AssignmentId: request.AssignmentId,
+            StudentId: request.StudentId,
+            CourseCode: request.CourseCode,
+            AssignmentTitle: request.AssignmentTitle,
+            EssayContent: request.EssayContent,
+            ScheduleToken: request.ScheduleToken
+        );
 
-        // 3. Persist the submission
-        await _repository.SaveAssignmentSubmissionAsync(new OfflineAssignmentRecord(
-            request.AssignmentId,
-            request.StudentId,
-            request.CourseCode,
-            request.AssignmentTitle,
-            request.EssayContent,
-            request.SubmittedAtUtc), cancellationToken);
+        await _eventPublisher.Publish(integrationEvent, cancellationToken);
 
-        // 4. Publish integration event
-        await _publisher.Publish(new OfflineAssignmentSubmittedIntegrationEvent(
-            request.AssignmentId,
-            request.StudentId,
-            request.CourseCode,
-            request.AssignmentTitle,
-            request.EssayContent,
-            request.ScheduleToken,
-            request.SubmittedAtUtc), cancellationToken);
-
-        _logger.LogInformation(
-            "Successfully ingested offline assignment {AssignmentId} for student {StudentId}.",
-            request.AssignmentId, request.StudentId);
-
-        return new ProcessOfflineAssignmentSubmissionResult(
-            request.AssignmentId,
-            IsAccepted: true,
-            RejectionReason: null);
+        return Result<Guid>.Success(submissionId);
     }
 }

@@ -4,12 +4,12 @@ using SharedKernel.Domain.Primitives;
 
 public sealed class ProgramOffering : AggregateRoot<string>
 {
-    public string College { get; private set; }
-    public string Degree { get; private set; }
-    public string Major { get; private set; }
-    public string Duration { get; private set; }
-    public string Intake { get; private set; }
-    public string TuitionEstimate { get; private set; }
+    public string College { get; private set; } = string.Empty;
+    public string Degree { get; private set; } = string.Empty;
+    public string Major { get; private set; } = string.Empty;
+    public string Duration { get; private set; } = string.Empty;
+    public string Intake { get; private set; } = string.Empty;
+    public string TuitionEstimate { get; private set; } = string.Empty;
     
     private readonly List<string> _tags = new();
     public IReadOnlyCollection<string> Tags => _tags.AsReadOnly();

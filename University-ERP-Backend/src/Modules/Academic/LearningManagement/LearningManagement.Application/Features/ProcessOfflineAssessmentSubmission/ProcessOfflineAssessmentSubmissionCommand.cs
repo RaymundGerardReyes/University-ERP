@@ -1,24 +1,16 @@
-using LearningManagement.Contracts.IntegrationEvents;
-using MediatR;
-
 namespace LearningManagement.Application.Features.ProcessOfflineAssessmentSubmission;
 
-/// <summary>
-/// CQRS command carrying the decrypted offline assessment submission
-/// payload received from the Avalonia LmsOffline client.
-/// </summary>
+using MediatR;
+using SharedKernel.Domain.Primitives;
+using System;
+
+// This record explicitly declares it returns a Result<Guid>, matching our handler.
 public sealed record ProcessOfflineAssessmentSubmissionCommand(
     Guid AssessmentId,
     Guid StudentId,
     string CourseCode,
     string ModuleTitle,
-    IReadOnlyList<AnswerPayload> Answers,
+    string AnswersJson,
     string ScheduleToken,
-    DateTimeOffset SubmittedAtUtc
-) : IRequest<ProcessOfflineAssessmentSubmissionResult>;
-
-public sealed record ProcessOfflineAssessmentSubmissionResult(
-    Guid AssessmentId,
-    bool IsAccepted,
-    string? RejectionReason
-);
+    DateTime SubmittedAtUtc
+) : IRequest<Result<Guid>>;
