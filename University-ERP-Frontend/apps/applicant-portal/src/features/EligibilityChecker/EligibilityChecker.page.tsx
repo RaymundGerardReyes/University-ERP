@@ -1,4 +1,4 @@
-import { admissionsApi } from '@university-erp/api-clients/student-lifecycle/admissionsApi';
+import { admissionsApi } from '@university-erp/api-clients';
 import { Button, Card, PageHeader } from '@university-erp/ui-kit';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';

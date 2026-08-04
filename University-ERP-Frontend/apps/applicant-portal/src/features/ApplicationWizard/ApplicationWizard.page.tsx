@@ -1,4 +1,4 @@
-import { admissionsApi } from '@university-erp/api-clients/student-lifecycle/admissionsApi';
+import { admissionsApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
 import { Button, Card, PageHeader } from '@university-erp/ui-kit';
 import React, { useState } from 'react';
@@ -19,7 +19,15 @@ export const ApplicationWizardPage: React.FC = () => {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      await admissionsApi.submitApplication({ applicantId: user?.id || 'TEST_ID', programId: formData.program || 'p1', ...formData, nationality: 'Domestic' });
+      await admissionsApi.submitApplication({
+        applicantId: user?.id || '738263fb-7f91-488d-8058-5de99cd2a53b',
+        programId: formData.program || 'p1',
+        firstName: formData.firstName || (user as any)?.firstName || 'Applicant',
+        lastName: formData.lastName || (user as any)?.lastName || 'User',
+        dateOfBirth: formData.dob || '2000-01-01',
+        nationality: 'Domestic',
+        ...formData
+      });
       navigate('/');
     } catch (error) {
       alert('Failed to submit application. Please try again.');
