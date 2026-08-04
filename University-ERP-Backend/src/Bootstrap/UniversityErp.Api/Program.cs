@@ -13,6 +13,24 @@ try
     
     var builder = WebApplication.CreateBuilder(args);
 
+    // [Local Native Dev Fallback] Dynamically construct DefaultConnection from .env variables
+    // This allows `npm run dev:backend` to work seamlessly without modifying the encrypted .env file.
+    if (string.IsNullOrEmpty(builder.Configuration.GetConnectionString("DefaultConnection")))
+    {
+        var dbHost = builder.Configuration["DB_HOST"] ?? "localhost";
+        var dbPort = builder.Configuration["DB_PORT"] ?? "5432";
+        var dbName = builder.Configuration["DB_NAME"];
+        var dbUser = builder.Configuration["DB_USER"];
+        var dbPass = builder.Configuration["DB_PASSWORD"];
+        
+        if (!string.IsNullOrEmpty(dbName))
+        {
+            var connectionString = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbPass}";
+            builder.Configuration["ConnectionStrings:DefaultConnection"] = connectionString;
+            Log.Information("Dynamically constructed Database Connection String for Native Execution.");
+        }
+    }
+
     // Replace the default .NET console logger with Serilog
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)

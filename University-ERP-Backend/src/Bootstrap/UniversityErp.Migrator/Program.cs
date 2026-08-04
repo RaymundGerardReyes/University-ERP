@@ -22,10 +22,27 @@ var host = Host.CreateDefaultBuilder(args)
     })
     .ConfigureServices((context, services) =>
     {
-        var connectionString = context.Configuration
-            .GetConnectionString("DefaultConnection")
-            ?? throw new InvalidOperationException(
-                "ConnectionStrings__DefaultConnection environment variable is not set.");
+        var connectionString = context.Configuration.GetConnectionString("DefaultConnection");
+
+        // [Local Native Dev Fallback] Dynamically construct DefaultConnection from .env variables
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            var dbHost = context.Configuration["DB_HOST"] ?? "localhost";
+            var dbPort = context.Configuration["DB_PORT"] ?? "5432";
+            var dbName = context.Configuration["DB_NAME"];
+            var dbUser = context.Configuration["DB_USER"];
+            var dbPass = context.Configuration["DB_PASSWORD"];
+
+            if (!string.IsNullOrEmpty(dbName))
+            {
+                connectionString = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbPass}";
+            }
+        }
+
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            throw new InvalidOperationException("ConnectionStrings__DefaultConnection environment variable is not set and could not be dynamically constructed.");
+        }
 
         services.AddDbContext<StudentInformationDbContext>(options =>
             options.UseNpgsql(connectionString));
