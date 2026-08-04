@@ -47,7 +47,7 @@ try
     builder.Services.AddAdministrationModules();
     builder.Services.AddGovernanceModules();
     builder.Services.AddPlatformModules(builder.Configuration);
-    builder.Services.AddStudentLifecycleModules();
+    builder.Services.AddStudentLifecycleModules(builder.Configuration);
 
     var app = builder.Build();
 
