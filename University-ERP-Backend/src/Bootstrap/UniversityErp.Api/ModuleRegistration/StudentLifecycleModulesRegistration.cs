@@ -1,10 +1,13 @@
 namespace UniversityErp.Api.ModuleRegistration;
 
+using Admissions.Infrastructure;
+
 // Aggregates module self-registration calls for the StudentLifecycle cluster.
 public static class StudentLifecycleModulesRegistration
 {
-    public static IServiceCollection AddStudentLifecycleModules(this IServiceCollection services)
+    public static IServiceCollection AddStudentLifecycleModules(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddAdmissionsInfrastructure(configuration);
         services.AddMediatR(cfg => 
         {
             cfg.RegisterServicesFromAssembly(typeof(Alumni.Application.Features.GetAlumniStatus.GetAlumniStatusQuery).Assembly);
