@@ -37,6 +37,8 @@ dist/
 build/
 out/
 storybook-static/
+University-ERP-Frontend/apps/**/*.js
+!University-ERP-Frontend/apps/**/vite.config.js
 
 # Logs, Coverage & E2E/Performance Test Artifacts
 npm-debug.log*
@@ -123,11 +125,13 @@ docker-compose.override.yml
 # =========================
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
-*.env
+.env.development
+.env.production
+.env.testing
+.env.keys
+
+!.env.example
 
 appsettings.Development.json
 appsettings.*.user.json
-secrets.json
+secrets.json*.md
