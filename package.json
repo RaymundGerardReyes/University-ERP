@@ -1,0 +1,21 @@
+{
+  "name": "university-erp-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Root workspace configuration for University ERP Monorepo",
+  "scripts": {
+    "docker:fresh": "dotenvx run -f .env -- docker compose build --no-cache frontend-builder && dotenvx run -f .env -- docker compose build --no-cache api worker migrator",
+    "docker:up": "dotenvx run -f .env -- docker compose up -d",
+    "docker:down": "dotenvx run -f .env -- docker compose down",
+    "docker:restart": "npm run docker:restart-backend && npm run docker:restart-frontend",
+    "docker:restart-backend": "dotenvx run -f .env -- docker compose restart api worker migrator",
+    "docker:restart-frontend": "dotenvx run -f .env -- docker compose restart frontend-builder",
+    "docker:restart-nginx": "dotenvx run -f .env -- docker compose restart nginx",
+    "dev:frontend": "npm run dev:all --prefix University-ERP-Frontend",
+    "env:encrypt": "dotenvx ext encrypt -f .env",
+    "env:decrypt": "dotenvx ext decrypt -f .env"
+  },
+  "devDependencies": {
+    "@dotenvx/dotenvx": "^1.14.0"
+  }
+}

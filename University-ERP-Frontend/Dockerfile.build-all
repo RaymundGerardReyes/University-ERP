@@ -5,13 +5,49 @@
 # volume structure that matches the Nginx named volume expectations.
 # -----------------------------------------------------------------------------
 
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
+# Copy workspace manifests first to leverage Docker layer caching
+COPY package.json package-lock.json ./
+COPY apps/admin-portal/package.json ./apps/admin-portal/
+COPY apps/applicant-portal/package.json ./apps/applicant-portal/
+COPY apps/faculty-portal/package.json ./apps/faculty-portal/
+COPY apps/finance-console/package.json ./apps/finance-console/
+COPY apps/governance-console/package.json ./apps/governance-console/
+COPY apps/identity-portal/package.json ./apps/identity-portal/
+COPY apps/library-portal/package.json ./apps/library-portal/
+COPY apps/lms-web/package.json ./apps/lms-web/
+COPY apps/platform-console/package.json ./apps/platform-console/
+COPY apps/student-portal/package.json ./apps/student-portal/
+
+COPY libs/api-clients/package.json ./libs/api-clients/
+COPY libs/auth-sdk/package.json ./libs/auth-sdk/
+COPY libs/core-logger/package.json ./libs/core-logger/
+COPY libs/domain-viewmodels/package.json ./libs/domain-viewmodels/
+COPY libs/shell-kit/package.json ./libs/shell-kit/
+COPY libs/ui-kit/package.json ./libs/ui-kit/
+COPY libs/vite-config/package.json ./libs/vite-config/
+
+# Install dependencies before copying source code
+RUN npm ci
+
+# Copy the rest of the source code
 COPY . .
 
-# Install dependencies
-RUN npm ci
+# Accept build arguments from docker-compose
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
+ARG VITE_AUTH_AUTHORITY
+ENV VITE_AUTH_AUTHORITY=$VITE_AUTH_AUTHORITY
+
+ARG VITE_IDENTITY_PORTAL_URL
+ENV VITE_IDENTITY_PORTAL_URL=$VITE_IDENTITY_PORTAL_URL
+
+# --- ADD THESE TWO LINES ---
+ARG VITE_APPLICANT_PORTAL_URL
+ENV VITE_APPLICANT_PORTAL_URL=$VITE_APPLICANT_PORTAL_URL
 
 # Build all portals simultaneously
 RUN npm run build --workspaces --if-present
