@@ -20,13 +20,13 @@ export const ApplicationWizardPage: React.FC = () => {
     setIsSubmitting(true);
     try {
       await admissionsApi.submitApplication({
+        ...formData,
         applicantId: user?.id || '738263fb-7f91-488d-8058-5de99cd2a53b',
         programId: formData.program || 'p1',
         firstName: formData.firstName || (user as any)?.firstName || 'Applicant',
         lastName: formData.lastName || (user as any)?.lastName || 'User',
         dateOfBirth: formData.dob || '2000-01-01',
-        nationality: 'Domestic',
-        ...formData
+        nationality: 'Domestic'
       });
       navigate('/');
     } catch (error) {
