@@ -1,17 +1,31 @@
 import { useAuth } from '@university-erp/auth-sdk';
-import { Button } from '@university-erp/ui-kit';
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+
+interface NavItem {
+  label: string;
+  path: string;
+  icon: string;
+  section: string;
+}
+
+const navItems: NavItem[] = [
+  { label: 'My Profile',      path: '/profile',     icon: '👤', section: 'Account' },
+  { label: 'My Enrollments',  path: '/enrollments', icon: '📚', section: 'Academics' },
+  { label: 'Health Center',   path: '/health',      icon: '🏥', section: 'Academics' },
+  { label: 'Guidance',        path: '/guidance',    icon: '🧭', section: 'Academics' },
+  { label: 'Hostel',          path: '/hostel',      icon: '🏠', section: 'Campus Life' },
+  { label: 'Career',          path: '/career',      icon: '💼', section: 'Campus Life' },
+  { label: 'Alumni Network',  path: '/alumni',      icon: '🎓', section: 'Campus Life' },
+];
+
+const sections = ['Account', 'Academics', 'Campus Life'];
 
 export const AppShell = () => {
   const { identity, logout } = useAuth();
   const location = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-
-  // Initialize theme from localStorage or system preference
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('theme') || 'light';
-  });
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -21,109 +35,112 @@ export const AppShell = () => {
   const toggleTheme = () => setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
   const closeMobileMenu = () => setIsMobileOpen(false);
 
-  const navItems = [
-    { label: 'Profile', path: '/profile' },
-    { label: 'My Enrollments', path: '/enrollments' },
-    { label: 'Hostel', path: '/hostel' },
-    { label: 'Health Center', path: '/health' },
-    { label: 'Guidance', path: '/guidance' },
-    { label: 'Career', path: '/career' },
-    { label: 'Alumni Network', path: '/alumni' }
-  ];
+  // Derive initials from name or ID
+  const name = identity?.name || 'Student';
+  const initials = name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
     <div className="app-layout">
-      {/* Mobile Top Header */}
+      {/* ── Mobile Top Bar ─────────────────────────────── */}
       <header className="mobile-header-bar">
-        <button className="icon-btn" onClick={() => setIsMobileOpen(true)} aria-label="Open Navigation Menu">
+        <button
+          className="icon-btn"
+          onClick={() => setIsMobileOpen(true)}
+          aria-label="Open Navigation"
+        >
           ☰
         </button>
-        <span style={{ fontWeight: 700, color: 'var(--brand-primary)' }}>University ERP</span>
+        <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-bright)' }}>
+          University ERP
+        </span>
         <button className="icon-btn" onClick={toggleTheme} aria-label="Toggle Theme">
           {theme === 'light' ? '🌙' : '☀️'}
         </button>
       </header>
 
-      {/* Primary Navigation Sidebar */}
+      {/* ── Sidebar ────────────────────────────────────── */}
       <aside className={`sidebar ${isMobileOpen ? 'open' : ''}`}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.75rem', padding: '0 0.5rem' }}>
-          <div>
-            <h1 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: 'var(--brand-primary)' }}>
-              University ERP
-            </h1>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 500 }}>Student Portal</span>
+
+        {/* Brand */}
+        <div className="sidebar-brand">
+          <div className="sidebar-brand-icon">🎓</div>
+          <div className="sidebar-brand-text">
+            <h1>University ERP</h1>
+            <span>Student Portal</span>
           </div>
-          <button className="icon-btn mobile-menu-btn" onClick={closeMobileMenu} aria-label="Close Navigation Sidebar">
-            ✕
-          </button>
+          <button
+            className="icon-btn mobile-menu-btn"
+            onClick={closeMobileMenu}
+            aria-label="Close Menu"
+            style={{ marginLeft: 'auto', display: 'none' }}
+          >✕</button>
         </div>
 
-        <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-          {navItems.map(item => {
-            const isActive = location.pathname.startsWith(item.path);
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={closeMobileMenu}
-                style={{
-                  padding: 'var(--space-2) var(--space-3)',
-                  textDecoration: 'none',
-                  color: isActive ? 'var(--brand-primary)' : 'var(--text-secondary)',
-                  backgroundColor: isActive ? 'var(--bg-surface)' : 'transparent',
-                  border: isActive ? '1px solid var(--border-subtle)' : '1px solid transparent',
-                  borderRadius: 'var(--radius-md)',
-                  fontWeight: isActive ? 600 : 500,
-                  fontSize: '0.875rem',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
+        {/* Navigation grouped by section */}
+        <nav style={{ flex: 1 }}>
+          {sections.map(section => (
+            <div key={section}>
+              <div className="nav-section-label">{section}</div>
+              {navItems
+                .filter(item => item.section === section)
+                .map(item => {
+                  const isActive = location.pathname === item.path ||
+                    (item.path !== '/' && location.pathname.startsWith(item.path));
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className={`nav-item ${isActive ? 'active' : ''}`}
+                      onClick={closeMobileMenu}
+                    >
+                      <span className="nav-icon">{item.icon}</span>
+                      {item.label}
+                    </Link>
+                  );
+                })}
+            </div>
+          ))}
         </nav>
 
-        {/* Footer Actions (Theme Switcher & User Profile) */}
-        <div style={{ marginTop: 'auto', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-          <button
-            onClick={toggleTheme}
-            className="icon-btn"
-            style={{ width: '100%', justifyContent: 'center', gap: 'var(--space-2)', padding: 'var(--space-2)', fontSize: '0.85rem' }}
-          >
+        {/* Footer */}
+        <div className="sidebar-footer">
+          {/* User Card */}
+          <div className="user-card">
+            <div className="user-avatar">{initials}</div>
+            <div className="user-info">
+              <div className="user-name">{name}</div>
+              <div className="user-id">{identity?.id ?? '—'}</div>
+            </div>
+          </div>
+
+          {/* Theme Toggle */}
+          <button className="theme-toggle-btn" onClick={toggleTheme}>
             {theme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode'}
           </button>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-2)' }}>
-            <div style={{ overflow: 'hidden' }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                {identity?.name || 'Student Account'}
-              </div>
-              <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>{identity?.id}</div>
-            </div>
-            <Button variant="outline" onClick={logout} style={{ padding: 'var(--space-1) var(--space-2)', fontSize: '0.75rem' }}>
-              Logout
-            </Button>
-          </div>
+          {/* Logout */}
+          <button className="logout-btn" onClick={logout}>
+            ↪ Sign Out
+          </button>
         </div>
       </aside>
 
-      {/* Main Page Area */}
+      {/* ── Main Content ───────────────────────────────── */}
       <main className="main-content">
         <div className="content-container">
           <Outlet />
         </div>
       </main>
 
-      {/* Mobile Drawer Overlay */}
+      {/* ── Mobile Overlay ─────────────────────────────── */}
       {isMobileOpen && (
         <div
           onClick={closeMobileMenu}
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.4)',
-            backdropFilter: 'blur(2px)',
+            backgroundColor: 'rgba(6, 11, 24, 0.65)',
+            backdropFilter: 'blur(4px)',
             zIndex: 40
           }}
         />

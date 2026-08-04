@@ -3,7 +3,7 @@ import React from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import { AppShell } from './AppShell';
-import { AuthGuard } from './AuthGuard';
+import { AuthGuard } from '@university-erp/shell-kit';
 
 import { NavigationLogger } from './NavigationLogger';
 
