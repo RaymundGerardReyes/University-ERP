@@ -86,9 +86,9 @@ services:
       dockerfile: Dockerfile.build-all
       args:
         VITE_API_BASE_URL: ${VITE_API_BASE_URL}
-        VITE_AUTH_AUTHORITY: ${VITE_AUTH_AUTHORITY}
         VITE_IDENTITY_PORTAL_URL: ${VITE_IDENTITY_PORTAL_URL}
-        VITE_APPLICANT_PORTAL_URL: ${VITE_APPLICANT_PORTAL_URL} # <-- ADD THIS LINE
+        VITE_AUTH_AUTHORITY: ${VITE_AUTH_AUTHORITY}
+        VITE_APPLICANT_PORTAL_URL: ${VITE_APPLICANT_PORTAL_URL}
     container_name: universityerp-frontend-builder
     restart: "no"
     volumes:

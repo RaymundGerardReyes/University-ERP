@@ -11,6 +11,7 @@
     "docker:restart-backend": "dotenvx run -f .env -- docker compose restart api worker migrator",
     "docker:restart-frontend": "dotenvx run -f .env -- docker compose restart frontend-builder",
     "docker:restart-nginx": "dotenvx run -f .env -- docker compose restart nginx",
+    "dev:backend": "dotenvx run -f .env -- dotnet run --project University-ERP-Backend/src/Bootstrap/UniversityErp.Api/UniversityErp.Api.csproj",
     "dev:frontend": "npm run dev:all --prefix University-ERP-Frontend",
     "env:encrypt": "dotenvx ext encrypt -f .env",
     "env:decrypt": "dotenvx ext decrypt -f .env"
