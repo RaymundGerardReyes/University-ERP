@@ -1,5 +1,7 @@
 <Solution>
-  <Folder Name="/src/" />
+  <Folder Name="/src/">
+    <Project Path="University-ERP-Backend/src/Contracts/UniversityErp.Contracts.csproj" />
+  </Folder>
   <Folder Name="/src/Bootstrap/">
     <Project Path="University-ERP-Backend/src/Bootstrap/UniversityErp.Api/UniversityErp.Api.csproj" />
     <Project Path="University-ERP-Backend/src/Bootstrap/UniversityErp.Migrator/UniversityErp.Migrator.csproj" />
