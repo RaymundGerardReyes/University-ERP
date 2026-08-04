@@ -22,6 +22,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Modules\Academic\StudentInformation\StudentInformation.Infrastructure\StudentInformation.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Platform\IdentityAccess\IdentityAccess.Infrastructure\IdentityAccess.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\StudentLifecycle\Admissions\Admissions.Infrastructure\Admissions.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -4,13 +4,14 @@ public class Worker(ILogger<Worker> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        while (!stoppingToken.IsCancellationRequested)
+        if (logger.IsEnabled(LogLevel.Information))
         {
-            if (logger.IsEnabled(LogLevel.Information))
-            {
-                logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-            }
-            await Task.Delay(1000, stoppingToken);
+            logger.LogInformation("University ERP Background Worker is running. Awaiting job registrations...");
         }
+
+        // Suspend the background service indefinitely without consuming CPU
+        // while it waits for shutdown. Future scheduled jobs (e.g., Quartz.NET) 
+        // or message consumers (e.g., MassTransit) will be registered alongside this.
+        await Task.Delay(Timeout.Infinite, stoppingToken);
     }
 }

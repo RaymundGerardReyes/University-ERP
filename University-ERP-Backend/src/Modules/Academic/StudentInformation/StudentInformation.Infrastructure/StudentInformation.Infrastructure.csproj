@@ -16,4 +16,9 @@
     <ProjectReference Include="..\..\..\..\SharedKernel\SharedKernel.Infrastructure\SharedKernel.Infrastructure.csproj" />
   </ItemGroup>
 
+  <!-- Link migration files from the ops folder into this project so EF Core can compile and apply them -->
+  <ItemGroup>
+    <Compile Include="..\..\..\..\..\..\ops\db-migrations\StudentInformation\**\*.cs" />
+  </ItemGroup>
+
 </Project>
