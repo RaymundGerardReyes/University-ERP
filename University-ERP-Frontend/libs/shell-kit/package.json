@@ -1,0 +1,13 @@
+{
+  "name": "@university-erp/shell-kit",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.ts",
+  "dependencies": {
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.1.5",
+    "@tanstack/react-query": "^5.101.4",
+    "@university-erp/auth-sdk": "*"
+  }
+}

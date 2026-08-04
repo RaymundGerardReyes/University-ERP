@@ -9,16 +9,57 @@ export const admissionsApi = {
       const response = await axios.get<ApplicationStatusViewModel[]>(`${BASE_URL}/status/${studentId}`);
       return response.data;
     } catch {
-      // Fallback mock if backend server is not running
-      return [
-        {
-          id: 'APP-2026-0891',
-          programName: 'B.S. Computer Science & Engineering',
-          status: 'Enrolled',
-          submittedDate: '2026-02-15T10:00:00Z',
-          missingDocuments: []
-        }
-      ];
+      return [];
+    }
+  },
+
+  getApplicantJourney: async (studentId: string): Promise<any> => {
+    try {
+      const response = await axios.get(`${BASE_URL}/applications/journey/${studentId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch applicant journey', error);
+      throw error;
+    }
+  },
+
+  submitApplication: async (data: any): Promise<string> => {
+    try {
+      const response = await axios.post(`${BASE_URL}/applications`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to submit application', error);
+      throw error;
+    }
+  },
+
+  uploadDocument: async (applicationId: string, data: { documentName: string, filePath: string }): Promise<boolean> => {
+    try {
+      const response = await axios.post(`${BASE_URL}/applications/${applicationId}/documents`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to upload document', error);
+      throw error;
+    }
+  },
+
+  getProgramCatalog: async (): Promise<any[]> => {
+    try {
+      const response = await axios.get(`${BASE_URL}/programs`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch programs', error);
+      return [];
+    }
+  },
+
+  checkEligibility: async (data: any): Promise<any> => {
+    try {
+      const response = await axios.post(`${BASE_URL}/eligibility`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to check eligibility', error);
+      throw error;
     }
   }
 };

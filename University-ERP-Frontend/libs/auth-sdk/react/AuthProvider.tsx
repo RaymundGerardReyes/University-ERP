@@ -29,13 +29,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     if (mockToken) {
-      logger.info('Global Identity session found in storage.');
-      setIdentity({
-        id: 'ID-84920-ABCD',
-        name: 'Jane Doe',
-        email: 'jane.doe@personal.com',
-        emailVerified: true
-      });
+      try {
+        const base64Url = mockToken.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        const payload = JSON.parse(jsonPayload);
+        
+        logger.info('Global Identity session found and decoded.');
+        setIdentity({
+          id: payload.sub || 'ID-UNKNOWN',
+          name: payload.name || payload.email || 'Unknown User',
+          email: payload.email || 'unknown@example.com',
+          emailVerified: true
+        });
+      } catch (e) {
+        logger.warn('Failed to parse identity token', e);
+        setIdentity({
+          id: 'ID-84920-ABCD',
+          name: 'Jane Doe',
+          email: 'jane.doe@personal.com',
+          emailVerified: true
+        });
+      }
     } else {
       logger.warn('No active identity session found. User must authenticate via Identity Portal.');
     }
@@ -46,8 +63,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = () => {
     logger.info('Redirecting to Identity Portal for Authentication...');
     const identityUrl = import.meta.env.VITE_IDENTITY_PORTAL_URL || 'http://localhost:8081';
-    const currentUrl = encodeURIComponent(window.location.href);
-    window.location.href = `${identityUrl}/login?redirect_uri=${currentUrl}`;
+    // Use only origin + pathname (not full href) to prevent redirect_uri from accumulating
+    // previously-encoded query params, which causes an infinite redirect loop.
+    const returnTo = encodeURIComponent(window.location.origin + window.location.pathname);
+    window.location.href = `${identityUrl}/login?redirect_uri=${returnTo}`;
   };
 
   const logout = () => {

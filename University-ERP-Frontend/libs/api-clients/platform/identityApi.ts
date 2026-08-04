@@ -21,16 +21,8 @@ export const identityApi = {
 
   login: async (credentials: any): Promise<AuthResponseViewModel> => {
     logger.info('Dispatching Login query');
-    try {
-      const response = await axios.post<AuthResponseViewModel>(`${BASE_URL}/login`, credentials);
-      return response.data;
-    } catch {
-      logger.warn('Backend login endpoint missing/failed. Falling back to mock session.');
-      return {
-        token: 'mock-jwt-token-777',
-        user: { id: 'usr-123', email: credentials.email, name: 'Alex Morgan', role: 'Student' }
-      };
-    }
+    const response = await axios.post<AuthResponseViewModel>(`${BASE_URL}/login`, credentials);
+    return response.data;
   },
 
   verifyMfa: async (code: string): Promise<void> => {

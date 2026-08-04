@@ -1,0 +1,10 @@
+{
+  "name": "@university-erp/vite-config",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.ts",
+  "dependencies": {
+    "vite": "^8.2.0",
+    "@vitejs/plugin-react": "^6.0.5"
+  }
+}
