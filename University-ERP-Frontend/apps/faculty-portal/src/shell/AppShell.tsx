@@ -4,6 +4,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 
 const navItems = [
   { label: 'Dashboard', path: '/dashboard', section: 'Workspace' },
+  { label: 'Documents', path: '/documents', section: 'Workspace' }, // <-- ADDED
   { label: 'Teaching & Classes', path: '/teaching', section: 'Academics' },
   { label: 'My Students', path: '/students', section: 'Academics' },
   { label: 'Assessments & Grades', path: '/assessments', section: 'Academics' },
@@ -13,9 +14,10 @@ const navItems = [
   { label: 'Schedule', path: '/schedule', section: 'Professional' },
   { label: 'Communication', path: '/communication', section: 'Connect' },
   { label: 'Analytics', path: '/analytics', section: 'Connect' },
+  { label: 'Settings', path: '/settings', section: 'System' }, // <-- ADDED
 ];
 
-const sections = ['Workspace', 'Academics', 'Administration', 'Professional', 'Connect'];
+const sections = ['Workspace', 'Academics', 'Administration', 'Professional', 'Connect', 'System'];
 
 export const AppShell = () => {
   const { identity, logout } = useAuth();
