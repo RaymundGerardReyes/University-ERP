@@ -2,6 +2,8 @@
 
 set -e
 
+# Ensure we are running inside the directory where the script is located
+cd "$(dirname "$0")"
 echo "========================================="
 echo " University ERP Frontend Bootstrap"
 echo "========================================="

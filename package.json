@@ -13,8 +13,8 @@
     "docker:restart-nginx": "dotenvx run -f .env -- docker compose restart nginx",
     "dev:backend": "dotenvx run -f .env -- dotnet run --project University-ERP-Backend/src/Bootstrap/UniversityErp.Api/UniversityErp.Api.csproj",
     "dev:frontend": "npm run dev:all --prefix University-ERP-Frontend",
-    "env:encrypt": "dotenvx ext encrypt -f .env",
-    "env:decrypt": "dotenvx ext decrypt -f .env"
+    "env:encrypt": "dotenvx encrypt -f .env",
+    "env:decrypt": "dotenvx decrypt -f .env"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.14.0"
