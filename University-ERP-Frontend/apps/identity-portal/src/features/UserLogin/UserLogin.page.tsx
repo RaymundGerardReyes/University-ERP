@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { admissionsApi } from '@university-erp/api-clients';
 import { useUserRegistration } from '../UserRegistration/UserRegistration.hooks';
 import { submitLogin } from './UserLogin.api';
 
@@ -294,33 +295,42 @@ export const LoginPage = () => {
         const response = await submitLogin({ email, password });
         localStorage.setItem('global_identity_token', response.token);
 
-        // 2. Extract standard redirect URI
-        const urlParams = new URLSearchParams(window.location.search);
-        let redirectUri = urlParams.get('redirect_uri') || 'http://localhost:8080';
+        // 2. Determine Redirection URLs strictly based on runtime execution port
+        // If the browser is executing on port 3001, it is 100% native Vite.
+        const currentPort = window.location.port;
+        const isNative = currentPort === '3001';
+        
+        const defaultStudentUrl = isNative ? 'http://localhost:5173' : 'http://localhost:8080';
+        const defaultApplicantUrl = isNative ? 'http://localhost:5174' : import.meta.env.VITE_APPLICANT_PORTAL_URL;
 
-        // 3. True Database Check: Verify their Admissions status
+        const urlParams = new URLSearchParams(window.location.search);
+        let redirectUri = urlParams.get('redirect_uri') || defaultStudentUrl;
+
+        // 3. True Database Check: Verify their Admissions status securely
         try {
-          // This queries the actual PostgreSQL database
           const applications = await admissionsApi.getApplicationStatus(response.user.id);
 
-          // Check if they have an application that is officially enrolled/accepted
-          const isEnrolled = applications.some((app: any) =>
+          // Check if they have an application that is officially enrolled or accepted
+          const isApproved = applications.some((app: any) =>
             app.status === 'Enrolled' || app.status === 'Accepted'
           );
 
-          if (!isEnrolled) {
-            // Force route to Applicant Portal
-            redirectUri = import.meta.env.VITE_APPLICANT_PORTAL_URL || 'http://localhost:8082';
+          if (!isApproved) {
+            if (!defaultApplicantUrl) throw new Error("VITE_APPLICANT_PORTAL_URL is missing in environment config.");
+            redirectUri = defaultApplicantUrl;
           }
         } catch (error) {
-          // Failsafe: If no record exists, they are a new user. Route to Applicant Portal.
-          redirectUri = import.meta.env.VITE_APPLICANT_PORTAL_URL || 'http://localhost:8082';
+          // Failsafe: If no records exist, they are a new student. Route to Applicant Portal.
+          if (defaultApplicantUrl) {
+            redirectUri = defaultApplicantUrl;
+          }
         }
 
-        // 4. Final Redirect
+        // 4. Execute the final redirect with the token fragment
         window.location.href = `${redirectUri}#token=${response.token}`;
 
       } else {
+        // --- NEW USER REGISTRATION FLOW ---
         if (!firstName || !lastName || !email || !password) {
           throw new Error('Please fill in all registration fields.');
         }
@@ -340,8 +350,13 @@ export const LoginPage = () => {
 
         // 3. Since they JUST registered, they are 100% a new student. 
         // Redirect them directly to the Applicant Portal.
-        const applicantPortalUrl = import.meta.env.VITE_APPLICANT_PORTAL_URL || 'http://localhost:8082';
-        window.location.href = `${applicantPortalUrl}#token=${response.token}`;
+        const currentPort = window.location.port;
+        const isNative = currentPort === '3001';
+        const applicantUrl = isNative ? 'http://localhost:5174' : import.meta.env.VITE_APPLICANT_PORTAL_URL;
+        
+        if (!applicantUrl) throw new Error("VITE_APPLICANT_PORTAL_URL is missing in environment config.");
+
+        window.location.href = `${applicantUrl}#token=${response.token}`;
       }
     } catch (error: any) {
       setErrorMessage(error.response?.data?.message || error.message || 'An error occurred.');
