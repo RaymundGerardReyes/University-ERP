@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AppShell from './AppShell';
-import AuthGuard from './AuthGuard';
+import { AuthGuard } from '@university-erp/shell-kit';
 
 export function Routing() {
   return (
