@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LmsOffline.Presentation.ViewModels"
+             x:Class="LmsOffline.Presentation.Views.LearningTimelineView"
+             x:DataType="vm:LearningTimelineViewModel">
+
+    <StackPanel Spacing="20">
+        <TextBlock Text="Learning Timeline" FontSize="28" FontWeight="Bold" Foreground="White"/>
+        <TextBlock Text="Your structured academic progression for installed courses." Foreground="#8899b8" Margin="0,0,0,20"/>
+
+        <!-- Course Header -->
+        <Border Background="#111d36" CornerRadius="10" Padding="20" BorderBrush="#3b82f6" BorderThickness="1">
+            <StackPanel>
+                <TextBlock Text="CS-201: Object Oriented Programming" FontSize="22" FontWeight="Bold" Foreground="#63b3ed"/>
+                <TextBlock Text="Semester 1 • Dr. Alan Turing • Package v1.4.2" Foreground="#8899b8" Margin="0,5,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Timeline Node -->
+        <StackPanel Margin="20,10,0,0">
+            <TextBlock Text="Week 3: Inheritance &amp; Polymorphism" FontSize="18" FontWeight="Bold" Foreground="White" Margin="0,0,0,15"/>
+            
+            <Border Background="#0d1526" CornerRadius="10" Padding="20" BorderBrush="#1f2937" BorderThickness="1" Margin="0,0,0,15">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel>
+                        <TextBlock Text="LECTURE VIDEO" FontSize="11" FontWeight="Bold" Foreground="#8899b8" LetterSpacing="1"/>
+                        <TextBlock Text="Lesson 1: Deep Dive into Polymorphism" FontSize="16" Foreground="White" Margin="0,5,0,0"/>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="Watch Offline" Background="Transparent" BorderBrush="#1f2937" BorderThickness="1" Foreground="White" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <Border Background="#0d1526" CornerRadius="10" Padding="20" BorderBrush="#34d399" BorderThickness="1">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel>
+                        <TextBlock Text="PRACTICE QUIZ - Completed" FontSize="11" FontWeight="Bold" Foreground="#34d399" LetterSpacing="1"/>
+                        <TextBlock Text="Polymorphism Checkpoint" FontSize="16" Foreground="White" Margin="0,5,0,0"/>
+                        <TextBlock Text="Score: 90 / 100 • Feedback Available" FontSize="12" Foreground="#8899b8" Margin="0,5,0,0"/>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="Review Feedback" Background="#3b82f6" Foreground="White" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

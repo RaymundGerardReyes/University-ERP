@@ -11,6 +11,10 @@ public sealed class EncryptedSqliteContext : DbContext
     public DbSet<OfflineModule> Modules { get; set; } = null!;
     public DbSet<OfflineAssessment> Assessments { get; set; } = null!;
     public DbSet<OfflineAssignment> Assignments { get; set; } = null!;
+    
+    // NEW: Enterprise Capabilities
+    public DbSet<CoursePackage> Packages { get; set; } = null!;
+    public DbSet<LearningEvent> LearningRecordStore { get; set; } = null!;
 
     public EncryptedSqliteContext(string databasePath, string encryptionKey)
     {
@@ -20,18 +24,24 @@ public sealed class EncryptedSqliteContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        // Enforce SQLCipher AES-256 encryption via connection string
+        // Enforce SQLCipher AES-256 encryption
         optionsBuilder.UseSqlite($"Data Source={_databasePath};Password={_encryptionKey};");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<OfflineModule>().HasKey(e => e.Id);
+        modelBuilder.Entity<CoursePackage>().HasKey(e => e.Id);
+        
+        modelBuilder.Entity<LearningEvent>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.SyncState).HasConversion<string>();
+        });
 
         modelBuilder.Entity<OfflineAssessment>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.OwnsOne(e => e.Window); // Flattens Start/End time into the table
+            entity.OwnsOne(e => e.Window); 
             entity.Property(e => e.SyncState).HasConversion<string>();
         });
 

@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LmsOffline.Presentation.ViewModels"
+             x:Class="LmsOffline.Presentation.Views.DiagnosticsView"
+             x:DataType="vm:DiagnosticsViewModel">
+
+    <StackPanel Spacing="20">
+        <TextBlock Text="Diagnostics &amp; Security" FontSize="28" FontWeight="Bold" Foreground="White"/>
+        <TextBlock Text="System health, cryptographic integrity, and local database status." Foreground="#8899b8" Margin="0,0,0,10"/>
+
+        <!-- Crypto Integrity -->
+        <Border Background="#0d1526" CornerRadius="10" Padding="20" BorderBrush="#60a5fa" BorderThickness="1">
+            <StackPanel Spacing="10">
+                <TextBlock Text="Cryptographic Integrity &amp; Auth" FontSize="18" FontWeight="Bold" Foreground="White" Margin="0,0,0,10"/>
+                
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="Package Signature Verification" Foreground="#8899b8"/>
+                    <TextBlock Grid.Column="1" Text="Enforced (ECDSA)" Foreground="#34d399" FontWeight="Bold"/>
+                </Grid>
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="Local Storage Encryption" Foreground="#8899b8"/>
+                    <TextBlock Grid.Column="1" Text="Active (SQLCipher AES-256)" Foreground="#34d399" FontWeight="Bold"/>
+                </Grid>
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="Offline JWT Token Cache" Foreground="#8899b8"/>
+                    <TextBlock Grid.Column="1" Text="Valid (Expires in 18h)" Foreground="White" FontWeight="Bold"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- Network & Connectivity -->
+        <Border Background="#0d1526" CornerRadius="10" Padding="20" BorderBrush="#1f2937" BorderThickness="1">
+            <StackPanel Spacing="10">
+                <TextBlock Text="Network &amp; Connectivity" FontSize="18" FontWeight="Bold" Foreground="White" Margin="0,0,0,10"/>
+                
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="Current State" Foreground="#8899b8"/>
+                    <TextBlock Grid.Column="1" Text="Offline (Runtime Mode)" Foreground="#fbbf24" FontWeight="Bold"/>
+                </Grid>
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="Last Server Reachability" Foreground="#8899b8"/>
+                    <TextBlock Grid.Column="1" Text="2026-08-05 01:14 PM" Foreground="White" FontWeight="Bold"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

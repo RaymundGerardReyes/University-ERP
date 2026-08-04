@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LmsOffline.Presentation.ViewModels"
+             x:Class="LmsOffline.Presentation.Views.SyncHubView"
+             x:DataType="vm:SyncHubViewModel">
+
+    <StackPanel Spacing="20">
+        <Grid ColumnDefinitions="*,Auto">
+            <StackPanel>
+                <TextBlock Text="Synchronization Engine" FontSize="28" FontWeight="Bold" Foreground="White"/>
+                <TextBlock Text="Monitor your Event Journal, background sync queues, and conflict resolutions." Foreground="#8899b8"/>
+            </StackPanel>
+            <Button Grid.Column="1" Content="Force Manual Sync" Background="#3b82f6" Foreground="White" VerticalAlignment="Center"/>
+        </Grid>
+
+        <Grid ColumnDefinitions="1*,1*" Margin="0,20,0,0">
+            <!-- Outbox -->
+            <Border Grid.Column="0" Background="#0d1526" CornerRadius="10" Padding="20" BorderBrush="#1f2937" BorderThickness="1" Margin="0,0,10,0">
+                <StackPanel Spacing="15">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Pending Uploads (Outbox)" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                        <TextBlock Grid.Column="1" Text="2 Items Queued" Foreground="#60a5fa" FontWeight="Bold"/>
+                    </Grid>
+                    
+                    <Border Background="#111d36" CornerRadius="6" Padding="15" BorderBrush="#1f2937" BorderThickness="1">
+                        <StackPanel>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Text="ASSESSMENT_SUBMITTED" Foreground="#63b3ed" FontWeight="Bold" FontFamily="Consolas"/>
+                                <TextBlock Grid.Column="1" Text="Waiting for Network" Foreground="#fbbf24"/>
+                            </Grid>
+                            <TextBlock Text="CS-201: Laboratory Exercise 3" Foreground="White" Margin="0,10,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- Inbox -->
+            <Border Grid.Column="1" Background="#0d1526" CornerRadius="10" Padding="20" BorderBrush="#1f2937" BorderThickness="1" Margin="10,0,0,0">
+                <StackPanel Spacing="15">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Incoming Events (Inbox)" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                        <TextBlock Grid.Column="1" Text="Up to Date" Foreground="#34d399" FontWeight="Bold"/>
+                    </Grid>
+                    
+                    <TextBlock Text="✓" FontSize="64" Foreground="#34d399" HorizontalAlignment="Center" Margin="0,40,0,10"/>
+                    <TextBlock Text="Your local runtime is completely synchronized with the University ERP." Foreground="#8899b8" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </StackPanel>
+</UserControl>

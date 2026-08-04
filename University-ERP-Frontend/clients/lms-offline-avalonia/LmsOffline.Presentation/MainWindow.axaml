@@ -1,19 +1,46 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:views="using:LmsOffline.Presentation.Views"
+        xmlns:vm="using:LmsOffline.Presentation.ViewModels"
         x:Class="LmsOffline.Presentation.MainWindow"
-        Title="University ERP - Offline LMS Client"
-        Width="1024" Height="768">
+        x:DataType="vm:MainWindowViewModel"
+        Title="University ERP - Offline Learning Runtime"
+        Width="1200" Height="800"
+        Background="#060b18">
 
-    <TabControl Margin="10">
-        <TabItem Header="Module Timeline (Sync)">
-            <views:ModuleTimelineView />
-        </TabItem>
-        <TabItem Header="Offline Assessment">
-            <views:AssessmentView />
-        </TabItem>
-        <TabItem Header="Homework Submission">
-            <views:AssignmentSubmissionView />
-        </TabItem>
-    </TabControl>
+    <Grid ColumnDefinitions="260,*">
+        <!-- Sidebar Navigation -->
+        <Border Grid.Column="0" Background="#080f1e" BorderBrush="#1f2937" BorderThickness="0,0,1,0">
+            <StackPanel Padding="20">
+                <TextBlock Text="Offline Runtime" Foreground="White" FontSize="18" FontWeight="Bold"/>
+                <TextBlock Text="ENTERPRISE EDITION" Foreground="#63b3ed" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,30" LetterSpacing="1"/>
+
+                <TextBlock Text="LEARNING" Foreground="#4d6080" FontSize="11" FontWeight="Bold" Margin="0,0,0,10"/>
+                <Button Content="Learning Timeline" 
+                        Command="{Binding NavigateCommand}" 
+                        CommandParameter="{Binding NavigationItems[0]}"
+                        Background="Transparent" Foreground="#e2e8f4" Margin="0,0,0,5" HorizontalAlignment="Stretch"/>
+
+                <TextBlock Text="RUNTIME MANAGEMENT" Foreground="#4d6080" FontSize="11" FontWeight="Bold" Margin="0,20,0,10"/>
+                <Button Content="Package Manager" 
+                        Command="{Binding NavigateCommand}" 
+                        CommandParameter="{Binding NavigationItems[1]}"
+                        Background="Transparent" Foreground="#e2e8f4" Margin="0,0,0,5" HorizontalAlignment="Stretch"/>
+                
+                <Button Content="Sync Engine" 
+                        Command="{Binding NavigateCommand}" 
+                        CommandParameter="{Binding NavigationItems[2]}"
+                        Background="Transparent" Foreground="#e2e8f4" Margin="0,0,0,5" HorizontalAlignment="Stretch"/>
+                
+                <Button Content="Diagnostics &amp; Security" 
+                        Command="{Binding NavigateCommand}" 
+                        CommandParameter="{Binding NavigationItems[3]}"
+                        Background="Transparent" Foreground="#e2e8f4" Margin="0,0,0,5" HorizontalAlignment="Stretch"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Border Grid.Column="1" Padding="30">
+            <TransitioningContentControl Content="{Binding CurrentPage}" />
+        </Border>
+    </Grid>
 </Window>
