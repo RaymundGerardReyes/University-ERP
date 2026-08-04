@@ -1,51 +1,51 @@
+import { AuthGuard } from '@university-erp/shell-kit';
 import React from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-import { EmployeeManagementPage } from '../features/EmployeeManagement/EmployeeManagement.page';
-import { PurchaseOrdersPage } from '../features/PurchaseOrders/PurchaseOrders.page';
-import { StockManagementPage } from '../features/StockManagement/StockManagement.page';
-import { AssetRegistryPage } from '../features/AssetRegistry/AssetRegistry.page';
-import { FleetManagementPage } from '../features/FleetManagement/FleetManagement.page';
-import { CanteenOrdersPage } from '../features/CanteenOrders/CanteenOrders.page';
-import { FacilityBookingPage } from '../features/FacilityBooking/FacilityBooking.page';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
-const AppShell = ({ children }: { children: React.ReactNode }) => (
-    <div className="flex h-screen bg-gray-50">
-        <nav className="w-64 bg-slate-900 text-white p-4">
-            <div className="text-xl font-bold mb-8">Admin Portal</div>
-            <ul className="space-y-2">
-                <li className="pt-2 text-gray-400 text-xs uppercase font-bold">Core Admin</li>
-                <li><Link to="/hr/employees" className="block p-2 rounded hover:bg-slate-800">Human Resources</Link></li>
-                <li><Link to="/procurement/orders" className="block p-2 rounded hover:bg-slate-800">Procurement</Link></li>
-                <li><Link to="/inventory/stock" className="block p-2 rounded hover:bg-slate-800">Inventory</Link></li>
-                <li><Link to="/assets/registry" className="block p-2 rounded hover:bg-slate-800">Asset Management</Link></li>
-                
-                <li className="pt-4 text-gray-400 text-xs uppercase font-bold">Campus Life</li>
-                <li><Link to="/transport/fleet" className="block p-2 rounded hover:bg-slate-800">Fleet Management</Link></li>
-                <li><Link to="/canteen/orders" className="block p-2 rounded hover:bg-slate-800">Canteen Orders</Link></li>
-                <li><Link to="/facilities/booking" className="block p-2 rounded hover:bg-slate-800">Facility Booking</Link></li>
-            </ul>
-        </nav>
-        <main className="flex-1 overflow-auto">
-            {children}
-        </main>
-    </div>
-);
+import { AppShell } from './AppShell';
+
+// Features
+import { AcademicConfigurationPage } from '../features/AcademicConfiguration/AcademicConfiguration.page';
+import { AuditCompliancePage } from '../features/AuditCompliance/AuditCompliance.page';
+import { DashboardPage } from '../features/Dashboard/Dashboard.page';
+import { IdentitySecurityPage } from '../features/IdentitySecurity/IdentitySecurity.page';
+import { IntegrationManagementPage } from '../features/IntegrationManagement/IntegrationManagement.page';
+import { OrganizationManagementPage } from '../features/OrganizationManagement/OrganizationManagement.page';
+import { PlatformMonitoringPage } from '../features/PlatformMonitoring/PlatformMonitoring.page';
+import { ReportsPage } from '../features/Reports/Reports.page';
+import { RoleAdministrationPage } from '../features/RoleAdministration/RoleAdministration.page';
+import { SystemAdministrationPage } from '../features/SystemAdministration/SystemAdministration.page';
+import { UserAdministrationPage } from '../features/UserAdministration/UserAdministration.page';
+import { WorkflowManagementPage } from '../features/WorkflowManagement/WorkflowManagement.page';
 
 export const Routing: React.FC = () => {
     return (
         <BrowserRouter>
-            <AppShell>
-                <Routes>
-                    <Route path="/hr/employees" element={<EmployeeManagementPage />} />
-                    <Route path="/procurement/orders" element={<PurchaseOrdersPage />} />
-                    <Route path="/inventory/stock" element={<StockManagementPage />} />
-                    <Route path="/assets/registry" element={<AssetRegistryPage />} />
-                    <Route path="/transport/fleet" element={<FleetManagementPage />} />
-                    <Route path="/canteen/orders" element={<CanteenOrdersPage />} />
-                    <Route path="/facilities/booking" element={<FacilityBookingPage />} />
-                    <Route path="*" element={<div className="p-6">Select a module from the sidebar.</div>} />
-                </Routes>
-            </AppShell>
+            <Routes>
+                <Route element={<AuthGuard><AppShell /></AuthGuard>}>
+                    {/* Overview */}
+                    <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/reports" element={<ReportsPage />} />
+                    <Route path="/monitoring" element={<PlatformMonitoringPage />} />
+
+                    {/* Access Control */}
+                    <Route path="/users" element={<UserAdministrationPage />} />
+                    <Route path="/roles" element={<RoleAdministrationPage />} />
+                    <Route path="/security" element={<IdentitySecurityPage />} />
+
+                    {/* Master Data */}
+                    <Route path="/organization" element={<OrganizationManagementPage />} />
+                    <Route path="/academic-config" element={<AcademicConfigurationPage />} />
+
+                    {/* Platform Operations */}
+                    <Route path="/workflows" element={<WorkflowManagementPage />} />
+                    <Route path="/integrations" element={<IntegrationManagementPage />} />
+                    <Route path="/system" element={<SystemAdministrationPage />} />
+                    <Route path="/audit" element={<AuditCompliancePage />} />
+
+                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                </Route>
+            </Routes>
         </BrowserRouter>
     );
 };

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { hrApi } from '@university-erp/api-clients';
 import { OnboardEmployeePayload } from '@university-erp/domain-viewmodels';
+import { Button, Card, PageHeader } from '@university-erp/ui-kit';
+import React, { useState } from 'react';
 
 export const useOnboardEmployee = () => {
     return useMutation({
@@ -26,27 +27,32 @@ export const EmployeeManagementPage: React.FC = () => {
         }
     };
 
+    const inputStyle = { width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--bg-base)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' };
+
     return (
-        <div className="p-6 max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">Human Resources: Employee Management</h1>
-            <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold mb-4">Onboard New Employee</h2>
-                {error && <div className="p-4 mb-4 text-red-700 bg-red-100 rounded">{error.message}</div>}
-                {successMsg && <div className="p-4 mb-4 text-green-700 bg-green-100 rounded">{successMsg}</div>}
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <input type="text" required placeholder="First Name" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} className="p-2 border rounded-md" />
-                        <input type="text" required placeholder="Last Name" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} className="p-2 border rounded-md" />
+        <div className="fade-in">
+            <PageHeader title="Human Resources" subtitle="Onboard new university faculty and staff." />
+
+            <Card style={{ maxWidth: '600px', margin: '0 auto' }}>
+                <h2 style={{ fontSize: '1.2rem', marginBottom: 'var(--space-4)', color: 'var(--text-primary)' }}>Onboard Employee</h2>
+
+                {error && <div style={{ padding: '1rem', marginBottom: '1rem', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger-text)', borderRadius: '4px' }}>{error.message}</div>}
+                {successMsg && <div style={{ padding: '1rem', marginBottom: '1rem', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--success-text)', borderRadius: '4px' }}>{successMsg}</div>}
+
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div className="grid-2">
+                        <input type="text" required placeholder="First Name" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} style={inputStyle} />
+                        <input type="text" required placeholder="Last Name" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} style={inputStyle} />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <input type="text" required placeholder="Role (e.g., Professor)" value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })} className="p-2 border rounded-md" />
-                        <input type="text" required placeholder="Department ID" value={formData.departmentId} onChange={(e) => setFormData({ ...formData, departmentId: e.target.value })} className="p-2 border rounded-md" />
+                    <div className="grid-2">
+                        <input type="text" required placeholder="Role (e.g., Professor)" value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })} style={inputStyle} />
+                        <input type="text" required placeholder="Department ID" value={formData.departmentId} onChange={(e) => setFormData({ ...formData, departmentId: e.target.value })} style={inputStyle} />
                     </div>
-                    <button type="submit" disabled={isPending} className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">
+                    <Button type="submit" variant="primary" disabled={isPending} style={{ marginTop: '1rem' }}>
                         {isPending ? 'Processing...' : 'Onboard Employee'}
-                    </button>
+                    </Button>
                 </form>
-            </div>
+            </Card>
         </div>
     );
 };
