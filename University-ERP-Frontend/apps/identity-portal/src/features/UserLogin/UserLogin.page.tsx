@@ -302,9 +302,24 @@ export const LoginPage = () => {
         
         const defaultStudentUrl = isNative ? 'http://localhost:5173' : 'http://localhost:8080';
         const defaultApplicantUrl = isNative ? 'http://localhost:5174' : import.meta.env.VITE_APPLICANT_PORTAL_URL;
+        const defaultAdminUrl = isNative ? 'http://localhost:5178' : import.meta.env.VITE_ADMIN_PORTAL_URL;
+        const defaultFacultyUrl = isNative ? 'http://localhost:5175' : import.meta.env.VITE_FACULTY_PORTAL_URL;
 
         const urlParams = new URLSearchParams(window.location.search);
         let redirectUri = urlParams.get('redirect_uri') || defaultStudentUrl;
+
+        // Role-Based Routing Interceptor
+        if (response.user.role === 'Admin') {
+            redirectUri = defaultAdminUrl;
+            window.location.href = `${redirectUri}#token=${response.token}`;
+            return;
+        }
+
+        if (response.user.role === 'Faculty') {
+            redirectUri = defaultFacultyUrl;
+            window.location.href = `${redirectUri}#token=${response.token}`;
+            return;
+        }
 
         // 3. True Database Check: Verify their Admissions status securely
         try {

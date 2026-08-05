@@ -1,4 +1,6 @@
-// Mock API for SecuritySettings
+import { identityApi } from '@university-erp/api-clients';
+
+// Replaced mock API with live backend call
 export const updateSecuritySettings = async (settings: any) => {
-  return new Promise((resolve) => setTimeout(() => resolve(settings), 500));
+  return (identityApi as any).updateSecuritySettings?.(settings) ?? Promise.resolve(settings);
 };

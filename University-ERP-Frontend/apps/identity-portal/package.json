@@ -17,7 +17,7 @@
     "@university-erp/ui-kit": "*",
     "@university-erp/shell-kit": "*",
     "@university-erp/vite-config": "*",
-    "axios": "^1.19.0",
+    "axios": "^1.7.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.1.5"
