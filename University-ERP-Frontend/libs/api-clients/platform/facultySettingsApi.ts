@@ -14,21 +14,16 @@ export const facultySettingsApi = {
         try {
             const response = await axios.get<FacultySettings>(`${BASE_URL}/${facultyId}`);
             return response.data;
-        } catch {
-            return {
-                officeLocation: 'Building A, Room 310',
-                consultationLink: 'https://meet.university.edu/faculty-310',
-                emailNotifications: true,
-                smsNotifications: false,
-            };
+        } catch (error) {
+            throw error;
         }
     },
     updateSettings: async (facultyId: string, settings: Partial<FacultySettings>): Promise<boolean> => {
         try {
             await axios.patch(`${BASE_URL}/${facultyId}`, settings);
             return true;
-        } catch {
-            return true;
+        } catch (error) {
+            throw error;
         }
     }
 };

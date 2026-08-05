@@ -8,12 +8,8 @@ export const hrApi = {
     try {
       const response = await axios.post<OnboardEmployeeResponse>(`${BASE_URL}/employees/onboard`, payload);
       return response.data;
-    } catch {
-      // Fallback mock if backend server is not running
-      return {
-        employeeId: `EMP-${Math.floor(1000 + Math.random() * 9000)}`,
-        status: 'Onboarded'
-      };
+    } catch (error) {
+      throw error;
     }
   }
 };

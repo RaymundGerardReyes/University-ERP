@@ -8,12 +8,8 @@ export const canteenApi = {
     try {
       const response = await axios.post<ReserveMealResponse>(`${BASE_URL}/reservations`, payload);
       return response.data;
-    } catch {
-      // Fallback mock if backend server is not running
-      return {
-        reservationId: `RES-${Math.floor(10000 + Math.random() * 90000)}`,
-        status: 'Reserved'
-      };
+    } catch (error) {
+      throw error;
     }
   }
 };

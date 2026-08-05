@@ -8,8 +8,8 @@ export const admissionsApi = {
     try {
       const response = await axios.get<ApplicationStatusViewModel[]>(`${BASE_URL}/status/${studentId}`);
       return response.data;
-    } catch {
-      return [];
+    } catch (error) {
+      throw error;
     }
   },
 
@@ -49,7 +49,7 @@ export const admissionsApi = {
       return response.data;
     } catch (error) {
       console.error('Failed to fetch programs', error);
-      return [];
+      throw error;
     }
   },
 

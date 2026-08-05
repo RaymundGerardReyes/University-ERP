@@ -18,37 +18,8 @@ export const teachingApi = {
         try {
             const response = await axios.get<CourseSection[]>(`${BASE_URL}/faculty/${facultyId}/courses`);
             return response.data;
-        } catch {
-            // Mock data for UI development
-            return [
-                {
-                    id: 'SEC-1001',
-                    courseCode: 'CS-101',
-                    courseName: 'Introduction to Computing',
-                    sectionName: 'BSCS-1A',
-                    schedule: 'Mon/Wed 09:00 AM - 10:30 AM',
-                    room: 'Lab 402',
-                    enrolledCount: 35
-                },
-                {
-                    id: 'SEC-1002',
-                    courseCode: 'CS-305',
-                    courseName: 'Database Management & DBMA',
-                    sectionName: 'BSCS-3C',
-                    schedule: 'Tue/Thu 01:00 PM - 02:30 PM',
-                    room: 'Hall B',
-                    enrolledCount: 42
-                },
-                {
-                    id: 'SEC-1003',
-                    courseCode: 'CS-401',
-                    courseName: 'Software Engineering II',
-                    sectionName: 'BSIT-4A',
-                    schedule: 'Fri 08:00 AM - 11:00 AM',
-                    room: 'Lab 405',
-                    enrolledCount: 28
-                }
-            ];
+        } catch (error) {
+            throw error;
         }
     },
 
@@ -57,8 +28,8 @@ export const teachingApi = {
         try {
             await axios.post(`${BASE_URL}/sections/${sectionId}/attendance`, attendanceData);
             return true;
-        } catch {
-            return true; // Simulate success
+        } catch (error) {
+            throw error;
         }
     }
 };

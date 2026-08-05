@@ -11,13 +11,8 @@ export const inventoryApi = {
         reason: payload.reason
       });
       return response.data;
-    } catch {
-      // Fallback mock if backend server is not running
-      return {
-        stockItemId: payload.stockItemId,
-        newQuantity: 150 + payload.amount,
-        status: 'Adjusted'
-      };
+    } catch (error) {
+      throw error;
     }
   }
 };

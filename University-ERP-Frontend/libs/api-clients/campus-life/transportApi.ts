@@ -10,12 +10,17 @@ export const transportApi = {
         driverId: payload.driverId
       });
       return response.data;
-    } catch {
-      // Fallback mock if backend server is not running
-      return {
-        assignmentId: `ASG-${Math.floor(1000 + Math.random() * 9000)}`,
-        status: 'Assigned'
-      };
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getFleetStatus: async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/status`);
+      return response.data;
+    } catch (error) {
+      throw error;
     }
   }
 };

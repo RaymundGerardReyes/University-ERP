@@ -15,12 +15,8 @@ export const advisingApi = {
         try {
             const response = await axios.get<Advisee[]>(`${BASE_URL}/${facultyId}/advisees`);
             return response.data;
-        } catch {
-            return [
-                { studentId: 'STU-1042', name: 'Michael Ross', program: 'BSCS', degreeProgress: 85, status: 'On Track' },
-                { studentId: 'STU-1045', name: 'Rachel Zane', program: 'BSIT', degreeProgress: 45, status: 'At Risk' },
-                { studentId: 'STU-1088', name: 'Donna Paulsen', program: 'BSCS', degreeProgress: 98, status: 'Action Required' },
-            ];
+        } catch (error) {
+            throw error;
         }
     }
 };

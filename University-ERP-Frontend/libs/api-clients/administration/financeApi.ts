@@ -9,11 +9,8 @@ export const financeApi = {
     try {
       const response = await axios.post<GeneratePayslipResponse>(`${BASE_URL_PAYROLL}/payslips`, payload);
       return response.data;
-    } catch {
-      return {
-        payslipId: `PSLIP-${Math.floor(1000 + Math.random() * 9000)}`,
-        status: 'Generated'
-      };
+    } catch (error) {
+      throw error;
     }
   },
 
@@ -21,11 +18,8 @@ export const financeApi = {
     try {
       const response = await axios.post<IssueInvoiceResponse>(`${BASE_URL_FINANCE}/invoices`, payload);
       return response.data;
-    } catch {
-      return {
-        invoiceId: `INV-${Math.floor(1000 + Math.random() * 9000)}`,
-        status: 'Issued'
-      };
+    } catch (error) {
+      throw error;
     }
   }
 };
