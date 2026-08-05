@@ -11,20 +11,24 @@ public sealed class AdmissionsDbContext : DbContext
     {
     }
 
+    // Expose the Aggregate Roots
     public DbSet<AdmissionApplication> Applications => Set<AdmissionApplication>();
     public DbSet<ProgramOffering> ProgramOfferings => Set<ProgramOffering>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // DBMA Pattern: Strictly isolate all tables into the 'admissions' schema
         modelBuilder.HasDefaultSchema("admissions");
 
         modelBuilder.Entity<AdmissionApplication>(entity =>
         {
+            entity.ToTable("AdmissionApplications");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.ApplicantId).IsRequired();
             entity.Property(e => e.ProgramId).IsRequired();
             entity.Property(e => e.Status).IsRequired();
             
+            // Map the collections for the Aggregate Root
             entity.HasMany(e => e.Documents)
                   .WithOne()
                   .HasForeignKey(e => e.AdmissionApplicationId)
@@ -38,6 +42,7 @@ public sealed class AdmissionsDbContext : DbContext
 
         modelBuilder.Entity<AdmissionDocument>(entity =>
         {
+            entity.ToTable("AdmissionDocuments");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).IsRequired();
             entity.Property(e => e.Status).IsRequired();
@@ -45,6 +50,7 @@ public sealed class AdmissionsDbContext : DbContext
 
         modelBuilder.Entity<ApplicationTimelineEvent>(entity =>
         {
+            entity.ToTable("ApplicationTimelineEvents");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Title).IsRequired();
             entity.Property(e => e.Description).IsRequired();
@@ -53,15 +59,13 @@ public sealed class AdmissionsDbContext : DbContext
 
         modelBuilder.Entity<ProgramOffering>(entity =>
         {
+            entity.ToTable("ProgramOfferings");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.College).IsRequired();
             entity.Property(e => e.Degree).IsRequired();
             entity.Property(e => e.Major).IsRequired();
-            entity.Property(e => e.Duration).IsRequired();
-            entity.Property(e => e.Intake).IsRequired();
-            entity.Property(e => e.TuitionEstimate).IsRequired();
-
-            // Store tags as primitive collection (JSON array in PostgreSQL)
+            
+            // Store the list of strings natively using PostgreSQL JSONB
             entity.Property(e => e.Tags).HasColumnType("jsonb");
         });
 

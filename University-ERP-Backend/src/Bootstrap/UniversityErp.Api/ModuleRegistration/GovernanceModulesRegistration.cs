@@ -1,12 +1,21 @@
 namespace UniversityErp.Api.ModuleRegistration;
 
-// Aggregates module self-registration calls for the Governance cluster.
-// Each module below must expose Add<ModuleName>Module(IServiceCollection) in its own ModuleRegistration.cs.
+using Microsoft.Extensions.DependencyInjection;
+using VisitorManagement.Application;
+using QualityAccreditation.Application;
+using Helpdesk.Application;
+using GrievanceManagement.Application;
+using EventManagement.Application;
+
 public static class GovernanceModulesRegistration
 {
     public static IServiceCollection AddGovernanceModules(this IServiceCollection services)
     {
-        // TODO: services.AddXxxModule();
+        services.AddVisitorManagementApplicationModule();
+        services.AddQualityAccreditationApplicationModule();
+        services.AddHelpdeskApplicationModule();
+        services.AddGrievanceManagementApplicationModule();
+        services.AddEventManagementApplicationModule();
         return services;
     }
 }

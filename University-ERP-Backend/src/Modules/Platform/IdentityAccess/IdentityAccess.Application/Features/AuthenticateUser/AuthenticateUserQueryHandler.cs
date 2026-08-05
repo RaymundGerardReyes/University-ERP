@@ -69,7 +69,17 @@ public sealed partial class AuthenticateUserQueryHandler : IRequestHandler<Authe
 
         LogAuthSuccess(user.Id.ToString());
 
-        var userDto = new UserDto(user.Id.ToString(), user.Email, $"{user.FirstName} {user.LastName}", "User");
+        string role = "Student";
+        if (user.Email.StartsWith("admin@", StringComparison.OrdinalIgnoreCase))
+        {
+            role = "Admin";
+        }
+        else if (user.Email.StartsWith("faculty@", StringComparison.OrdinalIgnoreCase))
+        {
+            role = "Faculty";
+        }
+
+        var userDto = new UserDto(user.Id.ToString(), user.Email, $"{user.FirstName} {user.LastName}", role);
         return Result<AuthResponseDto>.Success(new AuthResponseDto(token, userDto));
     }
 

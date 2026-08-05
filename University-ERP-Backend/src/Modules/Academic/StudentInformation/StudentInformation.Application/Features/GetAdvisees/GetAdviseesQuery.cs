@@ -4,7 +4,8 @@ using MediatR;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-
+using StudentInformation.Application.Abstractions;
+using System;
 // 1. DTO perfectly matching the frontend 'Advisee' interface
 public sealed record AdviseeDto(
     string StudentId, 
@@ -20,17 +21,32 @@ public sealed record GetAdviseesQuery(string FacultyId) : IRequest<IReadOnlyList
 // 3. The Handler
 public sealed class GetAdviseesQueryHandler : IRequestHandler<GetAdviseesQuery, IReadOnlyList<AdviseeDto>>
 {
-    public Task<IReadOnlyList<AdviseeDto>> Handle(GetAdviseesQuery request, CancellationToken cancellationToken)
-    {
-        // In a full implementation, we would query the IStudentRepository here.
-        // Returning mock data structured exactly for the new UI:
-        var mockData = new List<AdviseeDto>
-        {
-            new("STU-1042", "Michael Ross", "BSCS", 85, "On Track"),
-            new("STU-1045", "Rachel Zane", "BSIT", 45, "At Risk"),
-            new("STU-1088", "Donna Paulsen", "BSCS", 98, "Action Required")
-        };
+    private readonly IStudentRepository _repository;
 
-        return Task.FromResult<IReadOnlyList<AdviseeDto>>(mockData);
+    public GetAdviseesQueryHandler(IStudentRepository repository)
+    {
+        _repository = repository;
+    }
+
+    public async Task<IReadOnlyList<AdviseeDto>> Handle(GetAdviseesQuery request, CancellationToken cancellationToken)
+    {
+        if (Guid.TryParse(request.FacultyId, out var parsedGuid))
+        {
+            var advisees = await _repository.GetAdviseesByFacultyIdAsync(parsedGuid, cancellationToken);
+            var dtos = new List<AdviseeDto>();
+            foreach (var a in advisees)
+            {
+                dtos.Add(new AdviseeDto(
+                    a.StudentId,
+                    a.StudentName,
+                    a.Program,
+                    a.DegreeProgress,
+                    a.Status
+                ));
+            }
+            return dtos;
+        }
+
+        return new List<AdviseeDto>();
     }
 }

@@ -36,6 +36,7 @@ public static class LearningManagementModuleRegistration
             ?? throw new InvalidOperationException("LmsOffline:ScheduleTokenSecret is not configured.");
         services.AddSingleton<IScheduleTokenVerifier>(_ => new ScheduleTokenVerifier(scheduleSecret));
 
+        services.AddScoped<ILearningManagementRepository, LearningManagementRepository>();
         return services;
     }
 }

@@ -6,12 +6,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-public sealed record AssignRouteCommand(Guid RouteId, string DriverId) : IRequest<Result<bool>>;
+public sealed record AssignRouteCommand(Guid RouteId, string DriverId) : IRequest<Result<Guid>>;
 
-public sealed class AssignRouteCommandHandler : IRequestHandler<AssignRouteCommand, Result<bool>>
+public sealed class AssignRouteCommandHandler : IRequestHandler<AssignRouteCommand, Result<Guid>>
 {
-    public Task<Result<bool>> Handle(AssignRouteCommand request, CancellationToken cancellationToken)
+    public Task<Result<Guid>> Handle(AssignRouteCommand request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(Result<bool>.Success(true));
+        return Task.FromResult(Result<Guid>.Success(request.RouteId));
     }
 }

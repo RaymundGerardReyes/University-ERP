@@ -1,4 +1,5 @@
 using LearningManagement.Application.Abstractions;
+using LearningManagement.Domain.Aggregates;
 using Microsoft.EntityFrameworkCore;
 
 namespace LearningManagement.Infrastructure.Persistence;
@@ -12,12 +13,27 @@ public sealed class LearningManagementDbContext : DbContext
     public LearningManagementDbContext(DbContextOptions<LearningManagementDbContext> options)
         : base(options) { }
 
+    public DbSet<Assessment> Assessments => Set<Assessment>();
+    public DbSet<ClassPerformance> ClassPerformances => Set<ClassPerformance>();
+
     public DbSet<OfflineAssessmentSubmissionEntity> OfflineAssessmentSubmissions => Set<OfflineAssessmentSubmissionEntity>();
     public DbSet<OfflineAssignmentSubmissionEntity> OfflineAssignmentSubmissions => Set<OfflineAssignmentSubmissionEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("lms");
+
+        modelBuilder.Entity<Assessment>(entity =>
+        {
+            entity.ToTable("Assessments");
+            entity.HasKey(e => e.Id);
+        });
+
+        modelBuilder.Entity<ClassPerformance>(entity =>
+        {
+            entity.ToTable("ClassPerformance");
+            entity.HasKey(e => e.Id);
+        });
 
         modelBuilder.Entity<OfflineAssessmentSubmissionEntity>(entity =>
         {

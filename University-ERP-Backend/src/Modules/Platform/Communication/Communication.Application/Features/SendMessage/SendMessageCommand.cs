@@ -5,6 +5,8 @@ using SharedKernel.Domain.Primitives;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading;
+using System.Threading.Tasks;
 using Communication.Domain.Aggregates;
 using Communication.Application.Abstractions;
 
@@ -32,6 +34,8 @@ public sealed class SendMessageCommandHandler : IRequestHandler<SendMessageComma
         }
 
         await _repository.AddAsync(messageResult.Value, cancellationToken);
+        await _repository.SaveChangesAsync(cancellationToken);
+
         return Result<Guid>.Success(messageResult.Value.Id);
     }
 }

@@ -47,5 +47,53 @@
     <ProjectReference Include="..\..\Modules\StudentLifecycle\Admissions\Admissions.Presentation\Admissions.Presentation.csproj" />
     <ProjectReference Include="..\..\Modules\StudentLifecycle\Hostel\Hostel.Infrastructure\Hostel.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\StudentLifecycle\Hostel\Hostel.Presentation\Hostel.Presentation.csproj" />
+    
+    <!-- Administration Cluster -->
+    <ProjectReference Include="..\..\Modules\Administration\Procurement\Procurement.Infrastructure\Procurement.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\Procurement\Procurement.Presentation\Procurement.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\AssetManagement\AssetManagement.Infrastructure\AssetManagement.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\AssetManagement\AssetManagement.Presentation\AssetManagement.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\HumanResources\HumanResources.Infrastructure\HumanResources.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\HumanResources\HumanResources.Presentation\HumanResources.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\Finance\Finance.Infrastructure\Finance.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\Finance\Finance.Presentation\Finance.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\Payroll\Payroll.Infrastructure\Payroll.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\Payroll\Payroll.Presentation\Payroll.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\Transport\Transport.Infrastructure\Transport.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\Transport\Transport.Presentation\Transport.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\Facilities\Facilities.Infrastructure\Facilities.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\Facilities\Facilities.Presentation\Facilities.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\Inventory\Inventory.Infrastructure\Inventory.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\Inventory\Inventory.Presentation\Inventory.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\MessCanteen\MessCanteen.Infrastructure\MessCanteen.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\MessCanteen\MessCanteen.Presentation\MessCanteen.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\Library\Library.Infrastructure\Library.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Administration\Library\Library.Presentation\Library.Presentation.csproj" />
+
+    <!-- Platform Cluster (Missing) -->
+    <ProjectReference Include="..\..\Modules\Platform\AnalyticsBI\AnalyticsBI.Infrastructure\AnalyticsBI.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Platform\AnalyticsBI\AnalyticsBI.Presentation\AnalyticsBI.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Platform\DocumentManagement\DocumentManagement.Infrastructure\DocumentManagement.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Platform\DocumentManagement\DocumentManagement.Presentation\DocumentManagement.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Platform\MultiCampus\MultiCampus.Infrastructure\MultiCampus.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Platform\MultiCampus\MultiCampus.Presentation\MultiCampus.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Platform\CRM\CRM.Infrastructure\CRM.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Platform\CRM\CRM.Presentation\CRM.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Platform\Communication\Communication.Infrastructure\Communication.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Platform\Communication\Communication.Presentation\Communication.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Platform\Notification\Notification.Infrastructure\Notification.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Platform\Notification\Notification.Presentation\Notification.Presentation.csproj" />
+
+    <!-- Governance Cluster -->
+    <ProjectReference Include="..\..\Modules\Governance\VisitorManagement\VisitorManagement.Infrastructure\VisitorManagement.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Governance\VisitorManagement\VisitorManagement.Presentation\VisitorManagement.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Governance\QualityAccreditation\QualityAccreditation.Infrastructure\QualityAccreditation.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Governance\QualityAccreditation\QualityAccreditation.Presentation\QualityAccreditation.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Governance\Helpdesk\Helpdesk.Infrastructure\Helpdesk.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Governance\Helpdesk\Helpdesk.Presentation\Helpdesk.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Governance\GrievanceManagement\GrievanceManagement.Infrastructure\GrievanceManagement.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Governance\GrievanceManagement\GrievanceManagement.Presentation\GrievanceManagement.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Governance\EventManagement\EventManagement.Infrastructure\EventManagement.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Governance\EventManagement\EventManagement.Presentation\EventManagement.Presentation.csproj" />
   </ItemGroup>
 </Project>

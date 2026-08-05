@@ -11,4 +11,5 @@ public interface IStudentRepository
     Task<Student?> GetByIdAsync(StudentId id, CancellationToken cancellationToken = default);
     Task<bool> IsEnrollmentNumberUniqueAsync(string enrollmentNumber, CancellationToken cancellationToken = default);
     Task AddAsync(Student student, CancellationToken cancellationToken = default);
+    Task<System.Collections.Generic.IReadOnlyList<FacultyAdvisee>> GetAdviseesByFacultyIdAsync(System.Guid facultyId, CancellationToken cancellationToken = default);
 }

@@ -4,6 +4,7 @@ using MediatR;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Examination.Application.Abstractions;
 
 // 1. DTO perfectly matching the frontend 'StudentGradeRecord' interface
 public sealed record StudentGradeRecordDto(
@@ -21,19 +22,30 @@ public sealed record GetGradebookQuery(string SectionId) : IRequest<IReadOnlyLis
 // 3. The Query Handler
 public sealed class GetGradebookQueryHandler : IRequestHandler<GetGradebookQuery, IReadOnlyList<StudentGradeRecordDto>>
 {
-    public Task<IReadOnlyList<StudentGradeRecordDto>> Handle(GetGradebookQuery request, CancellationToken cancellationToken)
-    {
-        // In a production scenario, we query the IExaminationRepository to fetch 
-        // the Examination Aggregates for the requested SectionId.
-        
-        // Supplying the exact mock structure required by the UI for seamless integration
-        var gradebook = new List<StudentGradeRecordDto>
-        {
-            new("STU-001", "Alex Morgan", 92, 88, null, "Pending"),
-            new("STU-002", "James Chen", 85, null, null, "Incomplete"),
-            new("STU-003", "Sarah Jenkins", 95, 94, 96, "Graded")
-        };
+    private readonly IExaminationRepository _repository;
 
-        return Task.FromResult<IReadOnlyList<StudentGradeRecordDto>>(gradebook);
+    public GetGradebookQueryHandler(IExaminationRepository repository)
+    {
+        _repository = repository;
+    }
+
+    public async Task<IReadOnlyList<StudentGradeRecordDto>> Handle(GetGradebookQuery request, CancellationToken cancellationToken)
+    {
+        var gradebook = await _repository.GetGradebookBySectionAsync(request.SectionId, cancellationToken);
+        var dtos = new List<StudentGradeRecordDto>();
+
+        foreach (var r in gradebook)
+        {
+            dtos.Add(new StudentGradeRecordDto(
+                r.StudentId,
+                r.StudentName,
+                r.Prelim.HasValue ? (double)r.Prelim.Value : null,
+                r.Midterm.HasValue ? (double)r.Midterm.Value : null,
+                r.Final.HasValue ? (double)r.Final.Value : null,
+                r.Status
+            ));
+        }
+
+        return dtos;
     }
 }

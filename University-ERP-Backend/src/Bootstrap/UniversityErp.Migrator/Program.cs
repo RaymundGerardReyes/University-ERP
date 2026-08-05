@@ -8,7 +8,7 @@ using StudentInformation.Infrastructure;
 using StudentInformation.Infrastructure.Persistence;
 using IdentityAccess.Infrastructure.Persistence;
 using Admissions.Infrastructure.Persistence;
-
+using LearningManagement.Infrastructure.Persistence;
 // ─────────────────────────────────────────────────────────────────────────────
 // University ERP – Database Migrator Entry Point
 // Applies EF Core migrations for all module DbContexts in sequence.
@@ -53,6 +53,9 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddDbContext<AdmissionsDbContext>(options =>
             options.UseNpgsql(connectionString));
 
+        services.AddDbContext<LearningManagementDbContext>(options =>
+            options.UseNpgsql(connectionString));
+
         // Store the connection string for raw SQL usage
         services.AddSingleton(new RawConnectionString(connectionString));
     })
@@ -70,6 +73,13 @@ try
     await CreateIdentitySchemaAsync(host.Services, logger);
 
     await CreateAdmissionsSchemaAsync(host.Services, logger);
+    await CreateLearningManagementSchemaAsync(host.Services, logger);
+    await CreateAcademicSchedulingSchemaAsync(host.Services, logger);
+    await CreateExaminationSchemaAsync(host.Services, logger);
+    await CreateAdvisingSchemaAsync(host.Services, logger);
+    await CreatePlatformSchemaAsync(host.Services, logger);
+
+    await SeedDefaultUsersAsync(host.Services, logger);
 
     logger.LogInformation("All migrations applied successfully. Migrator exiting.");
 }
@@ -189,6 +199,204 @@ static async Task CreateAdmissionsSchemaAsync(IServiceProvider services, ILogger
     await cmd.ExecuteNonQueryAsync();
 
     Console.WriteLine("admissions schema and tables are ready.");
+}
+
+static async Task CreateLearningManagementSchemaAsync(IServiceProvider services, ILogger logger)
+{
+    var rawConn = services.GetRequiredService<RawConnectionString>();
+    Console.WriteLine("Ensuring lms schema and tables exist via raw SQL...");
+
+    await using var conn = new NpgsqlConnection(rawConn.Value);
+    await conn.OpenAsync();
+
+    var sql = """
+        CREATE SCHEMA IF NOT EXISTS lms;
+
+        CREATE TABLE IF NOT EXISTS lms."Assessments" (
+            "Id" UUID NOT NULL PRIMARY KEY,
+            "Title" VARCHAR(200) NOT NULL,
+            "DueDateUtc" TIMESTAMPTZ NOT NULL,
+            "MaxScore" INT NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS lms."ClassPerformance" (
+            "Id" UUID NOT NULL PRIMARY KEY,
+            "FacultyId" UUID NOT NULL,
+            "CourseCode" VARCHAR(50) NOT NULL,
+            "AverageGrade" DECIMAL(5,2) NOT NULL,
+            "PassRate" DECIMAL(5,2) NOT NULL,
+            "AtRiskCount" INT NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS lms."OfflineAssessmentSubmissions" (
+            "AssessmentId" UUID NOT NULL PRIMARY KEY,
+            "StudentId" UUID NOT NULL,
+            "CourseCode" VARCHAR(20) NOT NULL,
+            "ModuleTitle" VARCHAR(200) NOT NULL,
+            "AnswersJson" JSONB NOT NULL,
+            "SubmittedAtUtc" TIMESTAMPTZ NOT NULL,
+            "IngestedAtUtc" TIMESTAMPTZ NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS lms."OfflineAssignmentSubmissions" (
+            "AssignmentId" UUID NOT NULL PRIMARY KEY,
+            "StudentId" UUID NOT NULL,
+            "CourseCode" VARCHAR(20) NOT NULL,
+            "AssignmentTitle" VARCHAR(200) NOT NULL,
+            "EssayContent" TEXT NOT NULL,
+            "SubmittedAtUtc" TIMESTAMPTZ NOT NULL,
+            "IngestedAtUtc" TIMESTAMPTZ NOT NULL
+        );
+        """;
+
+    await using var cmd = new NpgsqlCommand(sql, conn);
+    await cmd.ExecuteNonQueryAsync();
+
+    Console.WriteLine("lms schema and tables are ready.");
+}
+
+static async Task CreateAcademicSchedulingSchemaAsync(IServiceProvider services, ILogger logger)
+{
+    var rawConn = services.GetRequiredService<RawConnectionString>();
+    Console.WriteLine("Ensuring academic_scheduling schema and tables exist via raw SQL...");
+    await using var conn = new NpgsqlConnection(rawConn.Value);
+    await conn.OpenAsync();
+
+    var sql = """
+        CREATE SCHEMA IF NOT EXISTS academic_scheduling;
+        CREATE TABLE IF NOT EXISTS academic_scheduling."CourseSections" (
+            "Id" VARCHAR(50) NOT NULL PRIMARY KEY,
+            "CourseCode" VARCHAR(20) NOT NULL,
+            "CourseName" VARCHAR(200) NOT NULL,
+            "SectionName" VARCHAR(50) NOT NULL,
+            "FacultyId" UUID NOT NULL,
+            "Schedule" VARCHAR(100) NOT NULL,
+            "Room" VARCHAR(50) NOT NULL,
+            "EnrolledCount" INT NOT NULL DEFAULT 0
+        );
+
+        CREATE TABLE IF NOT EXISTS academic_scheduling."AttendanceRecords" (
+            "Id" UUID NOT NULL PRIMARY KEY,
+            "SectionId" VARCHAR(50) NOT NULL,
+            "Data" JSONB NOT NULL,
+            "SubmittedAtUtc" TIMESTAMPTZ NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS academic_scheduling."RoomAllocations" (
+            "Id" UUID NOT NULL PRIMARY KEY,
+            "RoomNumber" VARCHAR(50) NOT NULL,
+            "CourseCode" VARCHAR(20) NOT NULL,
+            "DayOfWeek" VARCHAR(20) NOT NULL,
+            "StartTime" TIME NOT NULL,
+            "EndTime" TIME NOT NULL,
+            "ExpectedCapacity" INT NOT NULL
+        );
+        """;
+    await using var cmd = new NpgsqlCommand(sql, conn);
+    await cmd.ExecuteNonQueryAsync();
+}
+
+static async Task CreateExaminationSchemaAsync(IServiceProvider services, ILogger logger)
+{
+    var rawConn = services.GetRequiredService<RawConnectionString>();
+    Console.WriteLine("Ensuring examination schema and tables exist via raw SQL...");
+    await using var conn = new NpgsqlConnection(rawConn.Value);
+    await conn.OpenAsync();
+
+    var sql = """
+        CREATE SCHEMA IF NOT EXISTS examination;
+        CREATE TABLE IF NOT EXISTS examination."GradebookRecords" (
+            "Id" VARCHAR(50) NOT NULL PRIMARY KEY,
+            "SectionId" VARCHAR(50) NOT NULL,
+            "StudentId" VARCHAR(50) NOT NULL,
+            "StudentName" VARCHAR(200) NOT NULL,
+            "Prelim" DECIMAL(5,2),
+            "Midterm" DECIMAL(5,2),
+            "Final" DECIMAL(5,2),
+            "Status" VARCHAR(50) NOT NULL
+        );
+        """;
+    await using var cmd = new NpgsqlCommand(sql, conn);
+    await cmd.ExecuteNonQueryAsync();
+}
+
+static async Task CreateAdvisingSchemaAsync(IServiceProvider services, ILogger logger)
+{
+    var rawConn = services.GetRequiredService<RawConnectionString>();
+    Console.WriteLine("Ensuring advising schema and tables exist via raw SQL...");
+    await using var conn = new NpgsqlConnection(rawConn.Value);
+    await conn.OpenAsync();
+
+    var sql = """
+        CREATE SCHEMA IF NOT EXISTS advising;
+        CREATE TABLE IF NOT EXISTS advising."FacultyAdvisees" (
+            "Id" VARCHAR(50) NOT NULL PRIMARY KEY,
+            "FacultyId" UUID NOT NULL,
+            "StudentId" VARCHAR(50) NOT NULL,
+            "StudentName" VARCHAR(200) NOT NULL,
+            "Program" VARCHAR(100) NOT NULL,
+            "DegreeProgress" INT NOT NULL,
+            "Status" VARCHAR(50) NOT NULL
+        );
+        """;
+    await using var cmd = new NpgsqlCommand(sql, conn);
+    await cmd.ExecuteNonQueryAsync();
+}
+
+static async Task CreatePlatformSchemaAsync(IServiceProvider services, ILogger logger)
+{
+    var rawConn = services.GetRequiredService<RawConnectionString>();
+    Console.WriteLine("Ensuring platform schema and tables exist via raw SQL...");
+    await using var conn = new NpgsqlConnection(rawConn.Value);
+    await conn.OpenAsync();
+
+    var sql = """
+        CREATE SCHEMA IF NOT EXISTS platform;
+        CREATE TABLE IF NOT EXISTS platform."DirectMessages" (
+            "Id" UUID NOT NULL PRIMARY KEY,
+            "SenderId" VARCHAR(256) NOT NULL,
+            "ReceiverId" VARCHAR(256) NOT NULL,
+            "Content" TEXT NOT NULL,
+            "SentOnUtc" TIMESTAMPTZ NOT NULL,
+            "IsRead" BOOLEAN NOT NULL DEFAULT FALSE
+        );
+        """;
+    await using var cmd = new NpgsqlCommand(sql, conn);
+    await cmd.ExecuteNonQueryAsync();
+}
+
+static async Task SeedDefaultUsersAsync(IServiceProvider services, ILogger logger)
+{
+    var rawConn = services.GetRequiredService<RawConnectionString>();
+    Console.WriteLine("Seeding default admin and faculty credentials...");
+
+    await using var conn = new NpgsqlConnection(rawConn.Value);
+    await conn.OpenAsync();
+
+    // 1. Admin Credentials
+    var adminEmail = "admin@university.edu";
+    var adminPasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!", 12);
+
+    // 2. Faculty Credentials
+    var facultyEmail = "faculty@university.edu";
+    var facultyPasswordHash = BCrypt.Net.BCrypt.HashPassword("Faculty123!", 12);
+
+    var sql = """
+        INSERT INTO identity."Users" ("Id", "Email", "PasswordHash", "FirstName", "LastName", "IsActive", "CreatedOnUtc")
+        VALUES 
+            ('00000000-0000-0000-0000-000000000001', @AdminEmail, @AdminHash, 'System', 'Admin', TRUE, NOW()),
+            ('00000000-0000-0000-0000-000000000002', @FacultyEmail, @FacultyHash, 'Dr. Sarah', 'Jenkins', TRUE, NOW())
+        ON CONFLICT ("Email") DO NOTHING;
+        """;
+
+    await using var cmd = new NpgsqlCommand(sql, conn);
+    cmd.Parameters.AddWithValue("AdminEmail", adminEmail);
+    cmd.Parameters.AddWithValue("AdminHash", adminPasswordHash);
+    cmd.Parameters.AddWithValue("FacultyEmail", facultyEmail);
+    cmd.Parameters.AddWithValue("FacultyHash", facultyPasswordHash);
+
+    var rows = await cmd.ExecuteNonQueryAsync();
+    Console.WriteLine($"Seeded {rows} new default user(s).");
 }
 
 // Simple wrapper to carry the connection string through DI

@@ -1,12 +1,36 @@
 namespace UniversityErp.Api.ModuleRegistration;
 
-// Aggregates module self-registration calls for the Administration cluster.
-// Each module below must expose Add<ModuleName>Module(IServiceCollection) in its own ModuleRegistration.cs.
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Finance.Infrastructure;
+using Finance.Application;
+using HumanResources.Infrastructure;
+using HumanResources.Application;
+using Procurement.Application;
+using AssetManagement.Application;
+using Payroll.Application;
+using Transport.Application;
+using Facilities.Application;
+using Inventory.Application;
+using MessCanteen.Application;
+using Library.Application;
+
 public static class AdministrationModulesRegistration
 {
-    public static IServiceCollection AddAdministrationModules(this IServiceCollection services)
+    public static IServiceCollection AddAdministrationCluster(this IServiceCollection services, IConfiguration configuration)
     {
-        // TODO: services.AddXxxModule();
+        services.AddFinanceModule(configuration);
+        services.AddHumanResourcesModule(configuration);
+        services.AddProcurementApplicationModule();
+        services.AddAssetManagementApplicationModule();
+        services.AddHumanResourcesApplicationModule();
+        services.AddFinanceApplicationModule();
+        services.AddPayrollApplicationModule();
+        services.AddTransportApplicationModule();
+        services.AddFacilitiesApplicationModule();
+        services.AddInventoryApplicationModule();
+        services.AddMessCanteenApplicationModule();
+        services.AddLibraryApplicationModule();
         return services;
     }
 }

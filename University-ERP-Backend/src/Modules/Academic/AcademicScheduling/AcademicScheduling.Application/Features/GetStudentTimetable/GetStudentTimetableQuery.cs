@@ -1,6 +1,11 @@
 namespace AcademicScheduling.Application.Features.GetStudentTimetable;
 
 using MediatR;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using AcademicScheduling.Application.Abstractions;
+using System;
 
 public sealed record TimetableEntryDto(string CourseCode, string Room, string DayOfWeek, string StartTime, string EndTime, string FacultyName);
 
@@ -8,14 +13,31 @@ public sealed record GetStudentTimetableQuery(Guid StudentId, string AcademicTer
 
 public sealed class GetStudentTimetableQueryHandler : IRequestHandler<GetStudentTimetableQuery, IReadOnlyList<TimetableEntryDto>>
 {
-    public Task<IReadOnlyList<TimetableEntryDto>> Handle(GetStudentTimetableQuery request, CancellationToken cancellationToken)
+    private readonly IAcademicSchedulingRepository _repository;
+
+    public GetStudentTimetableQueryHandler(IAcademicSchedulingRepository repository)
     {
-        var timetable = new List<TimetableEntryDto>
+        _repository = repository;
+    }
+
+    public async Task<IReadOnlyList<TimetableEntryDto>> Handle(GetStudentTimetableQuery request, CancellationToken cancellationToken)
+    {
+        var timetable = new List<TimetableEntryDto>();
+
+        var courses = await _repository.GetStudentTimetableAsync(request.StudentId.ToString(), cancellationToken);
+
+        foreach (var course in courses)
         {
-            new("CS-301", "Room 402", "Monday", "08:00 AM", "10:00 AM", "Dr. Alan Turing"),
-            new("CS-305", "Lab 2", "Wednesday", "10:00 AM", "12:00 PM", "Dr. Ada Lovelace")
-        };
-        
-        return Task.FromResult((IReadOnlyList<TimetableEntryDto>)timetable);
+            timetable.Add(new TimetableEntryDto(
+                course.CourseCode,
+                course.Room,
+                "Monday", // Map from day of week if stored
+                course.Schedule,
+                course.Schedule,
+                course.FacultyId.ToString()
+            ));
+        }
+
+        return timetable;
     }
 }

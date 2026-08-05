@@ -2,6 +2,10 @@ namespace AcademicScheduling.Application.Features.AllocateRoom;
 
 using MediatR;
 using SharedKernel.Domain.Primitives;
+using System;
+using AcademicScheduling.Application.Abstractions;
+using System.Threading;
+using System.Threading.Tasks;
 
 public sealed record AllocateRoomCommand(
     string RoomNumber, 
@@ -14,20 +18,37 @@ public sealed record AllocateRoomCommand(
 
 public sealed class AllocateRoomCommandHandler : IRequestHandler<AllocateRoomCommand, Result<Guid>>
 {
-    public Task<Result<Guid>> Handle(AllocateRoomCommand request, CancellationToken cancellationToken)
+    private readonly AcademicScheduling.Application.Abstractions.IAcademicSchedulingRepository _repository;
+
+    public AllocateRoomCommandHandler(AcademicScheduling.Application.Abstractions.IAcademicSchedulingRepository repository)
     {
-        // 1. Fetch Room details from scheduling repository
-        // 2. Verify ExpectedCapacity <= Room.Capacity
-        // 3. Query existing ClassSessions for overlap on DayOfWeek / StartTime -> EndTime
-        // 4. Return Conflict Error if overlap detected
-        
-        bool hasConflict = false; // Mock DBMA check
-        if (hasConflict)
+        _repository = repository;
+    }
+
+    public async Task<Result<Guid>> Handle(AllocateRoomCommand request, CancellationToken cancellationToken)
+    {
+        bool conflictExists = await _repository.HasRoomConflictAsync(request.RoomNumber, request.DayOfWeek, request.StartTime, request.EndTime, cancellationToken);
+
+        if (conflictExists)
         {
-            return Task.FromResult(Result<Guid>.Failure(new Error("Scheduling.Conflict", "Room is already booked for this time slot.")));
+            return Result<Guid>.Failure(new Error("Scheduling.Conflict", "Room is already booked for this time slot."));
         }
 
         var allocationId = Guid.NewGuid();
-        return Task.FromResult(Result<Guid>.Success(allocationId));
+        var allocation = new AcademicScheduling.Domain.Aggregates.RoomAllocation
+        {
+            Id = allocationId,
+            RoomNumber = request.RoomNumber,
+            CourseCode = request.CourseCode,
+            DayOfWeek = request.DayOfWeek,
+            StartTime = request.StartTime,
+            EndTime = request.EndTime,
+            ExpectedCapacity = request.ExpectedCapacity
+        };
+
+        await _repository.AddRoomAllocationAsync(allocation, cancellationToken);
+        await _repository.SaveChangesAsync(cancellationToken);
+        
+        return Result<Guid>.Success(allocationId);
     }
 }

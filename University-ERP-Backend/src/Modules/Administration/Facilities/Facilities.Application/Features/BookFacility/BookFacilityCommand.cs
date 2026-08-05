@@ -6,7 +6,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-public sealed record BookFacilityCommand(string RoomName, string ReservedBy, DateTime StartTime, DateTime EndTime) : IRequest<Result<Guid>>;
+public sealed record BookFacilityCommand(string FacilityId, DateTime StartTime, DateTime EndTime) : IRequest<Result<Guid>>;
 
 public sealed class BookFacilityCommandHandler : IRequestHandler<BookFacilityCommand, Result<Guid>>
 {
