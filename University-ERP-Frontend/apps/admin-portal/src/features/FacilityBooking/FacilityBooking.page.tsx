@@ -1,39 +1,88 @@
-import React, { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { facilitiesApi } from '@university-erp/api-clients';
-import { FacilityBookingPayload } from '@university-erp/domain-viewmodels';
-
-export const useBookFacility = () => {
-    return useMutation({
-        mutationFn: (payload: FacilityBookingPayload) => facilitiesApi.bookFacility(payload),
-    });
-};
+import { Badge, Button, Card, PageHeader } from '@university-erp/ui-kit';
+import React from 'react';
+import { useBookFacility, useCampusFacilities } from './FacilityBooking.hooks';
 
 export const FacilityBookingPage: React.FC = () => {
-    const { mutateAsync: book, isPending } = useBookFacility();
-    const [roomName, setRoomName] = useState('');
-    const [reservedBy, setReservedBy] = useState('');
+    const { data: facilities, isLoading } = useCampusFacilities();
+    const { mutateAsync: bookFacility, isPending } = useBookFacility();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const result = await book({ 
-            roomName, 
-            reservedBy, 
-            startTime: new Date().toISOString(), 
-            endTime: new Date(Date.now() + 3600000).toISOString() 
+    const handleBooking = async (facilityName: string) => {
+        await bookFacility({
+            roomName: facilityName,
+            reservedBy: 'ADMIN-OVERRIDE',
+            startTime: new Date().toISOString(),
+            endTime: new Date(Date.now() + 7200000).toISOString()
         });
-        alert(`Facility Booked: ${result.reservationId}`);
     };
 
+    if (isLoading) return <div className="skeleton" style={{ height: '60vh', borderRadius: 'var(--radius-lg)' }} />;
+
     return (
-        <div className="p-6 max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">Facilities: Room Booking</h1>
-            <div className="bg-white rounded-lg shadow p-6">
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <input type="text" required placeholder="Room Name (e.g., Auditorium A)" value={roomName} onChange={e => setRoomName(e.target.value)} className="w-full p-2 border rounded" />
-                    <input type="text" required placeholder="Reserved By (ID/Name)" value={reservedBy} onChange={e => setReservedBy(e.target.value)} className="w-full p-2 border rounded" />
-                    <button type="submit" disabled={isPending} className="w-full bg-blue-600 text-white py-2 rounded">Book Facility</button>
-                </form>
+        <div className="fade-in">
+            <PageHeader
+                title="Facility Bookings"
+                subtitle="Manage and override campus space reservations."
+            />
+
+            <div className="grid-stats fade-in-delay-1" style={{ marginBottom: 'var(--space-6)' }}>
+                <Card className="stat-card">
+                    <div className="card-accent-top" style={{ background: 'var(--success-text)' }} />
+                    <span className="stat-label">Available Spaces</span>
+                    <span className="stat-value" style={{ color: 'var(--success-text)' }}>42</span>
+                    <span className="stat-trend">Ready for booking</span>
+                </Card>
+                <Card className="stat-card">
+                    <div className="card-accent-top" style={{ background: 'var(--warning-text)' }} />
+                    <span className="stat-label">Currently In Use</span>
+                    <span className="stat-value" style={{ color: 'var(--warning-text)' }}>18</span>
+                    <span className="stat-trend">Active classes/events</span>
+                </Card>
+                <Card className="stat-card">
+                    <div className="card-accent-top" style={{ background: 'var(--danger-text)' }} />
+                    <span className="stat-label">Under Maintenance</span>
+                    <span className="stat-value" style={{ color: 'var(--danger-text)' }}>3</span>
+                    <span className="stat-trend">Out of commission</span>
+                </Card>
+            </div>
+
+            <div className="grid-auto fade-in-delay-2">
+                {facilities?.map((fac) => {
+                    let badgeColor: 'success' | 'warning' | 'danger' = 'success';
+                    if (fac.status === 'In Use') badgeColor = 'warning';
+                    if (fac.status === 'Maintenance') badgeColor = 'danger';
+
+                    return (
+                        <Card key={fac.id} style={{ display: 'flex', flexDirection: 'column' }}>
+                            <div className="card-accent-top" style={{ background: `var(--${badgeColor}-text)` }} />
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-4)' }}>
+                                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace" }}>{fac.id}</span>
+                                <Badge colorScheme={badgeColor}>{fac.status}</Badge>
+                            </div>
+
+                            <h3 style={{ color: 'var(--text-bright)', margin: '0 0 var(--space-1) 0', fontSize: '1.15rem' }}>{fac.name}</h3>
+                            <p style={{ color: 'var(--brand-primary)', margin: '0 0 var(--space-4) 0', fontSize: '0.85rem', fontWeight: 600 }}>{fac.type}</p>
+
+                            <div style={{ background: 'var(--bg-elevated)', padding: 'var(--space-3)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', marginBottom: 'var(--space-6)' }}>
+                                <div className="data-row" style={{ padding: 0, borderBottom: 'none' }}>
+                                    <span className="data-label">Max Capacity</span>
+                                    <span className="data-value">{fac.capacity} pax</span>
+                                </div>
+                            </div>
+
+                            <div style={{ marginTop: 'auto' }}>
+                                <Button
+                                    variant={fac.status === 'Available' ? 'primary' : 'secondary'}
+                                    disabled={fac.status !== 'Available' || isPending}
+                                    onClick={() => handleBooking(fac.name)}
+                                    style={{ width: '100%' }}
+                                >
+                                    {fac.status === 'Available' ? 'Force Reservation' : 'Unavailable'}
+                                </Button>
+                            </div>
+                        </Card>
+                    );
+                })}
             </div>
         </div>
     );

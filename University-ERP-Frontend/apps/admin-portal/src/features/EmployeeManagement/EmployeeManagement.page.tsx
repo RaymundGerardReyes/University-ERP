@@ -1,58 +1,98 @@
-import { useMutation } from '@tanstack/react-query';
-import { hrApi } from '@university-erp/api-clients';
-import { OnboardEmployeePayload } from '@university-erp/domain-viewmodels';
-import { Button, Card, PageHeader } from '@university-erp/ui-kit';
+import { Badge, Button, Card, PageHeader } from '@university-erp/ui-kit';
 import React, { useState } from 'react';
-
-export const useOnboardEmployee = () => {
-    return useMutation({
-        mutationFn: (payload: OnboardEmployeePayload) => hrApi.onboardEmployee(payload),
-    });
-};
+import { useActiveEmployees, useOnboardEmployee } from './EmployeeManagement.hooks';
+import { OnboardEmployeePayload } from './EmployeeManagement.types';
 
 export const EmployeeManagementPage: React.FC = () => {
-    const { mutateAsync: onboard, isPending, error } = useOnboardEmployee();
-    const [formData, setFormData] = useState({ firstName: '', lastName: '', role: '', departmentId: '' });
-    const [successMsg, setSuccessMsg] = useState('');
+    const { data: employees, isLoading } = useActiveEmployees();
+    const { mutateAsync: onboard, isPending } = useOnboardEmployee();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setSuccessMsg('');
+    const [formData, setFormData] = useState<OnboardEmployeePayload>({
+        firstName: '',
+        lastName: '',
+        role: 'Professor',
+        departmentId: 'DEPT-CS'
+    });
+
+    const handleOnboard = async () => {
         try {
-            const result = await onboard(formData);
-            setSuccessMsg(`Employee onboarded successfully! ID: ${result.employeeId}`);
-            setFormData({ firstName: '', lastName: '', role: '', departmentId: '' });
-        } catch (err: any) {
-            console.error(err);
+            await onboard(formData);
+            setFormData({ firstName: '', lastName: '', role: 'Professor', departmentId: 'DEPT-CS' });
+        } catch (error) {
+            console.error(error);
         }
     };
 
-    const inputStyle = { width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--bg-base)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' };
+    const inputStyle: React.CSSProperties = {
+        width: '100%', padding: 'var(--space-2) var(--space-3)', background: 'var(--bg-elevated)',
+        border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)',
+        color: 'var(--text-primary)', fontFamily: 'inherit', marginTop: 'var(--space-1)', marginBottom: 'var(--space-4)'
+    };
+
+    if (isLoading) return <div className="skeleton" style={{ height: '60vh', borderRadius: 'var(--radius-lg)' }} />;
 
     return (
         <div className="fade-in">
-            <PageHeader title="Human Resources" subtitle="Onboard new university faculty and staff." />
+            <PageHeader
+                title="Employee Management"
+                subtitle="Govern human resources, track staff, and onboard new university personnel."
+            />
 
-            <Card style={{ maxWidth: '600px', margin: '0 auto' }}>
-                <h2 style={{ fontSize: '1.2rem', marginBottom: 'var(--space-4)', color: 'var(--text-primary)' }}>Onboard Employee</h2>
-
-                {error && <div style={{ padding: '1rem', marginBottom: '1rem', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger-text)', borderRadius: '4px' }}>{error.message}</div>}
-                {successMsg && <div style={{ padding: '1rem', marginBottom: '1rem', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--success-text)', borderRadius: '4px' }}>{successMsg}</div>}
-
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <div className="grid-2">
-                        <input type="text" required placeholder="First Name" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} style={inputStyle} />
-                        <input type="text" required placeholder="Last Name" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} style={inputStyle} />
+            <div className="grid-2 fade-in-delay-1">
+                {/* Active Staff List */}
+                <Card style={{ padding: 0, overflow: 'hidden' }}>
+                    <div className="card-accent-top" style={{ background: 'var(--info-text)' }} />
+                    <div style={{ padding: 'var(--space-4) var(--space-6)', background: 'var(--bg-sidebar)', borderBottom: '1px solid var(--border-subtle)' }}>
+                        <h2 style={{ margin: 0, fontSize: '1.05rem', color: 'var(--text-primary)' }}>Active Personnel</h2>
                     </div>
-                    <div className="grid-2">
-                        <input type="text" required placeholder="Role (e.g., Professor)" value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })} style={inputStyle} />
-                        <input type="text" required placeholder="Department ID" value={formData.departmentId} onChange={(e) => setFormData({ ...formData, departmentId: e.target.value })} style={inputStyle} />
+                    <div style={{ padding: '0 var(--space-6)' }}>
+                        {employees?.map((emp, idx) => (
+                            <div key={emp.id} className="data-row" style={{ borderBottom: idx === employees.length - 1 ? 'none' : undefined }}>
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <span className="data-value" style={{ textAlign: 'left', color: 'var(--text-bright)' }}>{emp.name}</span>
+                                    <span className="data-label">{emp.role} &bull; {emp.department}</span>
+                                </div>
+                                <Badge colorScheme={emp.status === 'Active' ? 'success' : 'warning'}>{emp.status}</Badge>
+                            </div>
+                        ))}
                     </div>
-                    <Button type="submit" variant="primary" disabled={isPending} style={{ marginTop: '1rem' }}>
-                        {isPending ? 'Processing...' : 'Onboard Employee'}
+                </Card>
+
+                {/* Quick Onboard Form */}
+                <Card>
+                    <div className="card-accent-top" style={{ background: 'var(--brand-primary)' }} />
+                    <h2 style={{ fontSize: '1.05rem', color: 'var(--text-primary)', marginBottom: 'var(--space-4)' }}>Quick Onboard</h2>
+
+                    <div className="grid-2" style={{ gap: 'var(--space-3)' }}>
+                        <div>
+                            <label className="data-label">First Name</label>
+                            <input style={inputStyle} value={formData.firstName} onChange={e => setFormData({ ...formData, firstName: e.target.value })} />
+                        </div>
+                        <div>
+                            <label className="data-label">Last Name</label>
+                            <input style={inputStyle} value={formData.lastName} onChange={e => setFormData({ ...formData, lastName: e.target.value })} />
+                        </div>
+                    </div>
+
+                    <label className="data-label">System Role</label>
+                    <select style={inputStyle} value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })}>
+                        <option value="Professor">Professor</option>
+                        <option value="Administrator">Administrator</option>
+                        <option value="Support Staff">Support Staff</option>
+                    </select>
+
+                    <label className="data-label">Department Assignment</label>
+                    <select style={inputStyle} value={formData.departmentId} onChange={e => setFormData({ ...formData, departmentId: e.target.value })}>
+                        <option value="DEPT-CS">Computer Science</option>
+                        <option value="DEPT-ENG">Engineering</option>
+                        <option value="DEPT-FIN">Finance</option>
+                    </select>
+
+                    <Button variant="primary" style={{ width: '100%', marginTop: 'var(--space-2)' }} onClick={handleOnboard} disabled={isPending || !formData.firstName}>
+                        {isPending ? 'Provisioning...' : 'Provision Employee Account'}
                     </Button>
-                </form>
-            </Card>
+                </Card>
+            </div>
         </div>
     );
 };

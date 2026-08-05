@@ -1,52 +1,106 @@
-import { useMutation } from '@tanstack/react-query';
-import { procurementApi } from '@university-erp/api-clients';
-import { CreatePurchaseOrderPayload } from '@university-erp/domain-viewmodels';
-import { Button, Card, PageHeader } from '@university-erp/ui-kit';
+import { Badge, Button, Card, PageHeader } from '@university-erp/ui-kit';
 import React, { useState } from 'react';
-
-export const useCreatePurchaseOrder = () => {
-    return useMutation({
-        mutationFn: (payload: CreatePurchaseOrderPayload) => procurementApi.createPurchaseOrder(payload),
-    });
-};
+import { useCreatePurchaseOrder, useRecentOrders } from './PurchaseOrders.hooks';
+import { CreatePurchaseOrderPayload } from './PurchaseOrders.types';
 
 export const PurchaseOrdersPage: React.FC = () => {
-    const { mutateAsync: createOrder, isPending, error } = useCreatePurchaseOrder();
-    const [vendorId, setVendorId] = useState('');
-    const [amount, setAmount] = useState<number | ''>('');
-    const [successMsg, setSuccessMsg] = useState('');
+    const { data: orders, isLoading } = useRecentOrders();
+    const { mutateAsync: createOrder, isPending } = useCreatePurchaseOrder();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const [formData, setFormData] = useState<CreatePurchaseOrderPayload>({
+        vendorId: 'VND-DELL',
+        totalAmount: 0
+    });
+
+    const handleCreate = async () => {
+        if (formData.totalAmount <= 0) return;
         try {
-            const result = await createOrder({ vendorId, totalAmount: Number(amount) });
-            setSuccessMsg(`Purchase Order created! ID: ${result.orderId}`);
-            setVendorId('');
-            setAmount('');
-        } catch (err: any) {
-            console.error(err);
+            await createOrder(formData);
+            setFormData({ vendorId: 'VND-DELL', totalAmount: 0 });
+        } catch (error) {
+            console.error(error);
         }
     };
 
-    const inputStyle = { width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--bg-base)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', marginBottom: '1rem' };
+    if (isLoading) return <div className="skeleton" style={{ height: '60vh' }} />;
 
     return (
         <div className="fade-in">
-            <PageHeader title="Procurement" subtitle="Manage vendor purchase orders." />
+            <PageHeader
+                title="Procurement & Purchase Orders"
+                subtitle="Manage university expenditures, vendor orders, and financial approvals."
+            />
 
-            <Card style={{ maxWidth: '500px', margin: '0 auto' }}>
-                <form onSubmit={handleSubmit}>
-                    {error && <div style={{ color: 'var(--danger-text)', marginBottom: '1rem' }}>{error.message}</div>}
-                    {successMsg && <div style={{ color: 'var(--success-text)', marginBottom: '1rem' }}>{successMsg}</div>}
+            <div className="grid-stats fade-in-delay-1" style={{ marginBottom: 'var(--space-6)' }}>
+                <Card className="stat-card">
+                    <div className="card-accent-top" style={{ background: 'var(--brand-primary)' }} />
+                    <span className="stat-label">Monthly Spend</span>
+                    <span className="stat-value">$142,500</span>
+                    <span className="stat-trend">August 2026</span>
+                </Card>
+                <Card className="stat-card">
+                    <div className="card-accent-top" style={{ background: 'var(--warning-text)' }} />
+                    <span className="stat-label">Pending Approvals</span>
+                    <span className="stat-value" style={{ color: 'var(--warning-text)' }}>12</span>
+                    <span className="stat-trend">Awaiting Finance Sign-off</span>
+                </Card>
+            </div>
 
-                    <input type="text" required placeholder="Vendor ID" value={vendorId} onChange={e => setVendorId(e.target.value)} style={inputStyle} />
-                    <input type="number" required placeholder="Total Amount" value={amount} onChange={e => setAmount(Number(e.target.value))} style={inputStyle} />
+            <div className="grid-2 fade-in-delay-2">
+                <Card>
+                    <div className="card-accent-top" style={{ background: 'var(--info-text)' }} />
+                    <h2 className="data-value" style={{ textAlign: 'left', marginBottom: 'var(--space-4)' }}>Recent Orders</h2>
 
-                    <Button type="submit" variant="primary" disabled={isPending} style={{ width: '100%' }}>
-                        {isPending ? 'Saving...' : 'Create Order'}
+                    <div>
+                        {orders?.map((order) => (
+                            <div key={order.id} className="data-row">
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <span className="data-value" style={{ textAlign: 'left' }}>{order.vendor}</span>
+                                    <span className="data-label">{order.id} &bull; {order.date}</span>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 'var(--space-1)' }}>
+                                    <Badge colorScheme={order.status === 'Approved' ? 'success' : 'warning'}>{order.status}</Badge>
+                                    <span className="data-value">${order.total.toLocaleString()}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </Card>
+
+                <Card>
+                    <div className="card-accent-top" style={{ background: 'var(--success-text)' }} />
+                    <h2 className="data-value" style={{ textAlign: 'left', marginBottom: 'var(--space-4)' }}>Draft New Order</h2>
+
+                    <div className="data-row" style={{ borderBottom: 'none' }}>
+                        <label className="data-label">Select Vendor</label>
+                        <select
+                            className="data-value"
+                            style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', padding: 'var(--space-1) var(--space-2)', borderRadius: 'var(--radius-sm)' }}
+                            value={formData.vendorId}
+                            onChange={e => setFormData({ ...formData, vendorId: e.target.value })}
+                        >
+                            <option value="VND-DELL">Dell Technologies</option>
+                            <option value="VND-CISCO">Cisco Systems</option>
+                            <option value="VND-LAB">LabCorp</option>
+                        </select>
+                    </div>
+
+                    <div className="data-row">
+                        <label className="data-label">Total Amount ($)</label>
+                        <input
+                            type="number"
+                            className="data-value"
+                            style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', padding: 'var(--space-1) var(--space-2)', borderRadius: 'var(--radius-sm)', width: '120px' }}
+                            value={formData.totalAmount || ''}
+                            onChange={e => setFormData({ ...formData, totalAmount: parseFloat(e.target.value) })}
+                        />
+                    </div>
+
+                    <Button variant="primary" onClick={handleCreate} disabled={isPending || formData.totalAmount <= 0} style={{ width: '100%', marginTop: 'var(--space-4)' }}>
+                        {isPending ? 'Submitting...' : 'Submit to Finance'}
                     </Button>
-                </form>
-            </Card>
+                </Card>
+            </div>
         </div>
     );
 };
