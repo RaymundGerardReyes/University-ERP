@@ -2,29 +2,8 @@ import { Button, PageHeader } from '@university-erp/ui-kit';
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-// Mock data (keep your existing data structure here)
-const COURSE_DATA: Record<string, any> = {
-  'cs101': {
-    name: 'Intro to Computer Science', code: 'cs101', faculty: 'Dr. Smith',
-    modules: [
-      {
-        title: 'Prelims',
-        activities: [
-          { type: 'Attendance', title: 'Week 1-4', score: '100%', date: 'Sept 30' },
-          { type: 'Quiz', title: 'Quiz 1: Logic Gates', score: '95%', date: 'Oct 5' },
-          { type: 'Exam', title: 'Prelim Examination', score: '88%', date: 'Oct 15' }
-        ]
-      },
-      {
-        title: 'Midterms',
-        activities: [
-          { type: 'Laboratory', title: 'Python Basics', score: '98%', date: 'Nov 20' },
-          { type: 'Project', title: 'Midterm CLI App', score: '95%', date: 'Dec 1' }
-        ]
-      }
-    ]
-  }
-};
+import { useQuery } from '@tanstack/react-query';
+import { learningManagementApi } from '@university-erp/api-clients';
 
 const AssessmentPeriodAccordion = ({ period, delayIndex }: { period: any, delayIndex: number }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -62,9 +41,14 @@ const AssessmentPeriodAccordion = ({ period, delayIndex }: { period: any, delayI
 export const LearningManagementPage: React.FC = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const course = courseId ? COURSE_DATA[courseId.toLowerCase()] : COURSE_DATA['cs101'];
+  const { data: course, isLoading, isError } = useQuery({
+    queryKey: ['courseLms', courseId],
+    queryFn: () => (learningManagementApi as any).getCourseDetails?.(courseId),
+    enabled: !!courseId
+  });
 
-  if (!course) return <div className="stub-page fade-in"><div className="stub-title">Course not found.</div></div>;
+  if (isLoading) return <div className="skeleton" style={{ height: '60vh' }} />;
+  if (isError || !course) return <div className="stub-page fade-in"><div className="stub-title">Course not found or API unavailable.</div></div>;
 
   return (
     <div className="fade-in">
