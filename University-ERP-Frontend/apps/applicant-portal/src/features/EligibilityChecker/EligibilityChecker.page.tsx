@@ -1,101 +1,112 @@
-import { admissionsApi } from '@university-erp/api-clients';
-import { Button, Card, PageHeader } from '@university-erp/ui-kit';
+import { Badge, Button, Card, PageHeader } from '@university-erp/ui-kit';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useCheckEligibility } from './EligibilityChecker.hooks';
+import { EligibilityResponse } from './EligibilityChecker.types';
 
 export const EligibilityCheckerPage: React.FC = () => {
-  const [step, setStep] = useState(1);
-  const [applicantType, setApplicantType] = useState<string | null>(null);
-  const [gpa, setGpa] = useState<string>('');
-  const [isChecking, setIsChecking] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const { mutateAsync: checkEligibility, isPending } = useCheckEligibility();
+  const [result, setResult] = useState<EligibilityResponse | null>(null);
+
+  const [formData, setFormData] = useState({
+    programId: 'CS-BS',
+    gpa: 3.5,
+    previousDegree: 'High School Diploma'
+  });
 
   const handleCheck = async () => {
-    setIsChecking(true);
     try {
-      const data = await admissionsApi.checkEligibility({ applicantType, gpa: parseFloat(gpa), country: 'Domestic' });
-      setResult(data);
-      setStep(3);
-    } catch (error) {
-      alert('Error occurred while checking eligibility');
-    } finally {
-      setIsChecking(false);
+      // Utilize the actual backend response
+      const res = await checkEligibility(formData);
+      setResult(res);
+    } catch (err) {
+      console.error(err);
     }
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: 'var(--space-3)',
+    background: 'var(--bg-base)',
+    border: '1px solid var(--border-subtle)',
+    borderRadius: 'var(--radius-md)',
+    color: 'var(--text-primary)',
+    marginBottom: 'var(--space-4)',
+    fontFamily: 'inherit'
   };
 
   return (
     <div className="fade-in">
-      <PageHeader title="Eligibility Checker" subtitle="Instantly discover if you meet the academic requirements." />
+      <PageHeader
+        title="Eligibility Checker"
+        subtitle="Instantly verify your academic qualifications before starting an application."
+      />
 
-      <Card style={{ maxWidth: '700px', margin: '0 auto' }} className="fade-in-delay-1">
-        <div className="card-accent-top" />
-        {step === 1 && (
-          <div className="fade-in">
-            <h3 style={{ textAlign: 'center', marginBottom: 'var(--space-6)', color: 'var(--text-primary)' }}>1. Select Applicant Profile</h3>
-            <div className="grid-2">
-              {['Freshman', 'Transferee', 'International', 'Returning'].map((type) => (
-                <div
-                  key={type} onClick={() => setApplicantType(type)}
-                  style={{
-                    padding: 'var(--space-6)', textAlign: 'center', borderRadius: 'var(--radius-lg)', cursor: 'pointer',
-                    border: applicantType === type ? '2px solid var(--brand-primary)' : '2px solid var(--border-subtle)',
-                    background: applicantType === type ? 'var(--info-bg)' : 'var(--bg-elevated)',
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  <h4 style={{ margin: 0, color: applicantType === type ? 'var(--text-accent)' : 'var(--text-primary)', fontSize: '1.1rem' }}>{type}</h4>
+      <div className="grid-2 fade-in-delay-1">
+        <Card>
+          <div className="card-accent-top" style={{ background: 'var(--brand-gradient)' }} />
+          <h2 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: 'var(--space-6)' }}>
+            Academic Profile
+          </h2>
+
+          <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 'var(--space-2)' }}>Target Program</label>
+          <select style={inputStyle} value={formData.programId} onChange={e => setFormData({ ...formData, programId: e.target.value })}>
+            <option value="CS-BS">B.S. Computer Science</option>
+            <option value="ENG-BS">B.S. Engineering</option>
+            <option value="BUS-BA">B.A. Business Administration</option>
+          </select>
+
+          <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 'var(--space-2)' }}>Cumulative GPA (4.0 Scale)</label>
+          <input
+            type="number"
+            step="0.1"
+            style={inputStyle}
+            value={formData.gpa}
+            onChange={e => setFormData({ ...formData, gpa: parseFloat(e.target.value) })}
+          />
+
+          <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 'var(--space-2)' }}>Highest Attained Degree</label>
+          <input
+            type="text"
+            style={inputStyle}
+            value={formData.previousDegree}
+            onChange={e => setFormData({ ...formData, previousDegree: e.target.value })}
+          />
+
+          <Button variant="primary" style={{ width: '100%', marginTop: 'var(--space-2)' }} onClick={handleCheck} disabled={isPending}>
+            {isPending ? 'Analyzing Records...' : 'Check Eligibility'}
+          </Button>
+        </Card>
+
+        <div>
+          {result ? (
+            <Card className="fade-in" style={{ borderColor: result.isEligible ? 'var(--success-border)' : 'var(--danger-border)' }}>
+              <div className="card-accent-top" style={{ background: result.isEligible ? 'var(--success-text)' : 'var(--danger-text)' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
+                <h3 style={{ margin: 0, color: 'var(--text-bright)' }}>Results</h3>
+                <Badge colorScheme={result.isEligible ? 'success' : 'danger'}>
+                  {result.isEligible ? 'Eligible' : 'Does Not Meet Criteria'}
+                </Badge>
+              </div>
+
+              <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-6)' }}>{result.message}</p>
+
+              {result.missingPrerequisites && result.missingPrerequisites.length > 0 && (
+                <div style={{ background: 'var(--bg-elevated)', padding: 'var(--space-4)', borderRadius: 'var(--radius-md)' }}>
+                  <h4 style={{ fontSize: '0.85rem', color: 'var(--warning-text)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 'var(--space-2)' }}>Missing Prerequisites</h4>
+                  <ul style={{ margin: 0, paddingLeft: '1.2rem', color: 'var(--text-primary)', fontSize: '0.9rem' }}>
+                    {result.missingPrerequisites.map(prereq => <li key={prereq}>{prereq}</li>)}
+                  </ul>
                 </div>
-              ))}
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'var(--space-6)' }}>
-              <Button variant="primary" onClick={() => setStep(2)} disabled={!applicantType}>Next Step →</Button>
-            </div>
-          </div>
-        )}
-
-        {step === 2 && (
-          <div className="fade-in">
-            <h3 style={{ textAlign: 'center', marginBottom: 'var(--space-6)', color: 'var(--text-primary)' }}>2. Academic Standing</h3>
-            <div style={{ background: 'var(--bg-elevated)', padding: 'var(--space-8)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-subtle)', textAlign: 'center' }}>
-              <label style={{ display: 'block', color: 'var(--text-secondary)', marginBottom: 'var(--space-4)', fontWeight: 600 }}>Cumulative GPA (4.0 Scale)</label>
-              <input
-                type="number" step="0.01" max="4.0" min="0.0" value={gpa} onChange={(e) => setGpa(e.target.value)} placeholder="0.00"
-                style={{
-                  width: '150px', padding: '1rem', borderRadius: 'var(--radius-md)', border: '2px solid var(--border-color)',
-                  background: 'var(--bg-base)', color: 'var(--text-primary)', fontSize: '2rem', textAlign: 'center', outline: 'none'
-                }}
-              />
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'var(--space-6)' }}>
-              <Button variant="outline" onClick={() => setStep(1)}>← Back</Button>
-              <Button variant="primary" onClick={handleCheck} disabled={!gpa || parseFloat(gpa) > 4.0 || parseFloat(gpa) < 0}>
-                {isChecking ? 'Analyzing...' : 'Check Eligibility'}
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {step === 3 && result && (
-          <div className="fade-in" style={{ textAlign: 'center' }}>
-            <h2 style={{ fontSize: '2rem', color: result.isEligible ? 'var(--success-text)' : 'var(--warning-text)', marginBottom: 'var(--space-4)' }}>
-              {result.isEligible ? 'Highly Eligible!' : 'Conditionally Eligible'}
-            </h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', marginBottom: 'var(--space-6)' }}>{result.message}</p>
-
-            <div style={{ background: 'var(--info-bg)', padding: 'var(--space-6)', borderRadius: 'var(--radius-md)', border: '1px solid var(--info-border)', textAlign: 'left', marginBottom: 'var(--space-6)' }}>
-              <h4 style={{ margin: '0 0 var(--space-4) 0', color: 'var(--text-accent)' }}>Required Documents to Prepare:</h4>
-              <ul style={{ margin: 0, paddingLeft: 'var(--space-4)', color: 'var(--text-primary)', lineHeight: 1.8 }}>
-                {result.requiredDocuments?.map((doc: string) => <li key={doc}>{doc}</li>)}
-              </ul>
-            </div>
-
-            <div style={{ display: 'flex', gap: 'var(--space-4)', justifyContent: 'center' }}>
-              <Button variant="outline" onClick={() => setStep(1)}>Start Over</Button>
-              <Link to="/apply" style={{ textDecoration: 'none' }}><Button variant="primary">Proceed to Application</Button></Link>
-            </div>
-          </div>
-        )}
-      </Card>
+              )}
+            </Card>
+          ) : (
+            <Card style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: '300px', opacity: 0.6 }}>
+              <div style={{ fontSize: '3rem', marginBottom: 'var(--space-4)' }}>🎓</div>
+              <p style={{ color: 'var(--text-muted)' }}>Fill out your profile to view eligibility.</p>
+            </Card>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

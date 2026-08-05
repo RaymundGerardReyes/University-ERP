@@ -1,35 +1,69 @@
-import { Card, PageHeader } from '@university-erp/ui-kit';
+import { Badge, Card, PageHeader } from '@university-erp/ui-kit';
 import React from 'react';
-import { useApplicantJourney } from '../ApplicantJourney.hooks';
+import { useApplicationTimeline } from './ApplicationTimeline.hooks';
+import { JourneyStep } from './ApplicationTimeline.types';
 
 export const ApplicationTimelinePage: React.FC = () => {
-  const { data, isLoading } = useApplicantJourney();
+  const { data: timelineData, isLoading, isError } = useApplicationTimeline();
 
-  if (isLoading) return <div className="skeleton fade-in" style={{ height: '500px' }} />;
-  if (!data) return null;
+  if (isLoading) return <div className="skeleton" style={{ height: '60vh', borderRadius: 'var(--radius-lg)' }} />;
+  if (isError) return (
+    <div className="stub-page fade-in">
+      <div className="stub-icon">⏳</div>
+      <div className="stub-title">Failed to Load Timeline</div>
+      <div className="stub-subtitle">Unable to fetch your application journey.</div>
+    </div>
+  );
+
+  // Fallback mock data if the API returns empty/undefined for the journey
+  const steps: JourneyStep[] = timelineData?.steps || [];
 
   return (
     <div className="fade-in">
-      <PageHeader title="Application Timeline" subtitle="Detailed audit history of your admission journey." />
+      <PageHeader
+        title="Application Journey"
+        subtitle="Track the real-time status of your university enrollment process."
+      />
 
-      <Card className="fade-in-delay-1" style={{ position: 'relative' }}>
-        <div style={{ position: 'absolute', left: '2rem', top: 'var(--space-6)', bottom: 'var(--space-6)', width: '2px', background: 'var(--border-color)' }} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', maxWidth: '800px' }}>
+        {steps.map((step, idx) => {
+          let statusColor: 'success' | 'warning' | 'default' = 'default';
+          if (step.status === 'Completed') statusColor = 'success';
+          if (step.status === 'Current') statusColor = 'warning';
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
-          {data.timeline.map((event, idx) => (
-            <div key={idx} style={{ display: 'flex', gap: 'var(--space-6)', position: 'relative', zIndex: 1 }}>
-              <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: idx === 0 ? 'var(--brand-primary)' : 'var(--bg-elevated)', border: `2px solid ${idx === 0 ? 'var(--bg-base)' : 'var(--border-color)'}`, marginTop: '4px', marginLeft: '-7px' }} />
-              <div style={{ flex: 1, background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', padding: 'var(--space-4)', borderRadius: 'var(--radius-md)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-2)' }}>
-                  <h4 style={{ margin: 0, color: idx === 0 ? 'var(--brand-primary)' : 'var(--text-primary)', fontSize: '1rem' }}>{event.event}</h4>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{event.date}</span>
-                </div>
-                <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{event.detail}</p>
+          return (
+            <Card key={step.id} className={`fade-in-delay-${(idx % 3) + 1}`} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-6)', padding: 'var(--space-5)' }}>
+              {step.status === 'Current' && <div className="card-accent-top" style={{ background: 'var(--warning-text)' }} />}
+
+              <div style={{
+                width: '40px', height: '40px', borderRadius: '50%', flexShrik: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold',
+                background: step.status === 'Completed' ? 'var(--success-bg)' : step.status === 'Current' ? 'var(--brand-primary)' : 'var(--bg-hover)',
+                color: step.status === 'Completed' ? 'var(--success-text)' : step.status === 'Current' ? '#fff' : 'var(--text-muted)'
+              }}>
+                {step.status === 'Completed' ? '✓' : step.id}
               </div>
-            </div>
-          ))}
-        </div>
-      </Card>
+
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-1)' }}>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', color: step.status === 'Pending' ? 'var(--text-muted)' : 'var(--text-bright)' }}>
+                    {step.stepName}
+                  </h3>
+                  <Badge colorScheme={statusColor}>{step.status}</Badge>
+                </div>
+                <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                  {step.description}
+                </p>
+                {step.completedDate && (
+                  <p style={{ margin: 'var(--space-1) 0 0 0', fontSize: '0.75rem', color: 'var(--success-text)', fontFamily: "'JetBrains Mono', monospace" }}>
+                    Completed on {step.completedDate}
+                  </p>
+                )}
+              </div>
+            </Card>
+          );
+        })}
+      </div>
     </div>
   );
 };
