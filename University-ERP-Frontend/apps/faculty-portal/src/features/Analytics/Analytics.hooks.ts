@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { analyticsApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
+import { fetchClassAnalytics } from './Analytics.api';
 
-export const useClassPerformance = () => {
-    const { identity } = useAuth();
+export const useClassAnalytics = () => {
+    const { user } = useAuth();
+
     return useQuery({
-        queryKey: ['classPerformance', identity?.id],
-        queryFn: () => analyticsApi.getClassPerformance(identity?.id || 'FAC-001'),
-        enabled: !!identity?.id,
+        queryKey: ['classAnalytics', user?.id],
+        queryFn: () => fetchClassAnalytics(user!.id),
+        enabled: !!user?.id,
     });
 };

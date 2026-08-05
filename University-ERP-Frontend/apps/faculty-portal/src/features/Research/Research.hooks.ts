@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { researchApi, ResearchGrant, Publication } from '@university-erp/api-clients';
+import { useAuth } from '@university-erp/auth-sdk';
+import { fetchResearchData } from './Research.api';
 
-export const useResearchPortfolio = (facultyId?: string) => {
+export const useResearchPortfolio = () => {
+    const { user } = useAuth();
+
     return useQuery({
-        queryKey: ['researchPortfolio', facultyId],
-        queryFn: () => researchApi.getPortfolio(facultyId!),
-        enabled: !!facultyId
+        queryKey: ['researchPortfolio', user?.id],
+        queryFn: () => fetchResearchData(user!.id),
+        enabled: !!user?.id,
     });
 };
-
-export type { ResearchGrant, Publication };

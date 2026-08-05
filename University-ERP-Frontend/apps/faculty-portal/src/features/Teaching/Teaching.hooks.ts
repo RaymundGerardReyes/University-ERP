@@ -1,27 +1,18 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { teachingApi } from '@university-erp/api-clients';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useAuth } from '@university-erp/auth-sdk';
+import { fetchMyCourses, logAttendance } from './Teaching.api';
 
 export const useMyCourses = () => {
-    const { identity } = useAuth();
-
+    const { user } = useAuth();
     return useQuery({
-        queryKey: ['myCourses', identity?.id],
-        // Fallback to a mock ID if identity is not yet loaded
-        queryFn: () => teachingApi.getMyCourses(identity?.id || 'FAC-001'),
-        enabled: !!identity?.id,
+        queryKey: ['myCourses', user?.id],
+        queryFn: () => fetchMyCourses(user!.id),
+        enabled: !!user?.id,
     });
 };
 
 export const useSubmitAttendance = () => {
-    const queryClient = useQueryClient();
-
     return useMutation({
-        mutationFn: ({ sectionId, data }: { sectionId: string, data: any }) =>
-            teachingApi.submitAttendance(sectionId, data),
-        onSuccess: () => {
-            // Refresh any queries related to attendance or courses after submission
-            queryClient.invalidateQueries({ queryKey: ['myCourses'] });
-        }
+        mutationFn: ({ sectionId, data }: { sectionId: string, data: any }) => logAttendance(sectionId, data),
     });
 };

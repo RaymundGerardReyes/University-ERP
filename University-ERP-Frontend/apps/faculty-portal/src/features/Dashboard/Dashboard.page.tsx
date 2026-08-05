@@ -1,105 +1,82 @@
+import { useAuth } from '@university-erp/auth-sdk';
 import { Badge, Button, Card, PageHeader } from '@university-erp/ui-kit';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useFacultyDashboard } from './Dashboard.hooks';
 
 export const DashboardPage: React.FC = () => {
-    // In a real implementation, these would be fetched via React Query hooks
-    // calling various backend endpoints (e.g., admissionsApi, teachingApi, communicationApi)
-    const taskSummary = {
-        pendingAdmissions: 4,
-        pendingGrades: 2,
-        unreadMessages: 12,
-        classesToday: 3,
-    };
+    const { identity } = useAuth();
+    const { data, isLoading, isError } = useFacultyDashboard();
+
+    if (isLoading) return <div className="skeleton" style={{ height: '60vh', borderRadius: 'var(--radius-lg)' }} />;
+    if (isError || !data) return <div className="stub-page fade-in"><div className="stub-title">Dashboard Unavailable</div></div>;
+
+    const totalStudents = data.courses.reduce((acc, c) => acc + c.enrolledCount, 0);
+    const unreadMessages = data.inbox.filter(m => !m.isRead).length;
 
     return (
         <div className="fade-in">
             <PageHeader
-                title="Faculty Workspace"
-                subtitle="Your daily operational overview and pending tasks."
+                title={`Welcome, Professor ${identity?.name.split(' ')[1] || 'Faculty'}`}
+                subtitle="Here is your academic overview for the current semester."
             />
 
-            {/* Actionable Task Widgets */}
-            <div className="grid-stats fade-in-delay-1" style={{ marginBottom: 'var(--space-8)' }}>
-                <Card className="stat-card" style={{ borderTop: '3px solid var(--warning-text)' }}>
-                    <span className="stat-label">Pending Admissions</span>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                        <span className="stat-value">{taskSummary.pendingAdmissions}</span>
-                        <Link to="/admissions"><Button variant="outline" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}>Review</Button></Link>
-                    </div>
+            {/* Premium Stats Grid from theme.css */}
+            <div className="grid-stats fade-in-delay-1" style={{ marginBottom: 'var(--space-6)' }}>
+                <Card className="stat-card">
+                    <div className="card-accent-top" style={{ background: 'var(--brand-primary)' }} />
+                    <span className="stat-label">Active Courses</span>
+                    <span className="stat-value">{data.courses.length}</span>
+                    <span className="stat-trend" style={{ color: 'var(--text-muted)' }}>Fall 2026</span>
                 </Card>
-
-                <Card className="stat-card" style={{ borderTop: '3px solid var(--danger-text)' }}>
-                    <span className="stat-label">Grades Due</span>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                        <span className="stat-value">{taskSummary.pendingGrades}</span>
-                        <Link to="/assessments/gradebook"><Button variant="outline" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}>Submit</Button></Link>
-                    </div>
+                <Card className="stat-card">
+                    <div className="card-accent-top" style={{ background: 'var(--brand-secondary)' }} />
+                    <span className="stat-label">Total Students</span>
+                    <span className="stat-value">{totalStudents}</span>
+                    <span className="stat-trend">Across all sections</span>
                 </Card>
-
-                <Card className="stat-card" style={{ borderTop: '3px solid var(--info-text)' }}>
-                    <span className="stat-label">Today's Classes</span>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                        <span className="stat-value">{taskSummary.classesToday}</span>
-                        <Link to="/teaching"><Button variant="outline" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}>View Schedule</Button></Link>
-                    </div>
-                </Card>
-
-                <Card className="stat-card" style={{ borderTop: '3px solid var(--brand-secondary)' }}>
+                <Card className="stat-card">
+                    <div className="card-accent-top" style={{ background: unreadMessages > 0 ? 'var(--warning-text)' : 'var(--text-muted)' }} />
                     <span className="stat-label">Unread Messages</span>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                        <span className="stat-value">{taskSummary.unreadMessages}</span>
-                        <Link to="/communication"><Button variant="outline" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}>Open Inbox</Button></Link>
-                    </div>
+                    <span className="stat-value" style={{ color: unreadMessages > 0 ? 'var(--warning-text)' : 'var(--text-bright)' }}>
+                        {unreadMessages}
+                    </span>
+                    <span className="stat-trend" style={{ color: 'var(--text-muted)' }}>Requires attention</span>
                 </Card>
             </div>
 
             <div className="grid-2 fade-in-delay-2">
-                {/* Today's Schedule Preview */}
-                <Card style={{ display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
-                        <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)' }}>Today's Schedule</h3>
-                        <Badge colorScheme="info">Oct 14</Badge>
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-                        <div style={{ padding: 'var(--space-3)', background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)', borderLeft: '3px solid var(--brand-primary)' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                                <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>CS-101: Intro to Computing</span>
-                                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>09:00 AM</span>
+                <Card>
+                    <h2 style={{ fontSize: '1rem', color: 'var(--text-primary)', marginBottom: 'var(--space-4)' }}>Today's Classes</h2>
+                    {data.courses.slice(0, 2).map(course => (
+                        <div key={course.id} className="data-row" style={{ alignItems: 'flex-start' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span className="data-value" style={{ textAlign: 'left', color: 'var(--text-bright)' }}>{course.courseCode}</span>
+                                <span className="data-label">{course.courseName}</span>
+                                <span style={{ fontSize: '0.75rem', color: 'var(--brand-primary)', marginTop: 'var(--space-1)' }}>{course.schedule}</span>
                             </div>
-                            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Section: BSCS-1A • Room: Lab 402</div>
+                            <Badge colorScheme="info">{course.room}</Badge>
                         </div>
-
-                        <div style={{ padding: 'var(--space-3)', background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)', borderLeft: '3px solid var(--brand-primary)' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                                <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>CS-305: Database Management</span>
-                                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>01:00 PM</span>
-                            </div>
-                            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Section: BSCS-3C • Room: Hall B</div>
-                        </div>
-                    </div>
+                    ))}
+                    <Button variant="outline" style={{ width: '100%', marginTop: 'var(--space-4)' }}>View Full Schedule</Button>
                 </Card>
 
-                {/* Quick Actions / Announcements */}
                 <Card>
-                    <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: '1.2rem', color: 'var(--text-primary)' }}>Recent Announcements</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-                        <div style={{ borderBottom: '1px solid var(--border-subtle)', paddingBottom: 'var(--space-3)' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <span style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.95rem' }}>Midterm Grade Encoding</span>
-                                <Badge colorScheme="warning">Important</Badge>
+                    <h2 style={{ fontSize: '1rem', color: 'var(--text-primary)', marginBottom: 'var(--space-4)' }}>Recent Communications</h2>
+                    {data.inbox.slice(0, 3).map(msg => (
+                        <div key={msg.id} className="data-row" style={{ alignItems: 'flex-start' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                                    {!msg.isRead && <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--brand-primary)' }} />}
+                                    <span className="data-value" style={{ textAlign: 'left', fontWeight: msg.isRead ? 500 : 700 }}>{msg.sender}</span>
+                                </div>
+                                <span className="data-label">{msg.subject}</span>
                             </div>
-                            <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>The portal for midterm grade encoding will close on Friday at 5:00 PM.</p>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                {new Date(msg.date).toLocaleDateString()}
+                            </span>
                         </div>
-                        <div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <span style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.95rem' }}>Faculty Senate Meeting</span>
-                                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>2 days ago</span>
-                            </div>
-                            <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Monthly meeting will be held virtually via MS Teams.</p>
-                        </div>
-                    </div>
+                    ))}
+                    <Button variant="outline" style={{ width: '100%', marginTop: 'var(--space-4)' }}>Open Inbox</Button>
                 </Card>
             </div>
         </div>

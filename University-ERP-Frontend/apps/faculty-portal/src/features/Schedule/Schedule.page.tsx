@@ -3,45 +3,54 @@ import React from 'react';
 import { useWeeklySchedule } from './Schedule.hooks';
 
 export const SchedulePage: React.FC = () => {
-    const { data: schedule, isLoading } = useWeeklySchedule();
+    const { data: schedule, isLoading, isError } = useWeeklySchedule();
 
-    if (isLoading) return <div className="skeleton fade-in" style={{ height: '500px' }} />;
+    if (isLoading) return <div className="skeleton" style={{ height: '60vh' }} />;
+    if (isError || !schedule) return <div className="stub-page fade-in"><div className="stub-title">Schedule Unavailable</div></div>;
+
+    // Group events by day of week
+    const groupedSchedule = schedule.reduce((acc, event) => {
+        acc[event.dayOfWeek] = acc[event.dayOfWeek] || [];
+        acc[event.dayOfWeek].push(event);
+        return acc;
+    }, {} as Record<string, typeof schedule>);
 
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
     return (
         <div className="fade-in">
             <PageHeader
-                title="My Schedule"
-                subtitle="Manage your classes, consultation hours, and meetings."
-                action={<Button variant="primary">Add Office Hours</Button>}
+                title="Weekly Schedule"
+                subtitle="Manage your classes, consultations, and department meetings."
+                action={<Button variant="outline">Sync to Outlook</Button>}
             />
 
             <div className="grid-auto fade-in-delay-1">
-                {days.map(day => {
-                    const dayEvents = schedule?.filter(e => e.dayOfWeek === day) || [];
+                {days.map((day) => {
+                    const events = groupedSchedule[day] || [];
 
                     return (
-                        <Card key={day} style={{ display: 'flex', flexDirection: 'column' }}>
-                            <div className="card-accent-top" />
-                            <h3 style={{ margin: '0 0 var(--space-4) 0', color: 'var(--text-primary)', borderBottom: '1px solid var(--border-subtle)', paddingBottom: 'var(--space-2)' }}>
-                                {day}
-                            </h3>
+                        <Card key={day}>
+                            <div className="card-accent-top" style={{ background: events.length > 0 ? 'var(--brand-primary)' : 'var(--text-muted)' }} />
+                            <h2 className="data-value" style={{ textAlign: 'left', marginBottom: 'var(--space-4)' }}>{day}</h2>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-                                {dayEvents.length > 0 ? dayEvents.map(event => (
-                                    <div key={event.id} style={{ background: 'var(--bg-elevated)', padding: 'var(--space-3)', borderRadius: 'var(--radius-md)', borderLeft: `3px solid ${event.type === 'Class' ? 'var(--brand-primary)' : event.type === 'Consultation' ? 'var(--success-text)' : 'var(--warning-text)'}` }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-2)' }}>
-                                            <span style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.9rem' }}>{event.title}</span>
-                                            <Badge colorScheme={event.type === 'Class' ? 'info' : event.type === 'Consultation' ? 'success' : 'warning'}>{event.type}</Badge>
+                            {events.length === 0 ? (
+                                <p className="data-label">No scheduled events.</p>
+                            ) : (
+                                <div>
+                                    {events.map((evt, idx) => (
+                                        <div key={evt.id} className="data-row" style={{ borderBottom: idx === events.length - 1 ? 'none' : undefined }}>
+                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                <span className="data-value" style={{ textAlign: 'left' }}>{evt.title}</span>
+                                                <span className="data-label">{evt.time} &bull; {evt.location}</span>
+                                            </div>
+                                            <Badge colorScheme={evt.type === 'Class' ? 'info' : evt.type === 'Consultation' ? 'success' : 'warning'}>
+                                                {evt.type}
+                                            </Badge>
                                         </div>
-                                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{event.time}</div>
-                                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{event.location}</div>
-                                    </div>
-                                )) : (
-                                    <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontStyle: 'italic' }}>No events scheduled.</p>
-                                )}
-                            </div>
+                                    ))}
+                                </div>
+                            )}
                         </Card>
                     );
                 })}

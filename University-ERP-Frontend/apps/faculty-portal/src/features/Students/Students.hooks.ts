@@ -1,12 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
-import { facultyStudentsApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
+import { fetchMyStudents } from './Students.api';
 
 export const useFacultyStudents = () => {
-    const { identity } = useAuth();
+    const { user } = useAuth();
+
     return useQuery({
-        queryKey: ['facultyStudents', identity?.id],
-        queryFn: () => facultyStudentsApi.getMyStudents(identity?.id || 'FAC-001'),
-        enabled: !!identity?.id,
+        queryKey: ['facultyStudents', user?.id],
+        queryFn: () => fetchMyStudents(user!.id),
+        enabled: !!user?.id,
+        staleTime: 1000 * 60 * 10, // Cache roster for 10 minutes
     });
 };

@@ -3,50 +3,71 @@ import React from 'react';
 import { useResearchPortfolio } from './Research.hooks';
 
 export const ResearchPage: React.FC = () => {
-    const { data: portfolio, isLoading } = useResearchPortfolio();
+    const { data, isLoading, isError } = useResearchPortfolio();
 
-    if (isLoading) return <div className="skeleton fade-in" style={{ height: '500px' }} />;
+    if (isLoading) return <div className="skeleton" style={{ height: '60vh', borderRadius: 'var(--radius-lg)' }} />;
+    if (isError || !data) return <div className="stub-page fade-in"><div className="stub-title">Portfolio Unavailable</div></div>;
+
+    const activeGrantsTotal = data.grants.filter(g => g.status === 'Active').reduce((acc, curr) => acc + curr.amount, 0);
 
     return (
         <div className="fade-in">
             <PageHeader
                 title="Research & Publications"
-                subtitle="Track your active grants, publications, and academic portfolio."
-                action={<Button variant="primary">Log New Publication</Button>}
+                subtitle="Manage active grants, funding proposals, and peer-reviewed publications."
+                action={<Button variant="primary">Submit Proposal</Button>}
             />
 
-            <div className="grid-2 fade-in-delay-1">
-                {/* Active Grants */}
-                <Card style={{ display: 'flex', flexDirection: 'column' }}>
-                    <h2 style={{ fontSize: '1.2rem', color: 'var(--text-primary)', marginBottom: 'var(--space-4)' }}>Funding & Grants</h2>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-                        {portfolio?.grants.map((grant: any) => (
-                            <div key={grant.id} style={{ background: 'var(--bg-elevated)', padding: 'var(--space-4)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
-                                    <Badge colorScheme={grant.status === 'Active' ? 'success' : 'warning'}>{grant.status}</Badge>
-                                    <span style={{ fontWeight: 700, color: 'var(--success-text)' }}>${grant.amount.toLocaleString()}</span>
+            <div className="grid-stats fade-in-delay-1" style={{ marginBottom: 'var(--space-6)' }}>
+                <Card className="stat-card">
+                    <div className="card-accent-top" style={{ background: 'var(--success-text)' }} />
+                    <span className="stat-label">Active Funding</span>
+                    <span className="stat-value" style={{ color: 'var(--success-text)' }}>${activeGrantsTotal.toLocaleString()}</span>
+                    <span className="stat-trend">Current fiscal year</span>
+                </Card>
+                <Card className="stat-card">
+                    <div className="card-accent-top" style={{ background: 'var(--brand-primary)' }} />
+                    <span className="stat-label">Publications</span>
+                    <span className="stat-value">{data.publications.length}</span>
+                    <span className="stat-trend" style={{ color: 'var(--text-muted)' }}>Career total</span>
+                </Card>
+            </div>
+
+            <div className="grid-2 fade-in-delay-2">
+                <Card style={{ padding: 0, overflow: 'hidden' }}>
+                    <div className="card-accent-top" style={{ background: 'var(--brand-gradient)' }} />
+                    <div style={{ padding: 'var(--space-4) var(--space-6)', background: 'var(--bg-sidebar)', borderBottom: '1px solid var(--border-subtle)' }}>
+                        <h2 style={{ margin: 0, fontSize: '1.05rem', color: 'var(--text-primary)' }}>Grant Portfolio</h2>
+                    </div>
+                    <div style={{ padding: '0 var(--space-6)' }}>
+                        {data.grants.map((grant, idx) => (
+                            <div key={grant.id} className="data-row" style={{ borderBottom: idx === data.grants.length - 1 ? 'none' : undefined }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flex: 1, paddingRight: 'var(--space-4)' }}>
+                                    <span className="data-value" style={{ textAlign: 'left', color: 'var(--text-bright)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{grant.title}</span>
+                                    <span className="data-label">{grant.fundingAgency}</span>
                                 </div>
-                                <h4 style={{ margin: '0 0 var(--space-1) 0', color: 'var(--text-primary)', fontSize: '1.05rem' }}>{grant.title}</h4>
-                                <p style={{ margin: '0 0 var(--space-2) 0', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Agency: {grant.fundingAgency}</p>
-                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Ends: {new Date(grant.endDate).toLocaleDateString()}</div>
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                                    <Badge colorScheme={grant.status === 'Active' ? 'success' : 'warning'}>{grant.status}</Badge>
+                                    <span style={{ fontSize: '0.8rem', color: 'var(--text-primary)', fontWeight: 600 }}>${grant.amount.toLocaleString()}</span>
+                                </div>
                             </div>
                         ))}
                     </div>
                 </Card>
 
-                {/* Publications */}
-                <Card style={{ display: 'flex', flexDirection: 'column' }}>
-                    <h2 style={{ fontSize: '1.2rem', color: 'var(--text-primary)', marginBottom: 'var(--space-4)' }}>Recent Publications</h2>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-                        {portfolio?.publications.map((pub: any) => (
-                            <div key={pub.id} style={{ background: 'var(--bg-elevated)', padding: 'var(--space-4)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
-                                    <Badge colorScheme={pub.status === 'Published' ? 'success' : 'info'}>{pub.status}</Badge>
-                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{pub.id}</span>
+                <Card style={{ padding: 0, overflow: 'hidden' }}>
+                    <div className="card-accent-top" style={{ background: 'var(--text-secondary)' }} />
+                    <div style={{ padding: 'var(--space-4) var(--space-6)', background: 'var(--bg-sidebar)', borderBottom: '1px solid var(--border-subtle)' }}>
+                        <h2 style={{ margin: 0, fontSize: '1.05rem', color: 'var(--text-primary)' }}>Publications</h2>
+                    </div>
+                    <div style={{ padding: '0 var(--space-6)' }}>
+                        {data.publications.map((pub, idx) => (
+                            <div key={pub.id} className="data-row" style={{ borderBottom: idx === data.publications.length - 1 ? 'none' : undefined }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flex: 1, paddingRight: 'var(--space-4)' }}>
+                                    <span className="data-value" style={{ textAlign: 'left', color: 'var(--text-bright)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{pub.title}</span>
+                                    <span className="data-label" style={{ color: 'var(--brand-primary)' }}>{pub.journal}</span>
                                 </div>
-                                <h4 style={{ margin: '0 0 var(--space-1) 0', color: 'var(--text-primary)', fontSize: '1.05rem' }}>{pub.title}</h4>
-                                <p style={{ margin: '0 0 var(--space-2) 0', color: 'var(--brand-primary)', fontWeight: 500, fontSize: '0.85rem' }}>{pub.journal}</p>
-                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Date: {new Date(pub.publishDate).toLocaleDateString()}</div>
+                                <Badge colorScheme={pub.status === 'Published' ? 'info' : 'default'}>{pub.status}</Badge>
                             </div>
                         ))}
                     </div>

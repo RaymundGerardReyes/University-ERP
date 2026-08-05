@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { scheduleApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
+import { fetchFacultySchedule } from './Schedule.api';
 
 export const useWeeklySchedule = () => {
-    const { identity } = useAuth();
+    const { user } = useAuth();
+
     return useQuery({
-        queryKey: ['weeklySchedule', identity?.id],
-        queryFn: () => scheduleApi.getWeeklySchedule(identity?.id || 'FAC-001'),
-        enabled: !!identity?.id,
+        queryKey: ['facultySchedule', user?.id],
+        queryFn: () => fetchFacultySchedule(user!.id),
+        enabled: !!user?.id,
     });
 };

@@ -3,40 +3,69 @@ import React from 'react';
 import { useAdvisees } from './Advising.hooks';
 
 export const AdvisingPage: React.FC = () => {
-    const { data: advisees, isLoading } = useAdvisees();
+    const { data: advisees, isLoading, isError } = useAdvisees();
 
-    if (isLoading) return <div className="skeleton fade-in" style={{ height: '500px' }} />;
+    if (isLoading) return <div className="skeleton" style={{ height: '60vh' }} />;
+    if (isError || !advisees) return <div className="stub-page fade-in"><div className="stub-title">Advising Data Unavailable</div></div>;
+
+    const atRiskCount = advisees.filter(a => a.status === 'At Risk' || a.status === 'Action Required').length;
 
     return (
         <div className="fade-in">
-            <PageHeader title="Academic Advising" subtitle="Track degree progress and graduation readiness for your assigned advisees." />
-            <div className="grid-auto fade-in-delay-1">
-                {advisees?.map(student => (
-                    <Card key={student.studentId} style={{ display: 'flex', flexDirection: 'column' }}>
-                        <div className="card-accent-top" style={{ background: student.status === 'At Risk' ? 'var(--danger-text)' : 'var(--brand-primary)' }} />
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
-                            <Badge colorScheme={student.status === 'On Track' ? 'success' : student.status === 'At Risk' ? 'danger' : 'warning'}>{student.status}</Badge>
-                            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>{student.studentId}</span>
-                        </div>
-                        <h3 style={{ margin: '0 0 var(--space-1) 0', color: 'var(--text-primary)' }}>{student.name}</h3>
-                        <p style={{ margin: '0 0 var(--space-4) 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Program: {student.program}</p>
+            <PageHeader
+                title="Academic Advising"
+                subtitle="Monitor student progression, degree paths, and risk indicators."
+            />
 
-                        <div style={{ background: 'var(--bg-elevated)', padding: 'var(--space-4)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-6)' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
-                                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Degree Progress</span>
-                                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>{student.degreeProgress}%</span>
-                            </div>
-                            <div style={{ height: '6px', background: 'var(--bg-base)', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
-                                <div style={{ height: '100%', width: `${student.degreeProgress}%`, background: 'var(--brand-gradient)', transition: 'width 1s ease' }} />
-                            </div>
-                        </div>
+            <div className="grid-stats fade-in-delay-1" style={{ marginBottom: 'var(--space-6)' }}>
+                <Card className="stat-card">
+                    <div className="card-accent-top" style={{ background: 'var(--brand-primary)' }} />
+                    <span className="stat-label">Total Advisees</span>
+                    <span className="stat-value">{advisees.length}</span>
+                    <span className="stat-trend">Currently Enrolled</span>
+                </Card>
+                <Card className="stat-card">
+                    <div className="card-accent-top" style={{ background: atRiskCount > 0 ? 'var(--danger-text)' : 'var(--success-text)' }} />
+                    <span className="stat-label">Students at Risk</span>
+                    <span className="stat-value" style={{ color: atRiskCount > 0 ? 'var(--danger-text)' : 'var(--success-text)' }}>
+                        {atRiskCount}
+                    </span>
+                    <span className="stat-trend">Require Consultation</span>
+                </Card>
+            </div>
 
-                        <div style={{ marginTop: 'auto', display: 'flex', gap: 'var(--space-3)' }}>
-                            <Button variant="outline" style={{ flex: 1 }}>Degree Audit</Button>
-                            <Button variant="primary" style={{ flex: 1 }}>Schedule Sync</Button>
-                        </div>
-                    </Card>
-                ))}
+            <div className="grid-auto fade-in-delay-2">
+                {advisees.map((advisee) => {
+                    let badgeColor: 'success' | 'warning' | 'danger' = 'success';
+                    if (advisee.status === 'At Risk') badgeColor = 'warning';
+                    if (advisee.status === 'Action Required') badgeColor = 'danger';
+
+                    return (
+                        <Card key={advisee.studentId} style={{ display: 'flex', flexDirection: 'column' }}>
+                            <div className="card-accent-top" style={{ background: `var(--${badgeColor}-text)` }} />
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-4)' }}>
+                                <span className="data-label" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{advisee.studentId}</span>
+                                <Badge colorScheme={badgeColor}>{advisee.status}</Badge>
+                            </div>
+
+                            <h3 className="data-value" style={{ textAlign: 'left', fontSize: '1.15rem', marginBottom: 'var(--space-1)' }}>{advisee.name}</h3>
+                            <p className="data-label" style={{ color: 'var(--brand-primary)', marginBottom: 'var(--space-4)' }}>{advisee.program}</p>
+
+                            <div style={{ background: 'var(--bg-elevated)', padding: 'var(--space-3)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', marginBottom: 'var(--space-6)' }}>
+                                <div className="data-row" style={{ padding: 0, borderBottom: 'none' }}>
+                                    <span className="data-label">Degree Progress</span>
+                                    <span className="data-value" style={{ color: 'var(--text-bright)' }}>{advisee.degreeProgress}%</span>
+                                </div>
+                            </div>
+
+                            <div style={{ marginTop: 'auto', display: 'flex', gap: 'var(--space-3)' }}>
+                                <Button variant="primary" style={{ flex: 1 }}>Message</Button>
+                                <Button variant="outline" style={{ flex: 1 }}>View Transcript</Button>
+                            </div>
+                        </Card>
+                    );
+                })}
             </div>
         </div>
     );

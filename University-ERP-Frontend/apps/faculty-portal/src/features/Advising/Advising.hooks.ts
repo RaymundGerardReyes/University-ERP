@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { advisingApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
+import { fetchFacultyAdvisees } from './Advising.api';
 
 export const useAdvisees = () => {
-    const { identity } = useAuth();
+    const { user } = useAuth();
+
     return useQuery({
-        queryKey: ['advisees', identity?.id],
-        queryFn: () => advisingApi.getAdvisees(identity?.id || 'FAC-001'),
-        enabled: !!identity?.id,
+        queryKey: ['facultyAdvisees', user?.id],
+        queryFn: () => fetchFacultyAdvisees(user!.id),
+        enabled: !!user?.id,
     });
 };

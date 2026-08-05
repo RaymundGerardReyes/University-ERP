@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { documentsApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
+import { fetchFacultyDocuments } from './Documents.api';
 
 export const useFacultyDocuments = () => {
-    const { identity } = useAuth();
+    const { user } = useAuth();
+
     return useQuery({
-        queryKey: ['facultyDocuments', identity?.id],
-        queryFn: () => documentsApi.getDocuments(identity?.id || 'FAC-001'),
-        enabled: !!identity?.id,
+        queryKey: ['facultyDocuments', user?.id],
+        queryFn: () => fetchFacultyDocuments(user!.id),
+        enabled: !!user?.id,
     });
 };
