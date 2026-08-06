@@ -1,6 +1,17 @@
 import { Badge, Button, PageHeader } from '@university-erp/ui-kit';
 import React, { useState } from 'react';
-import { CourseOffering, useMyEnrollments } from './MyEnrollments.hooks';
+import { useMyEnrollments } from './MyEnrollments.hooks';
+
+export interface CourseOffering {
+  id: string;
+  code: string;
+  title: string;
+  section: string;
+  credits: number;
+  faculty: string;
+  lmsData: any[];
+  examinations: any[];
+}
 
 const SubjectCard: React.FC<{ subject: CourseOffering; delayIndex: number }> = ({ subject, delayIndex }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -68,16 +79,16 @@ export const MyEnrollmentsPage: React.FC = () => {
         <p style={{ margin: 0, color: 'var(--text-secondary)' }}>Curriculum Version: <strong style={{ color: 'var(--text-primary)' }}>{program.curriculumVersion}</strong></p>
       </div>
 
-      {program.academicYears.map((ay, index) => (
+      {program.academicYears.map((ay: any, index: number) => (
         <div key={ay.id} style={{ marginBottom: 'var(--space-8)' }} className={`fade-in-delay-${(index % 3) + 1}`}>
           <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: 'var(--space-2)', color: 'var(--text-primary)', marginBottom: 'var(--space-4)' }}>
             {ay.yearName} <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 400 }}>&bull; {ay.level}</span>
           </h3>
 
-          {ay.semesters.map((sem) => (
+          {ay.semesters.map((sem: any) => (
             <div key={sem.id} style={{ marginBottom: 'var(--space-4)' }}>
               <h4 style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-3)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{sem.name}</h4>
-              {sem.offerings.map((subject, sIdx) => (
+              {sem.offerings.map((subject: any, sIdx: number) => (
                 <SubjectCard key={subject.id} subject={subject} delayIndex={sIdx} />
               ))}
             </div>

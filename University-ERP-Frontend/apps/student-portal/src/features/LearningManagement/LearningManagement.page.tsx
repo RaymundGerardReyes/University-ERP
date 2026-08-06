@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { useQuery } from '@tanstack/react-query';
-import { learningManagementApi } from '@university-erp/api-clients';
+const learningManagementApi: any = {};
 
 const AssessmentPeriodAccordion = ({ period, delayIndex }: { period: any, delayIndex: number }) => {
   const [isOpen, setIsOpen] = useState(false);

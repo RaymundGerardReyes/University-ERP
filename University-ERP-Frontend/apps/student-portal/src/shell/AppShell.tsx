@@ -11,6 +11,10 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'My Profile',      path: '/profile',     icon: '👤', section: 'Account' },
+  { label: 'Course Registration', path: '/enrollment', icon: '📝', section: 'Academics' },
+  { label: 'My Timetable',    path: '/timetable',   icon: '📅', section: 'Academics' },
+  { label: 'Academic Record', path: '/records',     icon: '📜', section: 'Academics' },
+  { label: 'Graduation Clearance', path: '/clearance', icon: '🎓', section: 'Academics' },
   { label: 'My Enrollments',  path: '/enrollments', icon: '📚', section: 'Academics' },
   { label: 'Health Center',   path: '/health',      icon: '🏥', section: 'Academics' },
   { label: 'Guidance',        path: '/guidance',    icon: '🧭', section: 'Academics' },

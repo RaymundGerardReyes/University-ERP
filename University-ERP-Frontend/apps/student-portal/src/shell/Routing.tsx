@@ -15,6 +15,10 @@ import { HealthRecordsPage } from '../features/HealthRecords/HealthRecords.page'
 import { HostelAllocationPage } from '../features/HostelAllocation/HostelAllocation.page';
 import { MyEnrollmentsPage } from '../features/MyEnrollments/MyEnrollments.page';
 import { StudentProfilePage } from '../features/StudentProfile/StudentProfile.page';
+import { EnrollmentPage } from '../features/Enrollment/Enrollment.page';
+import { TimetablePage } from '../features/Timetable/Timetable.page';
+import { AcademicRecordPage } from '../features/AcademicRecord/AcademicRecord.page';
+import { ClearancePage } from '../features/Clearance/Clearance.page';
 
 const logger = createLogger('student-portal', 'Routing');
 
@@ -30,6 +34,10 @@ export const Routing: React.FC = () => {
         <Route element={<AuthGuard><AppShell /></AuthGuard>}>
           <Route path="/profile" element={<StudentProfilePage />} />
           <Route path="/enrollments" element={<MyEnrollmentsPage />} />
+          <Route path="/enrollment" element={<EnrollmentPage />} />
+          <Route path="/timetable" element={<TimetablePage />} />
+          <Route path="/records" element={<AcademicRecordPage />} />
+          <Route path="/clearance" element={<ClearancePage />} />
           <Route path="/hostel" element={<HostelAllocationPage />} />
           <Route path="/health" element={<HealthRecordsPage />} />
           <Route path="/guidance" element={<GuidanceSessionsPage />} />
