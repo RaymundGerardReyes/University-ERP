@@ -37,12 +37,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }).join(''));
         const payload = JSON.parse(jsonPayload);
         
+        const userEmail = payload.email || 'unknown@example.com';
+        
+        // Robust Fallback: If JWT somehow misses the claim, infer from email standard prefix
+        let fallbackRole = 'Student';
+        if (userEmail.startsWith('admin@')) fallbackRole = 'Admin';
+        else if (userEmail.startsWith('faculty@')) fallbackRole = 'Faculty';
+        else if (userEmail.startsWith('admissions@')) fallbackRole = 'Admissions';
+        else if (userEmail.startsWith('finance@')) fallbackRole = 'Finance';
+        else if (userEmail.startsWith('registrar@')) fallbackRole = 'Registrar';
+        else if (userEmail.startsWith('applicant@')) fallbackRole = 'Applicant';
+
+        const extractedRoles = payload.role ? (Array.isArray(payload.role) ? payload.role : [payload.role]) :
+                 (payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ? 
+                 (Array.isArray(payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']) ? 
+                 payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] : 
+                 [payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']]) : []);
+
+        if (extractedRoles.length === 0) {
+            extractedRoles.push(fallbackRole);
+        }
+
         logger.info('Global Identity session found and decoded.');
         setIdentity({
           id: payload.sub || 'ID-UNKNOWN',
-          name: payload.name || payload.email || 'Unknown User',
-          email: payload.email || 'unknown@example.com',
-          emailVerified: true
+          name: payload.name || userEmail || 'Unknown User',
+          email: userEmail,
+          emailVerified: true,
+          roles: extractedRoles
         });
       } catch (e) {
         logger.warn('Failed to parse identity token', e);

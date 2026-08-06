@@ -3,22 +3,25 @@ import React from 'react';
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   children: React.ReactNode;
   colorScheme?: 'success' | 'warning' | 'info' | 'danger' | 'default';
+  variant?: 'success' | 'warning' | 'info' | 'danger' | 'default';
 }
 
-export const Badge: React.FC<BadgeProps> = ({ children, colorScheme = 'default', style, ...props }) => {
+export const Badge: React.FC<BadgeProps> = ({ children, colorScheme, variant, style, ...props }) => {
   let background = 'var(--bg-hover)';
   let color = 'var(--text-secondary)';
+  
+  const effectiveScheme = variant || colorScheme || 'default';
 
-  if (colorScheme === 'success') {
+  if (effectiveScheme === 'success') {
     background = 'var(--success-bg)';
     color = 'var(--success-text)';
-  } else if (colorScheme === 'warning') {
+  } else if (effectiveScheme === 'warning') {
     background = 'var(--warning-bg)';
     color = 'var(--warning-text)';
-  } else if (colorScheme === 'info') {
+  } else if (effectiveScheme === 'info') {
     background = 'var(--info-bg)';
     color = 'var(--info-text)';
-  } else if (colorScheme === 'danger') {
+  } else if (effectiveScheme === 'danger') {
     background = 'var(--danger-bg)';
     color = 'var(--danger-text)';
   }

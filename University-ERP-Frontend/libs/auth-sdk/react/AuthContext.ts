@@ -5,6 +5,7 @@ export interface Identity {
   name: string;
   email: string;
   emailVerified: boolean;
+  roles?: string[];
 }
 
 export interface AuthContextType {

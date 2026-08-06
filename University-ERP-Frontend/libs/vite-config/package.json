@@ -2,6 +2,7 @@
   "name": "@university-erp/vite-config",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "main": "index.ts",
   "dependencies": {
     "vite": "^8.2.0",

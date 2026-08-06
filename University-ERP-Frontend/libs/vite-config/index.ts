@@ -55,6 +55,7 @@ export function createPortalConfig(options: PortalConfig): UserConfig {
     },
     server: {
       port: options.port,
+      strictPort: true,
       proxy: {
         '/api': {
           target: options.apiTarget ?? 'http://localhost:5191',

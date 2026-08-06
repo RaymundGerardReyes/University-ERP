@@ -1,7 +1,8 @@
 import React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost' | 'success' | 'warning' | 'info';
+  size?: 'small' | 'medium' | 'large';
 }
 
 export const Button: React.FC<ButtonProps> = ({ children, variant = 'primary', style, disabled, ...props }) => {

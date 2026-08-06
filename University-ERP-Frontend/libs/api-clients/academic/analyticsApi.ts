@@ -17,5 +17,15 @@ export const analyticsApi = {
         } catch (error) {
             throw error;
         }
+    },
+
+    getAdmissionsReport: async (): Promise<any> => {
+        try {
+            const response = await axios.get('/api/v1/analytics/admissions-report');
+            return response.data;
+        } catch (error) {
+            console.error('Failed to get admissions report', error);
+            throw error;
+        }
     }
 };

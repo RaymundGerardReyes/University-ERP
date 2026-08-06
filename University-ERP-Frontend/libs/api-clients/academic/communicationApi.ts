@@ -18,5 +18,15 @@ export const communicationApi = {
         } catch (error) {
             throw error;
         }
+    },
+    
+    sendMessage: async (payload: { recipientId: string, subject: string, body: string }): Promise<boolean> => {
+        try {
+            const response = await axios.post(`${BASE_URL}/messages`, payload);
+            return response.status === 200;
+        } catch (error) {
+            console.error('Failed to send message', error);
+            throw error;
+        }
     }
 };

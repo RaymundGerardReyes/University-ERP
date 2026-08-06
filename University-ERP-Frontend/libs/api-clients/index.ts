@@ -8,6 +8,7 @@ export * from './academic/libraryCatalogApi';
 export * from './academic/researchApi';
 export * from './academic/scheduleApi';
 export * from './academic/studentInformationApi';
+export * from './academic/registrarApi';
 export * from './academic/teachingApi';
 export * from './administration/assetManagementApi';
 export * from './administration/financeApi';

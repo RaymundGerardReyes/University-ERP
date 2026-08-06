@@ -27,5 +27,14 @@ export const assessmentApi = {
         } catch (error) {
             throw error;
         }
+    },
+    getExamSessions: async (): Promise<any[]> => {
+        try {
+            const response = await axios.get('/api/v1/academic/examination/sessions');
+            return response.data;
+        } catch (error) {
+            console.error('Failed to get exam sessions', error);
+            throw error;
+        }
     }
 };
