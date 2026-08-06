@@ -321,6 +321,27 @@ export const LoginPage = () => {
             return;
         }
 
+        if (response.user.role === 'Admissions') {
+            const defaultAdmissionsUrl = isNative ? 'http://localhost:5183' : import.meta.env.VITE_ADMISSIONS_PORTAL_URL;
+            redirectUri = defaultAdmissionsUrl || 'http://localhost:5183';
+            window.location.href = `${redirectUri}#token=${response.token}`;
+            return;
+        }
+
+        if (response.user.role === 'Finance') {
+            const defaultFinanceUrl = isNative ? 'http://localhost:5176' : import.meta.env.VITE_FINANCE_PORTAL_URL;
+            redirectUri = defaultFinanceUrl || 'http://localhost:5176';
+            window.location.href = `${redirectUri}#token=${response.token}`;
+            return;
+        }
+
+        if (response.user.role === 'Registrar') {
+            const defaultRegistrarUrl = isNative ? 'http://localhost:5181' : import.meta.env.VITE_REGISTRAR_PORTAL_URL;
+            redirectUri = defaultRegistrarUrl || 'http://localhost:5181';
+            window.location.href = `${redirectUri}#token=${response.token}`;
+            return;
+        }
+
         // 3. True Database Check: Verify their Admissions status securely
         try {
           const applications = await admissionsApi.getApplicationStatus(response.user.id);
