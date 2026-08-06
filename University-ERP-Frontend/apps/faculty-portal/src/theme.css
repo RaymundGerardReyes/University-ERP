@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+    --bg-base: #060b18;
+    --bg-surface: #0d1526;
+    --bg-elevated: #111d36;
+    --bg-sidebar: #080f1e;
+    --bg-hover: rgba(255, 255, 255, 0.05);
+    --bg-active: rgba(99, 179, 237, 0.1);
+    --text-primary: #e2e8f4;
+    --text-secondary: #8899b8;
+    --text-muted: #4d6080;
+    --text-bright: #ffffff;
+    --brand-primary: #3b82f6;
+    --brand-primary-hover: #60a5fa;
+    --brand-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --border-accent: rgba(59, 130, 246, 0.4);
+    --radius-md: 10px;
+    --radius-full: 9999px;
+    --sidebar-width: 260px;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border-color);
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-brand h1 {
+    font-size: 1.2rem;
+    color: var(--text-bright);
+    margin: 0 0 2rem 0;
+}
+
+.nav-section-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0 0.5rem;
+    margin: 1rem 0 0.5rem 0;
+}
+
+.nav-item {
+    display: flex;
+    padding: 0.5rem 0.75rem;
+    text-decoration: none;
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.15s;
+}
+
+.nav-item:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.nav-item.active {
+    color: var(--brand-primary-hover);
+    background: var(--bg-active);
+    border: 1px solid var(--border-accent);
+}
+
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.user-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    margin-top: auto;
+}

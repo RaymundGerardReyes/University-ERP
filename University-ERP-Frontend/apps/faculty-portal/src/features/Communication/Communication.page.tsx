@@ -1,59 +1,35 @@
+import { useQuery } from '@tanstack/react-query';
+import { communicationApi } from '@university-erp/api-clients';
+import { useAuth } from '@university-erp/auth-sdk';
 import { Badge, Button, Card, PageHeader } from '@university-erp/ui-kit';
 import React from 'react';
-import { useFacultyInbox } from './Communication.hooks';
 
 export const CommunicationPage: React.FC = () => {
-    const { data: messages, isLoading, isError } = useFacultyInbox();
+    const { user } = useAuth();
+    const { data: inbox, isLoading } = useQuery({
+        queryKey: ['facultyInbox', user?.id],
+        queryFn: () => communicationApi.getInbox(user!.id),
+        enabled: !!user?.id
+    });
 
-    if (isLoading) return <div className="skeleton" />;
-    if (isError || !messages) return <div className="stub-page"><div className="stub-title">Inbox Unavailable</div></div>;
-
-    const unreadCount = messages.filter(m => !m.isRead).length;
+    if (isLoading) return <div className="skeleton" style={{ height: '400px' }} />;
 
     return (
         <div className="fade-in">
-            <PageHeader
-                title="Faculty Inbox"
-                subtitle="Secure internal communications with administration and students."
-                action={<Button variant="primary">Compose Message</Button>}
-            />
-
-            <div className="grid-stats fade-in-delay-1">
-                <Card className="stat-card">
-                    <div className="card-accent-top" />
-                    <span className="stat-label">Unread Messages</span>
-                    <span className="stat-value">{unreadCount}</span>
-                    <span className="stat-trend">Requires Attention</span>
-                </Card>
-            </div>
-
-            <div className="grid-auto fade-in-delay-2">
-                {messages.map((msg) => (
-                    <Card key={msg.id} className="card">
-                        <div className="card-accent-top" />
-
-                        <div className="data-row">
+            <PageHeader title="Inbox" subtitle="Your secure academic communications." />
+            <Card className="fade-in-delay-1">
+                <div className="card-accent-top" />
+                {inbox?.map((msg) => (
+                    <div key={msg.id} className="data-row" style={{ padding: 'var(--space-4) 0' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
                             <span className="data-value">{msg.subject}</span>
-                            {!msg.isRead && <Badge colorScheme="info">New</Badge>}
+                            <span className="data-label">From: {msg.sender} • {new Date(msg.date).toLocaleDateString()}</span>
                         </div>
-
-                        <div className="data-row">
-                            <span className="data-label">Sender</span>
-                            <span className="data-value">{msg.sender}</span>
-                        </div>
-
-                        <div className="data-row">
-                            <span className="data-label">Received</span>
-                            <span className="data-value">{new Date(msg.date).toLocaleDateString()}</span>
-                        </div>
-
-                        <div className="data-row">
-                            <Button variant="outline">Archive</Button>
-                            <Button variant="secondary">Read Message</Button>
-                        </div>
-                    </Card>
+                        {!msg.isRead && <Badge colorScheme="warning">Unread</Badge>}
+                        <Button variant="secondary">Read</Button>
+                    </div>
                 ))}
-            </div>
+            </Card>
         </div>
     );
 };

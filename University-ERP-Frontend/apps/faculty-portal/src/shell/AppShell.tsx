@@ -1,60 +1,59 @@
 import { useAuth } from '@university-erp/auth-sdk';
-import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 
+// Structure directly matching image_277446.png
 const navItems = [
   { label: 'Dashboard', path: '/dashboard', section: 'Workspace' },
-  { label: 'Documents', path: '/documents', section: 'Workspace' }, // <-- ADDED
+  { label: 'Documents', path: '/documents', section: 'Workspace' },
+
   { label: 'Teaching & Classes', path: '/teaching', section: 'Academics' },
-  { label: 'My Students', path: '/students', section: 'Academics' },
-  { label: 'Assessments & Grades', path: '/assessments', section: 'Academics' },
-  { label: 'Admissions & Approvals', path: '/admissions', section: 'Administration' },
+  { label: 'Admission Queue', path: '/secretary/queue', section: 'Secretary Workspace' },
+  { label: 'Document Verification', path: '/secretary/verification', section: 'Secretary Workspace' },
+  { label: 'Interview Scheduling', path: '/secretary/interviews', section: 'Secretary Workspace' },
+  { label: 'Missing Requirements', path: '/secretary/requirements', section: 'Secretary Workspace' },
+
+  { label: 'Evaluation Queue', path: '/chairperson/queue', section: 'Chairperson Workspace' },
+  { label: 'Academic Evaluation', path: '/chairperson/evaluation', section: 'Chairperson Workspace' },
+  { label: 'Curriculum Matching', path: '/chairperson/curriculum', section: 'Chairperson Workspace' },
+  { label: 'Recommendation', path: '/chairperson/recommendation', section: 'Chairperson Workspace' },
+
+  { label: 'Recommendation Queue', path: '/dean/queue', section: 'Dean Workspace' },
+  { label: 'College Endorsement', path: '/dean/endorsement', section: 'Dean Workspace' },
+  { label: 'Program Capacity', path: '/dean/capacity', section: 'Dean Workspace' },
+
+  { label: 'Applicant Access', path: '/security/access', section: 'Faculty Security' },
+  { label: 'Confidential Documents', path: '/security/documents', section: 'Faculty Security' },
+  { label: 'Evaluation Audit Logs', path: '/security/audit', section: 'Faculty Security' },
+  { label: 'Digital Signatures', path: '/security/signatures', section: 'Faculty Security' },
+
   { label: 'Advising', path: '/advising', section: 'Administration' },
+
   { label: 'Research', path: '/research', section: 'Professional' },
   { label: 'Schedule', path: '/schedule', section: 'Professional' },
+
   { label: 'Communication', path: '/communication', section: 'Connect' },
   { label: 'Analytics', path: '/analytics', section: 'Connect' },
-  { label: 'Settings', path: '/settings', section: 'System' }, // <-- ADDED
+
+  { label: 'Settings', path: '/settings', section: 'System' },
 ];
 
-const sections = ['Workspace', 'Academics', 'Administration', 'Professional', 'Connect', 'System'];
+const sections = ['Workspace', 'Academics', 'Secretary Workspace', 'Chairperson Workspace', 'Dean Workspace', 'Faculty Security', 'Administration', 'Professional', 'Connect', 'System'];
 
 export const AppShell = () => {
   const { identity, logout } = useAuth();
   const location = useLocation();
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
 
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
-  const closeMobileMenu = () => setIsMobileOpen(false);
+  const name = identity?.name || 'Dr. Sarah Jenkins';
+  const initials = name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
     <div className="app-layout">
-      {/* Mobile Top Bar */}
-      <header className="mobile-header-bar">
-        <button className="icon-btn" onClick={() => setIsMobileOpen(true)}> </button>
-        <span style={{ fontWeight: 700, color: 'var(--text-bright)' }}>Faculty Portal</span>
-        <button className="icon-btn" onClick={toggleTheme}>
-          {theme === 'light' ? ' ' : ' '}
-        </button>
-      </header>
-
-      {/* Sidebar */}
-      <aside className={`sidebar ${isMobileOpen ? 'open' : ''}`}>
+      <aside className="sidebar">
         <div className="sidebar-brand">
-          <div className="sidebar-brand-icon" style={{ background: 'linear-gradient(135deg, hsl(200, 80%, 55%), hsl(240, 80%, 60%))' }}>F</div>
-          <div className="sidebar-brand-text">
-            <h1>University ERP</h1>
-            <span>Faculty Portal</span>
-          </div>
+          <h1>University ERP<br /><span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Faculty Portal</span></h1>
         </div>
 
-        <nav style={{ flex: 1, overflowY: 'auto' }}>
+        <nav style={{ flex: 1 }}>
           {sections.map(section => (
             <div key={section}>
               <div className="nav-section-label">{section}</div>
@@ -63,12 +62,7 @@ export const AppShell = () => {
                 .map(item => {
                   const isActive = location.pathname.startsWith(item.path);
                   return (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      className={`nav-item ${isActive ? 'active' : ''}`}
-                      onClick={closeMobileMenu}
-                    >
+                    <Link key={item.path} to={item.path} className={`nav-item ${isActive ? 'active' : ''}`}>
                       {item.label}
                     </Link>
                   );
@@ -77,32 +71,20 @@ export const AppShell = () => {
           ))}
         </nav>
 
-        {/* Footer */}
-        <div className="sidebar-footer">
-          <button className="theme-toggle-btn" onClick={toggleTheme}>
-            {theme === 'light' ? '  Dark Mode' : '  Light Mode'}
-          </button>
-          <div className="user-card">
-            <div className="user-avatar" style={{ background: 'var(--brand-secondary)' }}>
-              {identity?.name?.[0] || 'F'}
-            </div>
-            <div className="user-info">
-              <div className="user-name">{identity?.name || 'Faculty Member'}</div>
-              <div className="user-id">{identity?.id || 'ID-PENDING'}</div>
-            </div>
+        <div className="user-card">
+          <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--brand-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>
+            {initials}
           </div>
-          <button className="logout-btn" onClick={logout}> Sign Out</button>
+          <div style={{ overflow: 'hidden' }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</div>
+            <button onClick={logout} style={{ fontSize: '0.7rem', color: '#f87171', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>Sign Out</button>
+          </div>
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="main-content">
-        <div className="content-container">
-          <Outlet />
-        </div>
+        <Outlet />
       </main>
-
-      {isMobileOpen && <div onClick={closeMobileMenu} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(6, 11, 24, 0.65)', backdropFilter: 'blur(4px)', zIndex: 40 }} />}
     </div>
   );
 };
