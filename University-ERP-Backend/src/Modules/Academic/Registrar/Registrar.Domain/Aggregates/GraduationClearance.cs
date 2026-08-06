@@ -10,6 +10,8 @@ public sealed class GraduationClearance : AggregateRoot<Guid>
     public bool AcademicRequirementsMet { get; private set; }
     public bool FinancialObligationsCleared { get; private set; }
     public string ClearanceStatus { get; private set; } = string.Empty;
+    public decimal CumulativeGPA { get; private set; }
+    public string LatinHonors { get; private set; } = "None";
 
     private GraduationClearance() { }
 
@@ -40,5 +42,34 @@ public sealed class GraduationClearance : AggregateRoot<Guid>
 
         ClearanceStatus = "Deficient";
         return Result<bool>.Failure(new Error("Registrar.ClearanceFailed", "Student has outstanding academic or financial deficiencies."));
+    }
+
+    public Result<string> ComputeLatinHonors(decimal finalGpa)
+    {
+        if (ClearanceStatus != "Cleared_For_Graduation")
+        {
+            return Result<string>.Failure(new Error("Registrar.NotCleared", "Cannot compute honors for an uncleared student."));
+        }
+
+        CumulativeGPA = finalGpa;
+
+        if (finalGpa <= 1.20m)
+        {
+            LatinHonors = "Summa Cum Laude";
+        }
+        else if (finalGpa <= 1.45m)
+        {
+            LatinHonors = "Magna Cum Laude";
+        }
+        else if (finalGpa <= 1.75m)
+        {
+            LatinHonors = "Cum Laude";
+        }
+        else
+        {
+            LatinHonors = "None";
+        }
+
+        return Result<string>.Success($"Successfully computed honors: {LatinHonors}");
     }
 }

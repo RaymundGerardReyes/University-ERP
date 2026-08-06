@@ -15,14 +15,13 @@ public sealed class StudentInformationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // DBMA Rule: Explicitly map tables to specific schemas to prevent overlap
-        modelBuilder.Entity<Student>().ToTable("Students", "academic");
-        
         modelBuilder.Entity<FacultyAdvisee>(entity =>
         {
             entity.ToTable("FacultyAdvisees", "advising");
             entity.HasKey(e => e.Id);
         });
 
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(StudentInformationDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
     }
 }

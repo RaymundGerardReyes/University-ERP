@@ -16,7 +16,7 @@ public sealed class FacultyStudentsEndpoint : ControllerBase
 
     public FacultyStudentsEndpoint(ISender sender) => _sender = sender;
 
-    [HttpGet("faculty/{facultyId}")]
+    [HttpGet("{facultyId}")]
     [ProducesResponseType(typeof(IReadOnlyList<StudentDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMyStudents([FromRoute] string facultyId, CancellationToken cancellationToken)
     {

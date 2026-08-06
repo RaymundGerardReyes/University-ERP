@@ -25,11 +25,11 @@ public static class LearningManagementModuleRegistration
         // 2. EF Core DbContext (PostgreSQL)
         services.AddDbContext<LearningManagementDbContext>(options =>
             options.UseNpgsql(
-                configuration.GetConnectionString("UniversityErpDb"),
-                npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "lms")));
-
+                configuration.GetConnectionString("DefaultConnection"),
+                npgsqlOptions => npgsqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "learningmanagement")
+            ));
         // 3. Repository (Dependency Inversion)
-        services.AddScoped<IOfflineSubmissionRepository, OfflineSubmissionRepository>();
+        services.AddScoped<ILearningManagementRepository, LearningManagementRepository>();
 
         // 4. Schedule Token Verifier
         var scheduleSecret = configuration["LmsOffline:ScheduleTokenSecret"]
@@ -37,6 +37,7 @@ public static class LearningManagementModuleRegistration
         services.AddSingleton<IScheduleTokenVerifier>(_ => new ScheduleTokenVerifier(scheduleSecret));
 
         services.AddScoped<ILearningManagementRepository, LearningManagementRepository>();
+        services.AddScoped<IOfflineSubmissionRepository, OfflineSubmissionRepository>();
         return services;
     }
 }

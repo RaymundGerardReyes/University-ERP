@@ -26,4 +26,15 @@ public sealed class TranscriptRequest : AggregateRoot<Guid>
         
         return Result<TranscriptRequest>.Success(new TranscriptRequest(Guid.NewGuid(), studentId, purpose));
     }
+
+    public Result<string> Approve()
+    {
+        if (RequestStatus != "Pending_Clearance")
+        {
+            return Result<string>.Failure(new Error("Registrar.InvalidStatus", "Only pending requests can be approved."));
+        }
+
+        RequestStatus = "Approved_Ready_For_Printing";
+        return Result<string>.Success("Transcript request approved successfully.");
+    }
 }

@@ -4,10 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LearningManagement.Infrastructure.Persistence;
 
-/// <summary>
-/// EF Core DbContext for the LearningManagement bounded context.
-/// Persists offline submission records received from the Avalonia client.
-/// </summary>
 public sealed class LearningManagementDbContext : DbContext
 {
     public LearningManagementDbContext(DbContextOptions<LearningManagementDbContext> options)

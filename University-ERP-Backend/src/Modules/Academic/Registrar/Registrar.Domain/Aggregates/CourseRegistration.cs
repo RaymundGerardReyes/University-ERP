@@ -24,7 +24,7 @@ public sealed class CourseRegistration : AggregateRoot<Guid>
         StudentId = studentId;
         CourseCode = courseCode;
         AcademicTerm = academicTerm;
-        RegistrationStatus = "Enrolled";
+        RegistrationStatus = "PendingValidation";
         RegisteredOnUtc = registeredOn;
     }
 
@@ -46,5 +46,16 @@ public sealed class CourseRegistration : AggregateRoot<Guid>
     public void DropCourse()
     {
         RegistrationStatus = "Dropped";
+    }
+
+    public Result<string> Validate()
+    {
+        if (RegistrationStatus != "PendingValidation")
+        {
+            return Result<string>.Failure(new Error("Registrar.ValidationFailed", "Only pending registrations can be validated."));
+        }
+
+        RegistrationStatus = "Validated";
+        return Result<string>.Success("Course registration validated successfully.");
     }
 }

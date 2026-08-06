@@ -21,6 +21,11 @@ public sealed class ExamSessionRepository : IExamSessionRepository
         return await _dbContext.ExamSessions.FindAsync(new object[] { id }, cancellationToken);
     }
 
+    public async Task<System.Collections.Generic.IReadOnlyList<ExamSession>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.ExamSessions.ToListAsync(cancellationToken);
+    }
+
     public async Task AddAsync(ExamSession session, CancellationToken cancellationToken)
     {
         await _dbContext.ExamSessions.AddAsync(session, cancellationToken);
