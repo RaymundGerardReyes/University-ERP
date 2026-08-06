@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 [ApiController]
-[Route("api/v1/academic/analytics")] // Bridging Platform logic to Academic routing
+[Route("api/v1/platform/analytics")]
 public sealed class AcademicAnalyticsEndpoint : ControllerBase
 {
     private readonly ISender _sender;

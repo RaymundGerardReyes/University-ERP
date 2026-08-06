@@ -5,9 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading;
-using System.Threading.Tasks;
 using Communication.Application.Abstractions;
+
 public sealed record InboxMessageDto(
     string Id, 
     string Sender, 

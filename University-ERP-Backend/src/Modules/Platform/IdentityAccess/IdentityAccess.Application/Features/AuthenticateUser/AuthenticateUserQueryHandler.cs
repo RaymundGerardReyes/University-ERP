@@ -64,12 +64,9 @@ public sealed partial class AuthenticateUserQueryHandler : IRequestHandler<Authe
             return Result<AuthResponseDto>.Failure(new Error("Auth.InvalidCredentials", "Invalid email or password."));
         }
 
-        // 3. Generate JWT token
-        var token = GenerateJwtToken(user.Id.ToString(), user.Email, $"{user.FirstName} {user.LastName}");
-
         LogAuthSuccess(user.Id.ToString());
 
-        string role = "Student";
+        string role = "Applicant";
         if (user.Email.StartsWith("admin@", StringComparison.OrdinalIgnoreCase))
         {
             role = "Admin";
@@ -78,12 +75,31 @@ public sealed partial class AuthenticateUserQueryHandler : IRequestHandler<Authe
         {
             role = "Faculty";
         }
+        else if (user.Email.StartsWith("admissions@", StringComparison.OrdinalIgnoreCase))
+        {
+            role = "Admissions";
+        }
+        else if (user.Email.StartsWith("finance@", StringComparison.OrdinalIgnoreCase))
+        {
+            role = "Finance";
+        }
+        else if (user.Email.StartsWith("registrar@", StringComparison.OrdinalIgnoreCase))
+        {
+            role = "Registrar";
+        }
+        else if (user.Email.StartsWith("student@", StringComparison.OrdinalIgnoreCase))
+        {
+            role = "Student";
+        }
+
+        // 3. Generate JWT token
+        var token = GenerateJwtToken(user.Id.ToString(), user.Email, $"{user.FirstName} {user.LastName}", role);
 
         var userDto = new UserDto(user.Id.ToString(), user.Email, $"{user.FirstName} {user.LastName}", role);
         return Result<AuthResponseDto>.Success(new AuthResponseDto(token, userDto));
     }
 
-    private string GenerateJwtToken(string userId, string email, string name)
+    private string GenerateJwtToken(string userId, string email, string name, string role)
     {
         var secretKey = _configuration["JWT_SECRET_KEY"]
             ?? throw new InvalidOperationException("JWT_SECRET_KEY is not configured.");
@@ -98,6 +114,8 @@ public sealed partial class AuthenticateUserQueryHandler : IRequestHandler<Authe
             new Claim(JwtRegisteredClaimNames.Sub, userId),
             new Claim(JwtRegisteredClaimNames.Email, email),
             new Claim(JwtRegisteredClaimNames.Name, name),
+            new Claim("role", role),
+            new Claim(ClaimTypes.Role, role),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
 

@@ -5,8 +5,6 @@ using SharedKernel.Domain.Primitives;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading;
-using System.Threading.Tasks;
 using Communication.Domain.Aggregates;
 using Communication.Application.Abstractions;
 
