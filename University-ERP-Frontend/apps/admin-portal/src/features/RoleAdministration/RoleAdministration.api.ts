@@ -9,6 +9,9 @@ export interface SecurityRole {
     description: string;
     userCount: number;
     isSystem: boolean;
+    riskLevel?: string;
+    users?: number;
+    access?: string;
 }
 
 // Removed mock platform role API 

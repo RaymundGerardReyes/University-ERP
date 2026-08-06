@@ -44,7 +44,7 @@ export const CanteenOrdersPage: React.FC = () => {
                 </div>
 
                 <div style={{ padding: '0 var(--space-6)' }}>
-                    {data.recentOrders.map((order, idx) => (
+                    {data.recentOrders.map((order: any, idx: number) => (
                         <div key={order.id} className="data-row" style={{ borderBottom: idx === data.recentOrders.length - 1 ? 'none' : '1px solid var(--border-subtle)' }}>
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <span className="data-value" style={{ textAlign: 'left', color: 'var(--text-bright)' }}>{order.student}</span>

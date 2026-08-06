@@ -18,7 +18,7 @@ export const FleetManagementPage: React.FC = () => {
 
     if (isLoading) return <div className="skeleton" style={{ height: '60vh' }} />;
 
-    const activeVehicles = fleet?.filter(v => v.status === 'In Transit').length || 0;
+    const activeVehicles = fleet?.filter((v: any) => v.status === 'In Transit').length || 0;
 
     return (
         <div className="fade-in">
@@ -43,7 +43,7 @@ export const FleetManagementPage: React.FC = () => {
             </div>
 
             <div className="grid-auto fade-in-delay-2">
-                {fleet?.map((vehicle) => {
+                {fleet?.map((vehicle: any) => {
                     let badgeColor: 'info' | 'success' | 'danger' = 'info';
                     if (vehicle.status === 'In Transit') badgeColor = 'success';
                     if (vehicle.status === 'Maintenance') badgeColor = 'danger';

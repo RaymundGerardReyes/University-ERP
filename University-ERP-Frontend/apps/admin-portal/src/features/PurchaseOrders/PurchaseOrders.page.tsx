@@ -52,7 +52,7 @@ export const PurchaseOrdersPage: React.FC = () => {
                     <h2 className="data-value" style={{ textAlign: 'left', marginBottom: 'var(--space-4)' }}>Recent Orders</h2>
 
                     <div>
-                        {orders?.map((order) => (
+                        {orders?.map((order: any) => (
                             <div key={order.id} className="data-row">
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                                     <span className="data-value" style={{ textAlign: 'left' }}>{order.vendor}</span>

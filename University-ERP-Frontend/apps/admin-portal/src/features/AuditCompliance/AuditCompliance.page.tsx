@@ -61,7 +61,7 @@ export const AuditCompliancePage: React.FC = () => {
           </div>
           
           <div style={{ padding: '0 var(--space-6)' }}>
-            {records?.map((record, idx) => (
+            {records?.map((record: any, idx: number) => (
               <div key={record.id} className="data-row" style={{ borderBottom: idx === records.length - 1 ? 'none' : undefined }}>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <span className="data-value" style={{ textAlign: 'left' }}>{record.standard}</span>

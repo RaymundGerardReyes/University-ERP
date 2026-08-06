@@ -46,7 +46,7 @@ export const EmployeeManagementPage: React.FC = () => {
                         <h2 style={{ margin: 0, fontSize: '1.05rem', color: 'var(--text-primary)' }}>Active Personnel</h2>
                     </div>
                     <div style={{ padding: '0 var(--space-6)' }}>
-                        {employees?.map((emp, idx) => (
+                        {employees?.map((emp: any, idx: number) => (
                             <div key={emp.id} className="data-row" style={{ borderBottom: idx === employees.length - 1 ? 'none' : undefined }}>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                                     <span className="data-value" style={{ textAlign: 'left', color: 'var(--text-bright)' }}>{emp.name}</span>
