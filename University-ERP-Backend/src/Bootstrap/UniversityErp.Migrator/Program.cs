@@ -78,8 +78,10 @@ try
     await CreateExaminationSchemaAsync(host.Services, logger);
     await CreateAdvisingSchemaAsync(host.Services, logger);
     await CreatePlatformSchemaAsync(host.Services, logger);
+    await CreateFinanceSchemaAsync(host.Services, logger);
 
     await SeedDefaultUsersAsync(host.Services, logger);
+    await SeedProgramOfferingsAsync(host.Services, logger);
 
     logger.LogInformation("All migrations applied successfully. Migrator exiting.");
 }
@@ -166,7 +168,7 @@ static async Task CreateAdmissionsSchemaAsync(IServiceProvider services, ILogger
             "Tags" JSONB
         );
 
-        CREATE TABLE IF NOT EXISTS admissions."Applications" (
+        CREATE TABLE IF NOT EXISTS admissions."AdmissionApplications" (
             "Id" VARCHAR(50) NOT NULL PRIMARY KEY,
             "ApplicantId" VARCHAR(256) NOT NULL,
             "ProgramId" VARCHAR(50) NOT NULL,
@@ -174,25 +176,30 @@ static async Task CreateAdmissionsSchemaAsync(IServiceProvider services, ILogger
             "SubmittedDate" TIMESTAMPTZ NOT NULL
         );
 
-        CREATE TABLE IF NOT EXISTS admissions."AdmissionDocument" (
+        CREATE TABLE IF NOT EXISTS admissions."AdmissionDocuments" (
             "Id" VARCHAR(50) NOT NULL PRIMARY KEY,
             "AdmissionApplicationId" VARCHAR(50) NOT NULL,
             "Name" VARCHAR(256) NOT NULL,
             "Status" VARCHAR(50) NOT NULL,
             "Feedback" TEXT,
             "UploadedAt" TIMESTAMPTZ,
-            CONSTRAINT "FK_AdmissionDocument_Applications" FOREIGN KEY ("AdmissionApplicationId") REFERENCES admissions."Applications" ("Id") ON DELETE CASCADE
+            CONSTRAINT "FK_AdmissionDocument_Applications" FOREIGN KEY ("AdmissionApplicationId") REFERENCES admissions."AdmissionApplications" ("Id") ON DELETE CASCADE
         );
 
-        CREATE TABLE IF NOT EXISTS admissions."ApplicationTimelineEvent" (
+        CREATE TABLE IF NOT EXISTS admissions."ApplicationTimelineEvents" (
             "Id" VARCHAR(50) NOT NULL PRIMARY KEY,
             "AdmissionApplicationId" VARCHAR(50) NOT NULL,
             "Title" VARCHAR(256) NOT NULL,
             "Description" TEXT NOT NULL,
             "Status" VARCHAR(50) NOT NULL,
             "DateCompleted" TIMESTAMPTZ,
-            CONSTRAINT "FK_ApplicationTimelineEvent_Applications" FOREIGN KEY ("AdmissionApplicationId") REFERENCES admissions."Applications" ("Id") ON DELETE CASCADE
+            CONSTRAINT "FK_ApplicationTimelineEvent_Applications" FOREIGN KEY ("AdmissionApplicationId") REFERENCES admissions."AdmissionApplications" ("Id") ON DELETE CASCADE
         );
+
+        -- Add new columns dynamically if they don't exist
+        ALTER TABLE admissions."AdmissionApplications" ADD COLUMN IF NOT EXISTS "SubmittedDate" TIMESTAMPTZ NOT NULL DEFAULT NOW();
+        ALTER TABLE admissions."AdmissionApplications" ADD COLUMN IF NOT EXISTS "FacultyRemarks" TEXT NOT NULL DEFAULT '';
+        ALTER TABLE admissions."AdmissionApplications" ADD COLUMN IF NOT EXISTS "OfficialStudentId" TEXT NOT NULL DEFAULT '';
         """;
 
     await using var cmd = new NpgsqlCommand(sql, conn);
@@ -315,6 +322,53 @@ static async Task CreateExaminationSchemaAsync(IServiceProvider services, ILogge
             "Final" DECIMAL(5,2),
             "Status" VARCHAR(50) NOT NULL
         );
+
+        CREATE TABLE IF NOT EXISTS examination."ExamSessions" (
+            "Id" UUID NOT NULL PRIMARY KEY,
+            "AssessmentId" UUID NOT NULL,
+            "RoomNumber" VARCHAR(50) NOT NULL,
+            "InvigilatorId" UUID NOT NULL,
+            "StartTimeUtc" TIMESTAMPTZ NOT NULL,
+            "Incidents" JSONB
+        );
+
+        -- Add Incidents if missing for legacy databases
+        ALTER TABLE examination."ExamSessions" ADD COLUMN IF NOT EXISTS "Incidents" JSONB NOT NULL DEFAULT '[]'::jsonb;
+
+        INSERT INTO examination."ExamSessions" ("Id", "AssessmentId", "RoomNumber", "InvigilatorId", "StartTimeUtc", "Incidents")
+        VALUES 
+            (gen_random_uuid(), gen_random_uuid(), 'Room 101', '00000000-0000-0000-0000-000000000002', NOW() + INTERVAL '1 day', '[]'::jsonb),
+            (gen_random_uuid(), gen_random_uuid(), 'Room 102', '00000000-0000-0000-0000-000000000002', NOW() + INTERVAL '2 days', '[]'::jsonb)
+        ON CONFLICT ("Id") DO NOTHING;
+        """;
+    await using var cmd = new NpgsqlCommand(sql, conn);
+    await cmd.ExecuteNonQueryAsync();
+}
+
+static async Task CreateFinanceSchemaAsync(IServiceProvider services, ILogger logger)
+{
+    var rawConn = services.GetRequiredService<RawConnectionString>();
+    Console.WriteLine("Ensuring finance schema and tables exist via raw SQL...");
+    await using var conn = new NpgsqlConnection(rawConn.Value);
+    await conn.OpenAsync();
+
+    var sql = """
+        CREATE SCHEMA IF NOT EXISTS finance;
+        CREATE TABLE IF NOT EXISTS finance."StudentBillings" (
+            "Id" UUID NOT NULL PRIMARY KEY,
+            "StudentId" UUID NOT NULL,
+            "TotalAmount" DECIMAL(18,2) NOT NULL,
+            "PaidAmount" DECIMAL(18,2) NOT NULL,
+            "Description" TEXT NOT NULL,
+            "Status" VARCHAR(50) NOT NULL,
+            "IssuedOnUtc" TIMESTAMPTZ NOT NULL
+        );
+
+        INSERT INTO finance."StudentBillings" ("Id", "StudentId", "TotalAmount", "PaidAmount", "Description", "Status", "IssuedOnUtc")
+        VALUES 
+            (gen_random_uuid(), '00000000-0000-0000-0000-000000000004', 4500.00, 0.00, 'Fall 2026 Tuition', 'Pending', NOW()),
+            (gen_random_uuid(), '00000000-0000-0000-0000-000000000004', 50.00, 50.00, 'Application Fee', 'Paid', NOW() - INTERVAL '5 days')
+        ON CONFLICT ("Id") DO NOTHING;
         """;
     await using var cmd = new NpgsqlCommand(sql, conn);
     await cmd.ExecuteNonQueryAsync();
@@ -351,8 +405,8 @@ static async Task CreatePlatformSchemaAsync(IServiceProvider services, ILogger l
     await conn.OpenAsync();
 
     var sql = """
-        CREATE SCHEMA IF NOT EXISTS platform;
-        CREATE TABLE IF NOT EXISTS platform."DirectMessages" (
+        CREATE SCHEMA IF NOT EXISTS platform_communication;
+        CREATE TABLE IF NOT EXISTS platform_communication."DirectMessages" (
             "Id" UUID NOT NULL PRIMARY KEY,
             "SenderId" VARCHAR(256) NOT NULL,
             "ReceiverId" VARCHAR(256) NOT NULL,
@@ -368,24 +422,38 @@ static async Task CreatePlatformSchemaAsync(IServiceProvider services, ILogger l
 static async Task SeedDefaultUsersAsync(IServiceProvider services, ILogger logger)
 {
     var rawConn = services.GetRequiredService<RawConnectionString>();
-    Console.WriteLine("Seeding default admin and faculty credentials...");
+    Console.WriteLine("Seeding default credentials...");
 
     await using var conn = new NpgsqlConnection(rawConn.Value);
     await conn.OpenAsync();
 
-    // 1. Admin Credentials
     var adminEmail = "admin@university.edu";
     var adminPasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!", 12);
 
-    // 2. Faculty Credentials
     var facultyEmail = "faculty@university.edu";
     var facultyPasswordHash = BCrypt.Net.BCrypt.HashPassword("Faculty123!", 12);
+
+    var admissionsEmail = "admissions@university.edu";
+    var admissionsPasswordHash = BCrypt.Net.BCrypt.HashPassword("Admissions123!", 12);
+
+    var applicantEmail = "applicant@university.edu";
+    var applicantPasswordHash = BCrypt.Net.BCrypt.HashPassword("Applicant123!", 12);
+
+    var financeEmail = "finance@university.edu";
+    var financePasswordHash = BCrypt.Net.BCrypt.HashPassword("Finance123!", 12);
+
+    var registrarEmail = "registrar@university.edu";
+    var registrarPasswordHash = BCrypt.Net.BCrypt.HashPassword("Registrar123!", 12);
 
     var sql = """
         INSERT INTO identity."Users" ("Id", "Email", "PasswordHash", "FirstName", "LastName", "IsActive", "CreatedOnUtc")
         VALUES 
             ('00000000-0000-0000-0000-000000000001', @AdminEmail, @AdminHash, 'System', 'Admin', TRUE, NOW()),
-            ('00000000-0000-0000-0000-000000000002', @FacultyEmail, @FacultyHash, 'Dr. Sarah', 'Jenkins', TRUE, NOW())
+            ('00000000-0000-0000-0000-000000000002', @FacultyEmail, @FacultyHash, 'Dr. Sarah', 'Jenkins', TRUE, NOW()),
+            ('00000000-0000-0000-0000-000000000003', @AdmissionsEmail, @AdmissionsHash, 'Admissions', 'Officer', TRUE, NOW()),
+            ('00000000-0000-0000-0000-000000000004', @ApplicantEmail, @ApplicantHash, 'John', 'Doe', TRUE, NOW()),
+            ('00000000-0000-0000-0000-000000000005', @FinanceEmail, @FinanceHash, 'Finance', 'Cashier', TRUE, NOW()),
+            ('00000000-0000-0000-0000-000000000006', @RegistrarEmail, @RegistrarHash, 'Registrar', 'Admin', TRUE, NOW())
         ON CONFLICT ("Email") DO NOTHING;
         """;
 
@@ -394,9 +462,39 @@ static async Task SeedDefaultUsersAsync(IServiceProvider services, ILogger logge
     cmd.Parameters.AddWithValue("AdminHash", adminPasswordHash);
     cmd.Parameters.AddWithValue("FacultyEmail", facultyEmail);
     cmd.Parameters.AddWithValue("FacultyHash", facultyPasswordHash);
+    cmd.Parameters.AddWithValue("AdmissionsEmail", admissionsEmail);
+    cmd.Parameters.AddWithValue("AdmissionsHash", admissionsPasswordHash);
+    cmd.Parameters.AddWithValue("ApplicantEmail", applicantEmail);
+    cmd.Parameters.AddWithValue("ApplicantHash", applicantPasswordHash);
+    cmd.Parameters.AddWithValue("FinanceEmail", financeEmail);
+    cmd.Parameters.AddWithValue("FinanceHash", financePasswordHash);
+    cmd.Parameters.AddWithValue("RegistrarEmail", registrarEmail);
+    cmd.Parameters.AddWithValue("RegistrarHash", registrarPasswordHash);
 
     var rows = await cmd.ExecuteNonQueryAsync();
     Console.WriteLine($"Seeded {rows} new default user(s).");
+}
+
+static async Task SeedProgramOfferingsAsync(IServiceProvider services, ILogger logger)
+{
+    var rawConn = services.GetRequiredService<RawConnectionString>();
+    Console.WriteLine("Seeding program offerings...");
+
+    await using var conn = new NpgsqlConnection(rawConn.Value);
+    await conn.OpenAsync();
+
+    var sql = """
+        INSERT INTO admissions."ProgramOfferings" ("Id", "College", "Degree", "Major", "Duration", "Intake", "TuitionEstimate", "Tags")
+        VALUES 
+            ('BSCS', 'College of Computer Studies', 'B.S.', 'Computer Science', '4 Years', 'Fall / Spring', '$4,500 / sem', '["STEM", "Tech"]'::jsonb),
+            ('BSCE', 'College of Engineering', 'B.S.', 'Civil Engineering', '4 Years', 'Fall / Spring', '$4,800 / sem', '["Engineering", "STEM"]'::jsonb),
+            ('BBA', 'College of Business', 'B.S.', 'Business Administration', '4 Years', 'Fall / Spring', '$4,200 / sem', '["Business", "Management"]'::jsonb)
+        ON CONFLICT ("Id") DO NOTHING;
+        """;
+
+    await using var cmd = new NpgsqlCommand(sql, conn);
+    var rows = await cmd.ExecuteNonQueryAsync();
+    Console.WriteLine($"Seeded {rows} program offering(s).");
 }
 
 // Simple wrapper to carry the connection string through DI
