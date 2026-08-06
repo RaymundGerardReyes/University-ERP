@@ -456,16 +456,8 @@
 |   |   |   |   |   |   |   `-- Handlers
 |   |   |   |   |   |   |       `-- StudentEnrolledEventHandler.cs
 |   |   |   |   |   |   |-- Features
-|   |   |   |   |   |   |   |-- ApplyScholarship
-|   |   |   |   |   |   |   |   `-- ApplyScholarshipCommand.cs
-|   |   |   |   |   |   |   |-- AssessTuition
-|   |   |   |   |   |   |   |   `-- AssessTuitionCommand.cs
-|   |   |   |   |   |   |   |-- ClearBalance
-|   |   |   |   |   |   |   |   `-- ClearBalanceCommand.cs
-|   |   |   |   |   |   |   |-- IssueInvoice
-|   |   |   |   |   |   |   |   `-- IssueInvoiceCommand.cs
-|   |   |   |   |   |   |   `-- ProcessPayment
-|   |   |   |   |   |   |       `-- ProcessPaymentCommand.cs
+|   |   |   |   |   |   |   `-- IssueInvoice
+|   |   |   |   |   |   |       `-- IssueInvoiceCommand.cs
 |   |   |   |   |   |   |-- Finance.Application.csproj
 |   |   |   |   |   |   `-- ModuleRegistration.cs
 |   |   |   |   |   |-- Finance.Contracts
@@ -1173,7 +1165,7 @@
 |   |   |-- admin-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-CnpJ9dzY.js
+|   |   |   |   |   `-- index-BSAvnoD4.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1317,11 +1309,6 @@
 |   |   |   |-- tsconfig.node.json
 |   |   |   `-- vite.config.ts
 |   |   |-- admissions-portal
-|   |   |   |-- dist
-|   |   |   |   |-- assets
-|   |   |   |   |   |-- index-cJBQpNUN.css
-|   |   |   |   |   `-- index-jYEtr-r0.js
-|   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
 |   |   |   |-- src
@@ -1335,8 +1322,8 @@
 |   |   |-- applicant-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   |-- index-cJBQpNUN.css
-|   |   |   |   |   `-- index-ffXTrRfk.js
+|   |   |   |   |   |-- index-BAQpLcq3.js
+|   |   |   |   |   `-- index-cJBQpNUN.css
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1433,7 +1420,7 @@
 |   |   |-- faculty-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   |-- index-YCXjU_xm.js
+|   |   |   |   |   |-- index-Bs2omRJ7.js
 |   |   |   |   |   `-- index-cJBQpNUN.css
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
@@ -1539,7 +1526,7 @@
 |   |   |-- finance-console
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index--ACt-Ehd.js
+|   |   |   |   |   `-- index-CdQmVhu5.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1554,9 +1541,6 @@
 |   |   |   |   |   |   |-- Budgeting.page.tsx
 |   |   |   |   |   |   |-- Budgeting.test.tsx
 |   |   |   |   |   |   `-- Budgeting.types.ts
-|   |   |   |   |   |-- Cashier
-|   |   |   |   |   |   |-- ClearanceApproval.page.tsx
-|   |   |   |   |   |   `-- PaymentGateway.page.tsx
 |   |   |   |   |   |-- Dashboard
 |   |   |   |   |   |   |-- Dashboard.api.ts
 |   |   |   |   |   |   |-- Dashboard.hooks.ts
@@ -1590,16 +1574,12 @@
 |   |   |   |   |   |-- PayrollProcessing
 |   |   |   |   |   |   |-- PayrollProcessing.hooks.ts
 |   |   |   |   |   |   `-- PayrollProcessing.page.tsx
-|   |   |   |   |   |-- StudentBilling
-|   |   |   |   |   |   |-- ScholarshipGrants.page.tsx
-|   |   |   |   |   |   |-- StatementOfAccount.page.tsx
-|   |   |   |   |   |   |-- StudentBilling.api.ts
-|   |   |   |   |   |   |-- StudentBilling.hooks.ts
-|   |   |   |   |   |   |-- StudentBilling.page.tsx
-|   |   |   |   |   |   |-- StudentBilling.test.tsx
-|   |   |   |   |   |   `-- StudentBilling.types.ts
-|   |   |   |   |   `-- TuitionAssessment
-|   |   |   |   |       `-- TuitionAssessment.page.tsx
+|   |   |   |   |   `-- StudentBilling
+|   |   |   |   |       |-- StudentBilling.api.ts
+|   |   |   |   |       |-- StudentBilling.hooks.ts
+|   |   |   |   |       |-- StudentBilling.page.tsx
+|   |   |   |   |       |-- StudentBilling.test.tsx
+|   |   |   |   |       `-- StudentBilling.types.ts
 |   |   |   |   |-- main.tsx
 |   |   |   |   |-- shell
 |   |   |   |   |   |-- AppShell.tsx
@@ -1679,7 +1659,7 @@
 |   |   |-- identity-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-CUpXqkxi.js
+|   |   |   |   |   `-- index-Cao_m1XJ.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1688,11 +1668,6 @@
 |   |   |   |   |-- config
 |   |   |   |   |   `-- env.ts
 |   |   |   |   |-- features
-|   |   |   |   |   |-- Email
-|   |   |   |   |   |   `-- EmailProvisioning.page.tsx
-|   |   |   |   |   |-- MFA
-|   |   |   |   |   |   |-- AccessRevocation.page.tsx
-|   |   |   |   |   |   `-- MFASetup.page.tsx
 |   |   |   |   |   |-- MfaVerification
 |   |   |   |   |   |   |-- MfaVerification.api.ts
 |   |   |   |   |   |   |-- MfaVerification.hooks.ts
@@ -1729,9 +1704,6 @@
 |   |   |   |   |   |   |-- SessionManagement.page.tsx
 |   |   |   |   |   |   |-- SessionManagement.test.tsx
 |   |   |   |   |   |   `-- SessionManagement.types.ts
-|   |   |   |   |   |-- UniversityAccount
-|   |   |   |   |   |   |-- AccountProvisioning.page.tsx
-|   |   |   |   |   |   `-- DirectorySearch.page.tsx
 |   |   |   |   |   |-- UserLogin
 |   |   |   |   |   |   |-- UserLogin.api.ts
 |   |   |   |   |   |   |-- UserLogin.hooks.ts
@@ -1809,7 +1781,7 @@
 |   |   |-- lms-web
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-Bpyvpikd.js
+|   |   |   |   |   `-- index-CMv7xM3y.js
 |   |   |   |   |-- index.html
 |   |   |   |   |-- manifest.webmanifest
 |   |   |   |   `-- service-worker.ts
@@ -1835,8 +1807,6 @@
 |   |   |   |   |   |   |-- Calendar.page.tsx
 |   |   |   |   |   |   |-- Calendar.test.tsx
 |   |   |   |   |   |   `-- Calendar.types.ts
-|   |   |   |   |   |-- CourseAdministration
-|   |   |   |   |   |   `-- CoursePackaging.page.tsx
 |   |   |   |   |   |-- CourseContent
 |   |   |   |   |   |   |-- CourseContent.api.ts
 |   |   |   |   |   |   |-- CourseContent.hooks.ts
@@ -1855,8 +1825,6 @@
 |   |   |   |   |   |   |-- Discussions.page.tsx
 |   |   |   |   |   |   |-- Discussions.test.tsx
 |   |   |   |   |   |   `-- Discussions.types.ts
-|   |   |   |   |   |-- GradebookOrchestration
-|   |   |   |   |   |   `-- GradebookSync.page.tsx
 |   |   |   |   |   |-- Grades
 |   |   |   |   |   |   |-- Grades.api.ts
 |   |   |   |   |   |   |-- Grades.hooks.ts
@@ -1865,8 +1833,6 @@
 |   |   |   |   |   |   `-- Grades.types.ts
 |   |   |   |   |   |-- ModuleTimeline
 |   |   |   |   |   |   `-- ModuleTimeline.page.tsx
-|   |   |   |   |   |-- OfflineSubmissionReview
-|   |   |   |   |   |   `-- SubmissionReview.page.tsx
 |   |   |   |   |   |-- QuizWindowGuard
 |   |   |   |   |   `-- Quizzes
 |   |   |   |   |       |-- Quizzes.api.ts
@@ -1952,11 +1918,6 @@
 |   |   |   |-- tsconfig.node.json
 |   |   |   `-- vite.config.ts
 |   |   |-- registrar-portal
-|   |   |   |-- dist
-|   |   |   |   |-- assets
-|   |   |   |   |   |-- index-DAkdjPIl.js
-|   |   |   |   |   `-- index-cJBQpNUN.css
-|   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
 |   |   |   |-- src
@@ -2031,11 +1992,6 @@
 |   |   |   |-- tsconfig.json
 |   |   |   `-- vite.config.ts
 |   |   |-- security-portal
-|   |   |   |-- dist
-|   |   |   |   |-- assets
-|   |   |   |   |   |-- index-Dhw782YF.js
-|   |   |   |   |   `-- index-cJBQpNUN.css
-|   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
 |   |   |   |-- src
@@ -2050,7 +2006,7 @@
 |   |   `-- student-portal
 |   |       |-- dist
 |   |       |   |-- assets
-|   |       |   |   |-- index-NDknp7XE.js
+|   |       |   |   |-- index-DH4ubxI0.js
 |   |       |   |   `-- index-cJBQpNUN.css
 |   |       |   `-- index.html
 |   |       |-- index.html
@@ -2354,9 +2310,6 @@
 |   |   |   `-- src
 |   |   |       `-- guards
 |   |   |           |-- FacultyGuard.tsx
-|   |   |           |-- FinanceGuard.tsx
-|   |   |           |-- IdentityGuard.tsx
-|   |   |           |-- LMSGuard.tsx
 |   |   |           `-- RegistrarGuard.tsx
 |   |   |-- core-logger
 |   |   |   |-- index.ts
@@ -2392,10 +2345,7 @@
 |   |   |   |   |   |-- Badge.tsx
 |   |   |   |   |   |-- Button.tsx
 |   |   |   |   |   |-- Card.tsx
-|   |   |   |   |   |-- FormInput.tsx
-|   |   |   |   |   |-- Modal.tsx
-|   |   |   |   |   |-- PageHeader.tsx
-|   |   |   |   |   `-- Table.tsx
+|   |   |   |   |   `-- PageHeader.tsx
 |   |   |   |   |-- index.ts
 |   |   |   |   `-- styles.css
 |   |   |   |-- theming
@@ -2555,7 +2505,6 @@
 |-- docker-compose.yml
 |-- fix-encodings.js
 |-- health-logger.sh
-|-- logs.md
 |-- newupdate.md
 |-- package-lock.json
 |-- package.json
@@ -2573,4 +2522,4 @@
 |-- university-erp-frontend-features-ddd-dbma-prompt.md
 `-- university-erp-scaffolding-script-review.md
 
-971 directories, 1602 files
+953 directories, 1569 files

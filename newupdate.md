@@ -1,413 +1,398 @@
 On branch main
 Your branch is up to date with 'origin/main'.
 
-Changes not staged for commit:
-  (use "git add/rm <file>..." to update what will be committed)
-  (use "git restore <file>..." to discard changes in working directory)
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
 	modified:   CodebaseInfrastructure.md
+	new file:   University-ERP-Backend/ops/ops/db-migrations/Admissions/20260806014149_AddAdmissionsApprovalFields.cs
 	modified:   University-ERP-Backend/src/Bootstrap/UniversityErp.Api/ModuleRegistration/AcademicModulesRegistration.cs
-	modified:   University-ERP-Backend/src/Bootstrap/UniversityErp.Api/ModuleRegistration/AdministrationModulesRegistration.cs
-	modified:   University-ERP-Backend/src/Bootstrap/UniversityErp.Api/ModuleRegistration/GovernanceModulesRegistration.cs
-	modified:   University-ERP-Backend/src/Bootstrap/UniversityErp.Api/ModuleRegistration/PlatformModulesRegistration.cs
-	modified:   University-ERP-Backend/src/Bootstrap/UniversityErp.Api/Program.cs
-	modified:   University-ERP-Backend/src/Bootstrap/UniversityErp.Api/UniversityErp.Api.csproj
 	modified:   University-ERP-Backend/src/Bootstrap/UniversityErp.Migrator/Program.cs
-	modified:   University-ERP-Backend/src/Bootstrap/UniversityErp.Migrator/UniversityErp.Migrator.csproj
-	modified:   University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Application/Features/AllocateRoom/AllocateRoomCommand.cs
-	modified:   University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Application/Features/GetFacultyCourses/GetFacultyCoursesQuery.cs
-	modified:   University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Application/Features/GetStudentTimetable/GetStudentTimetableQuery.cs
-	modified:   University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Application/Features/SubmitAttendance/SubmitAttendanceCommand.cs
 	modified:   University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Infrastructure/AcademicScheduling.Infrastructure.csproj
-	modified:   University-ERP-Backend/src/Modules/Academic/Examination/Examination.Application/Features/GetGradebook/GetGradebookQuery.cs
-	modified:   University-ERP-Backend/src/Modules/Academic/Examination/Examination.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Academic/Examination/Examination.Infrastructure/Examination.Infrastructure.csproj
+	modified:   University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Infrastructure/AcademicSchedulingModuleRegistration.cs
+	modified:   University-ERP-Backend/src/Modules/Academic/Examination/Examination.Application/Abstractions/IExamSessionRepository.cs
+	new file:   University-ERP-Backend/src/Modules/Academic/Examination/Examination.Application/Features/GetExamSessions/GetExamSessionsQuery.cs
+	new file:   University-ERP-Backend/src/Modules/Academic/Examination/Examination.Application/Features/GetExamSessions/GetExamSessionsQueryHandler.cs
+	modified:   University-ERP-Backend/src/Modules/Academic/Examination/Examination.Infrastructure/ExaminationModuleRegistration.cs
+	modified:   University-ERP-Backend/src/Modules/Academic/Examination/Examination.Infrastructure/Repositories/ExamSessionRepository.cs
+	new file:   University-ERP-Backend/src/Modules/Academic/Examination/Examination.Presentation/Endpoints/SessionsEndpoint.cs
+	new file:   University-ERP-Backend/src/Modules/Academic/LearningManagement/LearningManagement.Application/Events/Handlers/StudentEnrolledEventHandler.cs
+	modified:   University-ERP-Backend/src/Modules/Academic/LearningManagement/LearningManagement.Application/LearningManagement.Application.csproj
+	deleted:    University-ERP-Backend/src/Modules/Academic/LearningManagement/LearningManagement.Application/LearningManagementApplicationRegistration.cs
+	modified:   University-ERP-Backend/src/Modules/Academic/LearningManagement/LearningManagement.Application/ModuleRegistration.cs
 	modified:   University-ERP-Backend/src/Modules/Academic/LearningManagement/LearningManagement.Infrastructure/LearningManagementModuleRegistration.cs
 	modified:   University-ERP-Backend/src/Modules/Academic/LearningManagement/LearningManagement.Infrastructure/Persistence/LearningManagementDbContext.cs
+	new file:   University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Application/Features/EvaluateCandidate/EvaluateCandidateCommand.cs
+	new file:   University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Application/Features/LockSectionGrades/LockSectionGradesCommand.cs
+	new file:   University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Application/Features/ProcessTranscriptRequest/ProcessTranscriptRequestCommand.cs
+	new file:   University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Application/Features/ValidateEnrollment/ValidateEnrollmentCommand.cs
 	modified:   University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Infrastructure/Registrar.Infrastructure.csproj
-	modified:   University-ERP-Backend/src/Modules/Academic/StudentInformation/StudentInformation.Application/Abstractions/IStudentRepository.cs
-	modified:   University-ERP-Backend/src/Modules/Academic/StudentInformation/StudentInformation.Application/Features/GetAdvisees/GetAdviseesQuery.cs
+	modified:   University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Domain/Aggregates/CourseRegistration.cs
+	modified:   University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Domain/Aggregates/CourseSection.cs
+	modified:   University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Domain/Aggregates/GraduationClearance.cs
+	modified:   University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Domain/Aggregates/TranscriptRequest.cs
+	modified:   University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Infrastructure/Persistence/RegistrarDbContext.cs
+	modified:   University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Infrastructure/RegistrarModuleRegistration.cs
 	modified:   University-ERP-Backend/src/Modules/Academic/StudentInformation/StudentInformation.Infrastructure/Persistence/StudentInformationDbContext.cs
-	modified:   University-ERP-Backend/src/Modules/Academic/StudentInformation/StudentInformation.Infrastructure/Repositories/StudentRepository.cs
-	modified:   University-ERP-Backend/src/Modules/Administration/AssetManagement/AssetManagement.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Administration/AssetManagement/AssetManagement.Presentation/AssetManagement.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Administration/Facilities/Facilities.Application/Features/BookFacility/BookFacilityCommand.cs
-	modified:   University-ERP-Backend/src/Modules/Administration/Facilities/Facilities.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Administration/Facilities/Facilities.Presentation/Facilities.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Administration/Finance/Finance.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Administration/Finance/Finance.Infrastructure/Finance.Infrastructure.csproj
-	modified:   University-ERP-Backend/src/Modules/Administration/Finance/Finance.Presentation/Finance.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Administration/HumanResources/HumanResources.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Administration/HumanResources/HumanResources.Infrastructure/HumanResources.Infrastructure.csproj
-	modified:   University-ERP-Backend/src/Modules/Administration/HumanResources/HumanResources.Presentation/HumanResources.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Administration/Inventory/Inventory.Application/Features/AdjustStock/AdjustStockCommand.cs
-	modified:   University-ERP-Backend/src/Modules/Administration/Inventory/Inventory.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Administration/Inventory/Inventory.Presentation/Inventory.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Administration/Library/Library.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Administration/Library/Library.Presentation/Library.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Administration/MessCanteen/MessCanteen.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Administration/MessCanteen/MessCanteen.Presentation/MessCanteen.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Administration/Payroll/Payroll.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Administration/Payroll/Payroll.Presentation/Payroll.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Administration/Procurement/Procurement.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Administration/Procurement/Procurement.Presentation/Procurement.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Administration/Transport/Transport.Application/Features/AssignRoute/AssignRouteCommand.cs
-	modified:   University-ERP-Backend/src/Modules/Administration/Transport/Transport.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Administration/Transport/Transport.Presentation/Transport.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Governance/EventManagement/EventManagement.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Governance/EventManagement/EventManagement.Presentation/EventManagement.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Governance/GrievanceManagement/GrievanceManagement.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Governance/GrievanceManagement/GrievanceManagement.Presentation/GrievanceManagement.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Governance/Helpdesk/Helpdesk.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Governance/Helpdesk/Helpdesk.Presentation/Helpdesk.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Governance/QualityAccreditation/QualityAccreditation.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Governance/QualityAccreditation/QualityAccreditation.Presentation/QualityAccreditation.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Governance/VisitorManagement/VisitorManagement.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Governance/VisitorManagement/VisitorManagement.Presentation/VisitorManagement.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Platform/AnalyticsBI/AnalyticsBI.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Platform/AnalyticsBI/AnalyticsBI.Presentation/AnalyticsBI.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Platform/CRM/CRM.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Platform/CRM/CRM.Presentation/CRM.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Platform/Communication/Communication.Application/Abstractions/ICommunicationRepository.cs
+	modified:   University-ERP-Backend/src/Modules/Academic/StudentInformation/StudentInformation.Presentation/Endpoints/FacultyStudentsEndpoint.cs
+	modified:   University-ERP-Backend/src/Modules/Administration/Finance/Finance.Application/Abstractions/IStudentBillingRepository.cs
+	new file:   University-ERP-Backend/src/Modules/Administration/Finance/Finance.Application/Events/Handlers/StudentEnrolledEventHandler.cs
+	new file:   University-ERP-Backend/src/Modules/Administration/Finance/Finance.Application/Features/ApplyScholarship/ApplyScholarshipCommand.cs
+	new file:   University-ERP-Backend/src/Modules/Administration/Finance/Finance.Application/Features/AssessTuition/AssessTuitionCommand.cs
+	new file:   University-ERP-Backend/src/Modules/Administration/Finance/Finance.Application/Features/ClearBalance/ClearBalanceCommand.cs
+	new file:   University-ERP-Backend/src/Modules/Administration/Finance/Finance.Application/Features/GetInvoices/GetInvoicesQuery.cs
+	new file:   University-ERP-Backend/src/Modules/Administration/Finance/Finance.Application/Features/GetInvoices/GetInvoicesQueryHandler.cs
+	new file:   University-ERP-Backend/src/Modules/Administration/Finance/Finance.Application/Features/ProcessPayment/ProcessPaymentCommand.cs
+	modified:   University-ERP-Backend/src/Modules/Administration/Finance/Finance.Application/Finance.Application.csproj
+	modified:   University-ERP-Backend/src/Modules/Administration/Finance/Finance.Domain/Aggregates/StudentBilling.cs
+	modified:   University-ERP-Backend/src/Modules/Administration/Finance/Finance.Infrastructure/Repositories/StudentBillingRepository.cs
+	new file:   University-ERP-Backend/src/Modules/Administration/Finance/Finance.Presentation/Endpoints/InvoicesEndpoint.cs
+	modified:   University-ERP-Backend/src/Modules/Platform/AnalyticsBI/AnalyticsBI.Presentation/Endpoints/AcademicAnalyticsEndpoint.cs
 	modified:   University-ERP-Backend/src/Modules/Platform/Communication/Communication.Application/Features/GetInbox/GetInboxQuery.cs
 	modified:   University-ERP-Backend/src/Modules/Platform/Communication/Communication.Application/Features/SendMessage/SendMessageCommand.cs
-	modified:   University-ERP-Backend/src/Modules/Platform/Communication/Communication.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Platform/Communication/Communication.Infrastructure/Communication.Infrastructure.csproj
-	modified:   University-ERP-Backend/src/Modules/Platform/Communication/Communication.Presentation/Communication.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Platform/DocumentManagement/DocumentManagement.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Platform/DocumentManagement/DocumentManagement.Infrastructure/DocumentManagement.Infrastructure.csproj
-	modified:   University-ERP-Backend/src/Modules/Platform/DocumentManagement/DocumentManagement.Presentation/DocumentManagement.Presentation.csproj
 	modified:   University-ERP-Backend/src/Modules/Platform/IdentityAccess/IdentityAccess.Application/Features/AuthenticateUser/AuthenticateUserQueryHandler.cs
-	modified:   University-ERP-Backend/src/Modules/Platform/MultiCampus/MultiCampus.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Platform/MultiCampus/MultiCampus.Presentation/MultiCampus.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/Platform/Notification/Notification.Application/ModuleRegistration.cs
-	modified:   University-ERP-Backend/src/Modules/Platform/Notification/Notification.Presentation/Notification.Presentation.csproj
-	modified:   University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Infrastructure/AdmissionsModuleRegistration.cs
+	new file:   University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Application/Features/ActivateEnrollment/ActivateEnrollmentCommand.cs
+	modified:   University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Application/Features/ApproveApplication/ApproveApplicationCommand.cs
+	new file:   University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Application/Features/CompleteInterview/CompleteInterviewCommand.cs
+	new file:   University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Application/Features/EndorseApplication/EndorseApplicationCommand.cs
+	new file:   University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Application/Features/EvaluateApplication/EvaluateApplicationCommand.cs
+	modified:   University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Application/Features/GetApplicationStatus/GetApplicationStatusQuery.cs
+	modified:   University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Application/Features/GetPendingApplications/GetPendingApplicationsQuery.cs
+	new file:   University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Application/Features/RecommendAdmission/RecommendAdmissionCommand.cs
+	new file:   University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Application/Features/VerifyDocuments/VerifyDocumentsCommand.cs
+	modified:   University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Domain/Aggregates/AdmissionApplication.cs
+	new file:   University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Domain/Events/StudentEnrolledDomainEvent.cs
+	modified:   University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Infrastructure/Admissions.Infrastructure.csproj
 	modified:   University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Infrastructure/Persistence/AdmissionsDbContext.cs
-	modified:   University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Infrastructure/Repositories/AdmissionApplicationRepository.cs
-	modified:   University-ERP-Frontend/apps/admin-portal/package.json
-	modified:   University-ERP-Frontend/apps/admin-portal/src/features/AssetRegistry/AssetRegistry.page.tsx
+	new file:   University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Infrastructure/Persistence/AdmissionsDbContextDesignTimeFactory.cs  C#
+	new file:   University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Presentation/Endpoints/AdmissionsWorkflowEndpoint.cs
+	modified:   University-ERP-Backend/src/Modules/StudentLifecycle/Admissions/Admissions.Presentation/Endpoints/GetApplicationStatusEndpoint.cs
+	new file:   University-ERP-Backend/structure.md
+	new file:   University-ERP-Frontend/apps/admin-portal/src/features/AdmissionsProcessing/AdmissionsWorkspace.page.tsx
+	new file:   University-ERP-Frontend/apps/admin-portal/src/features/AdmissionsProcessing/components/ChairpersonEvaluationView.tsx
+	new file:   University-ERP-Frontend/apps/admin-portal/src/features/AdmissionsProcessing/components/RegistrarEnrollmentView.tsx
+	new file:   University-ERP-Frontend/apps/admin-portal/src/features/AdmissionsProcessing/components/SecretaryIntakeView.tsx
 	modified:   University-ERP-Frontend/apps/admin-portal/src/features/AuditCompliance/AuditCompliance.page.tsx
 	modified:   University-ERP-Frontend/apps/admin-portal/src/features/CanteenOrders/CanteenOrders.page.tsx
-	modified:   University-ERP-Frontend/apps/admin-portal/src/features/Dashboard/Dashboard.page.tsx
 	modified:   University-ERP-Frontend/apps/admin-portal/src/features/EmployeeManagement/EmployeeManagement.page.tsx
-	modified:   University-ERP-Frontend/apps/admin-portal/src/features/FacilityBooking/FacilityBooking.page.tsx
 	modified:   University-ERP-Frontend/apps/admin-portal/src/features/FleetManagement/FleetManagement.page.tsx
 	modified:   University-ERP-Frontend/apps/admin-portal/src/features/PurchaseOrders/PurchaseOrders.page.tsx
-	modified:   University-ERP-Frontend/apps/admin-portal/src/features/RoleAdministration/RoleAdministration.page.tsx
-	modified:   University-ERP-Frontend/apps/admin-portal/src/features/StockManagement/StockManagement.page.tsx
-	modified:   University-ERP-Frontend/apps/admin-portal/src/features/SystemAdministration/SystemAdministration.page.tsx
-	modified:   University-ERP-Frontend/apps/admin-portal/src/features/UserAdministration/UserAdministration.page.tsx
-	modified:   University-ERP-Frontend/apps/admin-portal/src/shell/Routing.tsx
-	modified:   University-ERP-Frontend/apps/applicant-portal/package.json
-	modified:   University-ERP-Frontend/apps/applicant-portal/src/features/AdmissionStatus/AdmissionStatus.api.ts
-	modified:   University-ERP-Frontend/apps/applicant-portal/src/features/AdmissionStatus/AdmissionStatus.hooks.ts
-	modified:   University-ERP-Frontend/apps/applicant-portal/src/features/AdmissionStatus/AdmissionStatus.page.tsx
-	modified:   University-ERP-Frontend/apps/applicant-portal/src/features/AdmissionStatus/AdmissionStatus.test.tsx
-	modified:   University-ERP-Frontend/apps/applicant-portal/src/features/AdmissionStatus/AdmissionStatus.types.ts
+	new file:   University-ERP-Frontend/apps/admin-portal/src/features/RegistrarWorkspace/RegistrarWorkspace.page.tsx
+	new file:   University-ERP-Frontend/apps/admin-portal/src/features/RegistrarWorkspace/components/GraduationClearanceView.tsx
+	new file:   University-ERP-Frontend/apps/admin-portal/src/features/RegistrarWorkspace/components/TranscriptRequestsView.tsx
+	modified:   University-ERP-Frontend/apps/admin-portal/src/features/RoleAdministration/RoleAdministration.api.ts
+	modified:   University-ERP-Frontend/apps/admin-portal/src/main.tsx
+	modified:   University-ERP-Frontend/apps/admin-portal/src/shell/AppShell.tsx
+	modified:   University-ERP-Frontend/apps/admin-portal/vite.config.ts
+	new file:   University-ERP-Frontend/apps/admissions-portal/index.html
+	new file:   University-ERP-Frontend/apps/admissions-portal/package.json
+	new file:   University-ERP-Frontend/apps/admissions-portal/src/App.tsx
+	new file:   University-ERP-Frontend/apps/admissions-portal/src/features/Communication/ApplicantCommunication.page.tsx
+	new file:   University-ERP-Frontend/apps/admissions-portal/src/features/Dashboard/Dashboard.page.tsx
+	new file:   University-ERP-Frontend/apps/admissions-portal/src/features/Examination/EntranceExamination.page.tsx
+	new file:   University-ERP-Frontend/apps/admissions-portal/src/features/Fees/AdmissionFees.page.tsx
+	new file:   University-ERP-Frontend/apps/admissions-portal/src/features/Intake/ApplicationIntake.page.tsx
+	new file:   University-ERP-Frontend/apps/admissions-portal/src/features/Queue/AdmissionQueue.page.tsx
+	new file:   University-ERP-Frontend/apps/admissions-portal/src/features/Reports/AdmissionsReports.page.tsx
+	new file:   University-ERP-Frontend/apps/admissions-portal/src/features/Review/ApplicationReview.page.tsx
+	new file:   University-ERP-Frontend/apps/admissions-portal/src/features/Verification/ApplicationVerification.page.tsx
+	new file:   University-ERP-Frontend/apps/admissions-portal/src/index.css
+	new file:   University-ERP-Frontend/apps/admissions-portal/src/main.tsx
+	new file:   University-ERP-Frontend/apps/admissions-portal/src/shell/AppShell.tsx
+	new file:   University-ERP-Frontend/apps/admissions-portal/src/shell/Routing.tsx
+	new file:   University-ERP-Frontend/apps/admissions-portal/tsconfig.json
+	new file:   University-ERP-Frontend/apps/admissions-portal/vite.config.ts
+	modified:   University-ERP-Frontend/apps/applicant-portal/src/features/ApplicantJourney.hooks.ts
+	modified:   University-ERP-Frontend/apps/applicant-portal/src/features/ApplicationForm/ApplicationForm.page.tsx
+	modified:   University-ERP-Frontend/apps/applicant-portal/src/features/ApplicationStatus/ApplicationStatus.page.tsx
 	modified:   University-ERP-Frontend/apps/applicant-portal/src/features/ApplicationTimeline/ApplicationTimeline.page.tsx
 	modified:   University-ERP-Frontend/apps/applicant-portal/src/features/ApplicationWizard/ApplicationWizard.page.tsx
-	modified:   University-ERP-Frontend/apps/applicant-portal/src/features/Dashboard/Dashboard.page.tsx
+	modified:   University-ERP-Frontend/apps/applicant-portal/src/features/ApplicationWizard/ApplicationWizard.types.ts
 	modified:   University-ERP-Frontend/apps/applicant-portal/src/features/DocumentSubmission/DocumentSubmission.page.tsx
+	modified:   University-ERP-Frontend/apps/applicant-portal/src/features/DocumentUpload/DocumentUpload.page.tsx
 	modified:   University-ERP-Frontend/apps/applicant-portal/src/features/EligibilityChecker/EligibilityChecker.page.tsx
-	modified:   University-ERP-Frontend/apps/applicant-portal/src/features/ProgramExplorer/ProgramExplorer.page.tsx
+	deleted:    University-ERP-Frontend/apps/applicant-portal/src/features/EnrollmentApprovals/EnrollmentApprovals.hooks.ts
+	deleted:    University-ERP-Frontend/apps/applicant-portal/src/features/EnrollmentApprovals/EnrollmentApprovals.page.tsx
+	modified:   University-ERP-Frontend/apps/applicant-portal/src/features/InterviewScheduling/InterviewScheduling.page.tsx
+	modified:   University-ERP-Frontend/apps/applicant-portal/src/features/Offers/Offers.page.tsx
+	modified:   University-ERP-Frontend/apps/applicant-portal/src/shell/AppShell.tsx
 	modified:   University-ERP-Frontend/apps/applicant-portal/src/shell/Routing.tsx
-	modified:   University-ERP-Frontend/apps/faculty-portal/package.json
-	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Advising/Advising.hooks.ts
-	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Advising/Advising.page.tsx
-	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Analytics/Analytics.hooks.ts
+	modified:   University-ERP-Frontend/apps/applicant-portal/src/theme.css
+	modified:   University-ERP-Frontend/apps/applicant-portal/vite.config.ts
 	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Analytics/Analytics.page.tsx
-	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Assessments/Assessments.hooks.ts
 	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Assessments/Assessments.page.tsx
-	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Communication/Communication.hooks.ts
+	new file:   University-ERP-Frontend/apps/faculty-portal/src/features/ChairpersonWorkspace/AcademicEvaluation.page.tsx
+	new file:   University-ERP-Frontend/apps/faculty-portal/src/features/ChairpersonWorkspace/EvaluationQueue.page.tsx
+	new file:   University-ERP-Frontend/apps/faculty-portal/src/features/ChairpersonWorkspace/Recommendation.page.tsx
 	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Communication/Communication.page.tsx
 	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Dashboard/Dashboard.page.tsx
-	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Documents/Documents.hooks.ts
+	new file:   University-ERP-Frontend/apps/faculty-portal/src/features/DeanWorkspace/CollegeApproval.page.tsx
+	new file:   University-ERP-Frontend/apps/faculty-portal/src/features/DeanWorkspace/Endorsement.page.tsx
+	new file:   University-ERP-Frontend/apps/faculty-portal/src/features/DeanWorkspace/RecommendationQueue.page.tsx
 	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Documents/Documents.page.tsx
-	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Research/Research.hooks.ts
+	deleted:    University-ERP-Frontend/apps/faculty-portal/src/features/EnrollmentApprovals/EnrollmentApprovals.page.tsx
+	new file:   University-ERP-Frontend/apps/faculty-portal/src/features/FacultySecurity/ApplicantAccess.page.tsx
+	new file:   University-ERP-Frontend/apps/faculty-portal/src/features/FacultySecurity/RecommendationAudit.page.tsx
 	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Research/Research.page.tsx
-	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Schedule/Schedule.hooks.ts
 	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Schedule/Schedule.page.tsx
-	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Students/Students.hooks.ts
-	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Teaching/Teaching.hooks.ts
-	deleted:    University-ERP-Frontend/apps/faculty-portal/src/features/features/EnrollmentApprovals/EnrollmentApprovals.page.tsx
+	new file:   University-ERP-Frontend/apps/faculty-portal/src/features/SecretaryWorkspace/AdmissionQueue.page.tsx
+	new file:   University-ERP-Frontend/apps/faculty-portal/src/features/SecretaryWorkspace/DocumentVerification.page.tsx
+	new file:   University-ERP-Frontend/apps/faculty-portal/src/features/SecretaryWorkspace/InterviewScheduling.page.tsx
+	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Settings/Settings.page.tsx
+	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Students/Students.page.tsx
+	modified:   University-ERP-Frontend/apps/faculty-portal/src/features/Teaching/Teaching.page.tsx
+	modified:   University-ERP-Frontend/apps/faculty-portal/src/main.tsx
+	modified:   University-ERP-Frontend/apps/faculty-portal/src/shell/AppShell.tsx
 	modified:   University-ERP-Frontend/apps/faculty-portal/src/shell/Routing.tsx
-	modified:   University-ERP-Frontend/apps/finance-console/package.json
-	modified:   University-ERP-Frontend/apps/governance-console/package.json
-	modified:   University-ERP-Frontend/apps/identity-portal/package.json
-	modified:   University-ERP-Frontend/apps/identity-portal/src/features/SecuritySettings/SecuritySettings.api.ts
+	new file:   University-ERP-Frontend/apps/faculty-portal/src/theme.css
+	modified:   University-ERP-Frontend/apps/faculty-portal/vite.config.ts
+	new file:   University-ERP-Frontend/apps/finance-console/src/features/Cashier/ClearanceApproval.page.tsx
+	new file:   University-ERP-Frontend/apps/finance-console/src/features/Cashier/PaymentGateway.page.tsx
+	new file:   University-ERP-Frontend/apps/finance-console/src/features/StudentBilling/ScholarshipGrants.page.tsx
+	new file:   University-ERP-Frontend/apps/finance-console/src/features/StudentBilling/StatementOfAccount.page.tsx
+	new file:   University-ERP-Frontend/apps/finance-console/src/features/TuitionAssessment/TuitionAssessment.page.tsx
+	modified:   University-ERP-Frontend/apps/finance-console/src/shell/Routing.tsx
+	modified:   University-ERP-Frontend/apps/finance-console/vite.config.ts
+	modified:   University-ERP-Frontend/apps/governance-console/vite.config.ts
+	new file:   University-ERP-Frontend/apps/identity-portal/src/features/Email/EmailProvisioning.page.tsx
+	new file:   University-ERP-Frontend/apps/identity-portal/src/features/MFA/AccessRevocation.page.tsx
+	new file:   University-ERP-Frontend/apps/identity-portal/src/features/MFA/MFASetup.page.tsx
+	new file:   University-ERP-Frontend/apps/identity-portal/src/features/UniversityAccount/AccountProvisioning.page.tsx
+	new file:   University-ERP-Frontend/apps/identity-portal/src/features/UniversityAccount/DirectorySearch.page.tsx
 	modified:   University-ERP-Frontend/apps/identity-portal/src/features/UserLogin/UserLogin.page.tsx
-	modified:   University-ERP-Frontend/apps/library-portal/package.json
-	modified:   University-ERP-Frontend/apps/lms-web/package.json
-	modified:   University-ERP-Frontend/apps/platform-console/package.json
-	modified:   University-ERP-Frontend/apps/student-portal/package.json
+	modified:   University-ERP-Frontend/apps/identity-portal/src/shell/Routing.tsx
+	modified:   University-ERP-Frontend/apps/identity-portal/vite.config.ts
+	modified:   University-ERP-Frontend/apps/library-portal/vite.config.ts
+	new file:   University-ERP-Frontend/apps/lms-web/src/features/CourseAdministration/CoursePackaging.page.tsx
+	new file:   University-ERP-Frontend/apps/lms-web/src/features/GradebookOrchestration/GradebookSync.page.tsx
+	new file:   University-ERP-Frontend/apps/lms-web/src/features/OfflineSubmissionReview/SubmissionReview.page.tsx
+	modified:   University-ERP-Frontend/apps/lms-web/src/shell/Routing.tsx
+	modified:   University-ERP-Frontend/apps/lms-web/vite.config.ts
+	modified:   University-ERP-Frontend/apps/platform-console/vite.config.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/index.html
+	new file:   University-ERP-Frontend/apps/registrar-portal/package.json
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/App.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/AcademicComplianceDivision/.gitkeep
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/AcademicComplianceDivision/CHEDCompliance.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/AcademicComplianceDivision/Compliance.api.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/AcademicComplianceDivision/Compliance.hooks.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/AcademicComplianceDivision/Compliance.types.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/AcademicComplianceDivision/ResidencyRules.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/AcademicRecordsDivision/.gitkeep
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/AcademicRecordsDivision/AcademicStanding.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/AcademicRecordsDivision/OfficialGrades.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/AcademicRecordsDivision/Records.api.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/AcademicRecordsDivision/Records.hooks.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/AcademicRecordsDivision/Records.types.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/Admissions/EnrollmentActivation.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/AdmissionsDivision/.gitkeep
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/AdmissionsDivision/Admissions.api.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/AdmissionsDivision/Admissions.hooks.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/AdmissionsDivision/Admissions.types.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/AdmissionsDivision/AdmissionsQueue.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/AdmissionsDivision/FacultyEndorsements.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/CertificationDivision/.gitkeep
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/CertificationDivision/Certification.api.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/CertificationDivision/Certification.hooks.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/CertificationDivision/Certification.types.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/CertificationDivision/DiplomaVerification.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/CertificationDivision/TranscriptRequests.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/CurriculumDivision/.gitkeep
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/CurriculumDivision/CourseOfferings.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/CurriculumDivision/Curriculum.api.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/CurriculumDivision/Curriculum.hooks.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/CurriculumDivision/Curriculum.types.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/CurriculumDivision/SubjectCatalog.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/EnrollmentDivision/.gitkeep
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/EnrollmentDivision/Enrollment.api.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/EnrollmentDivision/Enrollment.hooks.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/EnrollmentDivision/Enrollment.types.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/EnrollmentDivision/EnrollmentValidation.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/EnrollmentDivision/SubjectLoading.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/GraduationDivision/.gitkeep
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/GraduationDivision/Graduation.api.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/GraduationDivision/Graduation.hooks.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/GraduationDivision/Graduation.types.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/GraduationDivision/GraduationCandidates.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/GraduationDivision/LatinHonors.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/RegistrarSecurity/.gitkeep
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/RegistrarSecurity/RecordAccessAudit.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/RegistrarSecurity/Security.api.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/RegistrarSecurity/Security.hooks.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/RegistrarSecurity/Security.types.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/RegistrarSecurity/SensitiveVault.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/StudentRegistryDivision/.gitkeep
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/StudentRegistryDivision/LeaveOfAbsence.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/StudentRegistryDivision/MasterStudentList.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/StudentRegistryDivision/Registry.api.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/StudentRegistryDivision/Registry.hooks.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/StudentRegistryDivision/Registry.types.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/StudentServicesDivision/.gitkeep
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/StudentServicesDivision/DataCorrections.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/StudentServicesDivision/Services.api.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/StudentServicesDivision/Services.hooks.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/StudentServicesDivision/Services.types.ts
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/features/StudentServicesDivision/StudentInquiries.page.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/main.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/shell/AppShell.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/src/shell/Routing.tsx
+	new file:   University-ERP-Frontend/apps/registrar-portal/tsconfig.json
+	new file:   University-ERP-Frontend/apps/registrar-portal/vite.config.ts
+	new file:   University-ERP-Frontend/apps/security-portal/index.html
+	new file:   University-ERP-Frontend/apps/security-portal/package.json
+	new file:   University-ERP-Frontend/apps/security-portal/src/App.tsx
+	new file:   University-ERP-Frontend/apps/security-portal/src/main.tsx
+	new file:   University-ERP-Frontend/apps/security-portal/src/shell/AppShell.tsx
+	new file:   University-ERP-Frontend/apps/security-portal/src/shell/Routing.tsx
+	new file:   University-ERP-Frontend/apps/security-portal/tsconfig.json
+	new file:   University-ERP-Frontend/apps/security-portal/vite.config.ts
+	new file:   University-ERP-Frontend/apps/structuring.md
+	modified:   University-ERP-Frontend/apps/student-portal/src/features/AcademicRecord/AcademicRecord.page.tsx
+	modified:   University-ERP-Frontend/apps/student-portal/src/features/Clearance/Clearance.page.tsx
+	modified:   University-ERP-Frontend/apps/student-portal/src/features/Enrollment/Enrollment.page.tsx
 	modified:   University-ERP-Frontend/apps/student-portal/src/features/LearningManagement/LearningManagement.page.tsx
-	modified:   University-ERP-Frontend/apps/student-portal/src/features/MyEnrollments/MyEnrollments.hooks.ts
-	modified:   University-ERP-Frontend/libs/api-clients/academic/advisingApi.ts
+	modified:   University-ERP-Frontend/apps/student-portal/src/features/MyEnrollments/MyEnrollments.page.tsx
+	modified:   University-ERP-Frontend/apps/student-portal/src/features/Timetable/Timetable.page.tsx
+	modified:   University-ERP-Frontend/apps/student-portal/src/main.tsx
+	modified:   University-ERP-Frontend/apps/student-portal/src/shell/AppShell.tsx
+	modified:   University-ERP-Frontend/apps/student-portal/src/shell/Routing.tsx
+	modified:   University-ERP-Frontend/apps/student-portal/vite.config.ts
+	modified:   University-ERP-Frontend/bootstrap.sh
 	modified:   University-ERP-Frontend/libs/api-clients/academic/analyticsApi.ts
 	modified:   University-ERP-Frontend/libs/api-clients/academic/assessmentApi.ts
 	modified:   University-ERP-Frontend/libs/api-clients/academic/communicationApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/academic/documentsApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/academic/facultyStudentsApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/academic/libraryCatalogApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/academic/researchApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/academic/scheduleApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/academic/studentInformationApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/academic/teachingApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/administration/assetManagementApi.ts
+	new file:   University-ERP-Frontend/libs/api-clients/academic/registrarApi.ts
 	modified:   University-ERP-Frontend/libs/api-clients/administration/financeApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/administration/hrApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/administration/inventoryApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/administration/procurementApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/campus-life/canteenApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/campus-life/transportApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/governance/facilitiesApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/governance/governanceApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/package.json
-	modified:   University-ERP-Frontend/libs/api-clients/platform/facultySettingsApi.ts
+	modified:   University-ERP-Frontend/libs/api-clients/index.ts
 	modified:   University-ERP-Frontend/libs/api-clients/student-lifecycle/admissionsApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/student-lifecycle/alumniApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/student-lifecycle/careerApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/student-lifecycle/facultyAdmissionsApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/student-lifecycle/guidanceApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/student-lifecycle/healthCenterApi.ts
-	modified:   University-ERP-Frontend/libs/api-clients/student-lifecycle/hostelApi.ts
+	modified:   University-ERP-Frontend/libs/auth-sdk/index.ts
+	modified:   University-ERP-Frontend/libs/auth-sdk/react/AuthContext.ts
+	modified:   University-ERP-Frontend/libs/auth-sdk/react/AuthProvider.tsx
+	new file:   University-ERP-Frontend/libs/auth-sdk/src/guards/FacultyGuard.tsx
+	new file:   University-ERP-Frontend/libs/auth-sdk/src/guards/FinanceGuard.tsx
+	new file:   University-ERP-Frontend/libs/auth-sdk/src/guards/IdentityGuard.tsx
+	new file:   University-ERP-Frontend/libs/auth-sdk/src/guards/LMSGuard.tsx
+	new file:   University-ERP-Frontend/libs/auth-sdk/src/guards/RegistrarGuard.tsx
+	modified:   University-ERP-Frontend/libs/shell-kit/AuthGuard.tsx
+	modified:   University-ERP-Frontend/libs/ui-kit/src/components/Badge.tsx
+	modified:   University-ERP-Frontend/libs/ui-kit/src/components/Button.tsx
+	new file:   University-ERP-Frontend/libs/ui-kit/src/components/FormInput.tsx
+	new file:   University-ERP-Frontend/libs/ui-kit/src/components/Modal.tsx
+	new file:   University-ERP-Frontend/libs/ui-kit/src/components/Table.tsx
+	modified:   University-ERP-Frontend/libs/ui-kit/src/index.ts
+	new file:   University-ERP-Frontend/libs/ui-kit/src/styles.css
+	modified:   University-ERP-Frontend/libs/vite-config/index.ts
+	modified:   University-ERP-Frontend/libs/vite-config/package.json
+	new file:   University-ERP-Frontend/libs/workflow-sdk/package.json
+	new file:   University-ERP-Frontend/libs/workflow-sdk/src/AcademicRecordWorkflow.ts
+	new file:   University-ERP-Frontend/libs/workflow-sdk/src/AdmissionWorkflow.ts
+	new file:   University-ERP-Frontend/libs/workflow-sdk/src/AuditWorkflow.ts
+	new file:   University-ERP-Frontend/libs/workflow-sdk/src/CertificationWorkflow.ts
+	new file:   University-ERP-Frontend/libs/workflow-sdk/src/EnrollmentWorkflow.ts
+	new file:   University-ERP-Frontend/libs/workflow-sdk/src/FinanceWorkflow.ts
+	new file:   University-ERP-Frontend/libs/workflow-sdk/src/GraduationWorkflow.ts
+	new file:   University-ERP-Frontend/libs/workflow-sdk/src/IdentityWorkflow.ts
+	new file:   University-ERP-Frontend/libs/workflow-sdk/src/LMSWorkflow.ts
+	new file:   University-ERP-Frontend/libs/workflow-sdk/src/LibraryWorkflow.ts
+	new file:   University-ERP-Frontend/libs/workflow-sdk/src/NotificationWorkflow.ts
+	new file:   University-ERP-Frontend/libs/workflow-sdk/src/StudentLifecycleWorkflow.ts
+	new file:   University-ERP-Frontend/libs/workflow-sdk/src/index.ts
+	new file:   University-ERP-Frontend/libs/workflow-sdk/tsconfig.json
 	modified:   University-ERP-Frontend/package-lock.json
 	modified:   University-ERP-Frontend/package.json
+	new file:   apps/registrar-portal/src/features/AcademicComplianceDivision/AcademicAudit/.gitkeep
+	new file:   apps/registrar-portal/src/features/AcademicComplianceDivision/CHEDCompliance/.gitkeep
+	new file:   apps/registrar-portal/src/features/AcademicComplianceDivision/EnrollmentRules/.gitkeep
+	new file:   apps/registrar-portal/src/features/AcademicComplianceDivision/GraduationRules/.gitkeep
+	new file:   apps/registrar-portal/src/features/AcademicComplianceDivision/MaximumLoad/.gitkeep
+	new file:   apps/registrar-portal/src/features/AcademicComplianceDivision/PolicyValidation/.gitkeep
+	new file:   apps/registrar-portal/src/features/AcademicComplianceDivision/PrerequisiteValidation/.gitkeep
+	new file:   apps/registrar-portal/src/features/AcademicComplianceDivision/ResidencyRules/.gitkeep
+	new file:   apps/registrar-portal/src/features/AcademicRecordsDivision/AcademicDeficiencies/.gitkeep
+	new file:   apps/registrar-portal/src/features/AcademicRecordsDivision/AcademicEvaluation/.gitkeep
+	new file:   apps/registrar-portal/src/features/AcademicRecordsDivision/AcademicHistory/.gitkeep
+	new file:   apps/registrar-portal/src/features/AcademicRecordsDivision/AcademicStanding/.gitkeep
+	new file:   apps/registrar-portal/src/features/AcademicRecordsDivision/AcademicVerification/.gitkeep
+	new file:   apps/registrar-portal/src/features/AcademicRecordsDivision/GradeCorrections/.gitkeep
+	new file:   apps/registrar-portal/src/features/AcademicRecordsDivision/Grades/.gitkeep
+	new file:   apps/registrar-portal/src/features/AcademicRecordsDivision/ScholasticRecords/.gitkeep
+	new file:   apps/registrar-portal/src/features/AcademicRecordsDivision/Transcript/.gitkeep
+	new file:   apps/registrar-portal/src/features/AcademicRecordsDivision/TrueCopyOfGrades/.gitkeep
+	new file:   apps/registrar-portal/src/features/AdmissionsDivision/AdmissionDecision/.gitkeep
+	new file:   apps/registrar-portal/src/features/AdmissionsDivision/AdmissionOffers/.gitkeep
+	new file:   apps/registrar-portal/src/features/AdmissionsDivision/AdmissionQueue/.gitkeep
+	new file:   apps/registrar-portal/src/features/AdmissionsDivision/AdmissionReports/.gitkeep
+	new file:   apps/registrar-portal/src/features/AdmissionsDivision/AdmissionReview/.gitkeep
+	new file:   apps/registrar-portal/src/features/AdmissionsDivision/DeferredApplications/.gitkeep
+	new file:   apps/registrar-portal/src/features/AdmissionsDivision/EnrollmentActivation/.gitkeep
+	new file:   apps/registrar-portal/src/features/AdmissionsDivision/FacultyEndorsements/.gitkeep
+	new file:   apps/registrar-portal/src/features/AdmissionsDivision/RejectedApplications/.gitkeep
+	new file:   apps/registrar-portal/src/features/CertificationDivision/CertificateRequests/.gitkeep
+	new file:   apps/registrar-portal/src/features/CertificationDivision/DigitalCertificates/.gitkeep
+	new file:   apps/registrar-portal/src/features/CertificationDivision/DiplomaVerification/.gitkeep
+	new file:   apps/registrar-portal/src/features/CertificationDivision/DocumentAuthentication/.gitkeep
+	new file:   apps/registrar-portal/src/features/CertificationDivision/EnrollmentCertificates/.gitkeep
+	new file:   apps/registrar-portal/src/features/CertificationDivision/GovernmentVerification/.gitkeep
+	new file:   apps/registrar-portal/src/features/CertificationDivision/TranscriptRequests/.gitkeep
+	new file:   apps/registrar-portal/src/features/CurriculumDivision/AcademicCalendar/.gitkeep
+	new file:   apps/registrar-portal/src/features/CurriculumDivision/CourseOfferings/.gitkeep
+	new file:   apps/registrar-portal/src/features/CurriculumDivision/Curriculum/.gitkeep
+	new file:   apps/registrar-portal/src/features/CurriculumDivision/FacultyAssignments/.gitkeep
+	new file:   apps/registrar-portal/src/features/CurriculumDivision/Prerequisites/.gitkeep
+	new file:   apps/registrar-portal/src/features/CurriculumDivision/Programs/.gitkeep
+	new file:   apps/registrar-portal/src/features/CurriculumDivision/Schedules/.gitkeep
+	new file:   apps/registrar-portal/src/features/CurriculumDivision/SectionManagement/.gitkeep
+	new file:   apps/registrar-portal/src/features/CurriculumDivision/SubjectCatalog/.gitkeep
+	new file:   apps/registrar-portal/src/features/EnrollmentDivision/ChangeOfProgram/.gitkeep
+	new file:   apps/registrar-portal/src/features/EnrollmentDivision/ChangeOfSection/.gitkeep
+	new file:   apps/registrar-portal/src/features/EnrollmentDivision/CrossEnrollment/.gitkeep
+	new file:   apps/registrar-portal/src/features/EnrollmentDivision/EnrollmentAdjustment/.gitkeep
+	new file:   apps/registrar-portal/src/features/EnrollmentDivision/EnrollmentDashboard/.gitkeep
+	new file:   apps/registrar-portal/src/features/EnrollmentDivision/EnrollmentHistory/.gitkeep
+	new file:   apps/registrar-portal/src/features/EnrollmentDivision/EnrollmentQueue/.gitkeep
+	new file:   apps/registrar-portal/src/features/EnrollmentDivision/EnrollmentValidation/.gitkeep
+	new file:   apps/registrar-portal/src/features/EnrollmentDivision/LateEnrollment/.gitkeep
+	new file:   apps/registrar-portal/src/features/EnrollmentDivision/SubjectEnrollment/.gitkeep
+	new file:   apps/registrar-portal/src/features/GraduationDivision/Commencement/.gitkeep
+	new file:   apps/registrar-portal/src/features/GraduationDivision/DiplomaPrinting/.gitkeep
+	new file:   apps/registrar-portal/src/features/GraduationDivision/GraduationCandidates/.gitkeep
+	new file:   apps/registrar-portal/src/features/GraduationDivision/GraduationClearance/.gitkeep
+	new file:   apps/registrar-portal/src/features/GraduationDivision/GraduationEvaluation/.gitkeep
+	new file:   apps/registrar-portal/src/features/GraduationDivision/GraduationReports/.gitkeep
+	new file:   apps/registrar-portal/src/features/GraduationDivision/LatinHonors/.gitkeep
+	new file:   apps/registrar-portal/src/features/RegistrarSecurity/AuditTrail/.gitkeep
+	new file:   apps/registrar-portal/src/features/RegistrarSecurity/Dashboard/.gitkeep
+	new file:   apps/registrar-portal/src/features/RegistrarSecurity/DataRetention/.gitkeep
+	new file:   apps/registrar-portal/src/features/RegistrarSecurity/DigitalSignatures/.gitkeep
+	new file:   apps/registrar-portal/src/features/RegistrarSecurity/DocumentVerification/.gitkeep
+	new file:   apps/registrar-portal/src/features/RegistrarSecurity/PermissionManagement/.gitkeep
+	new file:   apps/registrar-portal/src/features/RegistrarSecurity/PrivacyCompliance/.gitkeep
+	new file:   apps/registrar-portal/src/features/RegistrarSecurity/RecordRecovery/.gitkeep
+	new file:   apps/registrar-portal/src/features/RegistrarSecurity/SensitiveDocuments/.gitkeep
+	new file:   apps/registrar-portal/src/features/RegistrarSecurity/StudentRecordAccess/.gitkeep
+	new file:   apps/registrar-portal/src/features/StudentRegistryDivision/Alumni/.gitkeep
+	new file:   apps/registrar-portal/src/features/StudentRegistryDivision/LeaveOfAbsence/.gitkeep
+	new file:   apps/registrar-portal/src/features/StudentRegistryDivision/MasterStudents/.gitkeep
+	new file:   apps/registrar-portal/src/features/StudentRegistryDivision/Readmission/.gitkeep
+	new file:   apps/registrar-portal/src/features/StudentRegistryDivision/ReturningStudents/.gitkeep
+	new file:   apps/registrar-portal/src/features/StudentRegistryDivision/StudentClassification/.gitkeep
+	new file:   apps/registrar-portal/src/features/StudentRegistryDivision/StudentNumber/.gitkeep
+	new file:   apps/registrar-portal/src/features/StudentRegistryDivision/StudentStatus/.gitkeep
+	new file:   apps/registrar-portal/src/features/StudentRegistryDivision/TransferStudents/.gitkeep
+	new file:   apps/registrar-portal/src/features/StudentRegistryDivision/UniversityID/.gitkeep
+	new file:   apps/registrar-portal/src/features/StudentServicesDivision/BirthdateCorrection/.gitkeep
+	new file:   apps/registrar-portal/src/features/StudentServicesDivision/CorrectionRequests/.gitkeep
+	new file:   apps/registrar-portal/src/features/StudentServicesDivision/DocumentRelease/.gitkeep
+	new file:   apps/registrar-portal/src/features/StudentServicesDivision/NameCorrection/.gitkeep
+	new file:   apps/registrar-portal/src/features/StudentServicesDivision/Notifications/.gitkeep
+	new file:   apps/registrar-portal/src/features/StudentServicesDivision/RequestTracking/.gitkeep
+	new file:   apps/registrar-portal/src/features/StudentServicesDivision/StudentInquiry/.gitkeep
+	new file:   apps/registrar-portal/src/features/StudentServicesDivision/StudentRequests/.gitkeep
+	new file:   logs.md
+	new file:   release_all.sh
+	new file:   structure.md
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
 	modified:   newupdate.md
-	modified:   package.json
 
-Untracked files:
-  (use "git add <file>..." to include in what will be committed)
-	University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Application/Abstractions/
-	University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Domain/Aggregates/AttendanceRecord.cs
-	University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Domain/Aggregates/CourseSection.cs
-	University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Domain/Aggregates/RoomAllocation.cs
-	University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Infrastructure/AcademicSchedulingModuleRegistration.cs
-	University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Infrastructure/Persistence/
-	University-ERP-Backend/src/Modules/Academic/AcademicScheduling/AcademicScheduling.Infrastructure/Repositories/
-	University-ERP-Backend/src/Modules/Academic/Examination/Examination.Application/Abstractions/IExaminationRepository.cs
-	University-ERP-Backend/src/Modules/Academic/Examination/Examination.Domain/Aggregates/GradebookRecord.cs
-	University-ERP-Backend/src/Modules/Academic/Examination/Examination.Infrastructure/ExaminationModuleRegistration.cs
-	University-ERP-Backend/src/Modules/Academic/Examination/Examination.Infrastructure/Persistence/
-	University-ERP-Backend/src/Modules/Academic/Examination/Examination.Infrastructure/Repositories/
-	University-ERP-Backend/src/Modules/Academic/LearningManagement/LearningManagement.Application/Abstractions/ILearningManagementRepository.cs
-	University-ERP-Backend/src/Modules/Academic/LearningManagement/LearningManagement.Application/Features/Analytics/
-	University-ERP-Backend/src/Modules/Academic/LearningManagement/LearningManagement.Application/Features/Assessments/
-	University-ERP-Backend/src/Modules/Academic/LearningManagement/LearningManagement.Domain/Aggregates/
-	University-ERP-Backend/src/Modules/Academic/LearningManagement/LearningManagement.Infrastructure/Repositories/LearningManagementRepository.cs
-	University-ERP-Backend/src/Modules/Academic/LearningManagement/LearningManagement.Presentation/Endpoints/AnalyticsEndpoint.cs
-	University-ERP-Backend/src/Modules/Academic/LearningManagement/LearningManagement.Presentation/Endpoints/AssessmentsEndpoint.cs
-	University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Application/Abstractions/
-	University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Application/Features/Schedule/
-	University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Domain/Aggregates/CourseSection.cs
-	University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Infrastructure/Persistence/
-	University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Infrastructure/RegistrarModuleRegistration.cs
-	University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Infrastructure/Repositories/
-	University-ERP-Backend/src/Modules/Academic/Registrar/Registrar.Presentation/Endpoints/ScheduleEndpoint.cs
-	University-ERP-Backend/src/Modules/Academic/StudentInformation/StudentInformation.Application/Features/GetAdvisees/GetAdviseesQueryHandler.cs
-	University-ERP-Backend/src/Modules/Academic/StudentInformation/StudentInformation.Application/Features/GetMyStudents/
-	University-ERP-Backend/src/Modules/Academic/StudentInformation/StudentInformation.Domain/Aggregates/FacultyAdvisee.cs
-	University-ERP-Backend/src/Modules/Academic/StudentInformation/StudentInformation.Presentation/Endpoints/FacultyStudentsEndpoint.cs
-	University-ERP-Backend/src/Modules/Administration/Finance/Finance.Infrastructure/FinanceModuleRegistration.cs
-	University-ERP-Backend/src/Modules/Administration/Finance/Finance.Infrastructure/Persistence/
-	University-ERP-Backend/src/Modules/Administration/Finance/Finance.Infrastructure/Repositories/
-	University-ERP-Backend/src/Modules/Administration/HumanResources/HumanResources.Application/Abstractions/
-	University-ERP-Backend/src/Modules/Administration/HumanResources/HumanResources.Infrastructure/HumanResourcesModuleRegistration.cs
-	University-ERP-Backend/src/Modules/Administration/HumanResources/HumanResources.Infrastructure/Persistence/
-	University-ERP-Backend/src/Modules/Administration/HumanResources/HumanResources.Infrastructure/Repositories/
-	University-ERP-Backend/src/Modules/Platform/Communication/Communication.Infrastructure/CommunicationModuleRegistration.cs
-	University-ERP-Backend/src/Modules/Platform/Communication/Communication.Infrastructure/Persistence/
-	University-ERP-Backend/src/Modules/Platform/Communication/Communication.Infrastructure/Repositories/
-	University-ERP-Backend/src/Modules/Platform/DocumentManagement/DocumentManagement.Infrastructure/DocumentManagementModuleRegistration.cs
-	University-ERP-Backend/src/Modules/Platform/DocumentManagement/DocumentManagement.Infrastructure/Persistence/
-	University-ERP-Backend/src/Modules/Platform/DocumentManagement/DocumentManagement.Infrastructure/Repositories/
-	University-ERP-Frontend/apps/admin-portal/src/features/AcademicConfiguration/AcademicConfiguration.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/AcademicConfiguration/AcademicConfiguration.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/AcademicConfiguration/AcademicConfiguration.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/AcademicConfiguration/AcademicConfiguration.types.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/AssetRegistry/AssetRegistry.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/AssetRegistry/AssetRegistry.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/AssetRegistry/AssetRegistry.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/AssetRegistry/AssetRegistry.types.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/AuditCompliance/AuditCompliance.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/AuditCompliance/AuditCompliance.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/AuditCompliance/AuditCompliance.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/AuditCompliance/AuditCompliance.types.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/CanteenOrders/CanteenOrders.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/CanteenOrders/CanteenOrders.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/CanteenOrders/CanteenOrders.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/CanteenOrders/CanteenOrders.types.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/Dashboard/Dashboard.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/Dashboard/Dashboard.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/Dashboard/Dashboard.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/Dashboard/Dashboard.types.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/EmployeeManagement/EmployeeManagement.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/EmployeeManagement/EmployeeManagement.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/EmployeeManagement/EmployeeManagement.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/EmployeeManagement/EmployeeManagement.types.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/FacilityBooking/FacilityBooking.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/FacilityBooking/FacilityBooking.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/FacilityBooking/FacilityBooking.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/FacilityBooking/FacilityBooking.types.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/FleetManagement/FleetManagement.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/FleetManagement/FleetManagement.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/FleetManagement/FleetManagement.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/FleetManagement/FleetManagement.types.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/IdentitySecurity/IdentitySecurity.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/IdentitySecurity/IdentitySecurity.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/IdentitySecurity/IdentitySecurity.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/IdentitySecurity/IdentitySecurity.types.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/IntegrationManagement/IntegrationManagement.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/IntegrationManagement/IntegrationManagement.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/IntegrationManagement/IntegrationManagement.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/IntegrationManagement/IntegrationManagement.types.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/OrganizationManagement/OrganizationManagement.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/OrganizationManagement/OrganizationManagement.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/OrganizationManagement/OrganizationManagement.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/OrganizationManagement/OrganizationManagement.types.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/PlatformMonitoring/PlatformMonitoring.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/PlatformMonitoring/PlatformMonitoring.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/PlatformMonitoring/PlatformMonitoring.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/PlatformMonitoring/PlatformMonitoring.types.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/PurchaseOrders/PurchaseOrders.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/PurchaseOrders/PurchaseOrders.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/PurchaseOrders/PurchaseOrders.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/PurchaseOrders/PurchaseOrders.types.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/Reports/Reports.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/Reports/Reports.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/Reports/Reports.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/Reports/Reports.types.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/RoleAdministration/RoleAdministration.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/RoleAdministration/RoleAdministration.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/RoleAdministration/RoleAdministration.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/RoleAdministration/RoleAdministration.types.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/StockManagement/StockManagement.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/StockManagement/StockManagement.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/StockManagement/StockManagement.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/StockManagement/StockManagement.types.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/SystemAdministration/SystemAdministration.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/SystemAdministration/SystemAdministration.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/SystemAdministration/SystemAdministration.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/SystemAdministration/SystemAdministration.types.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/UserAdministration/UserAdministration.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/UserAdministration/UserAdministration.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/UserAdministration/UserAdministration.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/UserAdministration/UserAdministration.types.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/WorkflowManagement/WorkflowManagement.api.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/WorkflowManagement/WorkflowManagement.hooks.ts
-	University-ERP-Frontend/apps/admin-portal/src/features/WorkflowManagement/WorkflowManagement.test.tsx
-	University-ERP-Frontend/apps/admin-portal/src/features/WorkflowManagement/WorkflowManagement.types.ts
-	University-ERP-Frontend/apps/applicant-portal/src/features/ApplicationForm/
-	University-ERP-Frontend/apps/applicant-portal/src/features/ApplicationStatus/
-	University-ERP-Frontend/apps/applicant-portal/src/features/ApplicationTimeline/ApplicationTimeline.api.ts
-	University-ERP-Frontend/apps/applicant-portal/src/features/ApplicationTimeline/ApplicationTimeline.hooks.ts
-	University-ERP-Frontend/apps/applicant-portal/src/features/ApplicationTimeline/ApplicationTimeline.test.tsx
-	University-ERP-Frontend/apps/applicant-portal/src/features/ApplicationTimeline/ApplicationTimeline.types.ts
-	University-ERP-Frontend/apps/applicant-portal/src/features/ApplicationWizard/ApplicationWizard.api.ts
-	University-ERP-Frontend/apps/applicant-portal/src/features/ApplicationWizard/ApplicationWizard.hooks.ts
-	University-ERP-Frontend/apps/applicant-portal/src/features/ApplicationWizard/ApplicationWizard.test.tsx
-	University-ERP-Frontend/apps/applicant-portal/src/features/ApplicationWizard/ApplicationWizard.types.ts
-	University-ERP-Frontend/apps/applicant-portal/src/features/Dashboard/Dashboard.api.ts
-	University-ERP-Frontend/apps/applicant-portal/src/features/Dashboard/Dashboard.hooks.ts
-	University-ERP-Frontend/apps/applicant-portal/src/features/Dashboard/Dashboard.test.tsx
-	University-ERP-Frontend/apps/applicant-portal/src/features/Dashboard/Dashboard.types.ts
-	University-ERP-Frontend/apps/applicant-portal/src/features/DocumentSubmission/DocumentSubmission.api.ts
-	University-ERP-Frontend/apps/applicant-portal/src/features/DocumentSubmission/DocumentSubmission.hooks.ts
-	University-ERP-Frontend/apps/applicant-portal/src/features/DocumentSubmission/DocumentSubmission.test.tsx
-	University-ERP-Frontend/apps/applicant-portal/src/features/DocumentSubmission/DocumentSubmission.types.ts
-	University-ERP-Frontend/apps/applicant-portal/src/features/DocumentUpload/
-	University-ERP-Frontend/apps/applicant-portal/src/features/EligibilityChecker/EligibilityChecker.api.ts
-	University-ERP-Frontend/apps/applicant-portal/src/features/EligibilityChecker/EligibilityChecker.hooks.ts
-	University-ERP-Frontend/apps/applicant-portal/src/features/EligibilityChecker/EligibilityChecker.test.tsx
-	University-ERP-Frontend/apps/applicant-portal/src/features/EligibilityChecker/EligibilityChecker.types.ts
-	University-ERP-Frontend/apps/applicant-portal/src/features/InterviewScheduling/
-	University-ERP-Frontend/apps/applicant-portal/src/features/Offers/
-	University-ERP-Frontend/apps/applicant-portal/src/features/ProgramExplorer/ProgramExplorer.api.ts
-	University-ERP-Frontend/apps/applicant-portal/src/features/ProgramExplorer/ProgramExplorer.hooks.ts
-	University-ERP-Frontend/apps/applicant-portal/src/features/ProgramExplorer/ProgramExplorer.test.tsx
-	University-ERP-Frontend/apps/applicant-portal/src/features/ProgramExplorer/ProgramExplorer.types.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Advising/Advising.api.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Advising/Advising.test.tsx
-	University-ERP-Frontend/apps/faculty-portal/src/features/Advising/Advising.types.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Analytics/Analytics.api.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Analytics/Analytics.test.tsx
-	University-ERP-Frontend/apps/faculty-portal/src/features/Analytics/Analytics.types.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Assessments/Assessments.api.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Assessments/Assessments.test.tsx
-	University-ERP-Frontend/apps/faculty-portal/src/features/Assessments/Assessments.types.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Communication/Communication.api.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Communication/Communication.test.tsx
-	University-ERP-Frontend/apps/faculty-portal/src/features/Communication/Communication.types.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Dashboard/Dashboard.api.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Dashboard/Dashboard.hooks.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Dashboard/Dashboard.test.tsx
-	University-ERP-Frontend/apps/faculty-portal/src/features/Dashboard/Dashboard.types.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Documents/Documents.api.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Documents/Documents.test.tsx
-	University-ERP-Frontend/apps/faculty-portal/src/features/Documents/Documents.types.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/EnrollmentApprovals/
-	University-ERP-Frontend/apps/faculty-portal/src/features/Research/Research.api.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Research/Research.test.tsx
-	University-ERP-Frontend/apps/faculty-portal/src/features/Research/Research.types.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Schedule/Schedule.api.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Schedule/Schedule.test.tsx
-	University-ERP-Frontend/apps/faculty-portal/src/features/Schedule/Schedule.types.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Settings/Settings.api.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Settings/Settings.test.tsx
-	University-ERP-Frontend/apps/faculty-portal/src/features/Settings/Settings.types.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Students/Students.api.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Students/Students.page.tsx
-	University-ERP-Frontend/apps/faculty-portal/src/features/Students/Students.test.tsx
-	University-ERP-Frontend/apps/faculty-portal/src/features/Students/Students.types.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Teaching/Teaching.api.ts
-	University-ERP-Frontend/apps/faculty-portal/src/features/Teaching/Teaching.page.tsx
-	University-ERP-Frontend/apps/faculty-portal/src/features/Teaching/Teaching.test.tsx
-	University-ERP-Frontend/apps/faculty-portal/src/features/Teaching/Teaching.types.ts
-	University-ERP-Frontend/apps/finance-console/src/features/Budgeting/
-	University-ERP-Frontend/apps/finance-console/src/features/Dashboard/
-	University-ERP-Frontend/apps/finance-console/src/features/FinancialReports/
-	University-ERP-Frontend/apps/finance-console/src/features/Invoicing/
-	University-ERP-Frontend/apps/finance-console/src/features/PaymentGateway/
-	University-ERP-Frontend/apps/finance-console/src/features/Payroll/
-	University-ERP-Frontend/apps/finance-console/src/features/StudentBilling/StudentBilling.api.ts
-	University-ERP-Frontend/apps/finance-console/src/features/StudentBilling/StudentBilling.test.tsx
-	University-ERP-Frontend/apps/finance-console/src/features/StudentBilling/StudentBilling.types.ts
-	University-ERP-Frontend/apps/governance-console/src/features/Accreditation/
-	University-ERP-Frontend/apps/governance-console/src/features/Audits/
-	University-ERP-Frontend/apps/governance-console/src/features/Committees/
-	University-ERP-Frontend/apps/governance-console/src/features/Compliance/
-	University-ERP-Frontend/apps/governance-console/src/features/Policies/
-	University-ERP-Frontend/apps/governance-console/src/features/RiskManagement/
-	University-ERP-Frontend/apps/identity-portal/src/features/MultiFactorAuth/
-	University-ERP-Frontend/apps/identity-portal/src/features/PasswordRecovery/
-	University-ERP-Frontend/apps/library-portal/src/features/CatalogSearch/
-	University-ERP-Frontend/apps/library-portal/src/features/DigitalResources/
-	University-ERP-Frontend/apps/library-portal/src/features/Fines/
-	University-ERP-Frontend/apps/library-portal/src/features/MyLoans/
-	University-ERP-Frontend/apps/library-portal/src/features/Reservations/
-	University-ERP-Frontend/apps/lms-web/src/features/Assignments/
-	University-ERP-Frontend/apps/lms-web/src/features/Calendar/
-	University-ERP-Frontend/apps/lms-web/src/features/CourseContent/
-	University-ERP-Frontend/apps/lms-web/src/features/Dashboard/
-	University-ERP-Frontend/apps/lms-web/src/features/Discussions/
-	University-ERP-Frontend/apps/lms-web/src/features/Grades/
-	University-ERP-Frontend/apps/lms-web/src/features/Quizzes/
-	University-ERP-Frontend/apps/platform-console/src/features/APIKeys/
-	University-ERP-Frontend/apps/platform-console/src/features/DatabaseManagement/
-	University-ERP-Frontend/apps/platform-console/src/features/GlobalSettings/
-	University-ERP-Frontend/apps/platform-console/src/features/SecurityAudits/
-	University-ERP-Frontend/apps/platform-console/src/features/SystemLogs/
-	University-ERP-Frontend/apps/platform-console/src/features/TenantManagement/
-	University-ERP-Frontend/apps/student-portal/src/features/AcademicRecord/
-	University-ERP-Frontend/apps/student-portal/src/features/Clearance/
-	University-ERP-Frontend/apps/student-portal/src/features/Dashboard/
-	University-ERP-Frontend/apps/student-portal/src/features/Enrollment/
-	University-ERP-Frontend/apps/student-portal/src/features/Extracurriculars/
-	University-ERP-Frontend/apps/student-portal/src/features/Financials/
-	University-ERP-Frontend/apps/student-portal/src/features/Timetable/
-	University-ERP-Frontend/scaffold_features.ps1
-	scaffold_features.ps1
-
-no changes added to commit (use "git add" and/or "git commit -a")
