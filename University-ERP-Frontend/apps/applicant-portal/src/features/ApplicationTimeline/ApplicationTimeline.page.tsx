@@ -36,7 +36,7 @@ export const ApplicationTimelinePage: React.FC = () => {
               {step.status === 'Current' && <div className="card-accent-top" style={{ background: 'var(--warning-text)' }} />}
 
               <div style={{
-                width: '40px', height: '40px', borderRadius: '50%', flexShrik: 0,
+                width: '40px', height: '40px', borderRadius: '50%', flexShrink: 0,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold',
                 background: step.status === 'Completed' ? 'var(--success-bg)' : step.status === 'Current' ? 'var(--brand-primary)' : 'var(--bg-hover)',
                 color: step.status === 'Completed' ? 'var(--success-text)' : step.status === 'Current' ? '#fff' : 'var(--text-muted)'

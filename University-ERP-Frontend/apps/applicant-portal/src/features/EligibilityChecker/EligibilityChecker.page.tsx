@@ -8,9 +8,11 @@ export const EligibilityCheckerPage: React.FC = () => {
   const [result, setResult] = useState<EligibilityResponse | null>(null);
 
   const [formData, setFormData] = useState({
-    programId: 'CS-BS',
+    applicantType: 'Freshman',
     gpa: 3.5,
-    previousDegree: 'High School Diploma'
+    country: 'Domestic',
+    programId: 'P01',
+    previousDegree: 'High School'
   });
 
   const handleCheck = async () => {
@@ -48,11 +50,11 @@ export const EligibilityCheckerPage: React.FC = () => {
             Academic Profile
           </h2>
 
-          <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 'var(--space-2)' }}>Target Program</label>
-          <select style={inputStyle} value={formData.programId} onChange={e => setFormData({ ...formData, programId: e.target.value })}>
-            <option value="CS-BS">B.S. Computer Science</option>
-            <option value="ENG-BS">B.S. Engineering</option>
-            <option value="BUS-BA">B.A. Business Administration</option>
+          <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 'var(--space-2)' }}>Applicant Type</label>
+          <select style={inputStyle} value={formData.applicantType} onChange={e => setFormData({ ...formData, applicantType: e.target.value })}>
+            <option value="First-Year">First-Year Freshman</option>
+            <option value="Transfer">Transfer Student</option>
+            <option value="Graduate">Graduate</option>
           </select>
 
           <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 'var(--space-2)' }}>Cumulative GPA (4.0 Scale)</label>
@@ -64,13 +66,11 @@ export const EligibilityCheckerPage: React.FC = () => {
             onChange={e => setFormData({ ...formData, gpa: parseFloat(e.target.value) })}
           />
 
-          <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 'var(--space-2)' }}>Highest Attained Degree</label>
-          <input
-            type="text"
-            style={inputStyle}
-            value={formData.previousDegree}
-            onChange={e => setFormData({ ...formData, previousDegree: e.target.value })}
-          />
+          <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 'var(--space-2)' }}>Country of Origin</label>
+          <select style={inputStyle} value={formData.country} onChange={e => setFormData({ ...formData, country: e.target.value })}>
+            <option value="Domestic">Domestic (US)</option>
+            <option value="International">International</option>
+          </select>
 
           <Button variant="primary" style={{ width: '100%', marginTop: 'var(--space-2)' }} onClick={handleCheck} disabled={isPending}>
             {isPending ? 'Analyzing Records...' : 'Check Eligibility'}

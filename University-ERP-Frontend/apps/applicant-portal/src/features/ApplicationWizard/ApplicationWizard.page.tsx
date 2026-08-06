@@ -1,9 +1,11 @@
 import { Button, Card, PageHeader } from '@university-erp/ui-kit';
 import React, { useState } from 'react';
+import { useAuth } from '@university-erp/auth-sdk';
 import { useProgramCatalog, useSubmitApplication } from './ApplicationWizard.hooks';
 import { ApplicationFormData } from './ApplicationWizard.types';
 
 export const ApplicationWizardPage: React.FC = () => {
+  const { identity } = useAuth();
   const { data: programs, isLoading } = useProgramCatalog();
   const { mutateAsync: submitApp, isPending } = useSubmitApplication();
 
@@ -17,7 +19,20 @@ export const ApplicationWizardPage: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      await submitApp(formData);
+      const nameParts = (identity?.name || 'Jane Doe').trim().split(' ');
+      const firstName = nameParts[0] || 'Jane';
+      const lastName = nameParts.slice(1).join(' ') || 'Applicant';
+
+      const payload = {
+        applicantId: identity?.id || '322e4090-9e05-438b-95d8-28088085abc4',
+        programId: formData.programId,
+        firstName: firstName,
+        lastName: lastName,
+        dateOfBirth: '2000-01-01',
+        nationality: 'Domestic'
+      };
+
+      await submitApp(payload);
       setStep(3); // Success Step
     } catch (error) {
       console.error(error);
@@ -52,9 +67,17 @@ export const ApplicationWizardPage: React.FC = () => {
                 <label className="data-label">Select Intended Program</label>
                 <select style={inputStyle} value={formData.programId} onChange={e => setFormData({ ...formData, programId: e.target.value })}>
                   <option value="">-- Choose a Program --</option>
-                  <option value="BSCS">B.S. Computer Science</option>
-                  <option value="BSCE">B.S. Civil Engineering</option>
-                  <option value="BBA">B.S. Business Administration</option>
+                  {programs && programs.length > 0 ? (
+                    programs.map((p: any) => (
+                      <option key={p.id} value={p.id}>{p.degree} {p.major || p.name}</option>
+                    ))
+                  ) : (
+                    <>
+                      <option value="BSCS">B.S. Computer Science</option>
+                      <option value="BSCE">B.S. Civil Engineering</option>
+                      <option value="BBA">B.S. Business Administration</option>
+                    </>
+                  )}
                 </select>
               </div>
 

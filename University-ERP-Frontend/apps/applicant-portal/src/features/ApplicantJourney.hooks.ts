@@ -43,7 +43,7 @@ import { useAuth } from '@university-erp/auth-sdk';
 export const useApplicantJourney = () => {
   const [data, setData] = useState<JourneyState | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { user } = useAuth(); // Assume we get the logged in user here
+  const { user, identity } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
@@ -51,7 +51,7 @@ export const useApplicantJourney = () => {
     const fetchJourney = async () => {
       setIsLoading(true);
       try {
-        const studentId = user?.id || 'TEST_USER_ID';
+        const studentId = user?.id || identity?.id || '322e4090-9e05-438b-95d8-28088085abc4';
         const result = await admissionsApi.getApplicantJourney(studentId);
         
         if (isMounted) {
@@ -73,5 +73,5 @@ export const useApplicantJourney = () => {
     };
   }, [user?.id]);
 
-  return { data, isLoading };
+  return { data, isLoading, refetch: () => setData(null) };
 };

@@ -27,6 +27,8 @@ export const AppShell = () => {
     { label: 'Check Eligibility', path: '/eligibility' },
     { label: 'Application Wizard', path: '/apply' },
     { label: 'My Documents', path: '/documents' },
+    { label: 'Interviews', path: '/interviews' },
+    { label: 'Offers & Decision', path: '/offers' },
     { label: 'Journey Timeline', path: '/timeline' },
     { label: 'Admission Status', path: '/admissions' }
   ];
@@ -66,17 +68,7 @@ export const AppShell = () => {
                 key={item.path}
                 to={item.path}
                 onClick={closeMobileMenu}
-                style={{
-                  padding: 'var(--space-2) var(--space-3)',
-                  textDecoration: 'none',
-                  color: isActive ? 'var(--brand-primary)' : 'var(--text-secondary)',
-                  backgroundColor: isActive ? 'var(--bg-surface)' : 'transparent',
-                  border: isActive ? '1px solid var(--border-subtle)' : '1px solid transparent',
-                  borderRadius: 'var(--radius-md)',
-                  fontWeight: isActive ? 600 : 500,
-                  fontSize: '0.875rem',
-                  transition: 'all 0.15s ease'
-                }}
+                className={`nav-item ${isActive ? 'active' : ''}`}
               >
                 {item.label}
               </Link>
@@ -94,17 +86,21 @@ export const AppShell = () => {
             {theme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode'}
           </button>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-2)' }}>
-            <div style={{ overflow: 'hidden' }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+          <div className="user-card">
+            <div className="user-avatar">
+              {identity?.name?.charAt(0) || 'A'}
+            </div>
+            <div className="user-info">
+              <div className="user-name">
                 {identity?.name || 'Applicant Account'}
               </div>
-              <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>{identity?.id}</div>
+              <div className="user-id">{identity?.id || 'ID-UNKNOWN'}</div>
             </div>
-            <Button variant="outline" onClick={logout} style={{ padding: 'var(--space-1) var(--space-2)', fontSize: '0.75rem' }}>
-              Logout
-            </Button>
           </div>
+          
+          <button onClick={logout} className="logout-btn">
+            Logout
+          </button>
         </div>
       </aside>
 

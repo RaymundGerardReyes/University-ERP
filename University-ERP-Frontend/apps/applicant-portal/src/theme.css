@@ -105,8 +105,8 @@
 [data-theme='light'] {
     --bg-base: #f0f4fc;
     --bg-surface: #ffffff;
-    --bg-elevated: #f8faff;
-    --bg-sidebar: #1a2744;
+    --bg-elevated: #f8fafc;
+    --bg-sidebar: #ffffff;
 
     --bg-overlay: rgba(240, 244, 252, 0.9);
     --bg-hover: rgba(59, 130, 246, 0.06);
@@ -119,7 +119,7 @@
     --text-secondary: #475569;
     --text-muted: #94a3b8;
     --text-accent: #2563eb;
-    --text-bright: #0f172a;
+    --text-bright: #020617;
 
     --border-color: #e2e8f0;
     --border-subtle: #f1f5f9;

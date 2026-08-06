@@ -5,13 +5,15 @@ import { AppShell } from './AppShell';
 
 import { AdmissionStatusPage } from '../features/AdmissionStatus/AdmissionStatus.page';
 
-const Stub = ({ title }: { title: string }) => (
-  <div className="stub-page fade-in">
-    <div className="stub-icon">🚧</div>
-    <div className="stub-title">{title}</div>
-    <div className="stub-subtitle">This module is currently being built by the engineering team.</div>
-  </div>
-);
+import { ApplicationTimelinePage } from '../features/ApplicationTimeline/ApplicationTimeline.page';
+import { ApplicationWizardPage } from '../features/ApplicationWizard/ApplicationWizard.page';
+import { DashboardPage } from '../features/Dashboard/Dashboard.page';
+import { EligibilityCheckerPage } from '../features/EligibilityChecker/EligibilityChecker.page';
+
+import { ProgramExplorerPage } from '../features/ProgramExplorer/ProgramExplorer.page';
+import { DocumentSubmissionPage } from '../features/DocumentSubmission/DocumentSubmission.page';
+import { InterviewSchedulingPage } from '../features/InterviewScheduling/InterviewScheduling.page';
+import { OffersPage } from '../features/Offers/Offers.page';
 
 export const Routing: React.FC = () => {
   return (
@@ -19,13 +21,17 @@ export const Routing: React.FC = () => {
       <Routes>
         <Route element={<AuthGuard><AppShell /></AuthGuard>}>
           <Route path="/status" element={<AdmissionStatusPage />} />
-          <Route path="/timeline" element={<Stub title="Application Timeline" />} />
-          <Route path="/wizard" element={<Stub title="Application Wizard" />} />
-          <Route path="/dashboard" element={<Stub title="Dashboard" />} />
-          <Route path="/eligibility" element={<Stub title="Eligibility Checker" />} />
-          <Route path="/approvals" element={<Stub title="Enrollment Approvals" />} />
-          <Route path="/programs" element={<Stub title="Program Explorer" />} />
-          <Route path="/documents" element={<Stub title="Document Submission" />} />
+          <Route path="/admissions" element={<AdmissionStatusPage />} />
+          <Route path="/timeline" element={<ApplicationTimelinePage />} />
+          <Route path="/wizard" element={<ApplicationWizardPage />} />
+          <Route path="/apply" element={<ApplicationWizardPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/eligibility" element={<EligibilityCheckerPage />} />
+
+          <Route path="/programs" element={<ProgramExplorerPage />} />
+          <Route path="/documents" element={<DocumentSubmissionPage />} />
+          <Route path="/interviews" element={<InterviewSchedulingPage />} />
+          <Route path="/offers" element={<OffersPage />} />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Route>
       </Routes>
