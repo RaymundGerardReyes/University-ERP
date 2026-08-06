@@ -2,12 +2,15 @@ namespace Admissions.Domain.Aggregates;
 
 using SharedKernel.Domain.Primitives;
 using Admissions.Domain.Entities;
+using Admissions.Domain.Events;
 
 public sealed class AdmissionApplication : AggregateRoot<string>
 {
     public string ApplicantId { get; private set; } = string.Empty;
     public string ProgramId { get; private set; } = string.Empty;
     public string Status { get; private set; } = string.Empty;
+    public string FacultyRemarks { get; private set; } = string.Empty;
+    public string OfficialStudentId { get; private set; } = string.Empty;
     public DateTime SubmittedDate { get; private set; }
     
     private readonly List<AdmissionDocument> _documents = new();
@@ -45,8 +48,53 @@ public sealed class AdmissionApplication : AggregateRoot<string>
         _timelineEvents.Add(evt);
     }
 
-    public void UpdateStatus(string status)
+    public Result<bool> VerifyDocuments()
     {
-        Status = status;
+        if (Status != "Submitted") return Result<bool>.Failure(new Error("Admissions.InvalidState", "Application is not in Submitted state."));
+        Status = "InterviewPending";
+        AddTimelineEvent("Document Verification Complete", "Documents have been verified by Admissions.", "Completed", DateTime.UtcNow);
+        return Result<bool>.Success(true);
+    }
+
+    public Result<bool> CompleteInterview(string remarks)
+    {
+        if (Status != "InterviewPending") return Result<bool>.Failure(new Error("Admissions.InvalidState", "Application is not in InterviewPending state."));
+        Status = "UnderAcademicEvaluation";
+        FacultyRemarks = remarks;
+        AddTimelineEvent("Interview Completed", "Interview passed. Pending academic evaluation.", "Completed", DateTime.UtcNow);
+        return Result<bool>.Success(true);
+    }
+
+    public Result<bool> Recommend(string remarks)
+    {
+        if (Status != "UnderAcademicEvaluation") return Result<bool>.Failure(new Error("Admissions.InvalidState", "Application must be under academic evaluation."));
+        Status = "Recommended";
+        FacultyRemarks = remarks;
+        AddTimelineEvent("Chairperson Recommendation", "Program Chairperson has recommended admission.", "Completed", DateTime.UtcNow);
+        return Result<bool>.Success(true);
+    }
+
+    public Result<bool> Endorse()
+    {
+        if (Status != "Recommended") return Result<bool>.Failure(new Error("Admissions.InvalidState", "Application must be recommended by the Chairperson first."));
+        Status = "Endorsed_For_Enrollment";
+        AddTimelineEvent("Dean Endorsement", "College Dean has endorsed this applicant for official enrollment.", "Completed", DateTime.UtcNow);
+        return Result<bool>.Success(true);
+    }
+
+    public Result<bool> ActivateEnrollment(string generatedStudentId)
+    {
+        if (Status != "Endorsed_For_Enrollment") return Result<bool>.Failure(new Error("Admissions.InvalidState", "Application must be endorsed by the Dean before the Registrar can activate it."));
+        Status = "Enrolled";
+        OfficialStudentId = generatedStudentId;
+        AddTimelineEvent("Official Enrollment Activated", $"Registrar has activated enrollment. Student ID: {generatedStudentId}", "Completed", DateTime.UtcNow);
+        
+        RaiseDomainEvent(new StudentEnrolledDomainEvent(Guid.NewGuid(), DateTime.UtcNow, Id, generatedStudentId, DateTime.UtcNow));
+        return Result<bool>.Success(true);
+    }
+
+    public void UpdateStatus(string newStatus)
+    {
+        Status = newStatus;
     }
 }

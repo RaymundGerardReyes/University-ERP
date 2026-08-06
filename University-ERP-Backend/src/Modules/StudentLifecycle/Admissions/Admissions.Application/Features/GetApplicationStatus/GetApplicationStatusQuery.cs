@@ -32,7 +32,15 @@ public sealed class GetApplicationStatusQueryHandler : IRequestHandler<GetApplic
         foreach (var app in applications)
         {
             var program = await _programRepository.GetByIdAsync(app.ProgramId, cancellationToken);
-            var programName = program?.Major ?? "Unknown Program";
+            var programName = program != null && !string.IsNullOrWhiteSpace(program.Major)
+                ? $"{program.Degree} {program.Major}".Trim()
+                : app.ProgramId switch
+                {
+                    "BSCS" => "B.S. Computer Science",
+                    "BSCE" => "B.S. Civil Engineering",
+                    "BBA" => "B.S. Business Administration",
+                    _ => string.IsNullOrWhiteSpace(app.ProgramId) ? "B.S. Computer Science" : app.ProgramId
+                };
             
             var missingDocs = app.Documents
                 .Where(d => d.Status != "Verified" && d.Status != "Uploaded")

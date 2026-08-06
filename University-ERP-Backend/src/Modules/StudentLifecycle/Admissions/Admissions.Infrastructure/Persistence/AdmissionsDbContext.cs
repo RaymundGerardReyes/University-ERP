@@ -11,13 +11,11 @@ public sealed class AdmissionsDbContext : DbContext
     {
     }
 
-    // Expose the Aggregate Roots
     public DbSet<AdmissionApplication> Applications => Set<AdmissionApplication>();
     public DbSet<ProgramOffering> ProgramOfferings => Set<ProgramOffering>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // DBMA Pattern: Strictly isolate all tables into the 'admissions' schema
         modelBuilder.HasDefaultSchema("admissions");
 
         modelBuilder.Entity<AdmissionApplication>(entity =>
@@ -27,7 +25,16 @@ public sealed class AdmissionsDbContext : DbContext
             entity.Property(e => e.ApplicantId).IsRequired();
             entity.Property(e => e.ProgramId).IsRequired();
             entity.Property(e => e.Status).IsRequired();
-            
+
+            // NEW: Explicitly map the new properties that caused the Npgsql error
+            entity.Property(e => e.FacultyRemarks)
+                  .IsRequired()
+                  .HasDefaultValue(string.Empty);
+                  
+            entity.Property(e => e.OfficialStudentId)
+                  .IsRequired()
+                  .HasDefaultValue(string.Empty);
+
             // Map the collections for the Aggregate Root
             entity.HasMany(e => e.Documents)
                   .WithOne()
@@ -64,8 +71,6 @@ public sealed class AdmissionsDbContext : DbContext
             entity.Property(e => e.College).IsRequired();
             entity.Property(e => e.Degree).IsRequired();
             entity.Property(e => e.Major).IsRequired();
-            
-            // Store the list of strings natively using PostgreSQL JSONB
             entity.Property(e => e.Tags).HasColumnType("jsonb");
         });
 

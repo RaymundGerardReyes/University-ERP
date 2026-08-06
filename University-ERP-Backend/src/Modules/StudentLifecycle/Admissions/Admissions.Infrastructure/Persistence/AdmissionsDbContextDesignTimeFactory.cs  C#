@@ -1,0 +1,24 @@
+namespace Admissions.Infrastructure.Persistence;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using System;
+
+/// <summary>
+/// Provides a design-time instance of AdmissionsDbContext for EF Core tooling.
+/// </summary>
+public sealed class AdmissionsDbContextDesignTimeFactory : IDesignTimeDbContextFactory<AdmissionsDbContext>
+{
+    public AdmissionsDbContext CreateDbContext(string[] args)
+    {
+        // Connects directly to your specific university_erp database
+        var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+            ?? "Host=localhost;Port=5432;Database=university_erp;Username=erp_admin;Password=dev_password";
+
+        var options = new DbContextOptionsBuilder<AdmissionsDbContext>()
+            .UseNpgsql(connectionString, x => x.MigrationsHistoryTable("__EFMigrationsHistory", "admissions"))
+            .Options;
+
+        return new AdmissionsDbContext(options);
+    }
+}

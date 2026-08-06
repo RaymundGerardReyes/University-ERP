@@ -39,8 +39,11 @@ public sealed class ApproveApplicationCommandHandler : IRequestHandler<ApproveAp
         }
         else if (request.Action == "Approve")
         {
-            // This specific string unlocks the frontend Routing interceptor!
             application.UpdateStatus("Accepted"); 
+        }
+        else if (request.Action == "Reject")
+        {
+            application.UpdateStatus("Rejected");
         }
 
         // Persist the state change

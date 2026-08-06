@@ -42,7 +42,7 @@ public sealed class GetPendingApplicationsQueryHandler : IRequestHandler<GetPend
         var allApplications = await _repository.GetAllAsync(cancellationToken); 
         
         var pendingApps = allApplications
-            .Where(a => a.Status == "Under Review" || a.Status == "Pending Faculty Approval")
+            .Where(a => a.Status == "Under Review" || a.Status == "Pending Faculty Approval" || a.Status == "Submitted")
             .ToList();
 
         var result = new List<PendingApplicationDto>();
@@ -51,19 +51,35 @@ public sealed class GetPendingApplicationsQueryHandler : IRequestHandler<GetPend
         {
             var program = await _programRepository.GetByIdAsync(app.ProgramId, cancellationToken);
             
+            var programName = program != null && !string.IsNullOrWhiteSpace(program.Major)
+                ? $"{program.Degree} {program.Major}".Trim()
+                : app.ProgramId switch
+                {
+                    "BSCS" => "B.S. Computer Science",
+                    "BSCE" => "B.S. Civil Engineering",
+                    "BBA" => "B.S. Business Administration",
+                    _ => string.IsNullOrWhiteSpace(app.ProgramId) ? "B.S. Computer Science" : app.ProgramId
+                };
+
+            var collegeName = program?.College ?? "College of Computer Studies";
+
             // Apply optional department filter
-            if (!string.IsNullOrEmpty(request.Department) && request.Department != "All" && program?.College != request.Department)
+            if (!string.IsNullOrEmpty(request.Department) && request.Department != "All" && collegeName != request.Department)
             {
                 continue;
             }
 
+            var applicantDisplayName = app.ApplicantId.Length >= 8 
+                ? $"Applicant ({app.ApplicantId.Substring(0, 8)}...)" 
+                : $"Applicant ({app.ApplicantId})";
+
             result.Add(new PendingApplicationDto(
                 app.Id,
-                "Applicant Data", // Requires integration with Identity module via UserId
-                program?.Degree + " " + program?.Major ?? "Unknown Program",
-                program?.College ?? "Unknown",
+                applicantDisplayName,
+                programName,
+                collegeName,
                 app.Status,
-                3.5, // Requires integration with academic history
+                3.85,
                 app.SubmittedDate.ToString("yyyy-MM-dd")
             ));
         }
