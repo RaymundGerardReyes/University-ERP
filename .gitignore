@@ -56,20 +56,23 @@ test-results/
 # 3. C# .NET 9 & Avalonia UI (LMS Offline)
 # =========================
 # Build results
-[Bb]in/
-[Oo]bj/
+**/[Bb]in/
+**/[Oo]bj/
 
 # Publish, Deployments & Test outputs
-[Pp]ublish/
+**/[Pp]ublish/
 [Tt]est[Rr]esults/
 win-x64/
 win-arm64/
 linux-x64/
 osx-x64/
 
-# Crash dumps & Diagnostics
+# Crash dumps, Logs & Runtime Diagnostics
 *.dmp
 *.dump
+app.log
+crash.log
+*.log
 
 # Local SQLite & SQLCipher Offline Databases (Avalonia Client)
 *.db
@@ -80,6 +83,9 @@ osx-x64/
 *.sqlite-wal
 *.mdf
 *.ldf
+
+# Local Development & One-off Migration Utility Scripts
+University-ERP-Frontend/clients/lms-offline-avalonia/*.ps1
 
 # IDE / Visual Studio / Rider / VS Code
 .vs/
