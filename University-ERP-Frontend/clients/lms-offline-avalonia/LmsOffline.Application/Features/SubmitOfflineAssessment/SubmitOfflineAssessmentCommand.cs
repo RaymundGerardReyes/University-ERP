@@ -4,11 +4,8 @@ using System;
 using MediatR;
 using SharedKernel.Domain.Primitives;
 
-/// <summary>
-/// CQRS Command triggered when the student finishes an offline quiz/exam.
-/// </summary>
-public sealed record SubmitOfflineAssessmentCommand(
+public record SubmitOfflineAssessmentCommand(
     Guid AssessmentId,
-    string ExamAnswersJson,
+    string StudentAnswersJson,
     DateTime SubmittedAtUtc
-) : IRequest<Result<Guid>>;
+) : IRequest<Result<bool>>;

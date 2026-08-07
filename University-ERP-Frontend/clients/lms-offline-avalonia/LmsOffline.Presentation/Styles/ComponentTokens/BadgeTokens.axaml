@@ -1,0 +1,11 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 
+      BADGE TOKENS 
+      Enforces optical nesting for inline micro-elements (chips/badges).
+    -->
+    <StaticResource x:Key="BadgeRadius" ResourceKey="RadiusSM" />
+    <Thickness x:Key="BadgePadding">8,4</Thickness>
+
+</ResourceDictionary>

@@ -7,16 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.10" />
-    <PackageReference Include="sqlite-net-sqlcipher" Version="1.9.172" />
+    <!-- ADDED: Required assembly for IHttpClientFactory -->
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10" />
+    
+    <!-- Use Microsoft.EntityFrameworkCore.Sqlite.Core so that unencrypted bundle_e_sqlite3 is excluded -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="10.0.10" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlcipher" Version="2.1.8" />
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlcipher" Version="2.1.8" />
-    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
+    <PackageReference Include="sqlite-net-sqlcipher" Version="1.9.172" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LmsOffline.Domain\LmsOffline.Domain.csproj" />
     <ProjectReference Include="..\LmsOffline.Application\LmsOffline.Application.csproj" />
+    <ProjectReference Include="..\LmsOffline.Domain\LmsOffline.Domain.csproj" />
   </ItemGroup>
 
 </Project>

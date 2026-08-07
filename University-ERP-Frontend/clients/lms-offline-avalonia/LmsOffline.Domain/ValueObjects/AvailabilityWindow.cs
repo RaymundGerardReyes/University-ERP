@@ -7,8 +7,10 @@ using System;
 /// </summary>
 public sealed class AvailabilityWindow : IEquatable<AvailabilityWindow>
 {
-    public DateTime StartTimeUtc { get; }
-    public DateTime EndTimeUtc { get; }
+    public DateTime StartTimeUtc { get; private set; }
+    public DateTime EndTimeUtc { get; private set; }
+
+    private AvailabilityWindow() { }
 
     private AvailabilityWindow(DateTime startTimeUtc, DateTime endTimeUtc)
     {

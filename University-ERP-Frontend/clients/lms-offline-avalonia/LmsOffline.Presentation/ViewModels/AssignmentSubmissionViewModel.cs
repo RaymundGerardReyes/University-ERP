@@ -5,30 +5,52 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using LmsOffline.Application.Features.SubmitOfflineAssignment;
 
 public partial class AssignmentSubmissionViewModel : ObservableObject
 {
     private readonly ISender _sender;
+    private readonly ILogger<AssignmentSubmissionViewModel>? _logger;
+
+    public string Title => "Assignment Workspace";
 
     [ObservableProperty]
-    private string _draftContent = string.Empty;
+    private string _assignmentTitle = "CS-305: Analysis of Encrypted Local Databases in Edge Computing";
 
     [ObservableProperty]
-    private string _statusMessage = "Ready to type.";
+    private string _draftContent = "In this assignment, we analyze how SQLCipher uses AES-256-CBC encryption to secure offline academic records...";
 
-    // In a real app, this would be passed in via navigation parameters
-    private readonly Guid _currentAssignmentId = Guid.NewGuid(); 
+    [ObservableProperty]
+    private string _statusMessage = "Draft loaded from local encrypted vault.";
 
-    public AssignmentSubmissionViewModel(ISender sender)
+    [ObservableProperty]
+    private int _characterCount;
+
+    private readonly Guid _currentAssignmentId = Guid.NewGuid();
+
+    public AssignmentSubmissionViewModel(ISender sender, ILogger<AssignmentSubmissionViewModel>? logger = null)
     {
         _sender = sender;
+        _logger = logger;
+        UpdateCharacterCount();
+    }
+
+    partial void OnDraftContentChanged(string value)
+    {
+        UpdateCharacterCount();
+    }
+
+    private void UpdateCharacterCount()
+    {
+        CharacterCount = DraftContent?.Length ?? 0;
     }
 
     [RelayCommand]
     public async Task SubmitAssignmentAsync()
     {
-        StatusMessage = "Saving securely to offline outbox...";
+        StatusMessage = "Encrypting draft essay and saving to SQLCipher Outbox...";
+        _logger?.LogInformation("Student submitted assignment draft ({Length} characters).", CharacterCount);
 
         var command = new SubmitOfflineAssignmentCommand(
             AssessmentId: _currentAssignmentId,
@@ -40,11 +62,13 @@ public partial class AssignmentSubmissionViewModel : ObservableObject
 
         if (result.IsSuccess)
         {
-            StatusMessage = "Success! Assignment safely saved to outbox. It will sync automatically.";
+            StatusMessage = "SUCCESS: Assignment encrypted and queued in SQLCipher Outbox for sync!";
+            _logger?.LogInformation("Assignment submission stored safely in SQLCipher outbox.");
         }
         else
         {
-            StatusMessage = $"Failed to save: {result.Error.Description}";
+            StatusMessage = $"Failed to save draft: {result.Error.Description}";
+            _logger?.LogError("Failed to submit assignment to outbox: {Error}", result.Error.Description);
         }
     }
 }

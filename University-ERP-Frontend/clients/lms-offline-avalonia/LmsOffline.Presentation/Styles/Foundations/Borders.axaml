@@ -1,0 +1,13 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- 
+      BORDER PRIMITIVES
+      Thickness scales. 
+    -->
+    <Thickness x:Key="BorderStandard">1</Thickness>
+    <Thickness x:Key="BorderThick">2</Thickness>
+    <Thickness x:Key="BorderNone">0</Thickness>
+
+</ResourceDictionary>

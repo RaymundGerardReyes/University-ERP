@@ -1,0 +1,42 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 
+      PRIMITIVE COLOR TOKENS (Premium Slate Palette)
+      Do not use these directly in Views. Map them to Semantic Themes (e.g. BgBase).
+    -->
+    
+    <!-- Neutrals (Slate) -->
+    <Color x:Key="White">#FFFFFF</Color>
+    <Color x:Key="Slate50">#F8FAFC</Color>
+    <Color x:Key="Slate100">#F4F6F9</Color> <!-- Custom panel mid-step -->
+    <Color x:Key="Slate200">#E2E8F0</Color>
+    <Color x:Key="Slate300">#CBD5E1</Color>
+    <Color x:Key="Slate400">#94A3B8</Color>
+    <Color x:Key="Slate500">#64748B</Color>
+    <Color x:Key="Slate600">#475569</Color>
+    <Color x:Key="Slate900">#0F172A</Color>
+
+    <!-- Accents (Indigo) -->
+    <Color x:Key="Indigo500">#6366F1</Color>
+    <Color x:Key="Indigo600">#4F46E5</Color>
+    <Color x:Key="Indigo700">#4338CA</Color>
+
+    <!-- Semantic (Status) -->
+    <Color x:Key="Emerald50">#ECFDF5</Color>
+    <Color x:Key="Emerald600">#059669</Color>
+    <Color x:Key="Emerald700">#047857</Color>
+
+    <Color x:Key="Yellow50">#FEFCE8</Color>
+    <Color x:Key="Yellow600">#CA8A04</Color>
+    <Color x:Key="Yellow700">#A16207</Color>
+
+    <Color x:Key="Red50">#FEF2F2</Color>
+    <Color x:Key="Red600">#DC2626</Color>
+    <Color x:Key="Red700">#B91C1C</Color>
+
+    <Color x:Key="Sky50">#F0F9FF</Color>
+    <Color x:Key="Sky500">#0EA5E9</Color>
+    <Color x:Key="Sky600">#0284C7</Color>
+
+</ResourceDictionary>

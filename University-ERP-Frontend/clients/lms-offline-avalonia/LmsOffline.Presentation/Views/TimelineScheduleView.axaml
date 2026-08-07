@@ -1,0 +1,80 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LmsOffline.Presentation.ViewModels"
+             x:Class="LmsOffline.Presentation.Views.TimelineScheduleView"
+             x:DataType="vm:TimelineScheduleViewModel"
+             Background="{DynamicResource BgBase}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="{DynamicResource SpacingLargeVal}" Margin="{DynamicResource SpacingLarge}">
+            <!-- Header Section -->
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Spacing="{DynamicResource SpacingMicroVal}">
+                    <TextBlock Text="Academic Semester Timeline &amp; Schedule" FontSize="{DynamicResource FontSizePageTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextBright}"/>
+                    <TextBlock Text="Track cryptographically locked offline exam windows and milestone schedules." Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
+                </StackPanel>
+
+                <!-- Filter Pills -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{DynamicResource SpacingSmallVal}" VerticalAlignment="Center">
+                    <Button Content="All Courses" 
+                            Command="{Binding FilterTimelineCommand}" CommandParameter="All Courses"
+                            Background="{DynamicResource BrandPrimary}" Foreground="{DynamicResource TextBright}" FontWeight="Bold" Padding="12,6" CornerRadius="{DynamicResource ButtonRadius}"/>
+                    <Button Content="CS-201" 
+                            Command="{Binding FilterTimelineCommand}" CommandParameter="CS-201"
+                            Background="{DynamicResource BgPanel}" Foreground="{DynamicResource TextPrimary}" Padding="12,6" CornerRadius="{DynamicResource ButtonRadius}"/>
+                    <Button Content="CS-305" 
+                            Command="{Binding FilterTimelineCommand}" CommandParameter="CS-305"
+                            Background="{DynamicResource BgPanel}" Foreground="{DynamicResource TextPrimary}" Padding="12,6" CornerRadius="{DynamicResource ButtonRadius}"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Status Banner -->
+            <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource ButtonRadius}" Padding="14,10" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource InfoBase}" FontSize="{DynamicResource FontSizeMetadata}"/>
+            </Border>
+
+            <!-- Vertical Timeline Roadmap List -->
+            <ItemsControl ItemsSource="{Binding TimelineNodes}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:ScheduleMilestoneNode">
+                        <Grid ColumnDefinitions="90,Auto,*" Margin="0,0,0,20">
+                            <!-- Column 0: Date Badge -->
+                            <Border Grid.Column="0" Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource ButtonRadius}" Padding="10,8" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" VerticalAlignment="Top" HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding MonthDayText}" Foreground="{DynamicResource InfoBase}" FontSize="{DynamicResource FontSizeMetadata}" HorizontalAlignment="Center"/>
+                            </Border>
+
+                            <!-- Column 1: Timeline Vertical Line & Indicator Node -->
+                            <StackPanel Grid.Column="1" HorizontalAlignment="Center" Margin="12,0,16,0">
+                                <Ellipse Width="16" Height="16" Fill="{Binding NodeColor}"/>
+                                <Rectangle Width="2" Height="60" Fill="{DynamicResource BorderColor}" Margin="0,4,0,0"/>
+                            </StackPanel>
+
+                            <!-- Column 2: Milestone Card -->
+                            <Border Grid.Column="2" Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                                <StackPanel Spacing="{DynamicResource SpacingSmallVal}">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <StackPanel Orientation="Horizontal" Spacing="{DynamicResource SpacingSmallVal}">
+                                            <Border Background="{DynamicResource InfoSubtle}" BorderBrush="{DynamicResource InfoBase}" BorderThickness="1" CornerRadius="{DynamicResource BadgeRadius}" Padding="8,3">
+                                                <TextBlock Text="{Binding CourseCode}" Foreground="{DynamicResource InfoHover}" FontWeight="Bold" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                            </Border>
+                                            <TextBlock Text="{Binding EventTitle}" FontSize="{DynamicResource FontSizeCardTitle}" FontWeight="Medium" Foreground="{DynamicResource TextBright}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+
+                                        <Border Grid.Column="1" Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource CardRadius}" Padding="10,4">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <TextBlock Text="{Binding Icon}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                                <TextBlock Text="{Binding Status}" Foreground="{Binding NodeColor}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+
+                                    <TextBlock Text="{Binding AvailabilityWindow}" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeMetadata}" FontStyle="Italic"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

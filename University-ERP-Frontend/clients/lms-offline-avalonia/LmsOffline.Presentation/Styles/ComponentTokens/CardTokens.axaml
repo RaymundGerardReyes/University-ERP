@@ -1,0 +1,13 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 
+      CARD TOKENS 
+      Enforces the optical nesting rule for standard layout cards.
+    -->
+    <StaticResource x:Key="CardRadius" ResourceKey="RadiusXL" />
+    <StaticResource x:Key="CardPadding" ResourceKey="SpacingLarge" />
+    <StaticResource x:Key="CardElevation" ResourceKey="ShadowLevel2" />
+    <StaticResource x:Key="CardBorderThickness" ResourceKey="BorderStandard" />
+
+</ResourceDictionary>

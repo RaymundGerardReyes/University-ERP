@@ -2,44 +2,87 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:LmsOffline.Presentation.ViewModels"
              x:Class="LmsOffline.Presentation.Views.LearningTimelineView"
-             x:DataType="vm:LearningTimelineViewModel">
+             x:DataType="vm:LearningTimelineViewModel"
+             Background="{DynamicResource BgBase}">
 
-    <StackPanel Spacing="20">
-        <TextBlock Text="Learning Timeline" FontSize="28" FontWeight="Bold" Foreground="White"/>
-        <TextBlock Text="Your structured academic progression for installed courses." Foreground="#8899b8" Margin="0,0,0,20"/>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="{DynamicResource SpacingLargeVal}" Margin="{DynamicResource SpacingLarge}">
+            <!-- Header Section -->
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Spacing="{DynamicResource SpacingMicroVal}">
+                    <TextBlock Text="Learning Timeline" FontSize="{DynamicResource FontSizePageTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextBright}"/>
+                    <TextBlock Text="Track your offline course progression, completed lessons, and upcoming assessments." Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
+                </StackPanel>
 
-        <!-- Course Header -->
-        <Border Background="#111d36" CornerRadius="10" Padding="20" BorderBrush="#3b82f6" BorderThickness="1">
-            <StackPanel>
-                <TextBlock Text="CS-201: Object Oriented Programming" FontSize="22" FontWeight="Bold" Foreground="#63b3ed"/>
-                <TextBlock Text="Semester 1 • Dr. Alan Turing • Package v1.4.2" Foreground="#8899b8" Margin="0,5,0,0"/>
-            </StackPanel>
-        </Border>
+                <Border Grid.Column="1" Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource ButtonRadius}" Padding="12,6" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource InfoBase}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                </Border>
+            </Grid>
 
-        <!-- Timeline Node -->
-        <StackPanel Margin="20,10,0,0">
-            <TextBlock Text="Week 3: Inheritance &amp; Polymorphism" FontSize="18" FontWeight="Bold" Foreground="White" Margin="0,0,0,15"/>
-            
-            <Border Background="#0d1526" CornerRadius="10" Padding="20" BorderBrush="#1f2937" BorderThickness="1" Margin="0,0,0,15">
-                <Grid ColumnDefinitions="*,Auto">
-                    <StackPanel>
-                        <TextBlock Text="LECTURE VIDEO" FontSize="11" FontWeight="Bold" Foreground="#8899b8" LetterSpacing="1"/>
-                        <TextBlock Text="Lesson 1: Deep Dive into Polymorphism" FontSize="16" Foreground="White" Margin="0,5,0,0"/>
-                    </StackPanel>
-                    <Button Grid.Column="1" Content="Watch Offline" Background="Transparent" BorderBrush="#1f2937" BorderThickness="1" Foreground="White" VerticalAlignment="Center"/>
-                </Grid>
-            </Border>
+            <!-- Course Modules Cards List -->
+            <ItemsControl ItemsSource="{Binding CourseModules}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:OfflineCourseModuleItem">
+                        <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Margin="0,0,0,16">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Spacing="10">
+                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                        <Border Background="{DynamicResource InfoSubtle}" BorderBrush="{DynamicResource InfoBase}" BorderThickness="1" CornerRadius="{DynamicResource BadgeRadius}" Padding="8,3">
+                                            <TextBlock Text="{Binding CourseCode}" Foreground="{DynamicResource InfoHover}" FontWeight="Bold" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                        </Border>
+                                        <TextBlock Text="{Binding ModuleTitle}" FontSize="{DynamicResource FontSizeCardTitle}" FontWeight="Medium" Foreground="{DynamicResource TextBright}" VerticalAlignment="Center"/>
+                                    </StackPanel>
 
-            <Border Background="#0d1526" CornerRadius="10" Padding="20" BorderBrush="#34d399" BorderThickness="1">
-                <Grid ColumnDefinitions="*,Auto">
-                    <StackPanel>
-                        <TextBlock Text="PRACTICE QUIZ - Completed" FontSize="11" FontWeight="Bold" Foreground="#34d399" LetterSpacing="1"/>
-                        <TextBlock Text="Polymorphism Checkpoint" FontSize="16" Foreground="White" Margin="0,5,0,0"/>
-                        <TextBlock Text="Score: 90 / 100 • Feedback Available" FontSize="12" Foreground="#8899b8" Margin="0,5,0,0"/>
-                    </StackPanel>
-                    <Button Grid.Column="1" Content="Review Feedback" Background="#3b82f6" Foreground="White" VerticalAlignment="Center"/>
-                </Grid>
+                                    <TextBlock Text="{Binding Instructor, StringFormat='Instructor: {0}'}" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}"/>
+
+                                    <StackPanel Spacing="6" Margin="0,4,0,0">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBlock Text="{Binding NextMilestone, StringFormat='Next Milestone: {0}'}" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding StatusBadge}" Foreground="{DynamicResource SuccessBase}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                        </Grid>
+                                        <ProgressBar Value="{Binding ProgressPercentage}" Maximum="100" Height="6" Background="{DynamicResource BgPanel}" Foreground="{DynamicResource InfoBase}" CornerRadius="3"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <Button Grid.Column="1" Content="View Syllabus" 
+                                        Command="{Binding $parent[UserControl].((vm:LearningTimelineViewModel)DataContext).SelectModuleCommand}"
+                                        CommandParameter="{Binding}"
+                                        Background="{DynamicResource BgPanel}" Foreground="{DynamicResource TextBright}" FontWeight="SemiBold"
+                                        VerticalAlignment="Center" Margin="20,0,0,0" Padding="14,10" CornerRadius="{DynamicResource ButtonRadius}"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Selected Module Timeline Detail -->
+            <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource InfoBase}" BorderThickness="1">
+                <StackPanel Spacing="{DynamicResource SpacingMediumVal}">
+                    <TextBlock Text="Active Module Milestones" FontSize="{DynamicResource FontSizeCardTitle}" FontWeight="Medium" Foreground="{DynamicResource InfoHover}"/>
+
+                    <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource ButtonRadius}" Padding="{DynamicResource SpacingMedium}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="LESSON 1 • COMPLETED" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold" Foreground="{DynamicResource SuccessBase}"/>
+                                <TextBlock Text="Introduction to Encrypted Local Cache &amp; Domain Model" FontSize="{DynamicResource FontSizeBody}" Foreground="{DynamicResource TextBright}" FontWeight="SemiBold"/>
+                                <TextBlock Text="Duration: 45 mins • Offline Video Saved" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="Replay Lesson" Background="{DynamicResource BgPanel}" Foreground="{DynamicResource TextBright}" VerticalAlignment="Center" Padding="12,8" CornerRadius="{DynamicResource BadgeRadius}"/>
+                        </Grid>
+                    </Border>
+
+                    <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource ButtonRadius}" Padding="{DynamicResource SpacingMedium}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="ASSESSMENT • PENDING" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold" Foreground="{DynamicResource WarningBase}"/>
+                                <TextBlock Text="Midterm Security &amp; Outbox Pattern Exam" FontSize="{DynamicResource FontSizeBody}" Foreground="{DynamicResource TextBright}" FontWeight="SemiBold"/>
+                                <TextBlock Text="Time Limit: 60 mins • AES-256 Token Locked" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="Start Exam" Background="{DynamicResource BrandPrimary}" Foreground="{DynamicResource TextBright}" FontWeight="Bold" VerticalAlignment="Center" Padding="14,8" CornerRadius="{DynamicResource BadgeRadius}"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
             </Border>
         </StackPanel>
-    </StackPanel>
+    </ScrollViewer>
 </UserControl>

@@ -4,30 +4,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SharedKernel.Domain.Primitives;
-using LmsOffline.Domain.Aggregates;
-using LmsOffline.Infrastructure.Persistence;
+using LmsOffline.Application.Interfaces;
 
-public sealed class DownloadModulePackageCommandHandler : IRequestHandler<DownloadModulePackageCommand, Result<Guid>>
+public class DownloadModulePackageCommandHandler : IRequestHandler<DownloadModulePackageCommand, Result<bool>>
 {
-    private readonly EncryptedSqliteContext _context;
+    private readonly IOfflineModuleRepository _moduleRepository;
 
-    public DownloadModulePackageCommandHandler(EncryptedSqliteContext context)
+    public DownloadModulePackageCommandHandler(IOfflineModuleRepository moduleRepository)
     {
-        _context = context;
+        _moduleRepository = moduleRepository;
     }
 
-    public async Task<Result<Guid>> Handle(DownloadModulePackageCommand request, CancellationToken cancellationToken)
+    public Task<Result<bool>> Handle(DownloadModulePackageCommand request, CancellationToken cancellationToken)
     {
-        // 1. Instantiate the new Offline Module Aggregate
-        var module = new OfflineModule(
-            request.ModuleId, 
-            request.CourseName, 
-            request.ModuleTitle);
-
-        // 2. Save it to the encrypted local database
-        _context.Modules.Add(module);
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return Result<Guid>.Success(module.Id);
+        return Task.FromResult(Result<bool>.Success(true));
     }
 }

@@ -1,8 +1,37 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:LmsOffline.Presentation"
              x:Class="LmsOffline.Presentation.App"
-             RequestedThemeVariant="Default">
+             RequestedThemeVariant="Light">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- 1. FOUNDATIONS (Raw Primitives) -->
+                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/Foundations/Colors.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/Foundations/Radius.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/Foundations/Spacing.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/Foundations/Typography.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/Foundations/Elevation.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/Foundations/Borders.axaml" />
+
+                <!-- 2. THEMES (Semantic Surfaces) -->
+                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/Themes/Light.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/Themes/Dark.axaml" />
+
+                <!-- 3. COMPONENT TOKENS (Nesting Rules) -->
+                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/ComponentTokens/CardTokens.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/ComponentTokens/ButtonTokens.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/ComponentTokens/InputTokens.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/ComponentTokens/BadgeTokens.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
 
     <Application.Styles>
         <FluentTheme />

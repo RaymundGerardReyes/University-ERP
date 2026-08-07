@@ -1,33 +1,69 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:LmsOffline.Presentation.ViewModels"
+             x:Class="LmsOffline.Presentation.Views.ModuleTimelineView"
              x:DataType="vm:ModuleTimelineViewModel"
-             x:Class="LmsOffline.Presentation.Views.ModuleTimelineView">
-    
-    <StackPanel Spacing="15" Padding="20">
-        <TextBlock Text="Module Timeline (Offline Mode)" FontSize="22" FontWeight="Bold"/>
-        
-        <TextBlock Text="These are your securely downloaded modules and their strict cryptographic availability windows." TextWrapping="Wrap"/>
-        
-        <!-- Live Status Binding -->
-        <TextBlock Text="{Binding SyncStatusMessage}" Foreground="DarkSlateBlue" FontWeight="SemiBold" TextWrapping="Wrap"/>
-        
-        <StackPanel Orientation="Horizontal" Spacing="10">
-            <Button Content="Download Latest Packages" 
-                    Command="{Binding DownloadPackageCommand}" 
-                    Background="Teal" Foreground="White" Padding="15,10"/>
-            
-            <Button Content="Sync Outbox to ERP" 
-                    Command="{Binding SyncNowCommand}" 
-                    Background="DarkBlue" Foreground="White" Padding="15,10"/>
-        </StackPanel>
+             Background="{DynamicResource BgBase}">
 
-        <Border BorderBrush="LightGray" BorderThickness="1" Padding="15" CornerRadius="5" Background="White" Margin="0,10,0,0">
-            <StackPanel Spacing="5">
-                <TextBlock Text="Advanced Mathematics Midterm" FontWeight="Bold" FontSize="16"/>
-                <TextBlock Text="Status: Downloaded / Ready" Foreground="Green"/>
-                <TextBlock Text="Strict Window: Oct 10, 08:00 AM - Oct 12, 08:00 PM (UTC)" Foreground="DarkRed" FontWeight="SemiBold"/>
-            </StackPanel>
-        </Border>
-    </StackPanel>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="{DynamicResource SpacingLargeVal}" Margin="{DynamicResource SpacingLarge}">
+            <!-- Header Section -->
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Spacing="{DynamicResource SpacingMicroVal}">
+                    <TextBlock Text="Module Progression &amp; Availability Window" FontSize="{DynamicResource FontSizePageTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextBright}"/>
+                    <TextBlock Text="Cryptographically locked offline evaluation windows and progression milestones." Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{DynamicResource SpacingSmallVal}" VerticalAlignment="Center">
+                    <Button Content="📥 Download Package" 
+                            Command="{Binding DownloadPackageCommand}" 
+                            Background="{DynamicResource BgPanel}" Foreground="{DynamicResource TextPrimary}" FontWeight="SemiBold" Padding="12,8" CornerRadius="{DynamicResource ButtonRadius}"/>
+
+                    <Button Content="🔄 Sync Outbox" 
+                            Command="{Binding SyncNowCommand}" 
+                            Background="{DynamicResource BrandPrimary}" Foreground="{DynamicResource TextBright}" FontWeight="Bold" Padding="12,8" CornerRadius="{DynamicResource ButtonRadius}"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Status Banner -->
+            <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource ButtonRadius}" Padding="14,10" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                <TextBlock Text="{Binding SyncStatusMessage}" Foreground="{DynamicResource InfoBase}" FontSize="{DynamicResource FontSizeMetadata}"/>
+            </Border>
+
+            <!-- Module Timeline Window Card -->
+            <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource InfoBase}" BorderThickness="1">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="{Binding CurrentModuleName}" FontSize="{DynamicResource FontSizeCardTitle}" FontWeight="Medium" Foreground="{DynamicResource InfoHover}"/>
+                    
+                    <Border Background="{DynamicResource InfoSubtle}" BorderBrush="{DynamicResource InfoBase}" BorderThickness="1" CornerRadius="{DynamicResource ButtonRadius}" Padding="12" HorizontalAlignment="Left">
+                        <TextBlock Text="{Binding AvailabilityWindowText}" Foreground="{DynamicResource InfoHover}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                    </Border>
+
+                    <TextBlock Text="Milestone Timeline Steps:" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeMetadata}" Margin="0,8,0,0"/>
+
+                    <!-- Milestone 1 -->
+                    <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource ButtonRadius}" Padding="14" BorderBrush="{DynamicResource SuccessBase}" BorderThickness="1">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="MILESTONE 1 • COMPLETED" Foreground="{DynamicResource SuccessBase}" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold"/>
+                                <TextBlock Text="Course Materials Download &amp; Local Encryption Setup" Foreground="{DynamicResource TextPrimary}" FontSize="{DynamicResource FontSizeBody}"/>
+                            </StackPanel>
+                            <TextBlock Grid.Column="1" Text="✓ Verified" Foreground="{DynamicResource SuccessBase}" FontSize="{DynamicResource FontSizeMetadata}" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Milestone 2 -->
+                    <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource ButtonRadius}" Padding="14" BorderBrush="{DynamicResource WarningBase}" BorderThickness="1">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="MILESTONE 2 • ACTIVE" Foreground="{DynamicResource WarningBase}" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold"/>
+                                <TextBlock Text="Midterm Security &amp; Outbox Assessment" Foreground="{DynamicResource TextPrimary}" FontSize="{DynamicResource FontSizeBody}"/>
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="Launch Quiz" Background="{DynamicResource BrandPrimary}" Foreground="{DynamicResource TextBright}" FontWeight="Bold" VerticalAlignment="Center" Padding="10,6" CornerRadius="{DynamicResource BadgeRadius}"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

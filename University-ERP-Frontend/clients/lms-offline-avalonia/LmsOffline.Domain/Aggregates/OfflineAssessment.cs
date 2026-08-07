@@ -8,8 +8,8 @@ public sealed class OfflineAssessment
 {
     public Guid Id { get; private set; }
     public Guid ModuleId { get; private set; }
-    public string Title { get; private set; }
-    public AvailabilityWindow Window { get; private set; }
+    public string Title { get; private set; } = string.Empty;
+    public AvailabilityWindow Window { get; private set; } = null!;
     public int MaxAttempts { get; private set; }
     
     public bool IsStarted { get; private set; }

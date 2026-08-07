@@ -1,0 +1,74 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="LmsOffline.Presentation.Views.CustomControls.CustomTitleBar"
+             Height="36">
+    
+    <UserControl.Styles>
+        <!-- Standard Window Button Hover State -->
+        <Style Selector="Button.WindowControlButton:pointerover">
+            <Setter Property="Background" Value="#33FFFFFF" />
+        </Style>
+        
+        <!-- Close Window Button Hover State (Windows Red) -->
+        <Style Selector="Button.WindowCloseButton:pointerover">
+            <Setter Property="Background" Value="#E81123" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource BgPanel}" 
+            BorderBrush="{DynamicResource BorderSubtle}" 
+            BorderThickness="0,0,0,1" 
+            PointerPressed="TitleBar_PointerPressed">
+        
+        <Grid ColumnDefinitions="Auto, *, Auto">
+            
+            <!-- Left: Logo & Title -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" Margin="16,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False">
+                <!-- App Icon -->
+                <Border Width="16" Height="16" CornerRadius="{DynamicResource BadgeRadius}" Background="{DynamicResource BrandPrimary}">
+                    <TextBlock Text="U" Foreground="{DynamicResource TextBright}" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <!-- Application Title -->
+                <TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}" Foreground="{DynamicResource TextMuted}" FontSize="12" FontWeight="SemiBold"/>
+            </StackPanel>
+            
+            <!-- Right: Custom Window Controls -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <!-- Minimize Button -->
+                <Button Classes="WindowControlButton"
+                        ToolTip.Tip="Minimize"
+                        Content="—" 
+                        Click="MinimizeWindow_Click" 
+                        Width="46" Height="36" 
+                        Background="Transparent" 
+                        Foreground="{DynamicResource TextSecondary}" 
+                        BorderThickness="0" CornerRadius="0" 
+                        HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                
+                <!-- Maximize / Restore Button -->
+                <Button Classes="WindowControlButton"
+                        ToolTip.Tip="Maximize"
+                        Content="🗖" 
+                        Click="MaximizeWindow_Click" 
+                        Width="46" Height="36" 
+                        Background="Transparent" 
+                        Foreground="{DynamicResource TextSecondary}" 
+                        BorderThickness="0" CornerRadius="0" 
+                        HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                
+                <!-- Close Button -->
+                <Button Classes="WindowCloseButton"
+                        ToolTip.Tip="Close"
+                        Content="✕" 
+                        Click="CloseWindow_Click" 
+                        Width="46" Height="36" 
+                        Background="Transparent" 
+                        Foreground="{DynamicResource TextSecondary}" 
+                        BorderThickness="0" CornerRadius="0" 
+                        HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            </StackPanel>
+            
+        </Grid>
+    </Border>
+</UserControl>

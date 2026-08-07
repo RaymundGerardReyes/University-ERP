@@ -1,14 +1,10 @@
 namespace LmsOffline.Application.Validators;
 
-using System;
 using FluentValidation;
-using LmsOffline.Application.Commands;
+// FIXED: Pointing to the new Clean Architecture Features namespace instead of the deleted Commands folder
+using LmsOffline.Application.Features.StartOfflineAssessment; 
 
-#region Validators
-/// <summary>
-/// Validates the StartOfflineAssessmentCommand before execution.
-/// </summary>
-public sealed class StartOfflineAssessmentCommandValidator : AbstractValidator<StartOfflineAssessmentCommand>
+public class StartOfflineAssessmentCommandValidator : AbstractValidator<StartOfflineAssessmentCommand>
 {
     public StartOfflineAssessmentCommandValidator()
     {
@@ -16,13 +12,8 @@ public sealed class StartOfflineAssessmentCommandValidator : AbstractValidator<S
             .NotEmpty()
             .WithMessage("Assessment ID is required.");
 
-        RuleFor(x => x.Token)
-            .NotNull()
-            .WithMessage("An attempt token must be provided.");
-
-        RuleFor(x => x.CurrentTimeUtc)
-            .NotEqual(default(DateTime))
-            .WithMessage("A valid current time must be provided.");
+        RuleFor(x => x.TokenValue)
+            .NotEmpty()
+            .WithMessage("Security token is required.");
     }
 }
-#endregion

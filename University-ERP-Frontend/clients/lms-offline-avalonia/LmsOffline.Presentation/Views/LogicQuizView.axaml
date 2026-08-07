@@ -1,0 +1,142 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LmsOffline.Presentation.ViewModels"
+             x:Class="LmsOffline.Presentation.Views.LogicQuizView"
+             x:DataType="vm:LogicQuizViewModel"
+             Background="{DynamicResource BgBase}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Spacing="{DynamicResource SpacingLargeVal}" Margin="{DynamicResource SpacingSection}">
+            
+            <!-- Page Header & Timer Section -->
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="{DynamicResource SpacingSmallVal}">
+                        <Border Background="{DynamicResource InfoSubtle}" BorderBrush="{DynamicResource InfoBase}" BorderThickness="1" CornerRadius="{DynamicResource BadgeRadius}" Padding="8,3">
+                            <TextBlock Text="OFFLINE EXAM VAULT" Foreground="{DynamicResource InfoHover}" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold" LetterSpacing="1"/>
+                        </Border>
+                        <Border Background="{DynamicResource WarningSubtle}" BorderBrush="{DynamicResource WarningBase}" BorderThickness="1" CornerRadius="{DynamicResource BadgeRadius}" Padding="8,3">
+                            <TextBlock Text="AES-256 MEMORY ENCRYPTED" Foreground="{DynamicResource WarningHover}" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold"/>
+                        </Border>
+                    </StackPanel>
+                    <!-- FIXED: Changed TextBright to TextPrimary for semantic contrast -->
+                    <TextBlock Text="{Binding QuizTitle}" FontSize="{DynamicResource FontSizePageTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}"/>
+                    <TextBlock Text="Complete all logic evaluation questions. Your progress is continuously saved to local encrypted memory." Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
+                </StackPanel>
+
+                <!-- Timer Badge -->
+                <Border Grid.Column="1" Background="{DynamicResource BgSurface}" BorderBrush="{DynamicResource InfoBase}" BorderThickness="1" CornerRadius="{DynamicResource CardRadius}" Padding="16,10" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="TIME REMAINING" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding TimerText}" Foreground="{DynamicResource InfoHover}" FontSize="{DynamicResource FontSizeCardTitle}" FontWeight="Medium"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Question Palette Navigator (1, 2, 3...) -->
+            <Border Background="{DynamicResource BgSurface}" CornerRadius="16" Padding="20" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                <Grid ColumnDefinitions="Auto,*">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="{DynamicResource SpacingSmallVal}" VerticalAlignment="Center" Margin="0,0,16,0">
+                        <TextBlock Text="QUESTION PALETTE:" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <ItemsControl Grid.Column="1" ItemsSource="{Binding Questions}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="10"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="vm:QuizQuestionModel">
+                                <!-- FIXED: Changed TextBright to TextPrimary to contrast against BgPanel -->
+                                <Button Content="{Binding QuestionIndex}"
+                                        Command="{Binding $parent[UserControl].((vm:LogicQuizViewModel)DataContext).JumpToQuestionCommand}"
+                                        CommandParameter="{Binding}"
+                                        Background="{DynamicResource BgPanel}" 
+                                        Foreground="{DynamicResource TextPrimary}" 
+                                        BorderBrush="{DynamicResource BorderSubtle}" 
+                                        BorderThickness="1"
+                                        FontWeight="Bold"
+                                        Width="40" Height="40" 
+                                        CornerRadius="{DynamicResource InputRadius}" 
+                                        Padding="0" 
+                                        HorizontalContentAlignment="Center" 
+                                        VerticalContentAlignment="Center"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </Border>
+
+            <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource InputRadius}" Padding="14" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource InfoBase}" FontSize="{DynamicResource FontSizeMetadata}"/>
+            </Border>
+
+            <!-- Active Question Card Workspace -->
+            <Border Background="{DynamicResource BgSurface}" CornerRadius="16" Padding="28" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                <StackPanel Spacing="{DynamicResource SpacingLargeVal}">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+                            <Border Background="{DynamicResource BrandPrimary}" BorderBrush="{DynamicResource BrandHover}" BorderThickness="1" CornerRadius="{DynamicResource BadgeRadius}" Padding="10,4">
+                                <TextBlock Text="{Binding CurrentQuestion.CategoryBadge}" Foreground="{DynamicResource TextBright}" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold"/>
+                            </Border>
+                            <TextBlock Text="{Binding CurrentQuestion.QuestionIndex, StringFormat='Question {0} of 3'}" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeMetadata}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- FIXED: Changed TextBright to TextPrimary -->
+                    <TextBlock Text="{Binding CurrentQuestion.QuestionText}" FontSize="{DynamicResource FontSizeSectionTitle}" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" TextWrapping="Wrap" LineHeight="28"/>
+
+                    <!-- Options List -->
+                    <ItemsControl ItemsSource="{Binding CurrentQuestion.Options}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="vm:QuizOptionItem">
+                                <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource CardRadius}" Padding="18" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Margin="0,0,0,12">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <!-- FIXED: Changed TextBright to TextPrimary so A/B/C/D is visible in Light Mode -->
+                                        <Border Grid.Column="0" Width="32" Height="32" CornerRadius="{DynamicResource BadgeRadius}" Background="{DynamicResource BgSurface}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Margin="0,0,16,0" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Key}" Foreground="{DynamicResource TextPrimary}" FontWeight="Bold" FontSize="{DynamicResource FontSizeMetadata}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        
+                                        <TextBlock Grid.Column="1" Text="{Binding OptionText}" Foreground="{DynamicResource TextPrimary}" FontSize="{DynamicResource FontSizeBody}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                        
+                                        <Button Grid.Column="2" Content="Select Option"
+                                                Command="{Binding $parent[UserControl].((vm:LogicQuizViewModel)DataContext).SelectOptionCommand}"
+                                                CommandParameter="{Binding}"
+                                                Background="{DynamicResource BrandPrimary}" Foreground="{DynamicResource TextBright}" FontWeight="Bold" Padding="14,8" CornerRadius="{DynamicResource ButtonRadius}"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,12,0,0">
+                        <Button Grid.Column="0" Content="  Previous Question"
+                                Command="{Binding PreviousQuestionCommand}"
+                                Background="{DynamicResource BgPanel}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Foreground="{DynamicResource TextPrimary}" FontWeight="SemiBold" Padding="16,10" CornerRadius="{DynamicResource InputRadius}"/>
+                        <Button Grid.Column="2" Content="Next Question  "
+                                Command="{Binding NextQuestionCommand}"
+                                Background="{DynamicResource BgPanel}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Foreground="{DynamicResource TextPrimary}" FontWeight="SemiBold" Padding="16,10" CornerRadius="{DynamicResource InputRadius}"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Final Submission Footer Card -->
+            <Border Background="{DynamicResource BgSurface}" CornerRadius="16" Padding="24" BorderBrush="{DynamicResource SuccessBase}" BorderThickness="1">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0" Spacing="{DynamicResource SpacingMicroVal}">
+                        <!-- FIXED: Changed TextBright to TextPrimary -->
+                        <TextBlock Text="Ready to complete evaluation?" Foreground="{DynamicResource TextPrimary}" FontSize="{DynamicResource FontSizeCardTitle}" FontWeight="Medium"/>
+                        <TextBlock Text="Submitting encrypts your answers with SQLCipher AES-256 and queues the payload to the Outbox." Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                    </StackPanel>
+                    
+                    <Button Grid.Column="1" Content="Submit Quiz to Outbox"
+                            Command="{Binding SubmitQuizCommand}"
+                            IsEnabled="{Binding !IsQuizSubmitted}"
+                            Background="{DynamicResource SuccessBase}" Foreground="{DynamicResource TextBright}" FontWeight="Bold" FontSize="{DynamicResource FontSizeBody}" Padding="20,12" CornerRadius="{DynamicResource InputRadius}"/>
+                </Grid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

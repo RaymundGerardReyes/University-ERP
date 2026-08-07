@@ -1,0 +1,18 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 
+      OPTICAL RADIUS SYSTEM 
+      Base scale for corner radii. Never use these directly in Views.
+      Always map these to ComponentTokens to enforce Outer = Inner + Padding mathematical relationships.
+    -->
+    <CornerRadius x:Key="RadiusXS">4</CornerRadius>
+    <CornerRadius x:Key="RadiusSM">6</CornerRadius>
+    <CornerRadius x:Key="RadiusMD">8</CornerRadius>
+    <CornerRadius x:Key="Radius10">10</CornerRadius>
+    <CornerRadius x:Key="RadiusLG">12</CornerRadius>
+    <CornerRadius x:Key="RadiusXL">16</CornerRadius>
+    <CornerRadius x:Key="Radius2XL">20</CornerRadius>
+    <CornerRadius x:Key="RadiusWindow">24</CornerRadius>
+
+</ResourceDictionary>

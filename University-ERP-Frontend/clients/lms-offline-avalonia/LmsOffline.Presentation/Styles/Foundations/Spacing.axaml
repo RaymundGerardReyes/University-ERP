@@ -1,0 +1,26 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- 
+      SPACING PRIMITIVES (8-Point Grid System)
+      Base scale for padding and margins. Never use these directly in Views.
+      Always map to ComponentTokens.
+    -->
+    <!-- Thickness (Margin/Padding) -->
+    <Thickness x:Key="SpacingMicro">4</Thickness>
+    <Thickness x:Key="SpacingSmall">8</Thickness>
+    <Thickness x:Key="SpacingMedium">16</Thickness>
+    <Thickness x:Key="SpacingLarge">24</Thickness>
+    <Thickness x:Key="SpacingXL">32</Thickness>
+    <Thickness x:Key="SpacingSection">48</Thickness>
+
+    <!-- Double (StackPanel Spacing) -->
+    <sys:Double x:Key="SpacingMicroVal">4</sys:Double>
+    <sys:Double x:Key="SpacingSmallVal">8</sys:Double>
+    <sys:Double x:Key="SpacingMediumVal">16</sys:Double>
+    <sys:Double x:Key="SpacingLargeVal">24</sys:Double>
+    <sys:Double x:Key="SpacingXLVal">32</sys:Double>
+    <sys:Double x:Key="SpacingSectionVal">48</sys:Double>
+
+</ResourceDictionary>

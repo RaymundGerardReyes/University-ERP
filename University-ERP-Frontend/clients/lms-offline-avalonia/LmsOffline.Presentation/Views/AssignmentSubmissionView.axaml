@@ -1,30 +1,60 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:LmsOffline.Presentation.ViewModels"
+             x:Class="LmsOffline.Presentation.Views.AssignmentSubmissionView"
              x:DataType="vm:AssignmentSubmissionViewModel"
-             x:Class="LmsOffline.Presentation.Views.AssignmentSubmissionView">
-    
-    <StackPanel Spacing="15" Padding="20">
-        <TextBlock Text="Offline Assignment Submission" FontSize="22" FontWeight="Bold" Foreground="DarkSlateBlue"/>
-        
-        <TextBlock Text="Type your answers below. Your work is encrypted via SQLCipher and saved locally. It will auto-sync via the Outbox Processor when internet connectivity is restored." TextWrapping="Wrap"/>
-        
-        <!-- Live Status Binding -->
-        <TextBlock Text="{Binding StatusMessage}" Foreground="Green" FontWeight="SemiBold"/>
-        
-        <!-- Rich Text / Markdown Draft Area -->
-        <TextBox Height="250" 
-                 AcceptsReturn="True" 
-                 TextWrapping="Wrap" 
-                 Text="{Binding DraftContent}"
-                 Watermark="Enter your essay, code, or answers here..."/>
-        
-        <!-- Command Binding -->
-        <Button Content="Save to Offline Outbox" 
-                Command="{Binding SubmitAssignmentCommand}"
-                Background="DarkBlue" 
-                Foreground="White" 
-                HorizontalAlignment="Right" 
-                Padding="15,10"/>
-    </StackPanel>
+             Background="{DynamicResource BgBase}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="{DynamicResource SpacingLargeVal}" Margin="{DynamicResource SpacingLarge}">
+            <!-- Header Section -->
+            <StackPanel Spacing="{DynamicResource SpacingMicroVal}">
+                <TextBlock Text="Offline Assignment Workspace" FontSize="{DynamicResource FontSizePageTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextBright}"/>
+                <TextBlock Text="Draft your academic submission offline. Content is automatically encrypted and saved to Outbox." Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
+            </StackPanel>
+
+            <!-- Status & Title Banner -->
+            <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource InfoBase}" BorderThickness="1">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="{Binding AssignmentTitle}" FontSize="{DynamicResource FontSizeCardTitle}" FontWeight="Medium" Foreground="{DynamicResource InfoHover}"/>
+                    
+                    <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource ButtonRadius}" Padding="12" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                        <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource InfoBase}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- Rich Essay Text Editor -->
+            <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                <StackPanel Spacing="{DynamicResource SpacingMediumVal}">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Essay Draft Content (Markdown Supported):" Foreground="{DynamicResource TextBright}" FontSize="{DynamicResource FontSizeBody}"/>
+                        <TextBlock Grid.Column="1" Text="{Binding CharacterCount, StringFormat='Characters: {0}'}" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                    </Grid>
+
+                    <TextBox Text="{Binding DraftContent}"
+                             AcceptsReturn="True"
+                             Height="240"
+                             TextWrapping="Wrap"
+                             FontFamily="Consolas"
+                             Background="{DynamicResource BgBase}"
+                             Foreground="{DynamicResource TextPrimary}"
+                             BorderBrush="{DynamicResource BorderSubtle}"
+                             CornerRadius="{DynamicResource ButtonRadius}"
+                             Padding="14"
+                             PlaceholderText="Type your assignment submission essay here..."/>
+
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Grid.Column="0" Text="🔒 Encrypted via SQLCipher AES-256 before local saving." 
+                                   Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}" VerticalAlignment="Center"/>
+
+                        <Button Grid.Column="1" Content="💾 Queue to Outbox" 
+                                Command="{Binding SubmitAssignmentCommand}"
+                                Background="{DynamicResource SuccessBase}" Foreground="{DynamicResource TextBright}" FontWeight="Bold" 
+                                Padding="16,10" CornerRadius="{DynamicResource ButtonRadius}"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

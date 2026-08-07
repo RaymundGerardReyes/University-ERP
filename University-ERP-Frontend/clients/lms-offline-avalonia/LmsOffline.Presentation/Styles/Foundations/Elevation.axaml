@@ -1,0 +1,13 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 
+      ELEVATION PRIMITIVES
+      BoxShadow depth scales. Used to create optical depth separating layered surfaces.
+    -->
+    <BoxShadows x:Key="ShadowLevel1">0 1 2 0 #0D000000</BoxShadows> <!-- Micro/Input hover -->
+    <BoxShadows x:Key="ShadowLevel2">0 4 6 -1 #1A000000, 0 2 4 -1 #0F000000</BoxShadows> <!-- Card -->
+    <BoxShadows x:Key="ShadowLevel3">0 10 15 -3 #1A000000, 0 4 6 -2 #0D000000</BoxShadows> <!-- Dialog -->
+    <BoxShadows x:Key="ShadowLevel4">0 20 25 -5 #1A000000, 0 10 10 -5 #0A000000</BoxShadows> <!-- Window/Modal -->
+
+</ResourceDictionary>
