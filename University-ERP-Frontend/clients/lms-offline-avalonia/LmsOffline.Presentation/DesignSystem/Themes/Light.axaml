@@ -1,0 +1,53 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            
+            <!-- 3-TIER SURFACE DEPTH MODEL -->
+            <!-- Window Level (Deepest) -->
+            <SolidColorBrush x:Key="BgBase" Color="#F1F5F9" />      <!-- Slate100 -->
+            
+            <!-- Panel Level (Mid) -->
+            <SolidColorBrush x:Key="BgPanel" Color="#F8FAFC" />     <!-- Slate50 -->
+            
+            <!-- Card Level (Highest) -->
+            <SolidColorBrush x:Key="BgSurface" Color="#FFFFFF" />   <!-- White -->
+            
+            <!-- TEXT HIERARCHY -->
+            <SolidColorBrush x:Key="TextPrimary" Color="#0F172A" /> <!-- Slate900 -->
+            <SolidColorBrush x:Key="TextSecondary" Color="#475569" /><!-- Slate600 -->
+            <SolidColorBrush x:Key="TextMuted" Color="#64748B" />   <!-- Slate500 -->
+            <SolidColorBrush x:Key="TextBright" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="TextAccent" Color="#4F46E5" />  <!-- Indigo600 -->
+
+            <!-- BRAND HIERARCHY -->
+            <SolidColorBrush x:Key="BrandPrimary" Color="#4F46E5" /> <!-- Indigo600 -->
+            <SolidColorBrush x:Key="BrandHover" Color="#4338CA" />   <!-- Indigo700 -->
+            <SolidColorBrush x:Key="BrandSubtle" Color="#EEF2FF" />  <!-- Indigo50 -->
+
+            <!-- STRUCTURAL BORDERS -->
+            <SolidColorBrush x:Key="BorderColor" Color="#CBD5E1" />  <!-- Slate300 -->
+            <SolidColorBrush x:Key="BorderSubtle" Color="#E2E8F0" /> <!-- Slate200 -->
+
+            <!-- SEMANTIC STATUS (Base, Hover, Subtle/Background) -->
+            <SolidColorBrush x:Key="SuccessBase" Color="#10B981" />
+            <SolidColorBrush x:Key="SuccessHover" Color="#059669" />
+            <SolidColorBrush x:Key="SuccessSubtle" Color="#ECFDF5" /> <!-- Emerald50 -->
+
+            <SolidColorBrush x:Key="WarningBase" Color="#F59E0B" />
+            <SolidColorBrush x:Key="WarningHover" Color="#D97706" />
+            <SolidColorBrush x:Key="WarningSubtle" Color="#FFFBEB" /> <!-- Amber50 -->
+
+            <SolidColorBrush x:Key="ErrorBase" Color="#EF4444" />
+            <SolidColorBrush x:Key="ErrorHover" Color="#DC2626" />
+            <SolidColorBrush x:Key="ErrorSubtle" Color="#FEF2F2" />   <!-- Red50 -->
+
+            <SolidColorBrush x:Key="InfoBase" Color="#0EA5E9" />
+            <SolidColorBrush x:Key="InfoHover" Color="#0284C7" />
+            <SolidColorBrush x:Key="InfoSubtle" Color="#F0F9FF" />    <!-- Sky50 -->
+            
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+</ResourceDictionary>

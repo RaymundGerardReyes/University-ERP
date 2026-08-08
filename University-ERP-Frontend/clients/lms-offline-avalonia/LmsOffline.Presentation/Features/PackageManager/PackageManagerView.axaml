@@ -1,0 +1,62 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pmVm="using:LmsOffline.Presentation.Features.PackageManager"
+             x:Class="LmsOffline.Presentation.Features.PackageManager.PackageManagerView"
+             x:DataType="pmVm:PackageManagerViewModel"
+             Background="{DynamicResource BgBase}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="{DynamicResource SpacingLargeVal}" Margin="{DynamicResource SpacingLarge}">
+            
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Spacing="{DynamicResource SpacingMicroVal}">
+                    <TextBlock Text="Offline Course Materials" FontSize="{DynamicResource FontSizePageTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextBright}"/>
+                    <TextBlock Text="Manage your downloaded lessons and learning resources for offline use." Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="  Download New Course"
+                        Command="{Binding DownloadNewPackageCommand}"
+                        Background="{DynamicResource BrandPrimary}" Foreground="{DynamicResource TextBright}" FontWeight="Bold"
+                        VerticalAlignment="Center" Padding="14,10" CornerRadius="{DynamicResource ButtonRadius}"/>
+            </Grid>
+
+            <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                <StackPanel Spacing="10">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Device Storage Used" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
+                        <TextBlock Grid.Column="1" Text="{Binding StorageUsage}" Foreground="{DynamicResource TextBright}" FontWeight="Bold" FontSize="{DynamicResource FontSizeBody}"/>
+                    </Grid>
+                    <ProgressBar Value="{Binding StoragePercentage}" Maximum="100" Height="8" Foreground="{DynamicResource InfoBase}" Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource BadgeRadius}"/>
+                </StackPanel>
+            </Border>
+
+            <ItemsControl ItemsSource="{Binding InstalledPackages}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="pmVm:InstalledCoursePackageItem">
+                        <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Margin="0,0,0,16">
+                            <StackPanel Spacing="{DynamicResource SpacingMediumVal}">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Spacing="{DynamicResource SpacingMicroVal}">
+                                        <TextBlock Text="{Binding Title}" FontSize="{DynamicResource FontSizeCardTitle}" FontWeight="Medium" Foreground="{DynamicResource TextBright}"/>
+                                        <TextBlock Text="{Binding SizeFormatted, StringFormat='Version {0}   Size: {1}'}" FontSize="{DynamicResource FontSizeMetadata}" Foreground="{DynamicResource TextMuted}"/>
+                                    </StackPanel>
+                                    <Border Grid.Column="1" Background="{DynamicResource SuccessSubtle}" BorderBrush="{DynamicResource SuccessBase}" BorderThickness="1" CornerRadius="15" Padding="12,5" VerticalAlignment="Center">
+                                        <TextBlock Text="Ready for Offline Use" Foreground="{DynamicResource SuccessHover}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                    </Border>
+                                </Grid>
+
+                                <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource ButtonRadius}" Padding="14" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                                    <StackPanel Spacing="{DynamicResource SpacingSmallVal}">
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <TextBlock Text="Security: " Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                            <TextBlock Grid.Column="1" Text="Verified Safe" Foreground="{DynamicResource SuccessBase}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

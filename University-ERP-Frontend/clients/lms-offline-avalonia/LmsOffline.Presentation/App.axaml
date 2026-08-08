@@ -1,6 +1,7 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:LmsOffline.Presentation"
+             xmlns:shared="using:LmsOffline.Presentation.Shared.Controls"
              x:Class="LmsOffline.Presentation.App"
              RequestedThemeVariant="Light">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
@@ -9,22 +10,24 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <!-- 1. FOUNDATIONS (Raw Primitives) -->
-                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/Foundations/Colors.axaml" />
-                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/Foundations/Radius.axaml" />
-                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/Foundations/Spacing.axaml" />
-                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/Foundations/Typography.axaml" />
-                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/Foundations/Elevation.axaml" />
-                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/Foundations/Borders.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/DesignSystem/Foundations/Colors.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/DesignSystem/Foundations/Radius.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/DesignSystem/Foundations/Spacing.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/DesignSystem/Foundations/Typography.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/DesignSystem/Foundations/Elevation.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/DesignSystem/Foundations/Borders.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/DesignSystem/Foundations/ZIndex.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/DesignSystem/Foundations/Motion.axaml" />
 
                 <!-- 2. THEMES (Semantic Surfaces) -->
-                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/Themes/Light.axaml" />
-                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/Themes/Dark.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/DesignSystem/Themes/Light.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/DesignSystem/Themes/Dark.axaml" />
 
                 <!-- 3. COMPONENT TOKENS (Nesting Rules) -->
-                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/ComponentTokens/CardTokens.axaml" />
-                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/ComponentTokens/ButtonTokens.axaml" />
-                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/ComponentTokens/InputTokens.axaml" />
-                <ResourceInclude Source="avares://LmsOffline.Presentation/Styles/ComponentTokens/BadgeTokens.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/DesignSystem/Tokens/CardTokens.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/DesignSystem/Tokens/ButtonTokens.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/DesignSystem/Tokens/InputTokens.axaml" />
+                <ResourceInclude Source="avares://LmsOffline.Presentation/DesignSystem/Tokens/BadgeTokens.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

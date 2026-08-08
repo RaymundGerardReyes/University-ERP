@@ -1,0 +1,8 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Outer radius (24) = Inner radius (14) + Padding (10) -->
+    <CornerRadius x:Key="CardRadius">24</CornerRadius>
+    <Thickness x:Key="CardPadding">10</Thickness>
+    <StaticResource x:Key="CardElevation" ResourceKey="ShadowLevel2" />
+    <StaticResource x:Key="CardBorderThickness" ResourceKey="BorderStandard" />
+</ResourceDictionary>

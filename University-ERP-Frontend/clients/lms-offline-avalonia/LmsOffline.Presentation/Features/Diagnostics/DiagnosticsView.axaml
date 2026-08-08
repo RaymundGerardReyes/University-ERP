@@ -1,0 +1,60 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:dgVm="using:LmsOffline.Presentation.Features.Diagnostics"
+             x:Class="LmsOffline.Presentation.Features.Diagnostics.DiagnosticsView"
+             x:DataType="dgVm:DiagnosticsViewModel"
+             Background="{DynamicResource BgBase}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="{DynamicResource SpacingLargeVal}" Margin="{DynamicResource SpacingLarge}">
+            
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Spacing="{DynamicResource SpacingMicroVal}">
+                    <TextBlock Text="Learning App Status" FontSize="{DynamicResource FontSizePageTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextBright}"/>
+                    <TextBlock Text="Check your offline connection, storage space, and app performance." Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="  Refresh Status"
+                        Command="{Binding RunSelfTestCommand}"
+                        Background="{DynamicResource BrandPrimary}" Foreground="{DynamicResource TextBright}" FontWeight="Bold"
+                        VerticalAlignment="Center" Padding="14,10" CornerRadius="{DynamicResource ButtonRadius}"/>
+            </Grid>
+
+            <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource InfoBase}" BorderThickness="1">
+                <StackPanel Spacing="14">
+                    <TextBlock Text="Offline System Checks" FontSize="{DynamicResource FontSizeCardTitle}" FontWeight="Medium" Foreground="{DynamicResource InfoHover}"/>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Local Data Security" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
+                        <TextBlock Grid.Column="1" Text="Secured &amp; Active" Foreground="{DynamicResource SuccessBase}" FontWeight="Bold" FontSize="{DynamicResource FontSizeBody}"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Offline Storage Size" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
+                        <TextBlock Grid.Column="1" Text="{Binding DatabaseSizeBytes}" Foreground="{DynamicResource TextBright}" FontWeight="Bold" FontSize="{DynamicResource FontSizeBody}"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Offline Session Validity" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
+                        <TextBlock Grid.Column="1" Text="{Binding TokenValidity}" Foreground="{DynamicResource SuccessBase}" FontWeight="Bold" FontSize="{DynamicResource FontSizeBody}"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                <StackPanel Spacing="{DynamicResource SpacingMediumVal}">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Recent App Activity" FontSize="{DynamicResource FontSizeCardTitle}" FontWeight="Medium" Foreground="{DynamicResource TextBright}"/>
+                    </Grid>
+                    <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource ButtonRadius}" Padding="14" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" MinHeight="260">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding RuntimeLogs}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="x:String">
+                                        <TextBlock Text="{Binding}" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}" Margin="0,0,0,5"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

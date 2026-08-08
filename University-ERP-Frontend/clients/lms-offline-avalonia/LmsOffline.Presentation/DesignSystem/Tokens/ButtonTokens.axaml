@@ -1,0 +1,7 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Inner element radius mathematically scaled: Outer (24) - Padding (10) = 14 -->
+    <CornerRadius x:Key="ButtonRadius">14</CornerRadius>
+    <Thickness x:Key="ButtonPadding">16,10</Thickness>
+    <StaticResource x:Key="ButtonElevation" ResourceKey="ShadowLevel1" />
+</ResourceDictionary>

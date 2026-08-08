@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
@@ -11,6 +12,9 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+#if DEBUG
+        this.AttachDevTools();
+#endif
         this.SizeChanged += OnWindowSizeChanged;
         this.Opened += MainWindow_Opened;
     }
@@ -36,7 +40,12 @@ public partial class MainWindow : Window
             }
 
             // Standard responsive layout for the application shell
-            if (e.NewSize.Width < 1000)
+            if (e.NewSize.Width < 900)
+            {
+                splitView.DisplayMode = SplitViewDisplayMode.Overlay;
+                splitView.IsPaneOpen = false;
+            }
+            else if (e.NewSize.Width < 1280)
             {
                 splitView.DisplayMode = SplitViewDisplayMode.CompactInline;
                 splitView.IsPaneOpen = false;

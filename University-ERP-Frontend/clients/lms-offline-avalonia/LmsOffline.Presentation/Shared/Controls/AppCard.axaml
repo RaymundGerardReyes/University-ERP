@@ -1,0 +1,12 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="LmsOffline.Presentation.Shared.Controls.AppCard"
+             x:Name="Root">
+    <Border Background="{DynamicResource BgSurface}" 
+            CornerRadius="{DynamicResource CardRadius}" 
+            Padding="10" 
+            BorderBrush="{DynamicResource BorderSubtle}" 
+            BorderThickness="1">
+        <ContentPresenter Content="{Binding Content, ElementName=Root}" />
+    </Border>
+</UserControl>

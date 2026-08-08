@@ -1,0 +1,11 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <x:Int32 x:Key="ZIndexBase">0</x:Int32>
+    <x:Int32 x:Key="ZIndexDropdown">10</x:Int32>
+    <x:Int32 x:Key="ZIndexSticky">20</x:Int32>
+    <x:Int32 x:Key="ZIndexFixed">30</x:Int32>
+    <x:Int32 x:Key="ZIndexModalBackdrop">40</x:Int32>
+    <x:Int32 x:Key="ZIndexModal">50</x:Int32>
+    <x:Int32 x:Key="ZIndexPopover">60</x:Int32>
+    <x:Int32 x:Key="ZIndexTooltip">70</x:Int32>
+</ResourceDictionary>

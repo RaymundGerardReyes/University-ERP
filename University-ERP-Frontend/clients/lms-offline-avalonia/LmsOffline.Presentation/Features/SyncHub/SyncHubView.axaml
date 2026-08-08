@@ -1,0 +1,76 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shVm="using:LmsOffline.Presentation.Features.SyncHub"
+             x:Class="LmsOffline.Presentation.Features.SyncHub.SyncHubView"
+             x:DataType="shVm:SyncHubViewModel"
+             Background="{DynamicResource BgBase}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="{DynamicResource SpacingLargeVal}" Margin="{DynamicResource SpacingLarge}">
+            
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Spacing="{DynamicResource SpacingMicroVal}">
+                    <TextBlock Text="Learning Progress Sync" FontSize="{DynamicResource FontSizePageTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextBright}"/>
+                    <TextBlock Text="Your completed activities are safely saved and will automatically upload when connected to the internet." Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="  Sync Progress Now"
+                        Command="{Binding TriggerSyncCommand}"
+                        IsEnabled="{Binding !IsSyncing}"
+                        Background="{DynamicResource BrandPrimary}" Foreground="{DynamicResource TextBright}" FontWeight="Bold"
+                        VerticalAlignment="Center" Padding="14,10" CornerRadius="{DynamicResource ButtonRadius}"/>
+            </Grid>
+
+            <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource ButtonRadius}" Padding="14,10" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource InfoBase}" FontSize="{DynamicResource FontSizeMetadata}" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="1" Text="{Binding LastSyncTime}" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                </Grid>
+            </Border>
+
+            <Grid ColumnDefinitions="1*,1*" Margin="0,4,0,0">
+                <Border Grid.Column="0" Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Margin="0,0,10,0">
+                    <StackPanel Spacing="{DynamicResource SpacingMediumVal}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="Pending Uploads" FontSize="{DynamicResource FontSizeCardTitle}" FontWeight="Medium" Foreground="{DynamicResource TextBright}"/>
+                            <Border Grid.Column="1" Background="{DynamicResource InfoSubtle}" CornerRadius="{DynamicResource CardRadius}" Padding="8,2">
+                                <TextBlock Text="{Binding OutboxQueue.Count, StringFormat='{}{0} Waiting'}" Foreground="{DynamicResource InfoHover}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                            </Border>
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding OutboxQueue}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="shVm:OutboxItemViewModel">
+                                    <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource ButtonRadius}" Padding="14" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Margin="0,0,0,12">
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Text="Saved Offline" Foreground="{DynamicResource InfoBase}" FontWeight="Bold" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                            <TextBlock Text="{Binding TargetEntity}" Foreground="{DynamicResource TextPrimary}" FontWeight="SemiBold" FontSize="{DynamicResource FontSizeBody}"/>
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <TextBlock Text="{Binding CreatedAtFormatted}" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Margin="10,0,0,0">
+                    <StackPanel Spacing="{DynamicResource SpacingMediumVal}">
+                        <TextBlock Text="Recent Sync History" FontSize="{DynamicResource FontSizeCardTitle}" FontWeight="Medium" Foreground="{DynamicResource TextBright}"/>
+                        <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource ButtonRadius}" Padding="14" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" MinHeight="260">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding SyncLogFeed}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="x:String">
+                                            <TextBlock Text="{Binding}" Foreground="{DynamicResource SuccessBase}" FontSize="{DynamicResource FontSizeMetadata}" Margin="0,0,0,6"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

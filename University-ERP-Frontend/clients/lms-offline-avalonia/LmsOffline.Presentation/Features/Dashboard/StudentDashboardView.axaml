@@ -1,0 +1,571 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:dashVm="using:LmsOffline.Presentation.Features.Dashboard"
+             xmlns:dash="using:LmsOffline.Application.Features.Dashboard"
+             x:Class="LmsOffline.Presentation.Features.Dashboard.StudentDashboardView"
+             x:DataType="dashVm:StudentDashboardViewModel"
+             Background="{DynamicResource BgBase}">
+
+    <UserControl.Styles>
+        <!-- KPI card hover transition -->
+        <Style Selector="Border.kpiCard">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.kpiCard:pointerover">
+            <Setter Property="Background" Value="{DynamicResource BgPanel}"/>
+        </Style>
+        <!-- Horizon row hover -->
+        <Style Selector="Border.horizonRow">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.12"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.horizonRow:pointerover">
+            <Setter Property="Background" Value="{DynamicResource BgPanel}"/>
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Border MaxWidth="1100" HorizontalAlignment="Center" Margin="28,24,28,40">
+            <StackPanel Spacing="32">
+
+                <!-- ══════════════════════════════════════════════════════════ -->
+                <!-- SECTION 1 — WELCOME BANNER                               -->
+                <!-- ══════════════════════════════════════════════════════════ -->
+                <Border Background="{DynamicResource BgSurface}"
+                        CornerRadius="{DynamicResource CardRadius}"
+                        Padding="28,22"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1">
+                    <Grid ColumnDefinitions="*,Auto">
+
+                        <!-- Left: Greeting -->
+                        <StackPanel Grid.Column="0" Spacing="6" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding StudentName, StringFormat='Good morning, {0}'}"
+                                       FontSize="26" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimary}"/>
+                            <TextBlock Text="{Binding WelcomeSubtitle}"
+                                       FontSize="14"
+                                       Foreground="{DynamicResource TextSecondary}"/>
+                            <TextBlock Text="{Binding TodayDateString}"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource TextMuted}"
+                                       Margin="0,4,0,0"/>
+                            <!-- Attention summary pill -->
+                            <Border Background="{DynamicResource WarningSubtle}"
+                                    CornerRadius="20" Padding="12,5"
+                                    HorizontalAlignment="Left" Margin="0,8,0,0">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="⚡" FontSize="13" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding TopUrgentActionMessage}"
+                                               Foreground="{DynamicResource WarningBase}"
+                                               FontSize="13" FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Right: Avatar chip -->
+                        <Border Grid.Column="1"
+                                Background="{DynamicResource BgPanel}"
+                                CornerRadius="{DynamicResource CardRadius}"
+                                Padding="14,10"
+                                BorderBrush="{DynamicResource BorderSubtle}"
+                                BorderThickness="1"
+                                VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <Border Width="36" Height="36" CornerRadius="18"
+                                        Background="{DynamicResource BrandPrimary}">
+                                    <TextBlock Text="AR"
+                                               Foreground="{DynamicResource TextBright}"
+                                               FontSize="13" FontWeight="Bold"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center" Spacing="1">
+                                    <TextBlock Text="{Binding StudentId, StringFormat='ID: {0}'}"
+                                               Foreground="{DynamicResource TextSecondary}"
+                                               FontSize="12"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                    </Grid>
+                </Border>
+
+                <!-- ══════════════════════════════════════════════════════════ -->
+                <!-- SECTION 2 — AT-A-GLANCE KPI CARDS                       -->
+                <!-- ══════════════════════════════════════════════════════════ -->
+                <ItemsControl ItemsSource="{Binding KpiCards}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="4"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="dash:KpiCardDto">
+                            <!-- Outer: CardRadius (24) + Padding 10 → Inner: InputRadius (14) -->
+                            <Border Classes="kpiCard"
+                                    Background="{DynamicResource BgSurface}"
+                                    CornerRadius="{DynamicResource CardRadius}"
+                                    Padding="10"
+                                    BorderBrush="{DynamicResource BorderSubtle}"
+                                    BorderThickness="1"
+                                    Margin="0,0,14,0">
+                                <Border Background="{DynamicResource BgPanel}"
+                                        CornerRadius="{DynamicResource InputRadius}"
+                                        Padding="18,16">
+                                    <StackPanel Spacing="10">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock Text="{Binding Icon}" FontSize="20" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding Label}"
+                                                       Foreground="{DynamicResource TextMuted}"
+                                                       FontSize="11" FontWeight="Bold"
+                                                       LetterSpacing="1"
+                                                       VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Value}"
+                                                   Foreground="{Binding AccentColor}"
+                                                   FontSize="34" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding SubLabel}"
+                                                   Foreground="{DynamicResource TextSecondary}"
+                                                   FontSize="12"/>
+                                    </StackPanel>
+                                </Border>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- ══════════════════════════════════════════════════════════ -->
+                <!-- SECTION 3 — CONTINUE LEARNING                           -->
+                <!-- ══════════════════════════════════════════════════════════ -->
+                <StackPanel Spacing="12" IsVisible="{Binding ContinueLearning, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <TextBlock Text="Continue Learning"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimary}"/>
+                    <!-- Outer Card -->
+                    <Border Background="{DynamicResource BgSurface}"
+                            CornerRadius="{DynamicResource CardRadius}"
+                            Padding="10"
+                            BorderBrush="{DynamicResource BrandPrimary}"
+                            BorderThickness="1">
+                        <!-- Inner Panel -->
+                        <Border Background="{DynamicResource BgPanel}"
+                                CornerRadius="{DynamicResource InputRadius}"
+                                Padding="22,18">
+                            <Grid ColumnDefinitions="*,Auto"
+                                  DataContext="{Binding ContinueLearning}">
+                                <StackPanel Grid.Column="0" Spacing="10">
+                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                        <Border Background="{DynamicResource BrandSubtle}"
+                                                CornerRadius="8" Padding="10,4">
+                                            <TextBlock Text="{Binding CourseCode}"
+                                                       Foreground="{DynamicResource BrandPrimary}"
+                                                       FontSize="12" FontWeight="Bold"/>
+                                        </Border>
+                                        <TextBlock Text="{Binding CourseName}"
+                                                   Foreground="{DynamicResource TextSecondary}"
+                                                   FontSize="14" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding CurrentModule}"
+                                               Foreground="{DynamicResource TextPrimary}"
+                                               FontSize="17" FontWeight="SemiBold"/>
+                                    <!-- Progress Bar -->
+                                    <StackPanel Spacing="6">
+                                        <ProgressBar Value="{Binding ProgressPercent}"
+                                                     Maximum="100" Height="6"
+                                                     Background="{DynamicResource BorderSubtle}"
+                                                     Foreground="{DynamicResource BrandPrimary}"
+                                                     CornerRadius="3"
+                                                     Width="420"
+                                                     HorizontalAlignment="Left"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock Text="{Binding ProgressPercent, StringFormat='{}{0}%'}"
+                                                       Foreground="{DynamicResource BrandPrimary}"
+                                                       FontSize="13" FontWeight="Bold"/>
+                                            <TextBlock Text="·" Foreground="{DynamicResource TextMuted}" FontSize="13"/>
+                                            <TextBlock Text="{Binding ProgressLabel}"
+                                                       Foreground="{DynamicResource TextMuted}"
+                                                       FontSize="13"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <Button Grid.Column="1"
+                                        Content="Continue Learning →"
+                                        Background="{DynamicResource BrandPrimary}"
+                                        Foreground="{DynamicResource TextBright}"
+                                        FontWeight="Bold" FontSize="13"
+                                        Padding="22,11"
+                                        CornerRadius="{DynamicResource ButtonRadius}"
+                                        VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                    </Border>
+                </StackPanel>
+
+                <!-- ══════════════════════════════════════════════════════════ -->
+                <!-- SECTION 4 — IMMEDIATE HORIZON                           -->
+                <!-- ══════════════════════════════════════════════════════════ -->
+                <StackPanel Spacing="16">
+                    <!-- Header row -->
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Immediate Horizon"
+                                   FontSize="16" FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimary}"
+                                   VerticalAlignment="Center"/>
+                        <Button Grid.Column="1" Content="View Calendar →"
+                                Background="Transparent"
+                                Foreground="{DynamicResource BrandPrimary}"
+                                FontSize="13" FontWeight="SemiBold"
+                                BorderThickness="0" Padding="0"/>
+                    </Grid>
+
+                    <Border Background="{DynamicResource BgSurface}"
+                            CornerRadius="{DynamicResource CardRadius}"
+                            Padding="10"
+                            BorderBrush="{DynamicResource BorderSubtle}"
+                            BorderThickness="1">
+                        <StackPanel>
+
+                            <!-- ── OVERDUE ───────────────────────────────── -->
+                            <StackPanel IsVisible="{Binding HasOverdue}" Spacing="0">
+                                <Border Background="{DynamicResource BgPanel}"
+                                        CornerRadius="{DynamicResource InputRadius}"
+                                        Padding="16,12"
+                                        Margin="0,0,0,2">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="OVERDUE"
+                                                   Foreground="{DynamicResource ErrorBase}"
+                                                   FontSize="11" FontWeight="Bold"
+                                                   LetterSpacing="1.5"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+                                <ItemsControl ItemsSource="{Binding OverdueDeadlines}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="dash:DeadlineDto">
+                                            <Border Classes="horizonRow"
+                                                    CornerRadius="10"
+                                                    Padding="16,14"
+                                                    Margin="0,2,0,2"
+                                                    Background="Transparent">
+                                                <Grid ColumnDefinitions="*,Auto,Auto">
+                                                    <StackPanel Grid.Column="0" Spacing="3">
+                                                        <TextBlock Text="{Binding CourseCode}"
+                                                                   Foreground="{DynamicResource ErrorBase}"
+                                                                   FontSize="12" FontWeight="Bold"/>
+                                                        <TextBlock Text="{Binding Title}"
+                                                                   Foreground="{DynamicResource TextPrimary}"
+                                                                   FontSize="14" FontWeight="SemiBold"/>
+                                                    </StackPanel>
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{Binding RelativeTime}"
+                                                               Foreground="{DynamicResource TextMuted}"
+                                                               FontSize="12"
+                                                               VerticalAlignment="Center"
+                                                               Margin="16,0,20,0"/>
+                                                    <Button Grid.Column="2"
+                                                            Content="{Binding ActionText}"
+                                                            Background="{DynamicResource ErrorBase}"
+                                                            Foreground="{DynamicResource TextBright}"
+                                                            FontSize="12" FontWeight="Bold"
+                                                            Padding="16,7"
+                                                            CornerRadius="{DynamicResource ButtonRadius}"
+                                                            VerticalAlignment="Center"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <Rectangle Height="1" Fill="{DynamicResource BorderSubtle}" Margin="16,6"/>
+                            </StackPanel>
+
+                            <!-- ── TODAY ─────────────────────────────────── -->
+                            <StackPanel IsVisible="{Binding HasToday}" Spacing="0">
+                                <Border Background="{DynamicResource BgPanel}"
+                                        CornerRadius="{DynamicResource InputRadius}"
+                                        Padding="16,12"
+                                        Margin="0,0,0,2">
+                                    <TextBlock Text="TODAY"
+                                               Foreground="{DynamicResource WarningBase}"
+                                               FontSize="11" FontWeight="Bold"
+                                               LetterSpacing="1.5"/>
+                                </Border>
+                                <ItemsControl ItemsSource="{Binding TodayDeadlines}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="dash:DeadlineDto">
+                                            <Border Classes="horizonRow"
+                                                    CornerRadius="10"
+                                                    Padding="16,14"
+                                                    Margin="0,2,0,2"
+                                                    Background="Transparent">
+                                                <Grid ColumnDefinitions="*,Auto,Auto">
+                                                    <StackPanel Grid.Column="0" Spacing="3">
+                                                        <TextBlock Text="{Binding CourseCode}"
+                                                                   Foreground="{DynamicResource WarningBase}"
+                                                                   FontSize="12" FontWeight="Bold"/>
+                                                        <TextBlock Text="{Binding Title}"
+                                                                   Foreground="{DynamicResource TextPrimary}"
+                                                                   FontSize="14" FontWeight="SemiBold"/>
+                                                    </StackPanel>
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{Binding RelativeTime}"
+                                                               Foreground="{DynamicResource TextMuted}"
+                                                               FontSize="12"
+                                                               VerticalAlignment="Center"
+                                                               Margin="16,0,20,0"/>
+                                                    <Button Grid.Column="2"
+                                                            Content="{Binding ActionText}"
+                                                            Background="{DynamicResource BrandPrimary}"
+                                                            Foreground="{DynamicResource TextBright}"
+                                                            FontSize="12" FontWeight="Bold"
+                                                            Padding="16,7"
+                                                            CornerRadius="{DynamicResource ButtonRadius}"
+                                                            VerticalAlignment="Center"
+                                                            Command="{Binding $parent[UserControl].((dashVm:StudentDashboardViewModel)DataContext).PerformActionCommand}"
+                                                            CommandParameter="{Binding Title}"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <Rectangle Height="1" Fill="{DynamicResource BorderSubtle}" Margin="16,6"/>
+                            </StackPanel>
+
+                            <!-- ── UPCOMING ───────────────────────────────── -->
+                            <StackPanel IsVisible="{Binding HasUpcoming}" Spacing="0">
+                                <Border Background="{DynamicResource BgPanel}"
+                                        CornerRadius="{DynamicResource InputRadius}"
+                                        Padding="16,12"
+                                        Margin="0,0,0,2">
+                                    <TextBlock Text="UPCOMING"
+                                               Foreground="{DynamicResource InfoBase}"
+                                               FontSize="11" FontWeight="Bold"
+                                               LetterSpacing="1.5"/>
+                                </Border>
+                                <ItemsControl ItemsSource="{Binding UpcomingDeadlines}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="dash:DeadlineDto">
+                                            <Border Classes="horizonRow"
+                                                    CornerRadius="10"
+                                                    Padding="16,14"
+                                                    Margin="0,2,0,2"
+                                                    Background="Transparent">
+                                                <Grid ColumnDefinitions="*,Auto">
+                                                    <StackPanel Grid.Column="0" Spacing="3">
+                                                        <TextBlock Text="{Binding CourseCode}"
+                                                                   Foreground="{DynamicResource InfoBase}"
+                                                                   FontSize="12" FontWeight="Bold"/>
+                                                        <TextBlock Text="{Binding Title}"
+                                                                   Foreground="{DynamicResource TextPrimary}"
+                                                                   FontSize="14" FontWeight="SemiBold"/>
+                                                    </StackPanel>
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{Binding RelativeTime}"
+                                                               Foreground="{DynamicResource TextMuted}"
+                                                               FontSize="12"
+                                                               VerticalAlignment="Center"
+                                                               Margin="16,0,0,0"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- ══════════════════════════════════════════════════════════ -->
+                <!-- SECTION 5 — COURSE PROGRESS                             -->
+                <!-- ══════════════════════════════════════════════════════════ -->
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Course Progress"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimary}"/>
+                    <Border Background="{DynamicResource BgSurface}"
+                            CornerRadius="{DynamicResource CardRadius}"
+                            Padding="10"
+                            BorderBrush="{DynamicResource BorderSubtle}"
+                            BorderThickness="1">
+                        <ItemsControl ItemsSource="{Binding CourseProgresses}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="dash:CourseProgressDto">
+                                    <Border Background="{DynamicResource BgPanel}"
+                                            CornerRadius="{DynamicResource InputRadius}"
+                                            Padding="18,16"
+                                            Margin="0,0,0,6">
+                                        <StackPanel Spacing="10">
+                                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <Border Grid.Column="0"
+                                                        Background="{DynamicResource BrandSubtle}"
+                                                        CornerRadius="8" Padding="10,4"
+                                                        Margin="0,0,12,0">
+                                                    <TextBlock Text="{Binding CourseCode}"
+                                                               Foreground="{DynamicResource BrandPrimary}"
+                                                               FontSize="12" FontWeight="Bold"/>
+                                                </Border>
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding CourseName}"
+                                                           Foreground="{DynamicResource TextPrimary}"
+                                                           FontSize="14" FontWeight="SemiBold"
+                                                           VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="2"
+                                                           Text="{Binding ProgressPercent, StringFormat='{}{0}%'}"
+                                                           Foreground="{DynamicResource BrandPrimary}"
+                                                           FontSize="14" FontWeight="Bold"
+                                                           VerticalAlignment="Center"/>
+                                            </Grid>
+                                            <ProgressBar Value="{Binding ProgressPercent}"
+                                                         Maximum="100" Height="5"
+                                                         Background="{DynamicResource BorderSubtle}"
+                                                         Foreground="{DynamicResource BrandPrimary}"
+                                                         CornerRadius="3"
+                                                         HorizontalAlignment="Stretch"/>
+                                            <TextBlock Text="{Binding ModuleLabel}"
+                                                       Foreground="{DynamicResource TextMuted}"
+                                                       FontSize="12"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+                </StackPanel>
+
+                <!-- ══════════════════════════════════════════════════════════ -->
+                <!-- SECTION 6 — RECENT ACTIVITY                             -->
+                <!-- ══════════════════════════════════════════════════════════ -->
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Recent Activity"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimary}"/>
+                    <Border Background="{DynamicResource BgSurface}"
+                            CornerRadius="{DynamicResource CardRadius}"
+                            Padding="10"
+                            BorderBrush="{DynamicResource BorderSubtle}"
+                            BorderThickness="1">
+                        <ItemsControl ItemsSource="{Binding RecentActivities}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="dash:RecentActivityDto">
+                                    <Border Background="{DynamicResource BgPanel}"
+                                            CornerRadius="{DynamicResource InputRadius}"
+                                            Padding="16,14"
+                                            Margin="0,0,0,6">
+                                        <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+                                            <!-- Check icon -->
+                                            <Border Grid.Column="0"
+                                                    Width="32" Height="32" CornerRadius="16"
+                                                    Background="{DynamicResource SuccessSubtle}"
+                                                    Margin="0,0,12,0">
+                                                <TextBlock Text="{Binding Icon}"
+                                                           FontSize="14"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                            </Border>
+                                            <!-- Action label -->
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding ActionLabel}"
+                                                       Foreground="{DynamicResource SuccessBase}"
+                                                       FontSize="12" FontWeight="Bold"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,6,0"/>
+                                            <!-- Course + Title -->
+                                            <StackPanel Grid.Column="2" Spacing="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding CourseCode}"
+                                                           Foreground="{DynamicResource TextSecondary}"
+                                                           FontSize="11"/>
+                                                <TextBlock Text="{Binding Title}"
+                                                           Foreground="{DynamicResource TextPrimary}"
+                                                           FontSize="13" FontWeight="SemiBold"/>
+                                            </StackPanel>
+                                            <!-- Time -->
+                                            <TextBlock Grid.Column="3"
+                                                       Text="{Binding RelativeTime}"
+                                                       Foreground="{DynamicResource TextMuted}"
+                                                       FontSize="12"
+                                                       VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+                </StackPanel>
+
+                <!-- ══════════════════════════════════════════════════════════ -->
+                <!-- SECTION 7 — ACADEMIC SNAPSHOT (lowest priority)         -->
+                <!-- ══════════════════════════════════════════════════════════ -->
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Academic Snapshot"
+                               FontSize="14" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextSecondary}"/>
+                    <Border Background="{DynamicResource BgSurface}"
+                            CornerRadius="{DynamicResource CardRadius}"
+                            Padding="10"
+                            BorderBrush="{DynamicResource BorderSubtle}"
+                            BorderThickness="1">
+                        <Border Background="{DynamicResource BgPanel}"
+                                CornerRadius="{DynamicResource InputRadius}"
+                                Padding="22,18">
+                            <UniformGrid Columns="4">
+                                <!-- Program -->
+                                <StackPanel Spacing="4" Margin="0,0,16,0">
+                                    <TextBlock Text="Program"
+                                               Foreground="{DynamicResource TextMuted}"
+                                               FontSize="11" FontWeight="Bold"
+                                               LetterSpacing="1"/>
+                                    <TextBlock Text="{Binding AcademicProgram}"
+                                               Foreground="{DynamicResource TextPrimary}"
+                                               FontSize="13" FontWeight="SemiBold"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <!-- Courses -->
+                                <StackPanel Spacing="4" Margin="0,0,16,0">
+                                    <TextBlock Text="Current Courses"
+                                               Foreground="{DynamicResource TextMuted}"
+                                               FontSize="11" FontWeight="Bold"
+                                               LetterSpacing="1"/>
+                                    <TextBlock Text="{Binding ActiveCourseCount}"
+                                               Foreground="{DynamicResource TextPrimary}"
+                                               FontSize="13" FontWeight="SemiBold"/>
+                                </StackPanel>
+                                <!-- Academic Year -->
+                                <StackPanel Spacing="4" Margin="0,0,16,0">
+                                    <TextBlock Text="Academic Year"
+                                               Foreground="{DynamicResource TextMuted}"
+                                               FontSize="11" FontWeight="Bold"
+                                               LetterSpacing="1"/>
+                                    <TextBlock Text="{Binding AcademicYear}"
+                                               Foreground="{DynamicResource TextPrimary}"
+                                               FontSize="13" FontWeight="SemiBold"/>
+                                </StackPanel>
+                                <!-- Semester -->
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Semester"
+                                               Foreground="{DynamicResource TextMuted}"
+                                               FontSize="11" FontWeight="Bold"
+                                               LetterSpacing="1"/>
+                                    <TextBlock Text="{Binding Semester}"
+                                               Foreground="{DynamicResource TextPrimary}"
+                                               FontSize="13" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </UniformGrid>
+                        </Border>
+                    </Border>
+                </StackPanel>
+
+            </StackPanel>
+        </Border>
+    </ScrollViewer>
+</UserControl>

@@ -2,137 +2,45 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:LmsOffline.Presentation.ViewModels"
         xmlns:controls="using:LmsOffline.Presentation.Views.CustomControls"
+        xmlns:shell="using:LmsOffline.Presentation.Shell"
         x:Class="LmsOffline.Presentation.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Title="University ERP - Student Offline Learning Desktop Client"
+        Title="University ERP - Student Learning Portal"
         Width="1280" Height="820"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource BgBase}"
-        WindowDecorations="BorderOnly"
+        SystemDecorations="BorderOnly"
         ExtendClientAreaToDecorationsHint="True"
         CornerRadius="{StaticResource RadiusWindow}"
         WindowState="Normal">
 
+    <Window.Styles>
+        <!-- Style to automatically bind IsExpanded to our Node Model -->
+        <Style Selector="TreeViewItem" x:DataType="vm:TaxonomyNode">
+            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+        </Style>
+    </Window.Styles>
+
     <Grid RowDefinitions="36,*,Auto">
         
-        <!-- Inject Reusable Custom Title Bar (Restores OS Mechanics & Removes Ghost Chrome) -->
         <controls:CustomTitleBar Grid.Row="0" />
 
-        <!-- Main Application Shell: SplitView for Responsive Navigation -->
-        <SplitView Grid.Row="1" x:Name="MainSplitView" 
-                   DisplayMode="Inline" 
-                   IsPaneOpen="True" 
-                   OpenPaneLength="240" 
-                   CompactPaneLength="72" 
+        <SplitView Grid.Row="1" x:Name="MainSplitView"
+                   DisplayMode="Inline"
+                   IsPaneOpen="True"
+                   OpenPaneLength="280"
+                   CompactPaneLength="68"
                    Background="{DynamicResource BgBase}">
-                   
-            <!-- Navigation Sidebar Pane -->
+            
+            <!-- Navigation Sidebar Pane Extracted -->
             <SplitView.Pane>
-                <Border Background="{DynamicResource BgPanel}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="0,0,1,0" Padding="12,20,12,20" IsVisible="{Binding IsLoggedIn}">
-                    <DockPanel>
-                        <!-- Brand Header -->
-                        <StackPanel DockPanel.Dock="Top">
-                            <StackPanel Orientation="Horizontal" Spacing="10" Margin="4,0,0,16">
-                                <Border Width="40" Height="40" CornerRadius="{DynamicResource ButtonRadius}" Background="{DynamicResource BrandPrimary}">
-                                    <TextBlock Text="U" Foreground="{DynamicResource TextBright}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                                <StackPanel VerticalAlignment="Center" IsVisible="{Binding $parent[SplitView].IsPaneOpen}">
-                                    <TextBlock Text="University ERP" Foreground="{DynamicResource BrandHover}" FontSize="11" FontWeight="Bold" LetterSpacing="1"/>
-                                    <TextBlock Text="Student Client" Foreground="{DynamicResource TextBright}" FontSize="16" FontWeight="Bold"/>
-                                </StackPanel>
-                            </StackPanel>
-
-                            <TextBlock Text="STUDENT PORTAL" Foreground="{DynamicResource TextMuted}" FontSize="11" FontWeight="Bold" Margin="10,0,0,10" IsVisible="{Binding $parent[SplitView].IsPaneOpen}"/>
-                            
-                            <!-- Navigation Buttons -->
-                            <Button Command="{Binding NavigateCommand}" CommandParameter="{Binding NavigationItems[0]}"
-                                    Background="{DynamicResource BorderSubtle}" Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,6" HorizontalAlignment="Stretch" Padding="12,10" CornerRadius="{DynamicResource ButtonRadius}">
-                                <StackPanel Orientation="Horizontal" Spacing="16">
-                                    <TextBlock Text="🏠" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Student Dashboard" FontWeight="SemiBold" VerticalAlignment="Center" IsVisible="{Binding $parent[SplitView].IsPaneOpen}"/>
-                                </StackPanel>
-                            </Button>
-
-                            <Button Command="{Binding NavigateCommand}" CommandParameter="{Binding NavigationItems[1]}"
-                                    Background="Transparent" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,6" HorizontalAlignment="Stretch" Padding="12,10" CornerRadius="{DynamicResource ButtonRadius}">
-                                <StackPanel Orientation="Horizontal" Spacing="16">
-                                    <TextBlock Text="🧠" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Logic Quiz" FontWeight="SemiBold" VerticalAlignment="Center" IsVisible="{Binding $parent[SplitView].IsPaneOpen}"/>
-                                </StackPanel>
-                            </Button>
-
-                            <Button Command="{Binding NavigateCommand}" CommandParameter="{Binding NavigationItems[2]}"
-                                    Background="Transparent" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,6" HorizontalAlignment="Stretch" Padding="12,10" CornerRadius="{DynamicResource ButtonRadius}">
-                                <StackPanel Orientation="Horizontal" Spacing="16">
-                                    <TextBlock Text="📋" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Activity Board" FontWeight="SemiBold" VerticalAlignment="Center" IsVisible="{Binding $parent[SplitView].IsPaneOpen}"/>
-                                </StackPanel>
-                            </Button>
-
-                            <Button Command="{Binding NavigateCommand}" CommandParameter="{Binding NavigationItems[3]}"
-                                    Background="Transparent" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,6" HorizontalAlignment="Stretch" Padding="12,10" CornerRadius="{DynamicResource ButtonRadius}">
-                                <StackPanel Orientation="Horizontal" Spacing="16">
-                                    <TextBlock Text="📅" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Timeline Schedule" FontWeight="SemiBold" VerticalAlignment="Center" IsVisible="{Binding $parent[SplitView].IsPaneOpen}"/>
-                                </StackPanel>
-                            </Button>
-
-                            <TextBlock Text="OFFLINE SYSTEM" Foreground="{DynamicResource TextMuted}" FontSize="11" FontWeight="Bold" Margin="10,14,0,10" IsVisible="{Binding $parent[SplitView].IsPaneOpen}"/>
-
-                            <Button Command="{Binding NavigateCommand}" CommandParameter="{Binding NavigationItems[4]}"
-                                    Background="Transparent" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,6" HorizontalAlignment="Stretch" Padding="12,10" CornerRadius="{DynamicResource ButtonRadius}">
-                                <StackPanel Orientation="Horizontal" Spacing="16">
-                                    <TextBlock Text="📚" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Course Modules" FontWeight="SemiBold" VerticalAlignment="Center" IsVisible="{Binding $parent[SplitView].IsPaneOpen}"/>
-                                </StackPanel>
-                            </Button>
-
-                            <Button Command="{Binding NavigateCommand}" CommandParameter="{Binding NavigationItems[5]}"
-                                    Background="Transparent" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,6" HorizontalAlignment="Stretch" Padding="12,10" CornerRadius="{DynamicResource ButtonRadius}">
-                                <StackPanel Orientation="Horizontal" Spacing="16">
-                                    <TextBlock Text="📦" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Package Library" FontWeight="SemiBold" VerticalAlignment="Center" IsVisible="{Binding $parent[SplitView].IsPaneOpen}"/>
-                                </StackPanel>
-                            </Button>
-                            
-                            <Button Command="{Binding NavigateCommand}" CommandParameter="{Binding NavigationItems[6]}"
-                                    Background="Transparent" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,6" HorizontalAlignment="Stretch" Padding="12,10" CornerRadius="{DynamicResource ButtonRadius}">
-                                <StackPanel Orientation="Horizontal" Spacing="16">
-                                    <TextBlock Text="🔄" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Sync Engine" FontWeight="SemiBold" VerticalAlignment="Center" IsVisible="{Binding $parent[SplitView].IsPaneOpen}"/>
-                                </StackPanel>
-                            </Button>
-                            
-                            <Button Command="{Binding NavigateCommand}" CommandParameter="{Binding NavigationItems[7]}"
-                                    Background="Transparent" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,6" HorizontalAlignment="Stretch" Padding="12,10" CornerRadius="{DynamicResource ButtonRadius}">
-                                <StackPanel Orientation="Horizontal" Spacing="16">
-                                    <TextBlock Text="🛡️" FontSize="18" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Diagnostics &amp; Vault" FontWeight="SemiBold" VerticalAlignment="Center" IsVisible="{Binding $parent[SplitView].IsPaneOpen}"/>
-                                </StackPanel>
-                            </Button>
-                        </StackPanel>
-
-                        <!-- Bottom User Card -->
-                        <Border DockPanel.Dock="Bottom" Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource ButtonRadius}" Padding="12" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1">
-                            <StackPanel Orientation="Horizontal" Spacing="12">
-                                <Border Width="32" Height="32" CornerRadius="16" Background="{DynamicResource BrandPrimary}">
-                                    <TextBlock Text="AR" Foreground="{DynamicResource TextBright}" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                                <StackPanel Spacing="2" IsVisible="{Binding $parent[SplitView].IsPaneOpen}">
-                                    <TextBlock Text="Alex Rivera" Foreground="{DynamicResource TextPrimary}" FontSize="13" FontWeight="SemiBold"/>
-                                    <TextBlock Text="ID: 2026-8809" Foreground="{DynamicResource TextSecondary}" FontSize="11"/>
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
-                    </DockPanel>
-                </Border>
+                <shell:AppSidebar />
             </SplitView.Pane>
 
-            <!-- Main Content Area with Max Width Constraint for Ultrawide Monitors -->
+            <!-- Main Content Area -->
             <SplitView.Content>
                 <Border Background="{DynamicResource BgBase}">
                     <Grid>
-                        <!-- Container constrained to 1600px MaxWidth and centered -->
                         <Border MaxWidth="1600" HorizontalAlignment="Stretch">
                             <TransitioningContentControl Content="{Binding CurrentPage}" />
                         </Border>
@@ -141,45 +49,8 @@
             </SplitView.Content>
         </SplitView>
 
-        <!-- Live Bottom Status Bar -->
-        <Border Grid.Row="2" Background="{DynamicResource BgPanel}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="0,1,0,0" Padding="16,8" IsVisible="{Binding IsLoggedIn}">
-            <Grid ColumnDefinitions="Auto,*,Auto">
-                
-                <!-- Left: Network & Theme Toggles -->
-                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                    <Button Command="{Binding ToggleNetworkModeCommand}" 
-                            Background="{DynamicResource BorderSubtle}" Foreground="{DynamicResource TextBright}" CornerRadius="{DynamicResource BadgeRadius}" Padding="10,4" FontSize="11">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                            <Ellipse Width="8" Height="8" Fill="{Binding NetworkStatusColor}"/>
-                            <TextBlock Text="{Binding NetworkStatus}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}"/>
-                        </StackPanel>
-                    </Button>
-                    
-                    <!-- Toggle Theme Button -->
-                    <Button Command="{Binding ToggleThemeCommand}"
-                            Background="Transparent" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="{DynamicResource BadgeRadius}" Padding="10,4" FontSize="11">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                            <TextBlock Text="🌗" VerticalAlignment="Center"/>
-                            <TextBlock Text="Toggle Theme" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}"/>
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-
-                <!-- Status Center Message -->
-                <TextBlock Grid.Column="1" Text="Local AES-256 encrypted storage active. Student outbox items auto-sync when online." 
-                           Foreground="{DynamicResource TextSecondary}" FontSize="11" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-
-                <!-- Right: Encryption & Outbox Badges -->
-                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                    <Border Background="{DynamicResource BgPanel}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="{DynamicResource BadgeRadius}" Padding="8,3">
-                        <TextBlock Text="{Binding EncryptionBadge, StringFormat='🔐 {0}'}" Foreground="{DynamicResource TextAccent}" FontSize="11" FontWeight="SemiBold"/>
-                    </Border>
-
-                    <Border Background="{DynamicResource BgPanel}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="{DynamicResource BadgeRadius}" Padding="8,3">
-                        <TextBlock Text="{Binding PendingOutboxCount, StringFormat='📤 Outbox: {0} Pending'}" Foreground="{DynamicResource BrandHover}" FontSize="11" FontWeight="Bold"/>
-                    </Border>
-                </StackPanel>
-            </Grid>
-        </Border>
+        <!-- Live Bottom Status Bar Extracted -->
+        <shell:AppStatusBar Grid.Row="2" />
+        
     </Grid>
 </Window>

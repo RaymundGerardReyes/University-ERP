@@ -1,0 +1,351 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LmsOffline.Presentation.ViewModels"
+             xmlns:shared="using:LmsOffline.Presentation.Shared.Controls"
+             x:Class="LmsOffline.Presentation.Shell.AppSidebar"
+             x:DataType="vm:MainWindowViewModel">
+
+    <UserControl.Styles>
+        <!-- ========================================================= -->
+        <!-- 1. NEUTRALIZE & STRETCH AVALONIA TREEVIEWITEM CONTAINERS  -->
+        <!-- ========================================================= -->
+        <Style Selector="TreeView">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+
+        <Style Selector="TreeViewItem">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,0,0,4" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+        </Style>
+
+        <!-- Force template parts to stretch horizontally and prevent horizontal scroll triggers -->
+        <Style Selector="TreeViewItem /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+
+        <Style Selector="TreeViewItem /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+
+        <Style Selector="TreeViewItem /template/ Border#PART_LayoutRoot:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style Selector="TreeViewItem:selected /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style Selector="TreeViewItem:selected /template/ Border#PART_LayoutRoot:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+
+        <!-- ========================================================= -->
+        <!-- ANNIHILATE CHEVRON CONTAINER & EXPANDER TOGGLEBUTTON      -->
+        <!-- ========================================================= -->
+        <Style Selector="TreeViewItem /template/ Panel#PART_ExpandCollapseChevronContainer">
+            <Setter Property="IsVisible" Value="False" />
+            <Setter Property="Width" Value="0" />
+            <Setter Property="Height" Value="0" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+        <Style Selector="TreeViewItem /template/ ToggleButton#PART_Expander">
+            <Setter Property="IsVisible" Value="False" />
+            <Setter Property="Width" Value="0" />
+            <Setter Property="Height" Value="0" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+        <Style Selector="TreeViewItem /template/ ToggleButton#PART_Expander:checked">
+            <Setter Property="IsVisible" Value="False" />
+            <Setter Property="Width" Value="0" />
+            <Setter Property="Height" Value="0" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <!-- Indent child nodes cleanly under the course card -->
+        <Style Selector="TreeViewItem /template/ ItemsPresenter#PART_ItemsPresenter">
+            <Setter Property="Margin" Value="12,2,0,4" />
+        </Style>
+
+        <!-- Neutralize Expander inner content border padding -->
+        <Style Selector="Expander /template/ Border#PART_ContentBorder">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+
+        <!-- ========================================================= -->
+        <!-- 2. CUSTOM COURSE CARD HOVER STYLES                        -->
+        <!-- ========================================================= -->
+        <Style Selector="Border.courseCard">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+                    <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        
+        <Style Selector="Border.courseCard:pointerover">
+            <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimary}"/>
+            <Setter Property="Background" Value="{DynamicResource BgSurface}"/>
+        </Style>
+
+        <!-- ========================================================= -->
+        <!-- 3. SUB-ITEM (CHILD NODE) HOVER & SELECTION STYLES         -->
+        <!-- ========================================================= -->
+        <Style Selector="Border.subItemCard">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <!-- Hover State (Both direct pointerover and parent TreeViewItem pointerover) -->
+        <Style Selector="Border.subItemCard:pointerover">
+            <Setter Property="Background" Value="{DynamicResource BgSurface}"/>
+        </Style>
+        <Style Selector="TreeViewItem:pointerover Border.subItemCard">
+            <Setter Property="Background" Value="{DynamicResource BgSurface}"/>
+        </Style>
+        <Style Selector="Border.subItemCard:pointerover TextBlock.subItemText">
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+        </Style>
+        <Style Selector="TreeViewItem:pointerover Border.subItemCard TextBlock.subItemText">
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+        </Style>
+        
+        <!-- Smooth transition for the vertical pill indicator -->
+        <Style Selector="Border.subItemIndicator">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <!-- ACTIVE SELECTION STATE WHEN SUB-ITEM IS CLICKED / SELECTED -->
+        <Style Selector="TreeViewItem:selected Border.subItemCard">
+            <Setter Property="Background" Value="{DynamicResource BorderSubtle}"/>
+        </Style>
+        <Style Selector="TreeViewItem:selected Border.subItemCard TextBlock.subItemText">
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        <Style Selector="TreeViewItem:selected Border.subItemCard Border.subItemIndicator">
+            <Setter Property="Background" Value="{DynamicResource BrandPrimary}"/>
+        </Style>
+    </UserControl.Styles>
+
+    <!-- Main Sidebar Border Container -->
+    <Border Background="{DynamicResource BgPanel}"
+            BorderBrush="{DynamicResource BorderColor}"
+            BorderThickness="0,0,1,0"
+            IsVisible="{Binding IsLoggedIn}">
+        <DockPanel LastChildFill="True">
+            
+            <!-- Bottom User Card -->
+            <Border DockPanel.Dock="Bottom" Margin="12,0,12,16" Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource ButtonRadius}" Padding="12" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <Border Width="32" Height="32" CornerRadius="16" Background="{DynamicResource BrandPrimary}">
+                        <TextBlock Text="AR" Foreground="{DynamicResource TextBright}" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Spacing="2" IsVisible="{Binding $parent[SplitView].IsPaneOpen}">
+                        <TextBlock Text="Alex Rivera" Foreground="{DynamicResource TextPrimary}" FontSize="13" FontWeight="SemiBold"/>
+                        <TextBlock Text="Computer Science" Foreground="{DynamicResource TextSecondary}" FontSize="11"/>
+                        <TextBlock Text="Student ID: 2026-8809" Foreground="{DynamicResource TextSecondary}" FontSize="11"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- HEADER: Brand Title -->
+            <Border DockPanel.Dock="Top" Padding="12,20,12,12">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Border Width="40" Height="40" CornerRadius="{DynamicResource ButtonRadius}" Background="{DynamicResource BrandPrimary}">
+                        <TextBlock Text="U" Foreground="{DynamicResource TextBright}" FontSize="20" FontWeight="Bold"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center" IsVisible="{Binding $parent[SplitView].IsPaneOpen}">
+                        <TextBlock Text="UNIVERSITY ERP" Foreground="{DynamicResource BrandHover}"
+                                   FontSize="10" FontWeight="Bold" LetterSpacing="1.5"/>
+                        <TextBlock Text="Student Portal" Foreground="{DynamicResource TextPrimary}"
+                                   FontSize="15" FontWeight="Bold"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- MIDDLE: Navigation Area -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                          HorizontalScrollBarVisibility="Disabled"
+                          Padding="12,4,12,0">
+                <StackPanel Spacing="2" HorizontalAlignment="Stretch">
+                    
+                    <TextBlock Text="HOME" Foreground="{DynamicResource TextMuted}"
+                               FontSize="10" FontWeight="Bold" LetterSpacing="1.5"
+                               Margin="4,8,0,6"
+                               IsVisible="{Binding $parent[SplitView].IsPaneOpen}"/>
+
+                    <!-- Primary Learning Navigation ("Home") -->
+                    <Button Command="{Binding NavigateCommand}" CommandParameter="{Binding NavigationItems[0]}"
+                            Background="{DynamicResource BorderSubtle}" Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,6" HorizontalAlignment="Stretch" Padding="12,10" CornerRadius="{DynamicResource ButtonRadius}">
+                        <StackPanel Orientation="Horizontal" Spacing="16">
+                            <TextBlock Text="🏠" FontSize="18" VerticalAlignment="Center"/>
+                            <TextBlock Text="Home" FontWeight="SemiBold" VerticalAlignment="Center" IsVisible="{Binding $parent[SplitView].IsPaneOpen}"/>
+                        </StackPanel>
+                    </Button>
+
+                    <shared:NavigationItem Command="{Binding NavigateCommand}"
+                                           CommandParameter="{Binding NavigationItems[1]}"
+                                           Icon="📅"
+                                           Label="Calendar"
+                                           BgColor="Transparent"
+                                           FgColor="{DynamicResource TextSecondary}"
+                                           IsExpanded="{Binding $parent[SplitView].IsPaneOpen}"/>
+
+                    <TextBlock Text="MY LEARNING" Foreground="{DynamicResource TextMuted}"
+                               FontSize="10" FontWeight="Bold" LetterSpacing="1.5"
+                               Margin="4,12,0,6"
+                               IsVisible="{Binding $parent[SplitView].IsPaneOpen}"/>
+
+                    <!-- COURSES EXPANDER -->
+                    <Expander Background="Transparent"
+                              BorderThickness="0"
+                              Margin="0,0,0,4"
+                              Padding="0"
+                              HorizontalAlignment="Stretch"
+                              IsExpanded="True"
+                              IsVisible="{Binding $parent[SplitView].IsPaneOpen}">
+                        
+                        <Expander.Header>
+                            <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <TextBlock Text="📚" FontSize="16" VerticalAlignment="Center"/>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="My Courses" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimary}"/>
+                                        <TextBlock Text="{Binding TaxonomyNodes.Count, StringFormat='{}{0} Active Courses'}" Foreground="{DynamicResource TextSecondary}" FontSize="11"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Expander.Header>
+
+                        <!-- TreeView bounded strictly within horizontal limits -->
+                        <TreeView ItemsSource="{Binding TaxonomyNodes}" 
+                                  SelectedItem="{Binding SelectedNode, Mode=TwoWay}"
+                                  Background="Transparent" 
+                                  BorderThickness="0"
+                                  Padding="0"
+                                  Margin="0,4,0,0"
+                                  HorizontalAlignment="Stretch"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <TreeView.ItemTemplate>
+                                <TreeDataTemplate ItemsSource="{Binding Children}" DataType="vm:TaxonomyNode">
+                                    <Panel HorizontalAlignment="Stretch">
+                                        
+                                        <!-- A. SUB-ITEM NODE (Overview, Modules, Assignments, etc.) -->
+                                        <Border Classes="subItemCard"
+                                                CornerRadius="8"
+                                                Padding="8,7"
+                                                Margin="0,2,0,2"
+                                                HorizontalAlignment="Stretch"
+                                                IsVisible="{Binding !IsCourseRoot}">
+                                            <Grid ColumnDefinitions="Auto,*">
+                                                <!-- 3px Left Vertical Accent Pill -->
+                                                <Border Classes="subItemIndicator" 
+                                                        Width="3" Height="14" 
+                                                        CornerRadius="2" 
+                                                        Margin="0,0,10,0"
+                                                        VerticalAlignment="Center"/>
+                                                
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                                                    <TextBlock Text="{Binding Icon}" FontSize="14" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding Title}" 
+                                                               Classes="subItemText"
+                                                               Foreground="{DynamicResource TextSecondary}" 
+                                                               FontSize="12" FontWeight="Medium" VerticalAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- B. MAIN COURSE CARD NODE -->
+                                        <Border Classes="courseCard"
+                                                CornerRadius="{DynamicResource CardRadius}"
+                                                Background="{DynamicResource BgSurface}"
+                                                BorderBrush="{DynamicResource BorderSubtle}"
+                                                BorderThickness="1"
+                                                Padding="12"
+                                                Margin="0,0,0,8"
+                                                HorizontalAlignment="Stretch"
+                                                IsVisible="{Binding IsCourseRoot}">
+                                            <StackPanel Spacing="8" HorizontalAlignment="Stretch">
+                                                <!-- Course Header -->
+                                                <Grid ColumnDefinitions="Auto,*,Auto" HorizontalAlignment="Stretch">
+                                                    <TextBlock Grid.Column="0" Text="{Binding Icon}" FontSize="16" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Title}" Foreground="{DynamicResource TextPrimary}" FontSize="13" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                                                        <TextBlock Text="{Binding Subtitle}" Foreground="{DynamicResource TextSecondary}" FontSize="11" TextWrapping="Wrap"/>
+                                                    </StackPanel>
+                                                    <Border Grid.Column="2" Background="{DynamicResource BgBase}" CornerRadius="10" Padding="6,3" VerticalAlignment="Top" Margin="4,0,0,0"
+                                                            IsVisible="{Binding AlertText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                                        <TextBlock Text="{Binding AlertText}" Foreground="{Binding AlertColor}" FontSize="9" FontWeight="Bold"/>
+                                                    </Border>
+                                                </Grid>
+                                            </StackPanel>
+                                        </Border>
+
+                                    </Panel>
+                                </TreeDataTemplate>
+                            </TreeView.ItemTemplate>
+                        </TreeView>
+                    </Expander>
+
+                    <!-- TOOLS SECTION -->
+                    <TextBlock Text="TOOLS" Foreground="{DynamicResource TextMuted}"
+                               FontSize="10" FontWeight="Bold" LetterSpacing="1.5"
+                               Margin="4,12,0,6"
+                               IsVisible="{Binding $parent[SplitView].IsPaneOpen}"/>
+
+                    <Button Background="Transparent" BorderThickness="0" Padding="12,10" HorizontalAlignment="Stretch" CornerRadius="{DynamicResource ButtonRadius}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock Text="🔄" FontSize="16" VerticalAlignment="Center"/>
+                            <TextBlock Text="Sync Engine" Foreground="{DynamicResource TextSecondary}" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" IsVisible="{Binding $parent[SplitView].IsPaneOpen}"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    <Button Background="Transparent" BorderThickness="0" Padding="12,10" HorizontalAlignment="Stretch" CornerRadius="{DynamicResource ButtonRadius}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock Text="🛡️" FontSize="16" VerticalAlignment="Center"/>
+                            <TextBlock Text="Diagnostics" Foreground="{DynamicResource TextSecondary}" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" IsVisible="{Binding $parent[SplitView].IsPaneOpen}"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
+</UserControl>

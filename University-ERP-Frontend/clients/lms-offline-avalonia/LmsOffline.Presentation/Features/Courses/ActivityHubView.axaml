@@ -1,0 +1,150 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:crsVm="using:LmsOffline.Presentation.Features.Courses"
+             x:Class="LmsOffline.Presentation.Features.Courses.ActivityHubView"
+             x:DataType="crsVm:ActivityHubViewModel"
+             Background="{DynamicResource BgBase}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="{DynamicResource SpacingLargeVal}" Margin="{DynamicResource SpacingLarge}">
+            
+            <!-- Header Section -->
+            <StackPanel Spacing="{DynamicResource SpacingMicroVal}">
+                <!-- FIXED: Changed TextBright to TextPrimary -->
+                <TextBlock Text="Student Activity &amp; Reflection Board" FontSize="{DynamicResource FontSizePageTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}"/>
+                <TextBlock Text="Organize assignments, lab exercises, and offline reflections. Submissions queue to Outbox." Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
+            </StackPanel>
+
+            <!-- Status Banner -->
+            <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource ButtonRadius}" Padding="14,10" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource InfoBase}" FontSize="{DynamicResource FontSizeMetadata}"/>
+            </Border>
+
+            <!-- 3-Column Kanban Board -->
+            <Grid ColumnDefinitions="1*,1*,1*">
+                
+                <!-- Column 1: To Do Tasks -->
+                <Border Grid.Column="0" Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingMedium}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Margin="0,0,8,0">
+                    <StackPanel Spacing="14">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <!-- FIXED: Changed TextBright to TextPrimary -->
+                            <TextBlock Text="  TO DO" FontSize="{DynamicResource FontSizeBody}" Foreground="{DynamicResource TextPrimary}" FontWeight="SemiBold"/>
+                            <Border Grid.Column="1" Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource CardRadius}" Padding="8,2">
+                                <TextBlock Text="{Binding TodoTasks.Count}" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold"/>
+                            </Border>
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding TodoTasks}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="crsVm:StudentActivityTaskItem">
+                                    <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource ButtonRadius}" Padding="14" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Margin="0,0,0,10">
+                                        <StackPanel Spacing="6">
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <Border Background="{DynamicResource InfoSubtle}" BorderBrush="{DynamicResource InfoBase}" BorderThickness="1" CornerRadius="{DynamicResource BadgeRadius}" Padding="6,2">
+                                                    <TextBlock Text="{Binding CourseCode}" Foreground="{DynamicResource InfoHover}" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold"/>
+                                                </Border>
+                                                <TextBlock Grid.Column="1" Text="{Binding DueDateText}" Foreground="{DynamicResource WarningBase}" FontSize="{DynamicResource FontSizeCaption}"/>
+                                            </Grid>
+                                            <TextBlock Text="{Binding Title}" Foreground="{DynamicResource TextPrimary}" FontWeight="Bold" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                            <Button Content="Select Activity"
+                                                    Command="{Binding $parent[UserControl].((crsVm:ActivityHubViewModel)DataContext).SelectTaskCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    Background="{DynamicResource BgBase}" Foreground="{DynamicResource InfoBase}" FontSize="{DynamicResource FontSizeCaption}" Padding="10,4" HorizontalAlignment="Right" CornerRadius="{DynamicResource BadgeRadius}"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Column 2: In Progress Tasks -->
+                <Border Grid.Column="1" Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingMedium}" BorderBrush="{DynamicResource BrandPrimary}" BorderThickness="1" Margin="4,0,4,0">
+                    <StackPanel Spacing="14">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="  IN PROGRESS" FontSize="{DynamicResource FontSizeBody}" Foreground="{DynamicResource BrandHover}" FontWeight="SemiBold"/>
+                            <Border Grid.Column="1" Background="{DynamicResource InfoSubtle}" CornerRadius="{DynamicResource CardRadius}" Padding="8,2">
+                                <TextBlock Text="{Binding InProgressTasks.Count}" Foreground="{DynamicResource InfoHover}" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold"/>
+                            </Border>
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding InProgressTasks}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="crsVm:StudentActivityTaskItem">
+                                    <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource ButtonRadius}" Padding="14" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Margin="0,0,0,10">
+                                        <StackPanel Spacing="6">
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <Border Background="{DynamicResource InfoSubtle}" BorderBrush="{DynamicResource InfoBase}" BorderThickness="1" CornerRadius="{DynamicResource BadgeRadius}" Padding="6,2">
+                                                    <TextBlock Text="{Binding CourseCode}" Foreground="{DynamicResource InfoHover}" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold"/>
+                                                </Border>
+                                                <TextBlock Grid.Column="1" Text="{Binding DueDateText}" Foreground="{DynamicResource ErrorBase}" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold"/>
+                                            </Grid>
+                                            <TextBlock Text="{Binding Title}" Foreground="{DynamicResource TextPrimary}" FontWeight="Bold" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                            <Button Content="Work on Task"
+                                                    Command="{Binding $parent[UserControl].((crsVm:ActivityHubViewModel)DataContext).SelectTaskCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    Background="{DynamicResource BrandPrimary}" Foreground="{DynamicResource TextBright}" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold" Padding="10,4" HorizontalAlignment="Right" CornerRadius="{DynamicResource BadgeRadius}"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Column 3: Submitted / Outbox Tasks -->
+                <Border Grid.Column="2" Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingMedium}" BorderBrush="{DynamicResource SuccessBase}" BorderThickness="1" Margin="8,0,0,0">
+                    <StackPanel Spacing="14">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="  SUBMITTED (OUTBOX)" FontSize="{DynamicResource FontSizeBody}" Foreground="{DynamicResource SuccessHover}" FontWeight="SemiBold"/>
+                            <Border Grid.Column="1" Background="{DynamicResource SuccessSubtle}" CornerRadius="{DynamicResource CardRadius}" Padding="8,2">
+                                <TextBlock Text="{Binding CompletedTasks.Count}" Foreground="{DynamicResource SuccessBase}" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold"/>
+                            </Border>
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding CompletedTasks}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="crsVm:StudentActivityTaskItem">
+                                    <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource ButtonRadius}" Padding="14" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Margin="0,0,0,10">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="{Binding CourseCode}" Foreground="{DynamicResource SuccessBase}" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding Title}" Foreground="{DynamicResource TextPrimary}" FontWeight="Bold" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                            <TextBlock Text="{Binding DueDateText}" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeCaption}"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Active Activity Editor Workspace -->
+            <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                <StackPanel Spacing="{DynamicResource SpacingMediumVal}">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Spacing="2">
+                            <!-- FIXED: Changed TextBright to TextPrimary -->
+                            <TextBlock Text="{Binding SelectedTask.Title, StringFormat='Active Workspace: {0}'}" FontSize="{DynamicResource FontSizeCardTitle}" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}"/>
+                            <TextBlock Text="Markdown editor • Auto-encrypts upon queuing to SQLCipher Outbox." Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Text="{Binding CharacterCount, StringFormat='Length: {0} chars'}" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}" VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <TextBox Text="{Binding ReflectionDraftText}"
+                             AcceptsReturn="True"
+                             Height="180"
+                             TextWrapping="Wrap"
+                             FontFamily="Consolas"
+                             Background="{DynamicResource BgBase}"
+                             Foreground="{DynamicResource TextPrimary}"
+                             BorderBrush="{DynamicResource BorderSubtle}"
+                             CornerRadius="{DynamicResource ButtonRadius}"
+                             Padding="14"/>
+
+                    <Button Content="  Save &amp; Queue Activity to Outbox"
+                            Command="{Binding SaveActivityToOutboxCommand}"
+                            Background="{DynamicResource SuccessBase}" Foreground="{DynamicResource TextBright}" FontWeight="Bold" 
+                            Padding="16,10" CornerRadius="{DynamicResource ButtonRadius}" HorizontalAlignment="Right"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,8 +1,8 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:LmsOffline.Presentation.ViewModels"
-             x:Class="LmsOffline.Presentation.Views.AssignmentSubmissionView"
-             x:DataType="vm:AssignmentSubmissionViewModel"
+             xmlns:asmVm="using:LmsOffline.Presentation.Features.Assessments"
+             x:Class="LmsOffline.Presentation.Features.Assessments.AssignmentSubmissionView"
+             x:DataType="asmVm:AssignmentSubmissionViewModel"
              Background="{DynamicResource BgBase}">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">

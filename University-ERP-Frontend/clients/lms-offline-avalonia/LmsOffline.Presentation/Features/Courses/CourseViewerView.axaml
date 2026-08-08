@@ -1,0 +1,92 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:crsVm="using:LmsOffline.Presentation.Features.Courses"
+             x:Class="LmsOffline.Presentation.Features.Courses.CourseViewerView"
+             x:DataType="crsVm:CourseViewerViewModel"
+             Background="{DynamicResource BgBase}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="{DynamicResource SpacingLargeVal}" Margin="{DynamicResource SpacingLarge}">
+            
+            <!-- Hero Header -->
+            <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Spacing="{DynamicResource SpacingSmallVal}">
+                        <Border Background="{DynamicResource InfoSubtle}" CornerRadius="{DynamicResource BadgeRadius}" Padding="8,4" HorizontalAlignment="Left">
+                            <TextBlock Text="OFFLINE READY" Foreground="{DynamicResource InfoHover}" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold"/>
+                        </Border>
+                        <TextBlock Text="{Binding CourseTitle}" FontSize="{DynamicResource FontSizePageTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}"/>
+                        <TextBlock Text="{Binding Instructor, StringFormat='Instructor: {0}'}" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeBody}"/>
+                        <TextBlock Text="{Binding CourseDescription}" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeMetadata}" TextWrapping="Wrap" Margin="0,8,0,0" MaxWidth="800" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Column="1" Spacing="10" VerticalAlignment="Center" Margin="20,0,0,0">
+                        <TextBlock Text="{Binding CourseProgress, StringFormat='Course Progress: {0}%'}" Foreground="{DynamicResource TextPrimary}" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                        <ProgressBar Value="{Binding CourseProgress}" Maximum="100" Height="8" Width="200" Background="{DynamicResource BgPanel}" Foreground="{DynamicResource SuccessBase}" CornerRadius="4"/>
+                        <Button Content="Continue Learning" Command="{Binding StartNextModuleCommand}" Background="{DynamicResource BrandPrimary}" Foreground="{DynamicResource TextBright}" FontWeight="Bold" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="0,10" CornerRadius="{DynamicResource ButtonRadius}" Margin="0,10,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Learning Phases Dashboard -->
+            <TextBlock Text="Academic Syllabus" FontSize="{DynamicResource FontSizeCardTitle}" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}"/>
+            
+            <WrapPanel Margin="-8">
+                <!-- Preliminary Phase -->
+                <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource SuccessBase}" BorderThickness="1" Margin="8" Width="380" VerticalAlignment="Top">
+                    <StackPanel Spacing="{DynamicResource SpacingMediumVal}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="PRELIMINARY" FontSize="{DynamicResource FontSizeBody}" FontWeight="Bold" Foreground="{DynamicResource SuccessBase}"/>
+                            <TextBlock Grid.Column="1" Text="Completed" Foreground="{DynamicResource SuccessBase}" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold"/>
+                        </Grid>
+                        <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource ButtonRadius}" Padding="12" BorderThickness="1" BorderBrush="{DynamicResource BorderSubtle}">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Module 1: Variables &amp; Types" Foreground="{DynamicResource TextPrimary}" FontWeight="Medium"/>
+                                <TextBlock Text="✓ Reading Materials" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                <TextBlock Text="✓ Laboratory Exercise 1" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                <TextBlock Text="✓ Short Quiz" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- Midterm Phase -->
+                <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource BrandPrimary}" BorderThickness="1" Margin="8" Width="380" VerticalAlignment="Top">
+                    <StackPanel Spacing="{DynamicResource SpacingMediumVal}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="MIDTERM" FontSize="{DynamicResource FontSizeBody}" FontWeight="Bold" Foreground="{DynamicResource BrandHover}"/>
+                            <TextBlock Grid.Column="1" Text="In Progress" Foreground="{DynamicResource BrandHover}" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold"/>
+                        </Grid>
+                        <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource ButtonRadius}" Padding="12" BorderThickness="1" BorderBrush="{DynamicResource BorderSubtle}">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Module 3: Control Structures" Foreground="{DynamicResource TextPrimary}" FontWeight="Medium"/>
+                                <TextBlock Text="✓ Reading Materials" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                <TextBlock Text="• Laboratory Exercise 3 (Active)" Foreground="{DynamicResource TextPrimary}" FontSize="{DynamicResource FontSizeMetadata}" FontWeight="SemiBold"/>
+                                <TextBlock Text="• Midterm Examination" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- Final Phase -->
+                <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Margin="8" Width="380" VerticalAlignment="Top">
+                    <StackPanel Spacing="{DynamicResource SpacingMediumVal}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="FINAL" FontSize="{DynamicResource FontSizeBody}" FontWeight="Bold" Foreground="{DynamicResource TextMuted}"/>
+                            <TextBlock Grid.Column="1" Text="Locked" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeCaption}" FontWeight="Bold"/>
+                        </Grid>
+                        <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource ButtonRadius}" Padding="12" BorderThickness="1" BorderBrush="{DynamicResource BorderSubtle}">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Module 5: Data Structures" Foreground="{DynamicResource TextMuted}" FontWeight="Medium"/>
+                                <TextBlock Text="🔒 Reading Materials" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                <TextBlock Text="🔒 Final Project" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                <TextBlock Text="🔒 Final Examination" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </WrapPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

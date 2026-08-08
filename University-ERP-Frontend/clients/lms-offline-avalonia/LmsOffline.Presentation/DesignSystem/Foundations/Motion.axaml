@@ -1,0 +1,7 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=netstandard">
+    <sys:TimeSpan x:Key="DurationFast">0:0:0.15</sys:TimeSpan>
+    <sys:TimeSpan x:Key="DurationNormal">0:0:0.3</sys:TimeSpan>
+    <sys:TimeSpan x:Key="DurationSlow">0:0:0.5</sys:TimeSpan>
+</ResourceDictionary>

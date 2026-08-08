@@ -1,0 +1,72 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:asmVm="using:LmsOffline.Presentation.Features.Assessments"
+             x:Class="LmsOffline.Presentation.Features.Assessments.AssessmentView"
+             x:DataType="asmVm:AssessmentViewModel"
+             Background="{DynamicResource BgBase}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="{DynamicResource SpacingLargeVal}" Margin="{DynamicResource SpacingLarge}">
+            <!-- Header Section -->
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Spacing="{DynamicResource SpacingMicroVal}">
+                    <TextBlock Text="Secure Offline Exam Vault" FontSize="{DynamicResource FontSizePageTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextBright}"/>
+                    <TextBlock Text="Complete your examination securely without an active internet connection." Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
+                </StackPanel>
+
+                <Border Grid.Column="1" Background="{DynamicResource InfoSubtle}" CornerRadius="{DynamicResource ButtonRadius}" Padding="12,6" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding TimerDisplay}" Foreground="{DynamicResource InfoHover}" FontSize="{DynamicResource FontSizeBody}"/>
+                </Border>
+            </Grid>
+
+            <!-- Exam Info Card -->
+            <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource InfoBase}" BorderThickness="1">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="{Binding ExamTitle}" FontSize="{DynamicResource FontSizeCardTitle}" FontWeight="Medium" Foreground="{DynamicResource InfoHover}"/>
+                    <TextBlock Text="Total Questions: 5 • Passing Grade: 75% • Encryption: AES-256 Signature Enforced" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeMetadata}"/>
+
+                    <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource ButtonRadius}" Padding="12" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                        <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource InfoBase}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                    </Border>
+
+                    <Button Content="🚀 Initialize &amp; Start Secure Offline Exam" 
+                            Command="{Binding StartAssessmentCommand}"
+                            IsEnabled="{Binding !IsExamActive}"
+                            Background="{DynamicResource BrandPrimary}" Foreground="{DynamicResource TextBright}" FontWeight="Bold" 
+                            HorizontalAlignment="Left" Padding="14,10" CornerRadius="{DynamicResource ButtonRadius}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Active Exam Workspace -->
+            <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                <StackPanel Spacing="{DynamicResource SpacingMediumVal}">
+                    <TextBlock Text="Question 1 of 5: What is the primary purpose of the Outbox Pattern in SQLite offline clients?" 
+                               FontSize="{DynamicResource FontSizeBody}" Foreground="{DynamicResource TextBright}"/>
+
+                    <TextBlock Text="Student Response Payload (JSON Format):" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}"/>
+
+                    <TextBox Text="{Binding AnswersJson}" 
+                             AcceptsReturn="True" 
+                             Height="140" 
+                             TextWrapping="Wrap" 
+                             FontFamily="Consolas"
+                             Background="{DynamicResource BgBase}"
+                             Foreground="{DynamicResource SuccessHover}"
+                             BorderBrush="{DynamicResource BorderSubtle}"
+                             CornerRadius="{DynamicResource ButtonRadius}"
+                             Padding="12"/>
+
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Grid.Column="0" Text="🔒 All answers are encrypted with AES-256 before saving to outbox." 
+                                   Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}" VerticalAlignment="Center"/>
+
+                        <Button Grid.Column="1" Content="💾 Encrypt &amp; Save to Outbox" 
+                                Command="{Binding SubmitAssessmentCommand}"
+                                Background="{DynamicResource SuccessBase}" Foreground="{DynamicResource TextBright}" FontWeight="Bold" 
+                                Padding="16,10" CornerRadius="{DynamicResource ButtonRadius}"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

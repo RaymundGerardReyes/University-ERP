@@ -1,0 +1,18 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="LmsOffline.Presentation.Shared.Controls.NavigationItem"
+             x:Name="Root">
+    <Button Command="{Binding Command, ElementName=Root}"
+            CommandParameter="{Binding CommandParameter, ElementName=Root}"
+            Background="{Binding BgColor, ElementName=Root}" 
+            Foreground="{Binding FgColor, ElementName=Root}" 
+            Margin="0,0,0,6" 
+            HorizontalAlignment="Stretch" 
+            Padding="12,10" 
+            CornerRadius="{DynamicResource ButtonRadius}">
+        <StackPanel Orientation="Horizontal" Spacing="16">
+            <TextBlock Text="{Binding Icon, ElementName=Root}" FontSize="18" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding Label, ElementName=Root}" FontWeight="SemiBold" VerticalAlignment="Center" IsVisible="{Binding IsExpanded, ElementName=Root}"/>
+        </StackPanel>
+    </Button>
+</UserControl>

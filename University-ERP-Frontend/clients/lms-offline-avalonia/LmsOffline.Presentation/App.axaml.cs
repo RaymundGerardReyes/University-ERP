@@ -17,6 +17,15 @@ using LmsOffline.Infrastructure.Security;
 using LmsOffline.Application.Interfaces;
 using LmsOffline.Domain.Policies;
 using LmsOffline.Presentation.ViewModels;
+using LmsOffline.Presentation.Features.Auth;
+using LmsOffline.Presentation.Features.Dashboard;
+using LmsOffline.Presentation.Features.Calendar;
+using LmsOffline.Presentation.Features.Courses;
+using LmsOffline.Presentation.Features.Assessments;
+using LmsOffline.Presentation.Features.LearningTimeline;
+using LmsOffline.Presentation.Features.PackageManager;
+using LmsOffline.Presentation.Features.SyncHub;
+using LmsOffline.Presentation.Features.Diagnostics;
 using LmsOffline.Presentation.Services;
 
 namespace LmsOffline.Presentation;
@@ -102,9 +111,9 @@ public partial class App : Avalonia.Application
         services.AddHttpClient();
 
         // Register Identity & Hashing Services
-services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
-services.AddScoped<IOfflineIdentityRepository, OfflineIdentityRepository>();
-services.AddTransient<LoginViewModel>();
+        services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
+        services.AddScoped<IOfflineIdentityRepository, OfflineIdentityRepository>();
+        services.AddTransient<LmsOffline.Presentation.Features.Auth.LoginViewModel>();
 
         // 2. Register Infrastructure (Encrypted SQLite Database, Repositories, Diagnostics, Auth & Sync)
         services.AddSingleton(sp => new LmsOffline.Infrastructure.Persistence.EncryptedSqliteContext("lms_offline.db", "offline_exam_secure_passphrase_2026"));
@@ -124,18 +133,19 @@ services.AddTransient<LoginViewModel>();
 
         // 5. Register MVVM ViewModels
         services.AddTransient<MainWindowViewModel>();
-        services.AddTransient<StudentDashboardViewModel>();
-        services.AddTransient<LogicQuizViewModel>();
-        services.AddTransient<ActivityHubViewModel>();
-        services.AddTransient<TimelineScheduleViewModel>();
-        services.AddTransient<LearningTimelineViewModel>();
-        services.AddTransient<PackageManagerViewModel>();
-        services.AddTransient<SyncHubViewModel>();
-        services.AddTransient<DiagnosticsViewModel>();
-        services.AddTransient<CourseContentViewModel>();
-        services.AddTransient<AssessmentViewModel>();
-        services.AddTransient<AssignmentSubmissionViewModel>();
-        services.AddTransient<ModuleTimelineViewModel>();
+        services.AddTransient<LmsOffline.Presentation.Features.Courses.CourseViewerViewModel>();
+        services.AddTransient<LmsOffline.Presentation.Features.Dashboard.StudentDashboardViewModel>();
+        services.AddTransient<LmsOffline.Presentation.Features.Assessments.LogicQuizViewModel>();
+        services.AddTransient<LmsOffline.Presentation.Features.Courses.ActivityHubViewModel>();
+        services.AddTransient<LmsOffline.Presentation.Features.Calendar.TimelineScheduleViewModel>();
+        services.AddTransient<LmsOffline.Presentation.Features.LearningTimeline.LearningTimelineViewModel>();
+        services.AddTransient<LmsOffline.Presentation.Features.PackageManager.PackageManagerViewModel>();
+        services.AddTransient<LmsOffline.Presentation.Features.SyncHub.SyncHubViewModel>();
+        services.AddTransient<LmsOffline.Presentation.Features.Diagnostics.DiagnosticsViewModel>();
+        services.AddTransient<LmsOffline.Presentation.Features.Courses.CourseContentViewModel>();
+        services.AddTransient<LmsOffline.Presentation.Features.Assessments.AssessmentViewModel>();
+        services.AddTransient<LmsOffline.Presentation.Features.Assessments.AssignmentSubmissionViewModel>();
+        services.AddTransient<LmsOffline.Presentation.Features.Courses.ModuleTimelineViewModel>();
 
         return services.BuildServiceProvider();
     }

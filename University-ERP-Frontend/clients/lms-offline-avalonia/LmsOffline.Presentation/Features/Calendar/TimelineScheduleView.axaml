@@ -1,0 +1,131 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:calVm="using:LmsOffline.Presentation.Features.Calendar"
+             x:Class="LmsOffline.Presentation.Features.Calendar.TimelineScheduleView"
+             x:DataType="calVm:TimelineScheduleViewModel"
+             Background="{DynamicResource BgBase}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Spacing="{DynamicResource SpacingLargeVal}" Margin="{DynamicResource SpacingLarge}">
+            
+            <StackPanel Spacing="{DynamicResource SpacingMicroVal}">
+                <TextBlock Text="Calendar &amp; Agenda" FontSize="{DynamicResource FontSizePageTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextBright}"/>
+                <TextBlock Text="Navigate your workload spatially. Select a date to view its specific modules and activities." Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
+            </StackPanel>
+
+            <!-- THE TWO-PANE LAYOUT -->
+            <Grid ColumnDefinitions="4.5*, 5.5*">
+                
+                <!-- LEFT PANE: The Monthly Calendar Grid -->
+                <!-- Outer Radius (24) with Padding (10) -->
+                <Border Grid.Column="0" Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="10" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Margin="0,0,20,0" VerticalAlignment="Top">
+                    <StackPanel Spacing="{DynamicResource SpacingMediumVal}">
+                        
+                        <!-- Month Navigator -->
+                        <Grid ColumnDefinitions="Auto,*,Auto" Margin="10,10,10,0">
+                            <Button Content="&lt;" Background="Transparent" Foreground="{DynamicResource TextSecondary}" FontWeight="Bold" FontSize="{DynamicResource FontSizeBody}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding CurrentMonthYear}" FontSize="{DynamicResource FontSizeCardTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Button Grid.Column="2" Content="&gt;" Background="Transparent" Foreground="{DynamicResource TextSecondary}" FontWeight="Bold" FontSize="{DynamicResource FontSizeBody}"/>
+                        </Grid>
+
+                        <!-- Days of Week Header -->
+                        <UniformGrid Columns="7" Margin="0,10,0,0">
+                            <TextBlock Text="SUN" Foreground="{DynamicResource TextMuted}" FontSize="11" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <TextBlock Text="MON" Foreground="{DynamicResource TextMuted}" FontSize="11" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <TextBlock Text="TUE" Foreground="{DynamicResource TextMuted}" FontSize="11" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <TextBlock Text="WED" Foreground="{DynamicResource TextMuted}" FontSize="11" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <TextBlock Text="THU" Foreground="{DynamicResource TextMuted}" FontSize="11" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <TextBlock Text="FRI" Foreground="{DynamicResource TextMuted}" FontSize="11" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <TextBlock Text="SAT" Foreground="{DynamicResource TextMuted}" FontSize="11" FontWeight="Bold" HorizontalAlignment="Center"/>
+                        </UniformGrid>
+
+                        <!-- Actual Calendar Grid -->
+                        <ItemsControl ItemsSource="{Binding CalendarDays}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="7" Rows="6"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="calVm:CalendarDayModel">
+                                    <Button Command="{Binding $parent[UserControl].((calVm:TimelineScheduleViewModel)DataContext).SelectDateCommand}"
+                                            CommandParameter="{Binding}"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Height="60"
+                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                            Padding="4">
+                                        <!-- Inner Element matching 14px InputRadius -->
+                                        <Border CornerRadius="{DynamicResource InputRadius}"
+                                                Background="{Binding BgColor}"
+                                                BorderBrush="{Binding BorderColor}"
+                                                BorderThickness="1"
+                                                Padding="4">
+                                            <StackPanel VerticalAlignment="Center" Spacing="4">
+                                                <TextBlock Text="{Binding DayNumber}" Foreground="{Binding TextColor}" FontWeight="Bold" FontSize="{DynamicResource FontSizeBody}" HorizontalAlignment="Center"/>
+                                                
+                                                <!-- Color Coded Activity Dots -->
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="3">
+                                                    <Ellipse IsVisible="{Binding HasMissed}" Fill="{DynamicResource ErrorBase}" Width="6" Height="6"/>
+                                                    <Ellipse IsVisible="{Binding HasDueToday}" Fill="{DynamicResource WarningBase}" Width="6" Height="6"/>
+                                                    <Ellipse IsVisible="{Binding HasActive}" Fill="{DynamicResource SuccessBase}" Width="6" Height="6"/>
+                                                    <Ellipse IsVisible="{Binding HasUpcoming}" Fill="{DynamicResource InfoBase}" Width="6" Height="6"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Border>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- RIGHT PANE: Contextual Agenda -->
+                <!-- Outer Radius (24) with Padding (10) -->
+                <Border Grid.Column="1" Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="10" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" VerticalAlignment="Top" MinHeight="420">
+                    <StackPanel Spacing="{DynamicResource SpacingMediumVal}">
+                        
+                        <!-- Agenda Header -->
+                        <Grid ColumnDefinitions="*,Auto" Margin="14,10,14,10">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="{Binding SelectedDateText}" FontSize="{DynamicResource FontSizeCardTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}"/>
+                                <TextBlock Text="{Binding SelectedDateRelative}" Foreground="{DynamicResource InfoBase}" FontSize="{DynamicResource FontSizeMetadata}" FontWeight="Bold"/>
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="Filter Agenda" Background="{DynamicResource BgPanel}" Foreground="{DynamicResource TextSecondary}" CornerRadius="{DynamicResource InputRadius}" Padding="12,6"/>
+                        </Grid>
+
+                        <Rectangle Height="1" Fill="{DynamicResource BorderSubtle}" Margin="10,0"/>
+
+                        <!-- Dynamic Agenda List -->
+                        <ItemsControl ItemsSource="{Binding SelectedDayAgenda}" Margin="10,10,10,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="calVm:AgendaItemModel">
+                                    <Grid ColumnDefinitions="90, *" Margin="0,0,0,16">
+                                        <TextBlock Grid.Column="0" Text="{Binding TimeText}" Foreground="{DynamicResource TextSecondary}" FontWeight="Medium" FontSize="{DynamicResource FontSizeMetadata}" Margin="0,18,0,0"/>
+                                        
+                                        <!-- Inner Element matching 14px InputRadius -->
+                                        <Border Grid.Column="1" Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource InputRadius}" Padding="16" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                                            <StackPanel Spacing="6">
+                                                <Grid ColumnDefinitions="*,Auto">
+                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                        <TextBlock Text="{Binding CourseCode}" Foreground="{DynamicResource TextSecondary}" FontWeight="Bold" FontSize="{DynamicResource FontSizeCaption}"/>
+                                                        <TextBlock Text="|" Foreground="{DynamicResource BorderSubtle}"/>
+                                                        <TextBlock Text="{Binding Type}" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeCaption}"/>
+                                                    </StackPanel>
+                                                    <TextBlock Grid.Column="1" Text="{Binding Status}" Foreground="{Binding StatusColor}" FontWeight="Bold" FontSize="{DynamicResource FontSizeCaption}" VerticalAlignment="Center"/>
+                                                </Grid>
+                                                <TextBlock Text="{Binding Title}" Foreground="{DynamicResource TextPrimary}" FontWeight="SemiBold" FontSize="{DynamicResource FontSizeBody}"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        
+                    </StackPanel>
+                </Border>
+                
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
