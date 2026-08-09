@@ -86,7 +86,7 @@ export const ApplicationIntakePage: React.FC = () => {
                                 <td style={{ padding: '1rem', color: 'var(--text-secondary)' }}>{item.program || item.department || 'N/A'}</td>
                                 <td style={{ padding: '1rem', color: 'var(--text-secondary)' }}>{new Date(item.submittedAt || Date.now()).toLocaleDateString()}</td>
                                 <td style={{ padding: '1rem' }}><Badge colorScheme="warning">{item.stage || 'Pending Intake'}</Badge></td>
-                                <td style={{ padding: '1rem' }}><Button variant="secondary" size="sm" onClick={() => processMutation.mutate(item.id)}>Process</Button></td>
+                                <td style={{ padding: '1rem' }}><Button variant="secondary" size="small" onClick={() => processMutation.mutate(item.id)}>Process</Button></td>
                             </tr>
                         ))}
                     </tbody>

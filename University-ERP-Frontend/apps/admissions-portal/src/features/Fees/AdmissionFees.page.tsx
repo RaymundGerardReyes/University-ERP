@@ -54,7 +54,7 @@ export const AdmissionFeesPage: React.FC = () => {
                                 <td style={{ padding: '1rem', color: 'var(--text-secondary)' }}>{new Date(item.dueDate || Date.now()).toLocaleDateString()}</td>
                                 <td style={{ padding: '1rem' }}><Badge colorScheme={item.status === 'Paid' ? 'success' : 'warning'}>{item.status || 'Pending'}</Badge></td>
                                 <td style={{ padding: '1rem' }}>
-                                    <Button variant="secondary" size="sm" onClick={() => alert(`Viewing details for invoice ID: ${item.id}`)}>View</Button>
+                                    <Button variant="secondary" size="small" onClick={() => alert(`Viewing details for invoice ID: ${item.id}`)}>View</Button>
                                 </td>
                             </tr>
                         ))}

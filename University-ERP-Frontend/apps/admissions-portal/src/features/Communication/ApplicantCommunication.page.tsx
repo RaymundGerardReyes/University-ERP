@@ -39,7 +39,7 @@ export const ApplicantCommunicationPage: React.FC = () => {
                             placeholder="Search messages..." 
                             style={{ flex: 1, padding: '0.5rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)' }}
                         />
-                        <Button size="sm" onClick={() => alert('Search filters will be applied.')}>Filter</Button>
+                        <Button size="small" onClick={() => alert('Search filters will be applied.')}>Filter</Button>
                     </div>
                     
                     <div style={{ flex: 1, overflowY: 'auto' }}>
@@ -71,7 +71,7 @@ export const ApplicantCommunicationPage: React.FC = () => {
                             <Badge colorScheme="info">Applicant Inquiry</Badge>
                         </div>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            <Button variant="secondary" size="sm" onClick={() => alert('Message forwarded to Academic Department.')}>Forward to Academic Dept</Button>
+                            <Button variant="secondary" size="small" onClick={() => alert('Message forwarded to Academic Department.')}>Forward to Academic Dept</Button>
                         </div>
                     </div>
                     

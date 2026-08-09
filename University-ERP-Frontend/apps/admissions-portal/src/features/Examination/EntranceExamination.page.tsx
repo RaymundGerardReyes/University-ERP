@@ -78,7 +78,7 @@ export const EntranceExaminationPage: React.FC = () => {
                                 </div>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', justifyContent: 'center' }}>
-                                <Button variant="secondary" size="sm" onClick={() => alert(`Managing roster for session ID: ${session.id}`)}>Manage Roster</Button>
+                                <Button variant="secondary" size="small" onClick={() => alert(`Managing roster for session ID: ${session.id}`)}>Manage Roster</Button>
                             </div>
                         </div>
                     )})}
