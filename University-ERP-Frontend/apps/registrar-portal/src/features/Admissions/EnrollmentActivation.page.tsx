@@ -7,6 +7,12 @@ import { createLogger } from '@university-erp/core-logger';
 
 const logger = createLogger('registrar-portal', 'EnrollmentActivation');
 
+interface EnrollmentActivationResponse {
+    success?: boolean;
+    newStudentId?: string;
+    newStatus?: string;
+}
+
 export const EnrollmentActivationPage: React.FC = () => {
     const queryClient = useQueryClient();
     const [selectedApplication, setSelectedApplication] = useState<any | null>(null);
@@ -27,11 +33,11 @@ export const EnrollmentActivationPage: React.FC = () => {
 
     const activateMutation = useMutation({
         mutationFn: (id: string) => AdmissionWorkflow.advance(id, 'RegistrarEnrollment'),
-        onSuccess: (data, id) => {
-            logger.info(`Successfully enrolled applicant ${id}. Generated ID: ${data.newStudentId}`);
+        onSuccess: (data: EnrollmentActivationResponse, id: string) => {
+            logger.info(`Successfully enrolled applicant ${id}. Generated ID: ${data?.newStudentId}`);
             queryClient.invalidateQueries({ queryKey: ['admissions', 'endorsed'] });
             setSelectedApplication(null);
-            alert(`Enrollment Successful!\nGenerated Official Student ID: ${data.newStudentId || 'STU-2026-9999'}`);
+            alert(`Enrollment Successful!\nGenerated Official Student ID: ${data?.newStudentId || 'STU-2026-9999'}`);
         },
         onError: (err) => {
             logger.error('Failed to activate enrollment', err);
