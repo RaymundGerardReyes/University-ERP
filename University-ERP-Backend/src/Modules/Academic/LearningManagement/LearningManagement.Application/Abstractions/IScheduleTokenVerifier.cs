@@ -9,4 +9,9 @@ public interface IScheduleTokenVerifier
     /// the cryptographic signature expected by the server to prevent time-tampering.
     /// </summary>
     bool VerifyScheduleToken(string token, Guid assessmentId, Guid studentId);
+
+    /// <summary>
+    /// Cryptographically validates the offline session signature to prevent system clock spoofing.
+    /// </summary>
+    bool VerifyOfflineSessionSignature(string outboxId, DateTime submittedAtUtc);
 }

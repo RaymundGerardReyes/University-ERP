@@ -55,6 +55,12 @@ internal sealed class ScheduleTokenVerifier : IScheduleTokenVerifier
         }
     }
 
+    public bool VerifyOfflineSessionSignature(string token, DateTime sessionDate)
+    {
+        // TODO: Add your actual cryptographic or token verification logic here
+        throw new NotImplementedException("Token verification logic needs to be implemented.");
+    }
+    
     private string ComputeHmac(string payload)
     {
         using var hmac = new HMACSHA256(_secretKey);

@@ -10,6 +10,7 @@ using LearningManagement.Application.Abstractions;
 using LearningManagement.Domain.Aggregates;
 using LearningManagement.Infrastructure.Persistence;
 
+
 public sealed class LearningManagementRepository(LearningManagementDbContext dbContext) : ILearningManagementRepository
 {
     public async Task<IReadOnlyList<Assessment>> GetAssessmentsAsync(CancellationToken cancellationToken)
@@ -29,5 +30,29 @@ public sealed class LearningManagementRepository(LearningManagementDbContext dbC
                 .ToListAsync(cancellationToken);
         }
         return new List<ClassPerformance>();
+    }
+
+    public Task<IReadOnlyList<Assessment>> GetModulesUpdatedAfterAsync(List<string> moduleIds, DateTime sinceUtc, CancellationToken cancellationToken = default)
+    {
+        // TODO: Implement your Entity Framework database query here
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> HasBeenProcessedAsync(string submissionId, CancellationToken cancellationToken = default)
+    {
+        // TODO: Implement your Entity Framework database query here
+        throw new NotImplementedException();
+    }
+
+    public Task<Assessment?> GetAssessmentByIdAsync(string assessmentId, CancellationToken cancellationToken = default)
+    {
+        // TODO: Implement your Entity Framework database query here
+        throw new NotImplementedException();
+    }
+
+    public Task<IReadOnlyList<StudentGradeRecord>> GetStudentGradesUpdatedAfterAsync(string studentId, DateTime sinceUtc, CancellationToken cancellationToken = default)
+    {
+        // TODO: Implement your Entity Framework database query here
+        throw new NotImplementedException();
     }
 }
