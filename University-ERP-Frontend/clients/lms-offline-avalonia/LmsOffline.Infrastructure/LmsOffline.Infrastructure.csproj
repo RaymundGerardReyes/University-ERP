@@ -7,8 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- ADDED: Required assembly for IHttpClientFactory -->
+    <!-- ADDED: Required assembly for IHttpClientFactory and BackgroundService -->
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.10" />
     
     <!-- Use Microsoft.EntityFrameworkCore.Sqlite.Core so that unencrypted bundle_e_sqlite3 is excluded -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="10.0.10" />

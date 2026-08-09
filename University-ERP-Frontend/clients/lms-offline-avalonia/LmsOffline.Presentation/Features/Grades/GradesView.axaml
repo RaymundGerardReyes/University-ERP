@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LmsOffline.Presentation.Features.Grades"
+             x:Class="LmsOffline.Presentation.Features.Grades.GradesView"
+             x:DataType="vm:GradesViewModel"
+             Background="{DynamicResource BgBase}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="{DynamicResource SpacingLargeVal}" Margin="{DynamicResource SpacingLarge}">
+            
+            <!-- Header Section -->
+            <StackPanel Spacing="{DynamicResource SpacingMicroVal}">
+                <TextBlock Text="Academic Performance" FontSize="{DynamicResource FontSizePageTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextBright}"/>
+                <TextBlock Text="View your evaluated assignments and exams. Grades are cached offline for your convenience." Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
+            </StackPanel>
+
+            <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource InputRadius}" Padding="14" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource InfoBase}" FontSize="{DynamicResource FontSizeMetadata}"/>
+            </Border>
+
+            <!-- Grade List -->
+            <ItemsControl ItemsSource="{Binding Grades}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:GradeItemModel">
+                        <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Margin="0,0,0,16">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                
+                                <!-- Grade Percentage Ring -->
+                                <Border Grid.Column="0" Width="64" Height="64" CornerRadius="32" Background="{DynamicResource BrandPrimary}" Margin="0,0,20,0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Percentage, StringFormat='{}{0:0}%'}" Foreground="{DynamicResource TextBright}" FontWeight="Bold" FontSize="{DynamicResource FontSizeBody}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                
+                                <!-- Course & Assessment Details -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                                    <TextBlock Text="{Binding CourseCode}" Foreground="{DynamicResource BrandHover}" FontSize="{DynamicResource FontSizeMetadata}" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding AssessmentTitle}" Foreground="{DynamicResource TextBright}" FontSize="{DynamicResource FontSizeCardTitle}" FontWeight="Medium"/>
+                                    <TextBlock Text="{Binding Remarks}" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeBody}" TextWrapping="Wrap"/>
+                                </StackPanel>
+
+                                <!-- Status Indicators -->
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="4" HorizontalAlignment="Right">
+                                    <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource BadgeRadius}" Padding="10,4" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                                        <TextBlock Text="{Binding Status}" Foreground="{DynamicResource InfoBase}" FontSize="{DynamicResource FontSizeMetadata}" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Text="{Binding EvaluatedOn, StringFormat='Evaluated: {0}'}" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeMetadata}" HorizontalAlignment="Right"/>
+                                </StackPanel>
+                                
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

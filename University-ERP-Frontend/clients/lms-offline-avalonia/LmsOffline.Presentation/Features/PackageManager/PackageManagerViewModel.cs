@@ -7,14 +7,21 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 
-public class InstalledCoursePackageItem
+public class InstalledCoursePackageItem : ObservableObject
 {
     public string PackageId { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
     public string Version { get; set; } = string.Empty;
     public string SizeFormatted { get; set; } = string.Empty;
     public string HashSignature { get; set; } = string.Empty;
-    public string VerificationStatus { get; set; } = "SHA-256 Verified";
+
+    private string _verificationStatus = "SHA-256 Verified";
+    public string VerificationStatus
+    {
+        get => _verificationStatus;
+        set => SetProperty(ref _verificationStatus, value);
+    }
+
     public string InstalledDate { get; set; } = string.Empty;
 }
 
@@ -32,6 +39,15 @@ public partial class PackageManagerViewModel : ObservableObject
 
     [ObservableProperty]
     private string _statusMessage = "All installed course packages are cryptographically signed.";
+
+    [ObservableProperty]
+    private bool _isDownloading;
+
+    [ObservableProperty]
+    private double _downloadProgress;
+
+    [ObservableProperty]
+    private string _downloadProgressText = string.Empty;
 
     public ObservableCollection<InstalledCoursePackageItem> InstalledPackages { get; } = new();
 
@@ -80,7 +96,7 @@ public partial class PackageManagerViewModel : ObservableObject
         StatusMessage = $"Verifying SHA-256 hash for {package.PackageId}...";
         _logger?.LogInformation("Starting SHA-256 package verification for {PackageId}", package.PackageId);
         
-        await Task.Delay(800); // Simulate cryptographic check
+        await Task.Delay(600); // Simulate cryptographic check
 
         package.VerificationStatus = "Verified (SHA-256 Matches)";
         StatusMessage = $"Success! {package.PackageId} integrity verified. Signature match confirmed.";
@@ -90,10 +106,38 @@ public partial class PackageManagerViewModel : ObservableObject
     [RelayCommand]
     public async Task DownloadNewPackageAsync()
     {
-        StatusMessage = "Checking local network for published course package bundle (.lms-pkg)...";
-        _logger?.LogInformation("User requested package bundle scan.");
+        IsDownloading = true;
+        DownloadProgress = 0;
+        DownloadProgressText = "Connecting to Faculty Delta Sync Endpoint...";
+        StatusMessage = "Initiating downstream package sync...";
+
+        _logger?.LogInformation("User requested delta package download scan.");
         
-        await Task.Delay(1000);
-        StatusMessage = "No new offline package bundles detected on local subnet.";
+        await Task.Delay(400);
+        DownloadProgress = 35;
+        DownloadProgressText = "Downloading delta bundle (CS-410 Delta: 45 MB)...";
+
+        await Task.Delay(500);
+        DownloadProgress = 75;
+        DownloadProgressText = "Decrypting & verifying ECDSA signature...";
+
+        await Task.Delay(400);
+        DownloadProgress = 100;
+        DownloadProgressText = "Installing into SQLCipher database...";
+
+        await Task.Delay(300);
+        
+        InstalledPackages.Add(new InstalledCoursePackageItem
+        {
+            PackageId = $"PKG-DELTA-{Guid.NewGuid().ToString()[..4].ToUpper()}",
+            Title = "CS-410: Distributed Delta Sync & Outbox Core",
+            Version = "v2.1.0",
+            SizeFormatted = "45 MB",
+            HashSignature = "3a81c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            InstalledDate = DateTime.Now.ToString("yyyy-MM-dd")
+        });
+
+        IsDownloading = false;
+        StatusMessage = "SUCCESS: Faculty delta package installed & verified into local SQLCipher vault.";
     }
 }

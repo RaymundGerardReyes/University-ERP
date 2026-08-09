@@ -14,6 +14,7 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.5" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.5" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.5" />
+    <PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     
     <!-- UPDATED: Aligned with EF Core Design 10.0.10 requirements -->

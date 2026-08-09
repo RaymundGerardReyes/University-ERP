@@ -70,14 +70,17 @@ public partial class LoginViewModel : ObservableObject
 
         _logger?.LogInformation("Student initiating authentication via MediatR CQRS pipeline.");
 
-        // DUMMY BYPASS FOR DEVELOPMENT
-        if (Username == "alex.rivera@university.edu" && Password == "admin123")
+        var cachedToken = _tokenCache.GetToken();
+        if (cachedToken is not null && _tokenCache.IsSessionValid(DateTime.UtcNow))
         {
-            await Task.Delay(500); // Simulate network/decryption delay
+            _logger?.LogInformation("Reusing cached offline session for student {StudentId}.", cachedToken.StudentId);
+            await Task.Delay(300);
             IsAuthenticating = false;
             LoginSucceeded?.Invoke(this, EventArgs.Empty);
             return;
         }
+
+        _tokenCache.ClearCache();
 
         // Dispatch Command via MediatR (Clean Architecture)
         var command = new AuthenticateStudentCommand(Username, Password);
@@ -88,7 +91,7 @@ public partial class LoginViewModel : ObservableObject
             var authData = result.Value;
 
             // Cache token locally for 24-hour offline bounding
-            var attemptToken = new AttemptToken(authData.TokenValue, DateTime.UtcNow);
+            var attemptToken = new AttemptToken(authData.TokenValue, DateTime.UtcNow, authData.StudentId.ToString());
             _tokenCache.CacheToken(attemptToken);
 
             _logger?.LogInformation("Authenticated student ID {StudentId} successfully.", authData.StudentId);

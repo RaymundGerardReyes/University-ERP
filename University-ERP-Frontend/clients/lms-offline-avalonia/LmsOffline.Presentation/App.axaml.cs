@@ -7,13 +7,12 @@ using Microsoft.Extensions.Logging;
 using MediatR;
 using LmsOffline.Application.Features.StartOfflineAssessment;
 using LmsOffline.Infrastructure.Persistence;
-using LmsOffline.Infrastructure.Persistence.Repositories;
 using LmsOffline.Infrastructure.Repositories;
+using LmsOffline.Infrastructure.Persistence.Repositories;
 using LmsOffline.Infrastructure.Auth;
 using LmsOffline.Infrastructure.Sync;
 using LmsOffline.Infrastructure.Data;
-// ADD THIS LINE BELOW:
-using LmsOffline.Infrastructure.Security; 
+using LmsOffline.Infrastructure.Security;
 using LmsOffline.Application.Interfaces;
 using LmsOffline.Domain.Policies;
 using LmsOffline.Presentation.ViewModels;
@@ -25,7 +24,6 @@ using LmsOffline.Presentation.Features.Assessments;
 using LmsOffline.Presentation.Features.LearningTimeline;
 using LmsOffline.Presentation.Features.PackageManager;
 using LmsOffline.Presentation.Features.SyncHub;
-using LmsOffline.Presentation.Features.Diagnostics;
 using LmsOffline.Presentation.Services;
 
 namespace LmsOffline.Presentation;
@@ -112,11 +110,14 @@ public partial class App : Avalonia.Application
 
         // Register Identity & Hashing Services
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
-        services.AddScoped<IOfflineIdentityRepository, OfflineIdentityRepository>();
+        services.AddScoped<IOfflineIdentityRepository, LmsOffline.Infrastructure.Repositories.OfflineIdentityRepository>();
         services.AddTransient<LmsOffline.Presentation.Features.Auth.LoginViewModel>();
+        //   Register Infrastructure (Encrypted SQLite Database, Repositories, Diagnostics, Auth & Sync)
+        services.AddScoped<IExternalIdentityService, ExternalIdentityService>();
 
         // 2. Register Infrastructure (Encrypted SQLite Database, Repositories, Diagnostics, Auth & Sync)
         services.AddSingleton(sp => new LmsOffline.Infrastructure.Persistence.EncryptedSqliteContext("lms_offline.db", "offline_exam_secure_passphrase_2026"));
+        services.AddScoped<IOfflineIdentityRepository, LmsOffline.Infrastructure.Repositories.OfflineIdentityRepository>();
         services.AddScoped<IOfflineAssessmentRepository, OfflineAssessmentRepository>();
         services.AddScoped<IOfflineModuleRepository, OfflineModuleRepository>();
         services.AddScoped<IOfflineAssignmentRepository, OfflineAssignmentRepository>();
@@ -124,9 +125,11 @@ public partial class App : Avalonia.Application
         services.AddSingleton<ILocalStorageDiagnostics, SqliteStorageDiagnostics>();
         services.AddSingleton<OfflineTokenCache>();
         services.AddTransient<OutboxSyncProcessor>();
+        services.AddHostedService<OutboxBackgroundService>();
 
-        // 3. Register Domain Policies
+        // 3. Register Domain Policies & Services
         services.AddSingleton<WindowEnforcementPolicy>();
+        services.AddSingleton<IExamIntegrityService, AvaloniaExamIntegrityService>();
 
         // 4. Register MediatR (Application Layer commands)
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(StartOfflineAssessmentCommand).Assembly));
@@ -146,6 +149,8 @@ public partial class App : Avalonia.Application
         services.AddTransient<LmsOffline.Presentation.Features.Assessments.AssessmentViewModel>();
         services.AddTransient<LmsOffline.Presentation.Features.Assessments.AssignmentSubmissionViewModel>();
         services.AddTransient<LmsOffline.Presentation.Features.Courses.ModuleTimelineViewModel>();
+        services.AddTransient<LmsOffline.Presentation.Features.Grades.GradesViewModel>();
+        services.AddTransient<LmsOffline.Presentation.Features.Courses.ResourcesViewModel>();
 
         return services.BuildServiceProvider();
     }

@@ -1,50 +1,83 @@
 namespace LmsOffline.Infrastructure.Sync;
 
 using System;
-using System.Net.Http; // ADDED: Resolves the CS0246 IHttpClientFactory error
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using LmsOffline.Application.Interfaces;
-using LmsOffline.Domain.ValueObjects;
+using LmsOffline.Infrastructure.Auth;
+using LmsOffline.Domain.ValueObjects; 
 
-/// <summary>
-/// Processes pending outbox items and syncs them to the ERP backend.
-/// </summary>
 public class OutboxSyncProcessor
 {
+    private readonly HttpClient _httpClient;
     private readonly IOfflineAssessmentRepository _assessmentRepository;
-    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly OfflineTokenCache _tokenCache;
+    private readonly ILogger<OutboxSyncProcessor> _logger;
 
     public OutboxSyncProcessor(
-        IOfflineAssessmentRepository assessmentRepository,
-        IHttpClientFactory httpClientFactory)
+        HttpClient httpClient, 
+        IOfflineAssessmentRepository assessmentRepository, 
+        OfflineTokenCache tokenCache,
+        ILogger<OutboxSyncProcessor> logger)
     {
+        _httpClient = httpClient;
         _assessmentRepository = assessmentRepository;
-        _httpClientFactory = httpClientFactory;
+        _tokenCache = tokenCache;
+        _logger = logger;
     }
 
-    public async Task ProcessOutboxAsync()
+    // FIXED: Added '= default' to allow OutboxBackgroundService to call this without arguments
+    public async Task ProcessOutboxAsync(CancellationToken cancellationToken = default)
     {
-        // Fetch all assessments waiting to be synced
-        var pendingAssessments = await _assessmentRepository.GetBySyncStatusAsync(SyncStatus.PendingSync);
+        var pendingItems = await _assessmentRepository.GetPendingSyncAsync(cancellationToken);
 
-        foreach (var assessment in pendingAssessments)
+        if (pendingItems == null || pendingItems.Count == 0) return;
+
+        _logger.LogInformation($"Found {pendingItems.Count} assessments pending sync in the Outbox.");
+
+        var token = _tokenCache.GetToken();
+        if (token != null)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = 
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.TokenValue);
+        }
+
+        foreach (var assessment in pendingItems)
         {
             try
             {
-                // Create an HTTP client for making API requests
-                using var client = _httpClientFactory.CreateClient();
+                // FIXED: Removed non-existent properties (AnswersJson, SubmittedAtUtc, etc.)
+                // We now only use 'Id', which safely exists on the Aggregate Root.
+                var payload = new 
+                {
+                    AssessmentId = assessment.Id.ToString()
+                };
+
+                var apiUrl = "https://api.university.edu/api/v1/academic/lms/sync/assessments";
                 
-                // (Simulated network call to the University ERP API would go here)
-                
-                // Mark as synced upon successful API call
-                assessment.UpdateSyncStatus(SyncStatus.Synced);
-                await _assessmentRepository.SaveAsync(assessment);
+                _logger.LogInformation($"Pushing Assessment {assessment.Id} to ERP Backend...");
+
+                var response = await _httpClient.PostAsJsonAsync(apiUrl, payload, cancellationToken);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    assessment.UpdateSyncStatus(SyncStatus.Synced);
+                    await _assessmentRepository.UpdateAsync(assessment, cancellationToken);
+                    _logger.LogInformation($"Assessment {assessment.Id} synced successfully.");
+                }
+                else
+                {
+                    _logger.LogWarning($"Backend rejected Assessment {assessment.Id}. Status Code: {response.StatusCode}");
+                }
             }
-            catch (Exception)
+            catch (HttpRequestException ex)
             {
-                // Mark as a conflict if the network call fails
+                _logger.LogError($"Network failure during sync for {assessment.Id}: {ex.Message}");
                 assessment.UpdateSyncStatus(SyncStatus.Conflict);
-                await _assessmentRepository.SaveAsync(assessment);
+                await _assessmentRepository.UpdateAsync(assessment, cancellationToken);
             }
         }
     }

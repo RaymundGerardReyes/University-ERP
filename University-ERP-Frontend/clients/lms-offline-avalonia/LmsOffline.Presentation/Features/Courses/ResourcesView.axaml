@@ -1,0 +1,68 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LmsOffline.Presentation.Features.Courses"
+             x:Class="LmsOffline.Presentation.Features.Courses.ResourcesView"
+             x:DataType="vm:ResourcesViewModel"
+             Background="{DynamicResource BgBase}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="{DynamicResource SpacingLargeVal}" Margin="{DynamicResource SpacingLarge}">
+            
+            <!-- Header Section -->
+            <StackPanel Spacing="{DynamicResource SpacingMicroVal}">
+                <TextBlock Text="Course Resources &amp; Assets" FontSize="{DynamicResource FontSizePageTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextBright}"/>
+                <TextBlock Text="Download PDFs, presentations, and reference materials for offline study." Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
+            </StackPanel>
+
+            <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource InputRadius}" Padding="14" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource InfoBase}" FontSize="{DynamicResource FontSizeMetadata}"/>
+            </Border>
+
+            <!-- Resources List -->
+            <ItemsControl ItemsSource="{Binding CourseFiles}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:ResourceItemModel">
+                        <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Margin="0,0,0,12">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                
+                                <!-- File Icon -->
+                                <Border Grid.Column="0" Width="48" Height="48" CornerRadius="{DynamicResource BadgeRadius}" Background="{DynamicResource BgPanel}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Margin="0,0,16,0">
+                                    <TextBlock Text="📄" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                
+                                <!-- File Details -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                                    <TextBlock Text="{Binding FileName}" Foreground="{DynamicResource TextBright}" FontSize="{DynamicResource FontSizeBody}" FontWeight="SemiBold"/>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="{Binding FileType}" Foreground="{DynamicResource BrandHover}" FontSize="{DynamicResource FontSizeMetadata}" FontWeight="Medium"/>
+                                        <TextBlock Text="|" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                        <TextBlock Text="{Binding FileSize}" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- Action Buttons -->
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                    <Button Content="Download Offline" 
+                                            Command="{Binding $parent[UserControl].((vm:ResourcesViewModel)DataContext).DownloadResourceCommand}" 
+                                            CommandParameter="{Binding}"
+                                            IsVisible="{Binding !IsDownloaded}"
+                                            Background="{DynamicResource BrandPrimary}" 
+                                            Foreground="{DynamicResource TextBright}" 
+                                            FontWeight="Bold" 
+                                            CornerRadius="{DynamicResource ButtonRadius}" 
+                                            Padding="12,8"/>
+                                            
+                                    <Border IsVisible="{Binding IsDownloaded}" Background="{DynamicResource SuccessSubtle}" BorderBrush="{DynamicResource SuccessBase}" BorderThickness="1" CornerRadius="{DynamicResource BadgeRadius}" Padding="12,8">
+                                        <TextBlock Text="Available Offline" Foreground="{DynamicResource SuccessHover}" FontSize="{DynamicResource FontSizeMetadata}" FontWeight="SemiBold"/>
+                                    </Border>
+                                </StackPanel>
+                                
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

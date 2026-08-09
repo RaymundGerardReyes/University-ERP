@@ -60,6 +60,14 @@ public partial class StudentDashboardViewModel : ObservableObject
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _logger = logger;
+    }
+
+    /// <summary>
+    /// Lazy initialization invoked only after a student successfully logs in.
+    /// Prevents eager query race conditions before authentication session caching.
+    /// </summary>
+    public void Initialize()
+    {
         _ = LoadDashboardDataAsync();
     }
 

@@ -65,7 +65,6 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private TaxonomyNode? _selectedNode;
 
-    // REMOVED: SyncHub, PackageManager, and Diagnostics ViewModels from the constructor
     public MainWindowViewModel(
         LmsOffline.Presentation.Features.Auth.LoginViewModel loginViewModel,
         LmsOffline.Presentation.Features.Dashboard.StudentDashboardViewModel dashboardViewModel,
@@ -73,6 +72,9 @@ public partial class MainWindowViewModel : ObservableObject
         LmsOffline.Presentation.Features.Assessments.LogicQuizViewModel logicQuizViewModel,
         LmsOffline.Presentation.Features.Courses.ActivityHubViewModel activityHubViewModel,
         LmsOffline.Presentation.Features.Calendar.TimelineScheduleViewModel timelineScheduleViewModel,
+        LmsOffline.Presentation.Features.PackageManager.PackageManagerViewModel packageManagerViewModel,
+        LmsOffline.Presentation.Features.Grades.GradesViewModel gradesViewModel,
+        LmsOffline.Presentation.Features.Courses.ResourcesViewModel resourcesViewModel,
         ILogger<MainWindowViewModel>? logger = null)
     {
         _logger = logger;
@@ -83,12 +85,13 @@ public partial class MainWindowViewModel : ObservableObject
         NavigationItems.Add(timelineScheduleViewModel);
 
         // Build the Flattened Learner-Centric Taxonomy
-        BuildCourseTaxonomy(courseViewerViewModel, activityHubViewModel, logicQuizViewModel);
+        BuildCourseTaxonomy(courseViewerViewModel, activityHubViewModel, logicQuizViewModel, packageManagerViewModel, gradesViewModel, resourcesViewModel);
 
         // Subscribe to login success
         loginViewModel.LoginSucceeded += (s, e) =>
         {
             IsLoggedIn = true;
+            _dashboardViewModel.Initialize();
             CurrentPage = _dashboardViewModel;
             _logger?.LogInformation("Login successful. Routing to Student Dashboard.");
         };
@@ -100,7 +103,10 @@ public partial class MainWindowViewModel : ObservableObject
     private void BuildCourseTaxonomy(
         LmsOffline.Presentation.Features.Courses.CourseViewerViewModel courseViewer, 
         LmsOffline.Presentation.Features.Courses.ActivityHubViewModel labActivity, 
-        LmsOffline.Presentation.Features.Assessments.LogicQuizViewModel quiz)
+        LmsOffline.Presentation.Features.Assessments.LogicQuizViewModel quiz,
+        LmsOffline.Presentation.Features.PackageManager.PackageManagerViewModel packageManager,
+        LmsOffline.Presentation.Features.Grades.GradesViewModel gradesViewModel,
+        LmsOffline.Presentation.Features.Courses.ResourcesViewModel resourcesViewModel)
     {
         // CS101 Course Root
         var cs101 = new TaxonomyNode 
@@ -120,8 +126,8 @@ public partial class MainWindowViewModel : ObservableObject
         cs101.Children.Add(new TaxonomyNode { Title = "Modules", Icon = "📑", TargetViewModel = courseViewer });
         cs101.Children.Add(new TaxonomyNode { Title = "Assignments", Icon = "📝", TargetViewModel = labActivity });
         cs101.Children.Add(new TaxonomyNode { Title = "Quizzes", Icon = "🧠", TargetViewModel = quiz });
-        cs101.Children.Add(new TaxonomyNode { Title = "Grades", Icon = "📈" });
-        cs101.Children.Add(new TaxonomyNode { Title = "Resources", Icon = "📦" });
+        cs101.Children.Add(new TaxonomyNode { Title = "Grades", Icon = "📈", TargetViewModel = gradesViewModel });
+        cs101.Children.Add(new TaxonomyNode { Title = "Resources", Icon = "📦", TargetViewModel = resourcesViewModel });
 
         // Other Enrolled Courses
         var cs203 = new TaxonomyNode 
@@ -134,6 +140,12 @@ public partial class MainWindowViewModel : ObservableObject
             StatusText = "Module 3 of 6",
             TargetViewModel = courseViewer 
         };
+        cs203.Children.Add(new TaxonomyNode { Title = "Overview", Icon = "📊", TargetViewModel = courseViewer });
+        cs203.Children.Add(new TaxonomyNode { Title = "Modules", Icon = "📑", TargetViewModel = courseViewer });
+        cs203.Children.Add(new TaxonomyNode { Title = "Assignments", Icon = "📝", TargetViewModel = labActivity });
+        cs203.Children.Add(new TaxonomyNode { Title = "Quizzes", Icon = "🧠", TargetViewModel = quiz });
+        cs203.Children.Add(new TaxonomyNode { Title = "Grades", Icon = "📈", TargetViewModel = gradesViewModel });
+        cs203.Children.Add(new TaxonomyNode { Title = "Resources", Icon = "📦", TargetViewModel = resourcesViewModel });
         
         var cs305 = new TaxonomyNode 
         { 
@@ -147,6 +159,12 @@ public partial class MainWindowViewModel : ObservableObject
             AlertColor = "#10B981", // Success/Green
             TargetViewModel = courseViewer 
         };
+        cs305.Children.Add(new TaxonomyNode { Title = "Overview", Icon = "📊", TargetViewModel = courseViewer });
+        cs305.Children.Add(new TaxonomyNode { Title = "Modules", Icon = "📑", TargetViewModel = courseViewer });
+        cs305.Children.Add(new TaxonomyNode { Title = "Assignments", Icon = "📝", TargetViewModel = labActivity });
+        cs305.Children.Add(new TaxonomyNode { Title = "Quizzes", Icon = "🧠", TargetViewModel = quiz });
+        cs305.Children.Add(new TaxonomyNode { Title = "Grades", Icon = "📈", TargetViewModel = gradesViewModel });
+        cs305.Children.Add(new TaxonomyNode { Title = "Resources", Icon = "📦", TargetViewModel = resourcesViewModel });
         
         var ge101 = new TaxonomyNode 
         { 
@@ -160,6 +178,12 @@ public partial class MainWindowViewModel : ObservableObject
             AlertColor = "#EF4444", // Danger/Red
             TargetViewModel = courseViewer 
         };
+        ge101.Children.Add(new TaxonomyNode { Title = "Overview", Icon = "📊", TargetViewModel = courseViewer });
+        ge101.Children.Add(new TaxonomyNode { Title = "Modules", Icon = "📑", TargetViewModel = courseViewer });
+        ge101.Children.Add(new TaxonomyNode { Title = "Assignments", Icon = "📝", TargetViewModel = labActivity });
+        ge101.Children.Add(new TaxonomyNode { Title = "Quizzes", Icon = "🧠", TargetViewModel = quiz });
+        ge101.Children.Add(new TaxonomyNode { Title = "Grades", Icon = "📈", TargetViewModel = gradesViewModel });
+        ge101.Children.Add(new TaxonomyNode { Title = "Resources", Icon = "📦", TargetViewModel = resourcesViewModel });
 
         TaxonomyNodes.Add(cs101);
         TaxonomyNodes.Add(cs203);

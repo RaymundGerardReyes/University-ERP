@@ -13,12 +13,14 @@
                     <TextBlock Text="Offline Course Materials" FontSize="{DynamicResource FontSizePageTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextBright}"/>
                     <TextBlock Text="Manage your downloaded lessons and learning resources for offline use." Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
                 </StackPanel>
-                <Button Grid.Column="1" Content="  Download New Course"
+                <Button Grid.Column="1" Content="Check Delta Packages"
                         Command="{Binding DownloadNewPackageCommand}"
+                        IsEnabled="{Binding !IsDownloading}"
                         Background="{DynamicResource BrandPrimary}" Foreground="{DynamicResource TextBright}" FontWeight="Bold"
                         VerticalAlignment="Center" Padding="14,10" CornerRadius="{DynamicResource ButtonRadius}"/>
             </Grid>
 
+            <!-- Storage Indicator Card -->
             <Border Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
                 <StackPanel Spacing="10">
                     <Grid ColumnDefinitions="*,Auto">
@@ -27,6 +29,22 @@
                     </Grid>
                     <ProgressBar Value="{Binding StoragePercentage}" Maximum="100" Height="8" Foreground="{DynamicResource InfoBase}" Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource BadgeRadius}"/>
                 </StackPanel>
+            </Border>
+
+            <!-- Download Progress Indicator (Visible when downloading delta sync packages) -->
+            <Border IsVisible="{Binding IsDownloading}" Background="{DynamicResource BgSurface}" CornerRadius="{DynamicResource CardRadius}" Padding="{DynamicResource SpacingLarge}" BorderBrush="{DynamicResource BrandPrimary}" BorderThickness="1.5">
+                <StackPanel Spacing="10">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="{Binding DownloadProgressText}" Foreground="{DynamicResource BrandPrimary}" FontWeight="SemiBold" FontSize="{DynamicResource FontSizeBody}"/>
+                        <TextBlock Grid.Column="1" Text="{Binding DownloadProgress, StringFormat='{}{0}%'}" Foreground="{DynamicResource TextBright}" FontWeight="Bold" FontSize="{DynamicResource FontSizeBody}"/>
+                    </Grid>
+                    <ProgressBar Value="{Binding DownloadProgress}" Maximum="100" Height="8" Foreground="{DynamicResource BrandPrimary}" Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource BadgeRadius}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Status Banner -->
+            <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource ButtonRadius}" Padding="12,10" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}" HorizontalAlignment="Center"/>
             </Border>
 
             <ItemsControl ItemsSource="{Binding InstalledPackages}">
@@ -45,12 +63,16 @@
                                 </Grid>
 
                                 <Border Background="{DynamicResource BgPanel}" CornerRadius="{DynamicResource ButtonRadius}" Padding="14" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
-                                    <StackPanel Spacing="{DynamicResource SpacingSmallVal}">
-                                        <Grid ColumnDefinitions="Auto,*">
-                                            <TextBlock Text="Security: " Foreground="{DynamicResource TextSecondary}" FontSize="{DynamicResource FontSizeMetadata}"/>
-                                            <TextBlock Grid.Column="1" Text="Verified Safe" Foreground="{DynamicResource SuccessBase}" FontSize="{DynamicResource FontSizeMetadata}"/>
-                                        </Grid>
-                                    </StackPanel>
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <StackPanel Spacing="{DynamicResource SpacingMicroVal}">
+                                            <TextBlock Text="{Binding HashSignature, StringFormat='SHA-256: {0}'}" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeMetadata}"/>
+                                            <TextBlock Text="{Binding VerificationStatus}" Foreground="{DynamicResource SuccessBase}" FontSize="{DynamicResource FontSizeMetadata}" FontWeight="Medium"/>
+                                        </StackPanel>
+                                        <Button Grid.Column="1" Content="Verify SHA-256"
+                                                Command="{Binding ((pmVm:PackageManagerViewModel)DataContext).VerifyIntegrityCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Padding="10,4" FontSize="11" CornerRadius="4"/>
+                                    </Grid>
                                 </Border>
                             </StackPanel>
                         </Border>

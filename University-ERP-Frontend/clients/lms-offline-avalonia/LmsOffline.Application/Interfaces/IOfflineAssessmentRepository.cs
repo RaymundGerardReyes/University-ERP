@@ -5,16 +5,15 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using LmsOffline.Domain.Aggregates;
-using LmsOffline.Domain.ValueObjects;
 
-/// <summary>
-/// Defines the contract for accessing offline assessment data.
-/// </summary>
 public interface IOfflineAssessmentRepository
 {
-    // Default cancellation tokens satisfy callers with 1 or 2 arguments
-    Task<OfflineAssessment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<IEnumerable<OfflineAssessment>> GetBySyncStatusAsync(SyncStatus status, CancellationToken cancellationToken = default);
-    Task UpdateAsync(OfflineAssessment assessment, CancellationToken cancellationToken = default);
+    // Restored: The existing codebase pattern for offline saving
     Task SaveAsync(OfflineAssessment assessment, CancellationToken cancellationToken = default);
+    
+    // Kept: The methods required for the Outbox Sync Processor
+    Task<List<OfflineAssessment>> GetPendingSyncAsync(CancellationToken cancellationToken = default);
+    Task UpdateAsync(OfflineAssessment assessment, CancellationToken cancellationToken = default);
+    Task AddAsync(OfflineAssessment assessment, CancellationToken cancellationToken = default);
+    Task<OfflineAssessment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 }

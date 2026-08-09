@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using LmsOffline.Application.Features.SubmitOfflineAssessment;
+using LmsOffline.Application.Interfaces;
 
 public class QuizOptionItem : ObservableObject
 {
@@ -49,6 +50,7 @@ public class QuizQuestionModel : ObservableObject
 public partial class LogicQuizViewModel : ObservableObject
 {
     private readonly ISender _sender;
+    private readonly IExamIntegrityService _integrityService;
     private readonly ILogger<LogicQuizViewModel>? _logger;
 
     public string Title => "Interactive Logic Quiz";
@@ -73,11 +75,19 @@ public partial class LogicQuizViewModel : ObservableObject
 
     public ObservableCollection<QuizQuestionModel> Questions { get; } = new();
 
-    public LogicQuizViewModel(ISender sender, ILogger<LogicQuizViewModel>? logger = null)
+    public LogicQuizViewModel(
+        ISender sender, 
+        IExamIntegrityService integrityService,
+        ILogger<LogicQuizViewModel>? logger = null)
     {
         _sender = sender;
+        _integrityService = integrityService;
         _logger = logger;
+        
         LoadQuestions();
+
+        // Start active window focus monitoring & clipboard protection
+        _integrityService.StartMonitoring();
     }
 
     private void LoadQuestions()
@@ -170,15 +180,24 @@ public partial class LogicQuizViewModel : ObservableObject
     [RelayCommand]
     public async Task SubmitQuizAsync()
     {
-        StatusMessage = "Encrypting quiz answers and dispatching to SQLCipher Outbox...";
+        StatusMessage = "Encrypting quiz answers and integrity logs...";
         _logger?.LogInformation("Student submitting Logic Quiz to Outbox.");
 
+        // Stop integrity monitoring and retrieve violation records
+        _integrityService.StopMonitoring();
+        var violations = _integrityService.GetViolations();
+
         var answersList = Questions.Select(q => $"{{\"QuestionIndex\": {q.QuestionIndex}, \"SelectedOption\": \"{q.SelectedOptionKey ?? "NONE"}\"}}");
-        string jsonAnswers = $"[{string.Join(",", answersList)}]";
+        var violationsJson = string.Join(",", violations.Select(v => $"{{\"Type\": \"{v.ViolationType}\", \"Time\": \"{v.TimestampUtc:O}\", \"Details\": \"{v.Details}\"}}"));
+
+        string finalPayload = $@"{{
+            ""Answers"": [{string.Join(",", answersList)}],
+            ""IntegrityViolations"": [{violationsJson}]
+        }}";
 
         var command = new SubmitOfflineAssessmentCommand(
             AssessmentId: Guid.NewGuid(),
-            StudentAnswersJson: jsonAnswers,
+            StudentAnswersJson: finalPayload,
             SubmittedAtUtc: DateTime.UtcNow
         );
 
@@ -187,8 +206,8 @@ public partial class LogicQuizViewModel : ObservableObject
         if (result.IsSuccess)
         {
             IsQuizSubmitted = true;
-            StatusMessage = "SUCCESS: Quiz submitted & safely encrypted in local Outbox queue!";
-            _logger?.LogInformation("Logic Quiz saved to outbox successfully.");
+            StatusMessage = "SUCCESS: Quiz answers and integrity logs submitted & encrypted in local Outbox queue!";
+            _logger?.LogInformation("Logic Quiz with integrity logs saved to outbox successfully.");
         }
         else
         {

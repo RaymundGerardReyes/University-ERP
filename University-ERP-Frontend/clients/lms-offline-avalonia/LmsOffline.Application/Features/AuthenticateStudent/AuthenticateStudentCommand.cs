@@ -5,5 +5,5 @@ using SharedKernel.Domain.Primitives;
 
 public sealed record AuthenticateStudentCommand(
     string Identifier,
-    string PlainPassword
+    string Password
 ) : IRequest<Result<AuthenticateStudentResult>>;
