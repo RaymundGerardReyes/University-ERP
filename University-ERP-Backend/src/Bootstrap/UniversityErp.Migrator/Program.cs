@@ -445,6 +445,9 @@ static async Task SeedDefaultUsersAsync(IServiceProvider services, ILogger logge
     var registrarEmail = "registrar@university.edu";
     var registrarPasswordHash = BCrypt.Net.BCrypt.HashPassword("Registrar123!", 12);
 
+    var alexEmail = "alex.rivera@university.edu";
+    var alexPasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123", 12);
+
     var sql = """
         INSERT INTO identity."Users" ("Id", "Email", "PasswordHash", "FirstName", "LastName", "IsActive", "CreatedOnUtc")
         VALUES 
@@ -453,7 +456,8 @@ static async Task SeedDefaultUsersAsync(IServiceProvider services, ILogger logge
             ('00000000-0000-0000-0000-000000000003', @AdmissionsEmail, @AdmissionsHash, 'Admissions', 'Officer', TRUE, NOW()),
             ('00000000-0000-0000-0000-000000000004', @ApplicantEmail, @ApplicantHash, 'John', 'Doe', TRUE, NOW()),
             ('00000000-0000-0000-0000-000000000005', @FinanceEmail, @FinanceHash, 'Finance', 'Cashier', TRUE, NOW()),
-            ('00000000-0000-0000-0000-000000000006', @RegistrarEmail, @RegistrarHash, 'Registrar', 'Admin', TRUE, NOW())
+            ('00000000-0000-0000-0000-000000000006', @RegistrarEmail, @RegistrarHash, 'Registrar', 'Admin', TRUE, NOW()),
+            ('00000000-0000-0000-0000-000000000007', @AlexEmail, @AlexHash, 'Alex', 'Rivera', TRUE, NOW())
         ON CONFLICT ("Email") DO NOTHING;
         """;
 
@@ -470,6 +474,8 @@ static async Task SeedDefaultUsersAsync(IServiceProvider services, ILogger logge
     cmd.Parameters.AddWithValue("FinanceHash", financePasswordHash);
     cmd.Parameters.AddWithValue("RegistrarEmail", registrarEmail);
     cmd.Parameters.AddWithValue("RegistrarHash", registrarPasswordHash);
+    cmd.Parameters.AddWithValue("AlexEmail", alexEmail);
+    cmd.Parameters.AddWithValue("AlexHash", alexPasswordHash);
 
     var rows = await cmd.ExecuteNonQueryAsync();
     Console.WriteLine($"Seeded {rows} new default user(s).");
