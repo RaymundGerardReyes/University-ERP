@@ -13,7 +13,7 @@ export const EvaluationQueuePage: React.FC = () => {
     });
 
     const evaluateMutation = useMutation({
-        mutationFn: ({ id, decision }: { id: string, decision: 'Accept' | 'Reject' | 'Waitlist' }) =>
+        mutationFn: ({ id, decision }: { id: string, decision: 'Approve' | 'Verify' }) =>
             facultyAdmissionsApi.approveApplication(id, decision),
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['chairpersonQueue'] })
     });
@@ -41,14 +41,14 @@ export const EvaluationQueuePage: React.FC = () => {
                                 <Button variant="outline">Review Portfolio</Button>
                                 <Button
                                     variant="secondary"
-                                    onClick={() => evaluateMutation.mutate({ id: app.id, decision: 'Waitlist' })}
+                                    onClick={() => evaluateMutation.mutate({ id: app.id, decision: 'Verify' })}
                                     disabled={evaluateMutation.isPending}
                                 >
                                     Waitlist
                                 </Button>
                                 <Button
                                     variant="primary"
-                                    onClick={() => evaluateMutation.mutate({ id: app.id, decision: 'Accept' })}
+                                    onClick={() => evaluateMutation.mutate({ id: app.id, decision: 'Approve' })}
                                     disabled={evaluateMutation.isPending}
                                 >
                                     Recommend Admission

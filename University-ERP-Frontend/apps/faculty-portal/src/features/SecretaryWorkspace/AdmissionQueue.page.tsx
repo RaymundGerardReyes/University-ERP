@@ -13,7 +13,7 @@ export const AdmissionQueuePage: React.FC = () => {
     });
 
     const forwardMutation = useMutation({
-        mutationFn: (id: string) => facultyAdmissionsApi.approveApplication(id, 'ForwardToChairperson'),
+        mutationFn: (id: string) => facultyAdmissionsApi.approveApplication(id, 'Verify'),
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['secretaryQueue'] })
     });
 
