@@ -17,6 +17,7 @@
     "@university-erp/ui-kit": "*",
     "@university-erp/shell-kit": "*",
     "@university-erp/vite-config": "*",
+    "@university-erp/workflow-sdk": "*",
     "axios": "^1.7.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
