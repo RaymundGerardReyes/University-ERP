@@ -12,7 +12,8 @@
       "@university-erp/domain-viewmodels": ["../../libs/domain-viewmodels/index.ts"],
       "@university-erp/core-logger": ["../../libs/core-logger/index.ts"],
       "@university-erp/shell-kit": ["../../libs/shell-kit/index.ts"],
-      "@university-erp/vite-config": ["../../libs/vite-config/index.ts"]
+      "@university-erp/vite-config": ["../../libs/vite-config/index.ts"],
+      "@university-erp/workflow-sdk": ["../../libs/workflow-sdk/index.ts"]
     }
   },
   "include": ["src"],
