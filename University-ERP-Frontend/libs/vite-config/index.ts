@@ -14,8 +14,8 @@ const terminalLoggerPlugin = () => ({
             const log = JSON.parse(body);
             const color = log.level === 'error' ? '\x1b[31m' // Red
               : log.level === 'warn' ? '\x1b[33m' // Yellow
-              : log.level === 'debug' ? '\x1b[32m' // Green
-              : '\x1b[36m';                        // Cyan (Info)
+                : log.level === 'debug' ? '\x1b[32m' // Green
+                  : '\x1b[36m';                        // Cyan (Info)
             const reset = '\x1b[0m';
             const dataStr = log.data && log.data.length ? JSON.stringify(log.data) : '';
             console.log(`${color}${log.prefix}${reset} ${log.message} ${dataStr}`);
@@ -27,10 +27,12 @@ const terminalLoggerPlugin = () => ({
     });
   }
 });
+
 export interface PortalConfig {
   port: number;
   apiTarget?: string;
   title?: string;
+  test?: any;
 }
 
 export function createPortalConfig(options: PortalConfig): UserConfig {
@@ -51,6 +53,14 @@ export function createPortalConfig(options: PortalConfig): UserConfig {
         '@features': path.resolve(process.cwd(), './src/features'),
         '@state': path.resolve(process.cwd(), './src/state'),
         '@config': path.resolve(process.cwd(), './src/config'),
+        // Explicitly resolve workspaces to bypass Docker symlink issues
+        '@university-erp/ui-kit': path.resolve(process.cwd(), '../../libs/ui-kit/src'),
+        '@university-erp/core-logger': path.resolve(process.cwd(), '../../libs/core-logger'),
+        '@university-erp/api-clients': path.resolve(process.cwd(), '../../libs/api-clients'),
+        '@university-erp/auth-sdk': path.resolve(process.cwd(), '../../libs/auth-sdk'),
+        '@university-erp/domain-viewmodels': path.resolve(process.cwd(), '../../libs/domain-viewmodels'),
+        '@university-erp/shell-kit': path.resolve(process.cwd(), '../../libs/shell-kit'),
+        '@university-erp/workflow-sdk': path.resolve(process.cwd(), '../../libs/workflow-sdk'),
       },
     },
     server: {
@@ -63,5 +73,11 @@ export function createPortalConfig(options: PortalConfig): UserConfig {
         },
       },
     },
-  });
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      passWithNoTests: true,
+      ...options.test
+    }
+  } as UserConfig);
 }
