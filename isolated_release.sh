@@ -29,6 +29,17 @@ bump_minor() {
   fi
 }
 
+bump_major() {
+  local version=$1
+  version=${version#v}
+  if [[ $version =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+    echo "$((BASH_REMATCH[1] + 1)).0.0"
+  else
+    echo "1.0.0"
+  fi
+}
+
+
 process_module() {
   local scope_name="$1"
   local tag_prefix="$2"
@@ -73,9 +84,12 @@ process_module() {
 
       local next_version
       local bump_reason
-      if [[ "$commit_type" == "fix" ]]; then
+      if [[ "$commit_type" == *"!"* || "$commit_type" == "major" || "$commit_type" == "breaking" ]]; then
+        next_version=$(bump_major "$version_num")
+        bump_reason="MAJOR (Breaking change or full UI overhaul)"
+      elif [[ "$commit_type" == "fix" || "$commit_type" == "patch" || "$commit_type" == "refactor" || "$commit_type" == "perf" ]]; then
         next_version=$(bump_patch "$version_num")
-        bump_reason="PATCH (Backward-compatible bug fix)"
+        bump_reason="PATCH (Backward-compatible bug fix or internal refactor)"
       else
         next_version=$(bump_minor "$version_num")
         bump_reason="MINOR (New backward-compatible functionality)"
@@ -98,19 +112,19 @@ Bump reason: ${bump_reason}"
 echo "Starting isolated semantic versioning updates..."
 
 # ================= BACKEND MODULES =================
-process_module "academic" "backend-academic" "feat" "implement offline assessment submission processing and grade package download endpoints" \
+process_module "academic" "backend-academic" "feat" "implement academic modules domain logic and endpoints" \
   "University-ERP-Backend/src/Modules/Academic"
 
 process_module "administration" "backend-administration" "feat" "implement administration finance logic and events" \
   "University-ERP-Backend/src/Modules/Administration"
 
-process_module "platform" "backend-platform" "fix" "resolve student identity role resolution in user authentication handler" \
+process_module "platform" "backend-platform" "fix" "return HTTP 403 Forbidden on invalid credentials in login endpoint" \
   "University-ERP-Backend/src/Modules/Platform"
 
 process_module "student-lifecycle" "backend-studentlifecycle" "feat" "implement admissions workflow and application status" \
   "University-ERP-Backend/src/Modules/StudentLifecycle"
 
-process_module "bootstrap" "backend-bootstrap" "fix" "seed student default user credentials in migrator" \
+process_module "bootstrap" "backend-bootstrap" "fix" "seed student default credentials for offline client authentication" \
   "University-ERP-Backend/src/Bootstrap"
 
 process_module "backend-ops" "ops-backend" "feat" "add db migrations for admissions module" \
@@ -120,59 +134,59 @@ process_module "backend-docs" "docs-backend" "docs" "update backend architectura
   "University-ERP-Backend/structure.md"
 
 # ================= FRONTEND APPS =================
-process_module "admin-portal" "admin-portal" "feat" "implement secretary intake, integration, organization, and workflow management features" \
+process_module "admin-portal" "admin-portal" "feat" "update admin portal features and UI" \
   "University-ERP-Frontend/apps/admin-portal"
 
-process_module "admissions-portal" "admissions-portal" "feat" "implement applicant communication, entrance exam, admission fees, and intake features" \
+process_module "admissions-portal" "admissions-portal" "refactor!" "consolidate UX into 5 operational surfaces and unified Case Workspace" \
   "University-ERP-Frontend/apps/admissions-portal"
 
-process_module "applicant-portal" "applicant-portal" "chore" "update vite and typescript build configuration" \
+process_module "applicant-portal" "applicant-portal" "feat" "overhaul application wizard and submission flows" \
   "University-ERP-Frontend/apps/applicant-portal"
 
-process_module "faculty-portal" "faculty-portal" "feat" "implement chairperson evaluation queue and secretary admission queue pages" \
+process_module "faculty-portal" "faculty-portal" "feat" "implement students dashboard and section roster features" \
   "University-ERP-Frontend/apps/faculty-portal"
 
-process_module "finance-console" "finance-console" "chore" "update vite and typescript build configuration" \
+process_module "finance-console" "finance-console" "feat" "implement tuition assessment and cashier modules" \
   "University-ERP-Frontend/apps/finance-console"
 
-process_module "governance-console" "governance-console" "chore" "update vite and typescript build configuration" \
+process_module "governance-console" "governance-console" "chore" "update vite config for governance console" \
   "University-ERP-Frontend/apps/governance-console"
 
-process_module "identity-portal" "identity-portal" "chore" "update vite and typescript build configuration" \
+process_module "identity-portal" "identity-portal" "feat" "add MFA and email integration features" \
   "University-ERP-Frontend/apps/identity-portal"
 
-process_module "library-portal" "library-portal" "chore" "update vite and typescript build configuration" \
+process_module "library-portal" "library-portal" "chore" "update vite config for library portal" \
   "University-ERP-Frontend/apps/library-portal"
 
-process_module "lms-web" "lms-web" "feat" "implement assignment management page and API integration" \
+process_module "lms-web" "lms-web" "feat" "add course administration and gradebook features" \
   "University-ERP-Frontend/apps/lms-web"
 
-process_module "platform-console" "platform-console" "chore" "update vite and typescript build configuration" \
+process_module "platform-console" "platform-console" "chore" "update vite config for platform console" \
   "University-ERP-Frontend/apps/platform-console"
 
-process_module "lms-offline-client" "lms-offline-client" "feat" "implement offline sync engine, exam integrity service, asset caching, and auth contract fixes" \
+process_module "lms-offline-client" "lms-offline-client" "feat" "implement dynamic SQLite repositories and align auth error handling" \
   "University-ERP-Frontend/clients/lms-offline-avalonia"
 
 # CRITICAL FIX: Fixed path to strictly use University-ERP-Frontend only
-process_module "registrar-portal" "registrar-portal" "feat" "implement enrollment activation workspace" \
+process_module "registrar-portal" "registrar-portal" "feat" "implement curriculum, academic records, and enrollment workspaces" \
   "University-ERP-Frontend/apps/registrar-portal"
 
-process_module "security-portal" "security-portal" "chore" "update vite and typescript build configuration" \
+process_module "security-portal" "security-portal" "feat" "scaffold security portal application" \
   "University-ERP-Frontend/apps/security-portal"
 
-process_module "student-portal" "student-portal" "chore" "update vite and typescript build configuration" \
+process_module "student-portal" "student-portal" "feat" "implement online registration, cross-enrollment, and student financials" \
   "University-ERP-Frontend/apps/student-portal"
 
 # ================= FRONTEND LIBS & CONFIG =================
-process_module "frontend-libs" "frontend-libs" "feat" "implement workflow SDK integrations" \
+process_module "frontend-libs" "frontend-libs" "feat" "update API clients and workflow SDKs" \
   "University-ERP-Frontend/libs"
 
 process_module "frontend-infra" "frontend-infra" "chore" "update frontend workspace dependencies and config" \
-  "University-ERP-Frontend/package.json" "University-ERP-Frontend/package-lock.json" "University-ERP-Frontend/bootstrap.sh" "University-ERP-Frontend/apps/structuring.md" "University-ERP-Frontend/tsconfig.app.base.json"
+  "University-ERP-Frontend/package.json" "University-ERP-Frontend/package-lock.json" "University-ERP-Frontend/bootstrap.sh" "University-ERP-Frontend/apps/structuring.md"
 
 # ================= ROOT INFRASTRUCTURE =================
-process_module "project-docs" "docs-project" "docs" "update root architecture and status documentation" \
-  "CodebaseInfrastructure.md" "structure.md" "logs.md" "newupdate.md"
+process_module "project-docs" "docs-project" "docs" "update root architecture, analysis, and status documentation" \
+  "CodebaseInfrastructure.md" "structure.md" "logs.md" "newupdate.md" "Analysis_Task_Orchestration.md"
 
 # Safely only add the release_all.sh script here (not the apps/ folder anymore!)
 process_module "project-ops" "ops-project" "chore" "update isolated release script with patch versioning support" \
