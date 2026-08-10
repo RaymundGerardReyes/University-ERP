@@ -1,7 +1,25 @@
-import { describe, expect, it } from 'vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { render } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
+import { SchedulePage } from './Schedule.page';
 
-describe('Schedule Feature', () => {
-    it('should render the timetable correctly without inline styles', () => {
-        expect(true).toBe(true);
+// Mock the authentication SDK to prevent context errors
+vi.mock('@university-erp/auth-sdk', () => ({
+    useAuth: () => ({
+        identity: { id: 'faculty-user' },
+        user: { id: 'faculty-user' },
+        isAuthenticated: true
+    })
+}));
+
+describe('SchedulePage', () => {
+    it('renders successfully', () => {
+        const queryClient = new QueryClient();
+        const { container } = render(
+            <QueryClientProvider client={queryClient}>
+                <SchedulePage />
+            </QueryClientProvider>
+        );
+        expect(container).toBeDefined();
     });
 });

@@ -16,6 +16,7 @@ import { SchedulePage } from '../features/Schedule/Schedule.page';
 import { SettingsPage } from '../features/Settings/Settings.page';
 import { StudentsPage } from '../features/Students/Students.page';
 import { TeachingPage } from '../features/Teaching/Teaching.page';
+import { SectionRosterPage } from '../features/Teaching/SectionRoster.page';
 import { AcademicEvaluationPage } from '../features/ChairpersonWorkspace/AcademicEvaluation.page';
 import { AdmissionQueuePage } from '../features/SecretaryWorkspace/AdmissionQueue.page';
 import { DocumentVerificationPage } from '../features/SecretaryWorkspace/DocumentVerification.page';
@@ -35,6 +36,7 @@ export const Routing: React.FC = () => {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/documents" element={<DocumentsPage />} />
           <Route path="/teaching" element={<TeachingPage />} />
+          <Route path="/teaching/roster/:sectionId" element={<SectionRosterPage />} />
           <Route path="/students" element={<StudentsPage />} />
           <Route path="/assessments" element={<AssessmentsPage />} />
           {/* Secretary Workspace */}

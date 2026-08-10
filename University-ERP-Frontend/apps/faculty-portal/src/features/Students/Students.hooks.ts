@@ -1,14 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '@university-erp/auth-sdk';
-import { fetchMyStudents } from './Students.api';
+import { FacultyStudent, facultyStudentsApi } from '@university-erp/api-clients';
+import { studentsApi } from './Students.api';
+import { SectionRosterDto } from './Students.types';
 
-export const useFacultyStudents = () => {
-    const { user } = useAuth();
+export const useFacultyStudents = (facultyId: string) => {
+    return useQuery<FacultyStudent[]>({
+        queryKey: ['facultyStudents', facultyId],
+        queryFn: () => facultyStudentsApi.getMyStudents(facultyId),
+        enabled: !!facultyId
+    });
+};
 
-    return useQuery({
-        queryKey: ['facultyStudents', user?.id],
-        queryFn: () => fetchMyStudents(user!.id),
-        enabled: !!user?.id,
-        staleTime: 1000 * 60 * 10, // Cache roster for 10 minutes
+export const useSectionRoster = (sectionId: string) => {
+    return useQuery<SectionRosterDto>({
+        queryKey: ['sectionRoster', sectionId],
+        queryFn: () => studentsApi.getSectionRoster(sectionId),
+        enabled: !!sectionId
     });
 };
