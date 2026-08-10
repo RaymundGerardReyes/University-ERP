@@ -3,6 +3,7 @@ namespace LmsOffline.Infrastructure.Repositories;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using LmsOffline.Domain.Aggregates;
 using LmsOffline.Application.Interfaces;
@@ -26,5 +27,10 @@ public sealed class OfflineModuleRepository : IOfflineModuleRepository
     public async Task<OfflineModule?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Modules.FirstOrDefaultAsync(m => m.Id == id, cancellationToken);
+    }
+
+    public async Task<List<OfflineModule>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Modules.ToListAsync(cancellationToken);
     }
 }

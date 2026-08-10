@@ -1,6 +1,7 @@
 namespace LmsOffline.Infrastructure.Auth;
 
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using LmsOffline.Application.Interfaces;
 using LmsOffline.Domain.Aggregates; 
 using LmsOffline.Domain.ValueObjects;
+using SharedKernel.Domain.Primitives;
 
 internal class BackendAuthResponse 
 {
@@ -28,6 +30,14 @@ internal class BackendUserDto
     public string Email { get; set; } = string.Empty;
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
+}
+
+internal class BackendErrorResponse
+{
+    [JsonPropertyName("code")]
+    public string Code { get; set; } = string.Empty;
+    [JsonPropertyName("message")]
+    public string Message { get; set; } = string.Empty;
 }
 
 public class ExternalIdentityService : IExternalIdentityService
@@ -52,7 +62,7 @@ public class ExternalIdentityService : IExternalIdentityService
         _logger = logger;
     }
 
-    public async Task<bool> AuthenticateAndSyncAsync(string email, string plaintextPassword, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> AuthenticateAndSyncAsync(string email, string plaintextPassword, CancellationToken cancellationToken = default)
     {
         try 
         {
@@ -90,17 +100,41 @@ public class ExternalIdentityService : IExternalIdentityService
                     }
                     
                     _logger.LogInformation("Live authentication successful. Student profile synced to local encrypted vault.");
-                    return true;
+                    return Result<bool>.Success(true);
                 }
             }
             
             _logger.LogWarning("Backend rejected authentication. Status Code: {StatusCode}", response.StatusCode);
+
+            if (response.StatusCode == HttpStatusCode.Forbidden || response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Result<bool>.Failure(new Error("Auth.InvalidCredentials", "Invalid email or password."));
+            }
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return Result<bool>.Failure(new Error("Auth.NotFound", "No student account was found for the provided identifier."));
+            }
+
+            try
+            {
+                var errPayload = await response.Content.ReadFromJsonAsync<BackendErrorResponse>(cancellationToken: cancellationToken);
+                if (errPayload != null && !string.IsNullOrWhiteSpace(errPayload.Message))
+                {
+                    return Result<bool>.Failure(new Error(string.IsNullOrWhiteSpace(errPayload.Code) ? "Auth.InvalidCredentials" : errPayload.Code, errPayload.Message));
+                }
+            }
+            catch
+            {
+                // Ignore JSON parse errors for non-JSON response bodies
+            }
+
+            return Result<bool>.Failure(new Error("Auth.InvalidCredentials", "Invalid email or password."));
         }
         catch (HttpRequestException ex)
         {
             _logger.LogWarning("Backend is unreachable. {Message}", ex.Message);
+            return Result<bool>.Failure(new Error("Auth.NetworkError", "Unable to reach identity server. Please check network connection."));
         }
-        
-        return false;
     }
 }

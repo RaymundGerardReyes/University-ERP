@@ -9,7 +9,7 @@
         <StackPanel Spacing="{DynamicResource SpacingLargeVal}" Margin="{DynamicResource SpacingLarge}">
             
             <StackPanel Spacing="{DynamicResource SpacingMicroVal}">
-                <TextBlock Text="Calendar &amp; Agenda" FontSize="{DynamicResource FontSizePageTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextBright}"/>
+                <TextBlock Text="Calendar &amp; Agenda" FontSize="{DynamicResource FontSizePageTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}"/>
                 <TextBlock Text="Navigate your workload spatially. Select a date to view its specific modules and activities." Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeBody}"/>
             </StackPanel>
 
@@ -57,12 +57,12 @@
                                             Padding="4">
                                         <!-- Inner Element matching 14px InputRadius -->
                                         <Border CornerRadius="{DynamicResource InputRadius}"
-                                                Background="{Binding BgColor}"
-                                                BorderBrush="{Binding BorderColor}"
+                                                Background="{Binding BgColor, TargetNullValue=Transparent}"
+                                                BorderBrush="{Binding BorderColor, TargetNullValue=Transparent}"
                                                 BorderThickness="1"
                                                 Padding="4">
                                             <StackPanel VerticalAlignment="Center" Spacing="4">
-                                                <TextBlock Text="{Binding DayNumber}" Foreground="{Binding TextColor}" FontWeight="Bold" FontSize="{DynamicResource FontSizeBody}" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="{Binding DayNumber}" Foreground="{Binding TextColor, TargetNullValue={DynamicResource TextPrimary}}" FontWeight="Bold" FontSize="{DynamicResource FontSizeBody}" HorizontalAlignment="Center"/>
                                                 
                                                 <!-- Color Coded Activity Dots -->
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="3">
@@ -112,7 +112,7 @@
                                                         <TextBlock Text="|" Foreground="{DynamicResource BorderSubtle}"/>
                                                         <TextBlock Text="{Binding Type}" Foreground="{DynamicResource TextMuted}" FontSize="{DynamicResource FontSizeCaption}"/>
                                                     </StackPanel>
-                                                    <TextBlock Grid.Column="1" Text="{Binding Status}" Foreground="{Binding StatusColor}" FontWeight="Bold" FontSize="{DynamicResource FontSizeCaption}" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="1" Text="{Binding Status}" Foreground="{Binding StatusColor, TargetNullValue={DynamicResource TextMuted}}" FontWeight="Bold" FontSize="{DynamicResource FontSizeCaption}" VerticalAlignment="Center"/>
                                                 </Grid>
                                                 <TextBlock Text="{Binding Title}" Foreground="{DynamicResource TextPrimary}" FontWeight="SemiBold" FontSize="{DynamicResource FontSizeBody}"/>
                                             </StackPanel>

@@ -7,15 +7,17 @@ public sealed class OfflineAssignment
 {
     public Guid Id { get; private set; }
     public Guid ModuleId { get; private set; }
+    public string CourseCode { get; private set; } = string.Empty;
     public string Title { get; private set; } = string.Empty;
     public string DraftContent { get; private set; } = string.Empty;
     public AvailabilityWindow Window { get; private set; } = null!;
     public SyncStatus SyncState { get; private set; }
 
-    public OfflineAssignment(Guid id, Guid moduleId, string title, AvailabilityWindow window)
+    public OfflineAssignment(Guid id, Guid moduleId, string courseCode, string title, AvailabilityWindow window)
     {
         Id = id;
         ModuleId = moduleId;
+        CourseCode = courseCode;
         Title = title;
         Window = window ?? throw new ArgumentNullException(nameof(window));
         SyncState = SyncStatus.PendingSync;

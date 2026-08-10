@@ -1,7 +1,10 @@
 namespace LmsOffline.Presentation.Features.Grades;
 
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using MediatR;
+using LmsOffline.Application.Features.Grades;
 
 public class GradeItemModel : ObservableObject
 {
@@ -17,8 +20,11 @@ public class GradeItemModel : ObservableObject
     public double Percentage => MaxScore > 0 ? (Score / MaxScore) * 100 : 0;
 }
 
+
+
 public partial class GradesViewModel : ObservableObject
 {
+    private readonly IMediator _mediator;
     public string Title => "My Grades";
 
     [ObservableProperty]
@@ -26,28 +32,29 @@ public partial class GradesViewModel : ObservableObject
 
     public ObservableCollection<GradeItemModel> Grades { get; } = new();
 
-    public GradesViewModel()
+    public GradesViewModel(IMediator mediator)
     {
-        // Mock data to demonstrate the UI before the sync engine populates it dynamically
-        Grades.Add(new GradeItemModel 
-        { 
-            CourseCode = "CS101", 
-            AssessmentTitle = "Midterm Logic Evaluation", 
-            Score = 92.5, 
-            MaxScore = 100,
-            Remarks = "Excellent work. No integrity violations detected.",
-            EvaluatedOn = "2026-08-08"
-        });
-        
-        Grades.Add(new GradeItemModel 
-        { 
-            CourseCode = "CS203", 
-            AssessmentTitle = "Data Structures Tree Traversal", 
-            Score = 0, 
-            MaxScore = 100,
-            Status = "Pending Sync",
-            Remarks = "Awaiting faculty evaluation.",
-            EvaluatedOn = "N/A"
-        });
+        _mediator = mediator;
+    }
+
+    public async Task InitializeAsync(string studentIdNumber)
+    {
+        var result = await _mediator.Send(new GetLocalGradesQuery(studentIdNumber));
+        if (result.IsSuccess && result.Value != null)
+        {
+            Grades.Clear();
+            foreach (var grade in result.Value)
+            {
+                Grades.Add(new GradeItemModel
+                {
+                    CourseCode = grade.CourseCode,
+                    AssessmentTitle = grade.AssessmentTitle,
+                    Score = grade.Score,
+                    MaxScore = grade.MaxScore,
+                    Remarks = grade.Remarks,
+                    EvaluatedOn = grade.EvaluatedOnUtc.ToString("yyyy-MM-dd")
+                });
+            }
+        }
     }
 }

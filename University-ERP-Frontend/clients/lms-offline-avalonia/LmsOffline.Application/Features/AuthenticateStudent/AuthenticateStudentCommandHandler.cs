@@ -62,9 +62,9 @@ public sealed class AuthenticateStudentCommandHandler : IRequestHandler<Authenti
         // 2. ONLINE FALLBACK: Delegate dual-hashing, API call, and caching strictly to Infrastructure
         _logger.LogInformation("Attempting live backend authentication for {Identifier}...", request.Identifier);
         
-        bool isOnlineSuccess = await _externalIdentityService.AuthenticateAndSyncAsync(request.Identifier, request.Password, cancellationToken);
+        var onlineResult = await _externalIdentityService.AuthenticateAndSyncAsync(request.Identifier, request.Password, cancellationToken);
         
-        if (isOnlineSuccess)
+        if (onlineResult.IsSuccess)
         {
             var syncedStudent = await _identityRepository.GetByEmailOrStudentIdAsync(request.Identifier, cancellationToken);
             if (syncedStudent != null)
@@ -96,7 +96,7 @@ public sealed class AuthenticateStudentCommandHandler : IRequestHandler<Authenti
             ));
         }
 
-        _logger.LogWarning("Authentication failed: Student not found for identifier {Identifier}.", request.Identifier);
-        return Result<AuthenticateStudentResult>.Failure(new Error("Auth.NotFound", "No student account was found for the provided identifier."));
+        _logger.LogWarning("Authentication failed for identifier {Identifier}: {Error}", request.Identifier, onlineResult.Error.Description);
+        return Result<AuthenticateStudentResult>.Failure(onlineResult.Error);
     }
 }

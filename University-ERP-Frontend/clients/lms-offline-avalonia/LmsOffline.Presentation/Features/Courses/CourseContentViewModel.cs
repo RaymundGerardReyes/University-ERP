@@ -15,13 +15,13 @@ public partial class CourseContentViewModel : ObservableObject
     public string Title => "Course Material Viewer";
 
     [ObservableProperty]
-    private string _moduleTitle = "CS-201: Module 4 - Advanced Polymorphism & Interfaces";
+    private string _moduleTitle = "Loading module title...";
 
     [ObservableProperty]
-    private string _courseCode = "CS-201";
+    private string _courseCode = "Loading...";
 
     [ObservableProperty]
-    private string _textContent = "Welcome to Module 4. In this section, we study interface implementation and polymorphism in C# .NET 10.\n\nKey Concepts:\n1. Virtual vs Abstract Methods\n2. Interface Contract Implementation\n3. Immutable Value Objects & EF Core Owned Types";
+    private string _textContent = "Loading content...";
 
     [ObservableProperty]
     private bool _isLoading;

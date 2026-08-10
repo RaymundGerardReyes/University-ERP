@@ -2,9 +2,12 @@ namespace LmsOffline.Presentation.Features.LearningTimeline;
 
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using MediatR;
+using LmsOffline.Application.Features.PackageManager;
 
 public class OfflineCourseModuleItem
 {
@@ -20,6 +23,7 @@ public class OfflineCourseModuleItem
 
 public partial class LearningTimelineViewModel : ObservableObject
 {
+    private readonly IMediator _mediator;
     private readonly ILogger<LearningTimelineViewModel>? _logger;
 
     public string Title => "Learning Timeline";
@@ -35,48 +39,33 @@ public partial class LearningTimelineViewModel : ObservableObject
 
     public ObservableCollection<OfflineCourseModuleItem> CourseModules { get; } = new();
 
-    public LearningTimelineViewModel(ILogger<LearningTimelineViewModel>? logger = null)
+    public LearningTimelineViewModel(IMediator mediator, ILogger<LearningTimelineViewModel>? logger = null)
     {
+        _mediator = mediator;
         _logger = logger;
-        LoadDefaultModules();
     }
 
-    private void LoadDefaultModules()
+    public async Task InitializeAsync()
     {
-        CourseModules.Add(new OfflineCourseModuleItem
+        var result = await _mediator.Send(new GetInstalledPackagesQuery());
+        if (result.IsSuccess && result.Value != null)
         {
-            CourseCode = "CS-201",
-            ModuleTitle = "Object-Oriented Programming & Design",
-            Instructor = "Dr. Alan Turing",
-            CompletedLessons = 8,
-            TotalLessons = 10,
-            NextMilestone = "Week 4: Encapsulation & Polymorphism Exam",
-            StatusBadge = "80% Complete"
-        });
-
-        CourseModules.Add(new OfflineCourseModuleItem
-        {
-            CourseCode = "CS-305",
-            ModuleTitle = "Database Systems & SQLCipher Architecture",
-            Instructor = "Prof. Grace Hopper",
-            CompletedLessons = 5,
-            TotalLessons = 12,
-            NextMilestone = "Encrypted SQLite Transactions Workshop",
-            StatusBadge = "41% Complete"
-        });
-
-        CourseModules.Add(new OfflineCourseModuleItem
-        {
-            CourseCode = "CS-410",
-            ModuleTitle = "Distributed Systems & Outbox Sync Patterns",
-            Instructor = "Dr. Leslie Lamport",
-            CompletedLessons = 12,
-            TotalLessons = 12,
-            NextMilestone = "Final Research Submission",
-            StatusBadge = "100% Completed"
-        });
-
-        SelectedModule = CourseModules.FirstOrDefault();
+            CourseModules.Clear();
+            foreach (var package in result.Value)
+            {
+                CourseModules.Add(new OfflineCourseModuleItem
+                {
+                    CourseCode = package.CourseCode,
+                    ModuleTitle = package.Title,
+                    Instructor = package.Instructor,
+                    CompletedLessons = package.CompletedLessons,
+                    TotalLessons = package.TotalLessons,
+                    NextMilestone = "Continue Learning",
+                    StatusBadge = package.TotalLessons > 0 ? $"{(int)((double)package.CompletedLessons / package.TotalLessons * 100)}% Complete" : "0% Complete"
+                });
+            }
+            SelectedModule = CourseModules.FirstOrDefault();
+        }
     }
 
     [RelayCommand]

@@ -63,4 +63,9 @@ public class OfflineAssessmentRepository : IOfflineAssessmentRepository
         return await _dbContext.Set<OfflineAssessment>()
             .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
     }
+
+    public async Task<List<OfflineAssessment>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Set<OfflineAssessment>().ToListAsync(cancellationToken);
+    }
 }

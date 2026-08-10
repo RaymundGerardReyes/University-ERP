@@ -4,11 +4,12 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using LmsOffline.Application.Features.SubmitOfflineAssignment;
+using LmsOffline.Application.Interfaces;
 
 public class StudentActivityTaskItem : ObservableObject
 {
@@ -23,6 +24,7 @@ public class StudentActivityTaskItem : ObservableObject
 public partial class ActivityHubViewModel : ObservableObject
 {
     private readonly ISender _sender;
+    private readonly IOfflineAssignmentRepository _assignmentRepository;
     private readonly ILogger<ActivityHubViewModel>? _logger;
 
     public string Title => "Activity Hub";
@@ -43,51 +45,38 @@ public partial class ActivityHubViewModel : ObservableObject
     public ObservableCollection<StudentActivityTaskItem> InProgressTasks { get; } = new();
     public ObservableCollection<StudentActivityTaskItem> CompletedTasks { get; } = new();
 
-    public ActivityHubViewModel(ISender sender, ILogger<ActivityHubViewModel>? logger = null)
+    public ActivityHubViewModel(ISender sender, IOfflineAssignmentRepository assignmentRepository, ILogger<ActivityHubViewModel>? logger = null)
     {
         _sender = sender;
+        _assignmentRepository = assignmentRepository;
         _logger = logger;
-        LoadDefaultActivities();
     }
 
-    partial void OnReflectionDraftTextChanged(string value)
+    public async Task InitializeAsync()
     {
-        CharacterCount = value?.Length ?? 0;
-    }
+        var assignments = await _assignmentRepository.GetAllAsync();
+        TodoTasks.Clear();
+        InProgressTasks.Clear();
+        CompletedTasks.Clear();
 
-    private void LoadDefaultActivities()
-    {
-        TodoTasks.Add(new StudentActivityTaskItem
+        foreach (var assignment in assignments)
         {
-            ActivityId = "ACT-201-01",
-            CourseCode = "CS-201",
-            Title = "Lab Exercise 4: Virtual Method Invocation",
-            DueDateText = "Due in 2 days",
-            PriorityBadge = "HIGH",
-            Status = "To Do"
-        });
+            var task = new StudentActivityTaskItem
+            {
+                ActivityId = assignment.Id.ToString(),
+                CourseCode = assignment.CourseCode,
+                Title = assignment.Title,
+                DueDateText = "Due " + assignment.Window.EndTimeUtc.ToString("MMM dd"),
+                PriorityBadge = (assignment.Window.EndTimeUtc - DateTime.UtcNow).TotalDays < 2 ? "URGENT" : "NORMAL",
+                Status = assignment.SyncState == LmsOffline.Domain.ValueObjects.SyncStatus.Synced ? "Submitted" : (string.IsNullOrEmpty(assignment.DraftContent) ? "To Do" : "In Progress")
+            };
 
-        InProgressTasks.Add(new StudentActivityTaskItem
-        {
-            ActivityId = "ACT-305-02",
-            CourseCode = "CS-305",
-            Title = "Database Security Analysis Essay",
-            DueDateText = "Tomorrow at 11:59 PM",
-            PriorityBadge = "URGENT",
-            Status = "In Progress"
-        });
+            if (task.Status == "To Do") TodoTasks.Add(task);
+            else if (task.Status == "In Progress") InProgressTasks.Add(task);
+            else CompletedTasks.Add(task);
+        }
 
-        CompletedTasks.Add(new StudentActivityTaskItem
-        {
-            ActivityId = "ACT-410-01",
-            CourseCode = "CS-410",
-            Title = "Outbox Engine Architecture Reflection",
-            DueDateText = "Submitted Today",
-            PriorityBadge = "COMPLETED",
-            Status = "Submitted"
-        });
-
-        SelectedTask = InProgressTasks.FirstOrDefault();
+        SelectedTask = InProgressTasks.FirstOrDefault() ?? TodoTasks.FirstOrDefault();
     }
 
     [RelayCommand]

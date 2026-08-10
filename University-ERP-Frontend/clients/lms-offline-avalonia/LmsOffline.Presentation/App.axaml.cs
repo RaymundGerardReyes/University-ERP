@@ -67,11 +67,9 @@ public partial class App : Avalonia.Application
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<LmsOffline.Infrastructure.Persistence.EncryptedSqliteContext>();
                 
-                // FORCES the old database to be wiped so missing tables are built!
-                dbContext.Database.EnsureDeleted(); 
-                
+                // Ensure local SQLite database and schema exist
                 dbContext.Database.EnsureCreated();
-                logger.LogInformation("Encrypted SQLite Database schema validated and rebuilt successfully.");
+                logger.LogInformation("Encrypted SQLite Database schema validated successfully.");
             }
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -121,6 +119,8 @@ public partial class App : Avalonia.Application
         services.AddScoped<IOfflineAssessmentRepository, OfflineAssessmentRepository>();
         services.AddScoped<IOfflineModuleRepository, OfflineModuleRepository>();
         services.AddScoped<IOfflineAssignmentRepository, OfflineAssignmentRepository>();
+        services.AddScoped<ILocalGradeRepository, GradeRepository>();
+        services.AddScoped<ILocalPackageRepository, LocalPackageRepository>();
         services.AddScoped<IDashboardRepository, DashboardRepository>();
         services.AddSingleton<ILocalStorageDiagnostics, SqliteStorageDiagnostics>();
         services.AddSingleton<OfflineTokenCache>();

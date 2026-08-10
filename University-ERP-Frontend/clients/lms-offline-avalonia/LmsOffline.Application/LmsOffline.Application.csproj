@@ -10,6 +10,7 @@
     <!-- UPDATED: Aligned with SharedKernel to prevent NU1605 downgrade errors -->
     <PackageReference Include="FluentValidation" Version="12.1.1" />
     <PackageReference Include="MediatR" Version="14.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,27 +8,41 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using LmsOffline.Application.Features.SyncPendingSubmissions;
 using LmsOffline.Application.Features.DownloadModulePackage;
+using LmsOffline.Application.Interfaces;
 
 public partial class ModuleTimelineViewModel : ObservableObject
 {
     private readonly ISender _sender;
+    private readonly IOfflineModuleRepository _moduleRepository;
     private readonly ILogger<ModuleTimelineViewModel>? _logger;
 
     public string Title => "Module Progression Timeline";
 
     [ObservableProperty]
-    private string _syncStatusMessage = "Module timeline loaded. All offline windows verified.";
+    private string _syncStatusMessage = "Module timeline loading...";
 
     [ObservableProperty]
-    private string _currentModuleName = "CS-201: Object-Oriented Programming & Design Patterns";
+    private string _currentModuleName = "Loading module...";
 
     [ObservableProperty]
-    private string _availabilityWindowText = "Enforced Window: 2026-08-01 00:00:00 UTC to 2026-08-31 23:59:59 UTC";
+    private string _availabilityWindowText = "Loading window...";
 
-    public ModuleTimelineViewModel(ISender sender, ILogger<ModuleTimelineViewModel>? logger = null)
+    public ModuleTimelineViewModel(ISender sender, IOfflineModuleRepository moduleRepository, ILogger<ModuleTimelineViewModel>? logger = null)
     {
         _sender = sender;
+        _moduleRepository = moduleRepository;
         _logger = logger;
+    }
+
+    public async Task InitializeAsync(Guid moduleId)
+    {
+        var module = await _moduleRepository.GetByIdAsync(moduleId);
+        if (module != null)
+        {
+            CurrentModuleName = $"{module.CourseName}: {module.ModuleTitle}";
+            AvailabilityWindowText = $"Downloaded on: {module.DownloadedAtUtc:yyyy-MM-dd HH:mm UTC}";
+            SyncStatusMessage = "Module timeline loaded. All offline windows verified.";
+        }
     }
 
     [RelayCommand]

@@ -51,15 +51,16 @@ public partial class LogicQuizViewModel : ObservableObject
 {
     private readonly ISender _sender;
     private readonly IExamIntegrityService _integrityService;
+    private readonly IOfflineAssessmentRepository _assessmentRepository;
     private readonly ILogger<LogicQuizViewModel>? _logger;
 
     public string Title => "Interactive Logic Quiz";
 
     [ObservableProperty]
-    private string _quizTitle = "CS-201: Logic & Boolean Algebra Evaluation";
+    private string _quizTitle = "Loading quiz...";
 
     [ObservableProperty]
-    private string _timerText = "29:45 Remaining";
+    private string _timerText = "--:-- Remaining";
 
     [ObservableProperty]
     private QuizQuestionModel? _currentQuestion;
@@ -75,19 +76,34 @@ public partial class LogicQuizViewModel : ObservableObject
 
     public ObservableCollection<QuizQuestionModel> Questions { get; } = new();
 
+    private Guid _assessmentId;
+
     public LogicQuizViewModel(
         ISender sender, 
         IExamIntegrityService integrityService,
+        IOfflineAssessmentRepository assessmentRepository,
         ILogger<LogicQuizViewModel>? logger = null)
     {
         _sender = sender;
         _integrityService = integrityService;
+        _assessmentRepository = assessmentRepository;
         _logger = logger;
         
         LoadQuestions();
 
         // Start active window focus monitoring & clipboard protection
         _integrityService.StartMonitoring();
+    }
+
+    public async Task InitializeAsync(Guid assessmentId)
+    {
+        _assessmentId = assessmentId;
+        var assessment = await _assessmentRepository.GetByIdAsync(assessmentId);
+        if (assessment != null)
+        {
+            QuizTitle = assessment.Title;
+            TimerText = $"{assessment.Window.EndTimeUtc - DateTime.UtcNow:hh\\:mm} Remaining";
+        }
     }
 
     private void LoadQuestions()
@@ -196,7 +212,7 @@ public partial class LogicQuizViewModel : ObservableObject
         }}";
 
         var command = new SubmitOfflineAssessmentCommand(
-            AssessmentId: Guid.NewGuid(),
+            AssessmentId: _assessmentId,
             StudentAnswersJson: finalPayload,
             SubmittedAtUtc: DateTime.UtcNow
         );

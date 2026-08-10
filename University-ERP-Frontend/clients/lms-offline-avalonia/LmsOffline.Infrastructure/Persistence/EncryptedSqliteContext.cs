@@ -14,6 +14,7 @@ public sealed class EncryptedSqliteContext : DbContext
     public DbSet<OfflineAssignment> Assignments { get; set; } = null!;
     public DbSet<CoursePackage> Packages { get; set; } = null!;
     public DbSet<LearningEvent> LearningRecordStore { get; set; } = null!;
+    public DbSet<GradeRecord> Grades { get; set; } = null!;
 
     public EncryptedSqliteContext(string databasePath, string encryptionKey)
     {
@@ -53,5 +54,6 @@ public sealed class EncryptedSqliteContext : DbContext
             entity.OwnsOne(e => e.Window);
             entity.Property(e => e.SyncState).HasConversion<string>();
         });
+        modelBuilder.Entity<GradeRecord>().HasKey(e => e.Id);
     }
 }

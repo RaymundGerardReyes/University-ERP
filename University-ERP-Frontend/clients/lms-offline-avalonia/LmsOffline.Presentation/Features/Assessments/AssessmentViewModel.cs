@@ -8,22 +8,25 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using LmsOffline.Application.Features.StartOfflineAssessment;
 using LmsOffline.Application.Features.SubmitOfflineAssessment;
+using LmsOffline.Application.Interfaces;
 
 public partial class AssessmentViewModel : ObservableObject
 {
     private readonly ISender _sender;
+    private readonly IOfflineAssessmentRepository _assessmentRepository;
     private readonly ILogger<AssessmentViewModel>? _logger;
+    private Guid _assessmentId;
 
     public string Title => "Offline Exam Vault";
 
     [ObservableProperty]
-    private string _examTitle = "CS-201: Midterm Security & Outbox Architecture Exam";
+    private string _examTitle = "Loading assessment...";
 
     [ObservableProperty]
-    private string _statusMessage = "Ready to initialize secure exam window.";
+    private string _statusMessage = "Loading secure exam window...";
 
     [ObservableProperty]
-    private string _timerDisplay = "45:00 Remaining";
+    private string _timerDisplay = "--:-- Remaining";
 
     [ObservableProperty]
     private bool _isExamActive = false;
@@ -31,10 +34,23 @@ public partial class AssessmentViewModel : ObservableObject
     [ObservableProperty]
     private string _answersJson = "[\n  { \"QuestionId\": \"Q1\", \"SelectedOption\": \"B\" },\n  { \"QuestionId\": \"Q2\", \"SelectedOption\": \"A\" }\n]";
 
-    public AssessmentViewModel(ISender sender, ILogger<AssessmentViewModel>? logger = null)
+    public AssessmentViewModel(ISender sender, IOfflineAssessmentRepository assessmentRepository, ILogger<AssessmentViewModel>? logger = null)
     {
         _sender = sender;
+        _assessmentRepository = assessmentRepository;
         _logger = logger;
+    }
+
+    public async Task InitializeAsync(Guid assessmentId)
+    {
+        _assessmentId = assessmentId;
+        var assessment = await _assessmentRepository.GetByIdAsync(assessmentId);
+        if (assessment != null)
+        {
+            ExamTitle = assessment.Title;
+            StatusMessage = "Ready to initialize secure exam window.";
+            TimerDisplay = $"{assessment.Window.EndTimeUtc - DateTime.UtcNow:hh\\:mm} Remaining";
+        }
     }
 
     [RelayCommand]
@@ -44,7 +60,7 @@ public partial class AssessmentViewModel : ObservableObject
         _logger?.LogInformation("Student started offline assessment session.");
         
         var command = new StartOfflineAssessmentCommand(
-            AssessmentId: Guid.NewGuid(),
+            AssessmentId: _assessmentId,
             TokenValue: "secure_offline_token_123",
             TokenIssuedAtUtc: DateTime.UtcNow.AddMinutes(-10),
             CurrentDeviceTimeUtc: DateTime.UtcNow
@@ -72,7 +88,7 @@ public partial class AssessmentViewModel : ObservableObject
         _logger?.LogInformation("Student submitting assessment payload to Outbox.");
 
         var command = new SubmitOfflineAssessmentCommand(
-            AssessmentId: Guid.NewGuid(), 
+            AssessmentId: _assessmentId, 
             StudentAnswersJson: AnswersJson,
             SubmittedAtUtc: DateTime.UtcNow
         );

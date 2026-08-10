@@ -30,13 +30,28 @@ public class DashboardRepository : IDashboardRepository
         string studentId   = student?.StudentIdNumber ?? "2026-8809";
         string program     = student?.AcademicProgram ?? "BS Computer Science";
 
+        // Query real data
+        var packages = await _dbContext.Packages.ToListAsync(cancellationToken);
+        var assessments = await _dbContext.Assessments.ToListAsync(cancellationToken);
+        var assignments = await _dbContext.Assignments.ToListAsync(cancellationToken);
+        var learningEvents = await _dbContext.LearningRecordStore.OrderByDescending(l => l.OccurredOnUtc).Take(10).ToListAsync(cancellationToken);
+        var grades = await _dbContext.Grades.OrderByDescending(g => g.EvaluatedOnUtc).Take(5).ToListAsync(cancellationToken);
+
+        int totalCourses = packages.Count;
+        int dueSoonCount = assessments.Count(a => a.Window.EndTimeUtc > DateTime.UtcNow && (a.Window.EndTimeUtc - DateTime.UtcNow).TotalDays <= 7) +
+                           assignments.Count(a => a.Window.EndTimeUtc > DateTime.UtcNow && (a.Window.EndTimeUtc - DateTime.UtcNow).TotalDays <= 7);
+        int overdueCount = assessments.Count(a => a.Window.EndTimeUtc < DateTime.UtcNow && !a.IsStarted) +
+                           assignments.Count(a => a.Window.EndTimeUtc < DateTime.UtcNow);
+
+        double totalProgress = packages.Count > 0 ? packages.Average(p => p.TotalLessons > 0 ? (double)p.CompletedLessons / p.TotalLessons * 100 : 0) : 0;
+
         // ── KPI Cards ──────────────────────────────────────────────────────────
         var kpiCards = new List<KpiCardDto>
         {
             new KpiCardDto
             {
                 Label      = "Course Progress",
-                Value      = "72%",
+                Value      = $"{totalProgress:F0}%",
                 SubLabel   = "Overall learning",
                 AccentColor = "#6366F1",
                 Icon       = "📈"
@@ -44,7 +59,7 @@ public class DashboardRepository : IDashboardRepository
             new KpiCardDto
             {
                 Label      = "Active Courses",
-                Value      = "6",
+                Value      = totalCourses.ToString(),
                 SubLabel   = "Currently enrolled",
                 AccentColor = "#10B981",
                 Icon       = "📚"
@@ -52,7 +67,7 @@ public class DashboardRepository : IDashboardRepository
             new KpiCardDto
             {
                 Label      = "Due Soon",
-                Value      = "4",
+                Value      = dueSoonCount.ToString(),
                 SubLabel   = "Next 7 days",
                 AccentColor = "#F59E0B",
                 Icon       = "⏳"
@@ -60,7 +75,7 @@ public class DashboardRepository : IDashboardRepository
             new KpiCardDto
             {
                 Label      = "Overdue",
-                Value      = "1",
+                Value      = overdueCount.ToString(),
                 SubLabel   = "Needs attention",
                 AccentColor = "#EF4444",
                 Icon       = "⚠️"
@@ -68,178 +83,90 @@ public class DashboardRepository : IDashboardRepository
         };
 
         // ── Continue Learning ──────────────────────────────────────────────────
-        var continueLearning = new ContinueLearningDto
+        var lastPackage = packages.OrderByDescending(p => p.InstalledOnUtc).FirstOrDefault();
+        var continueLearning = lastPackage != null ? new ContinueLearningDto
         {
-            CourseCode      = "CS-201",
-            CourseName      = "Introduction to Programming",
-            CurrentModule   = "Module 5 · Control Structures",
-            ProgressPercent = 78,
-            ProgressLabel   = "5 of 8 modules completed"
-        };
+            CourseCode      = lastPackage.CourseCode,
+            CourseName      = lastPackage.Title,
+            CurrentModule   = "Continue from last saved state",
+            ProgressPercent = lastPackage.TotalLessons > 0 ? (double)lastPackage.CompletedLessons / lastPackage.TotalLessons * 100 : 0,
+            ProgressLabel   = $"{lastPackage.CompletedLessons} of {lastPackage.TotalLessons} modules completed"
+        } : null;
 
         // ── Immediate Horizon ──────────────────────────────────────────────────
-        var deadlines = new List<DeadlineDto>
+        var deadlines = new List<DeadlineDto>();
+        
+        foreach (var a in assessments.Where(a => !a.IsStarted))
         {
-            new DeadlineDto
+            string bucket = a.Window.EndTimeUtc < DateTime.UtcNow ? "Overdue" : 
+                            (a.Window.EndTimeUtc.Date == DateTime.UtcNow.Date ? "Today" : "Upcoming");
+            
+            string urgencyColor = bucket == "Overdue" ? "#FEE2E2" : (bucket == "Today" ? "#FEF3C7" : "#EFF6FF");
+            string borderColor = bucket == "Overdue" ? "#EF4444" : (bucket == "Today" ? "#F59E0B" : "#3B82F6");
+
+            deadlines.Add(new DeadlineDto
             {
-                CourseCode    = "CS-305",
-                Title         = "Database Security Assignment",
-                RelativeTime  = "Yesterday",
-                UrgencyColor  = "#FEE2E2",
-                BorderColor   = "#EF4444",
-                ActionText    = "Submit Now",
-                Bucket        = "Overdue"
-            },
-            new DeadlineDto
+                CourseCode = "Assessment",
+                Title = a.Title,
+                RelativeTime = a.Window.EndTimeUtc.ToString("MMM dd HH:mm"),
+                UrgencyColor = urgencyColor,
+                BorderColor = borderColor,
+                ActionText = bucket == "Overdue" ? "Late Submit" : "Start Now",
+                Bucket = bucket
+            });
+        }
+
+        foreach (var a in assignments.Where(a => a.SyncState != LmsOffline.Domain.ValueObjects.SyncStatus.Synced))
+        {
+            string bucket = a.Window.EndTimeUtc < DateTime.UtcNow ? "Overdue" : 
+                            (a.Window.EndTimeUtc.Date == DateTime.UtcNow.Date ? "Today" : "Upcoming");
+            
+            string urgencyColor = bucket == "Overdue" ? "#FEE2E2" : (bucket == "Today" ? "#FEF3C7" : "#EFF6FF");
+            string borderColor = bucket == "Overdue" ? "#EF4444" : (bucket == "Today" ? "#F59E0B" : "#3B82F6");
+
+            deadlines.Add(new DeadlineDto
             {
-                CourseCode    = "CS-201",
-                Title         = "Long Quiz",
-                RelativeTime  = "10:00 AM",
-                UrgencyColor  = "#FEF3C7",
-                BorderColor   = "#F59E0B",
-                ActionText    = "Start Quiz",
-                Bucket        = "Today"
-            },
-            new DeadlineDto
-            {
-                CourseCode    = "CS-305",
-                Title         = "Laboratory Activity",
-                RelativeTime  = "2:00 PM",
-                UrgencyColor  = "#FEF3C7",
-                BorderColor   = "#F59E0B",
-                ActionText    = "Open Activity",
-                Bucket        = "Today"
-            },
-            new DeadlineDto
-            {
-                CourseCode    = "CS-410",
-                Title         = "Assignment",
-                RelativeTime  = "Tomorrow",
-                UrgencyColor  = "#EFF6FF",
-                BorderColor   = "#3B82F6",
-                ActionText    = "View Details",
-                Bucket        = "Upcoming"
-            },
-            new DeadlineDto
-            {
-                CourseCode    = "CS-201",
-                Title         = "Long Quiz",
-                RelativeTime  = "Aug 11",
-                UrgencyColor  = "#EFF6FF",
-                BorderColor   = "#3B82F6",
-                ActionText    = "View Details",
-                Bucket        = "Upcoming"
-            },
-        };
+                CourseCode = a.CourseCode,
+                Title = a.Title,
+                RelativeTime = a.Window.EndTimeUtc.ToString("MMM dd HH:mm"),
+                UrgencyColor = urgencyColor,
+                BorderColor = borderColor,
+                ActionText = "View Assignment",
+                Bucket = bucket
+            });
+        }
 
         // ── Course Progress ────────────────────────────────────────────────────
-        var courseProgresses = new List<CourseProgressDto>
+        var courseProgresses = packages.Select(p => new CourseProgressDto
         {
-            new CourseProgressDto
-            {
-                CourseCode      = "CS-201",
-                CourseName      = "Introduction to Programming",
-                ProgressPercent = 78,
-                ModuleLabel     = "5 of 8 modules completed"
-            },
-            new CourseProgressDto
-            {
-                CourseCode      = "CS-305",
-                CourseName      = "Database Systems",
-                ProgressPercent = 62,
-                ModuleLabel     = "4 of 7 modules completed"
-            },
-            new CourseProgressDto
-            {
-                CourseCode      = "CS-410",
-                CourseName      = "Operating Systems",
-                ProgressPercent = 91,
-                ModuleLabel     = "7 of 8 modules completed"
-            },
-            new CourseProgressDto
-            {
-                CourseCode      = "CS-203",
-                CourseName      = "Data Structures & Algorithms",
-                ProgressPercent = 40,
-                ModuleLabel     = "3 of 6 modules completed"
-            },
-        };
+            CourseCode = p.CourseCode,
+            CourseName = p.Title,
+            ProgressPercent = p.TotalLessons > 0 ? (double)p.CompletedLessons / p.TotalLessons * 100 : 0,
+            ModuleLabel = $"{p.CompletedLessons} of {p.TotalLessons} modules completed"
+        }).ToList();
 
         // ── Recent Activity ────────────────────────────────────────────────────
-        var recentActivities = new List<RecentActivityDto>
+        var recentActivities = learningEvents.Select(l => new RecentActivityDto
         {
-            new RecentActivityDto
-            {
-                Icon          = "✓",
-                ActionLabel   = "Submitted",
-                CourseCode    = "CS-305",
-                Title         = "Database Assignment",
-                RelativeTime  = "8:15 AM",
-                DateGroup     = "Today"
-            },
-            new RecentActivityDto
-            {
-                Icon          = "✓",
-                ActionLabel   = "Completed",
-                CourseCode    = "CS-201",
-                Title         = "Practice Activity",
-                RelativeTime  = "9:42 AM",
-                DateGroup     = "Today"
-            },
-            new RecentActivityDto
-            {
-                Icon          = "✓",
-                ActionLabel   = "Completed",
-                CourseCode    = "CS-410",
-                Title         = "Module 7",
-                RelativeTime  = "4:32 PM",
-                DateGroup     = "Yesterday"
-            },
-            new RecentActivityDto
-            {
-                Icon          = "📖",
-                ActionLabel   = "Opened",
-                CourseCode    = "CS-203",
-                Title         = "Sorting Algorithms Lecture",
-                RelativeTime  = "2:10 PM",
-                DateGroup     = "Yesterday"
-            },
-        };
+            Icon = "✓",
+            ActionLabel = l.ActionVerb,
+            CourseCode = "",
+            Title = l.TargetObject,
+            RelativeTime = l.OccurredOnUtc.ToString("HH:mm"),
+            DateGroup = l.OccurredOnUtc.Date == DateTime.UtcNow.Date ? "Today" : "Previous"
+        }).ToList();
 
         // ── Feedback ───────────────────────────────────────────────────────────
-        var feedbacks = new List<FeedbackDto>
+        var feedbacks = grades.Select(g => new FeedbackDto
         {
-            new FeedbackDto
-            {
-                CourseCode      = "CS-305",
-                Title           = "Midterm Examination Scored",
-                RelativeTime    = "2 hours ago",
-                BadgeText       = "95/100",
-                BadgeColor      = "#10B981",
-                BadgeForeground = "#FFFFFF",
-                Icon            = "✅"
-            },
-            new FeedbackDto
-            {
-                CourseCode      = "CS-101",
-                Title           = "New Group Activity Posted",
-                RelativeTime    = "Yesterday",
-                BadgeText       = "NEW",
-                BadgeColor      = "#3B82F6",
-                BadgeForeground = "#FFFFFF",
-                Icon            = "🆕"
-            },
-            new FeedbackDto
-            {
-                CourseCode      = "GE-101",
-                Title           = "Assignment 1 Reviewed by Professor",
-                RelativeTime    = "2 days ago",
-                BadgeText       = "REVIEWED",
-                BadgeColor      = "#6B7280",
-                BadgeForeground = "#FFFFFF",
-                Icon            = "📝"
-            }
-        };
+            CourseCode = g.CourseCode,
+            Title = g.AssessmentTitle,
+            RelativeTime = g.EvaluatedOnUtc.ToString("MMM dd"),
+            BadgeText = $"{g.Score}/{g.MaxScore}",
+            BadgeColor = g.Score >= (g.MaxScore * 0.6) ? "#10B981" : "#EF4444",
+            BadgeForeground = "#FFFFFF",
+            Icon = "📝"
+        }).ToList();
 
         return new StudentDashboardStatsDto
         {
@@ -248,7 +175,7 @@ public class DashboardRepository : IDashboardRepository
             AcademicProgram      = program,
             WelcomeSubtitle      = "Here's what needs your attention today.",
             TodayDateString      = DateTime.Now.ToString("dddd, MMMM d"),
-            TopUrgentActionMessage = "1 assignment overdue · 2 activities due today",
+            TopUrgentActionMessage = $"{overdueCount} overdue · {dueSoonCount} due soon",
 
             KpiCards             = kpiCards,
             ContinueLearning     = continueLearning,
@@ -259,7 +186,7 @@ public class DashboardRepository : IDashboardRepository
 
             AcademicYear         = "2026–2027",
             Semester             = "First Semester",
-            ActiveCourseCount    = 6,
+            ActiveCourseCount    = totalCourses,
         };
     }
 }

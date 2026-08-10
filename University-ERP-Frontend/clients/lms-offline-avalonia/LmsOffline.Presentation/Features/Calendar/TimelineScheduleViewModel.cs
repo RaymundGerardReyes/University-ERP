@@ -1,11 +1,15 @@
 namespace LmsOffline.Presentation.Features.Calendar;
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using LmsOffline.Application.Interfaces;
+using LmsOffline.Domain.Aggregates;
+using System.Threading.Tasks;
 
 public class AgendaItemModel : ObservableObject
 {
@@ -14,7 +18,7 @@ public class AgendaItemModel : ObservableObject
     public string Title { get; set; } = string.Empty;
     public string Type { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
-    public string StatusColor { get; set; } = "#94A3B8"; // Default muted
+    public string? StatusColor { get; set; }
 }
 
 public partial class CalendarDayModel : ObservableObject
@@ -44,14 +48,19 @@ public partial class CalendarDayModel : ObservableObject
     [ObservableProperty] private bool _hasDueToday;
 
     // Dynamic UI Colors based on State
-    public string BgColor => IsSelected ? "#1A6366F1" : (IsToday ? "#1A10B981" : "Transparent");
-    public string BorderColor => IsSelected ? "#6366F1" : (IsToday ? "#10B981" : "Transparent");
-    public string TextColor => HasMissed && !IsSelected ? "#EF4444" : (IsToday && !IsSelected ? "#10B981" : "#F8FAFC");
+    public string? BgColor => IsSelected ? "#1A6366F1" : (IsToday ? "#1A10B981" : null);
+    public string? BorderColor => IsSelected ? "#6366F1" : (IsToday ? "#10B981" : null);
+    public string? TextColor => IsSelected ? "#6366F1" : (HasMissed ? "#EF4444" : (IsToday ? "#10B981" : null));
 }
 
 public partial class TimelineScheduleViewModel : ObservableObject
 {
+    private readonly IOfflineAssessmentRepository _assessmentRepository;
+    private readonly IOfflineAssignmentRepository _assignmentRepository;
     private readonly ILogger<TimelineScheduleViewModel>? _logger;
+
+    private List<OfflineAssessment> _assessments = new();
+    private List<OfflineAssignment> _assignments = new();
 
     public string Title => "Calendar & Schedule";
 
@@ -62,12 +71,20 @@ public partial class TimelineScheduleViewModel : ObservableObject
     public ObservableCollection<CalendarDayModel> CalendarDays { get; } = new();
     public ObservableCollection<AgendaItemModel> SelectedDayAgenda { get; } = new();
 
-    public TimelineScheduleViewModel(ILogger<TimelineScheduleViewModel>? logger = null)
+    public TimelineScheduleViewModel(IOfflineAssessmentRepository assessmentRepository, IOfflineAssignmentRepository assignmentRepository, ILogger<TimelineScheduleViewModel>? logger = null)
     {
+        _assessmentRepository = assessmentRepository;
+        _assignmentRepository = assignmentRepository;
         _logger = logger;
-        GenerateCalendar(new DateTime(2026, 8, 1)); // Boot to August 2026
+    }
+
+    public async Task InitializeAsync()
+    {
+        _assessments = await _assessmentRepository.GetAllAsync();
+        _assignments = await _assignmentRepository.GetAllAsync();
+
+        GenerateCalendar(new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1)); 
         
-        // Auto-select "Today" (August 7)
         var today = CalendarDays.FirstOrDefault(d => d.IsToday);
         if (today != null) SelectDate(today);
     }
@@ -92,13 +109,26 @@ public partial class TimelineScheduleViewModel : ObservableObject
             {
                 Date = date,
                 DayNumber = i.ToString(),
-                IsToday = (date.Year == 2026 && date.Month == 8 && date.Day == 7) // Simulated Today
+                IsToday = (date.Date == DateTime.UtcNow.Date)
             };
 
-            // Inject Mock Event Indicators
-            if (i == 5) dayModel.HasMissed = true;
-            if (i == 7) { dayModel.HasActive = true; dayModel.HasDueToday = true; }
-            if (i == 14) dayModel.HasUpcoming = true;
+            // Inject Event Indicators
+            var dayAssessments = _assessments.Where(a => a.Window.EndTimeUtc.Date == date.Date).ToList();
+            var dayAssignments = _assignments.Where(a => a.Window.EndTimeUtc.Date == date.Date).ToList();
+
+            if (date.Date < DateTime.UtcNow.Date && (dayAssessments.Any(a => !a.IsStarted) || dayAssignments.Any(a => a.SyncState != LmsOffline.Domain.ValueObjects.SyncStatus.Synced)))
+            {
+                dayModel.HasMissed = true;
+            }
+            if (date.Date == DateTime.UtcNow.Date && (dayAssessments.Any() || dayAssignments.Any()))
+            {
+                dayModel.HasActive = true;
+                dayModel.HasDueToday = true;
+            }
+            if (date.Date > DateTime.UtcNow.Date && (dayAssessments.Any() || dayAssignments.Any()))
+            {
+                dayModel.HasUpcoming = true;
+            }
 
             CalendarDays.Add(dayModel);
         }
@@ -135,23 +165,38 @@ public partial class TimelineScheduleViewModel : ObservableObject
     {
         SelectedDayAgenda.Clear();
 
-        if (date.Day == 7) // Today
+        var dayAssessments = _assessments.Where(a => a.Window.EndTimeUtc.Date == date.Date).ToList();
+        var dayAssignments = _assignments.Where(a => a.Window.EndTimeUtc.Date == date.Date).ToList();
+
+        foreach (var a in dayAssessments)
         {
-            SelectedDayAgenda.Add(new AgendaItemModel { TimeText = "08:00 AM", CourseCode = "CS-201", Title = "Long Quiz", Type = "Introduction to Cryptography", Status = "Active Now", StatusColor = "#10B981" });
-            SelectedDayAgenda.Add(new AgendaItemModel { TimeText = "10:30 AM", CourseCode = "CS-201", Title = "Laboratory Exercise", Type = "Introduction to Cryptography", Status = "Upcoming", StatusColor = "#0EA5E9" });
-            SelectedDayAgenda.Add(new AgendaItemModel { TimeText = "11:59 PM", CourseCode = "CS-305", Title = "Assignment Submission", Type = "Database Systems", Status = "Due Today", StatusColor = "#F59E0B" });
+            SelectedDayAgenda.Add(new AgendaItemModel 
+            { 
+                TimeText = a.Window.EndTimeUtc.ToString("hh:mm tt"), 
+                CourseCode = "Assessment", 
+                Title = a.Title, 
+                Type = "Quiz/Exam", 
+                Status = a.IsStarted ? "Started" : (date.Date < DateTime.UtcNow.Date ? "Missed" : "Due"), 
+                StatusColor = a.IsStarted ? "#10B981" : (date.Date < DateTime.UtcNow.Date ? "#EF4444" : "#F59E0B") 
+            });
         }
-        else if (date.Day == 5) // Missed Example
+
+        foreach (var a in dayAssignments)
         {
-            SelectedDayAgenda.Add(new AgendaItemModel { TimeText = "11:59 PM", CourseCode = "CS-305", Title = "Laboratory Exercise", Type = "Database Systems", Status = "Missed", StatusColor = "#EF4444" });
+            SelectedDayAgenda.Add(new AgendaItemModel 
+            { 
+                TimeText = a.Window.EndTimeUtc.ToString("hh:mm tt"), 
+                CourseCode = a.CourseCode, 
+                Title = a.Title, 
+                Type = "Assignment", 
+                Status = a.SyncState == LmsOffline.Domain.ValueObjects.SyncStatus.Synced ? "Submitted" : (date.Date < DateTime.UtcNow.Date ? "Missed" : "Due"), 
+                StatusColor = a.SyncState == LmsOffline.Domain.ValueObjects.SyncStatus.Synced ? "#10B981" : (date.Date < DateTime.UtcNow.Date ? "#EF4444" : "#F59E0B") 
+            });
         }
-        else if (date.Day == 14) // Locked/Future Example
+
+        if (!SelectedDayAgenda.Any())
         {
-            SelectedDayAgenda.Add(new AgendaItemModel { TimeText = "08:00 AM", CourseCode = "CS-305", Title = "Long Quiz", Type = "Database Systems", Status = "Locked", StatusColor = "#64748B" });
-        }
-        else
-        {
-            SelectedDayAgenda.Add(new AgendaItemModel { TimeText = "All Day", CourseCode = "---", Title = "No scheduled activities.", Type = "Rest Day", Status = "Clear", StatusColor = "#94A3B8" });
+            SelectedDayAgenda.Add(new AgendaItemModel { TimeText = "All Day", CourseCode = "---", Title = "No scheduled activities.", Type = "Rest Day", Status = "Clear", StatusColor = null });
         }
     }
 }

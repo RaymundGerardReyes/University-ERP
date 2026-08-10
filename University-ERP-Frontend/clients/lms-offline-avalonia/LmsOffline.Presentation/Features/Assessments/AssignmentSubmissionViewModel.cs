@@ -7,33 +7,48 @@ using CommunityToolkit.Mvvm.Input;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using LmsOffline.Application.Features.SubmitOfflineAssignment;
+using LmsOffline.Application.Interfaces;
 
 public partial class AssignmentSubmissionViewModel : ObservableObject
 {
     private readonly ISender _sender;
+    private readonly IOfflineAssignmentRepository _assignmentRepository;
     private readonly ILogger<AssignmentSubmissionViewModel>? _logger;
 
     public string Title => "Assignment Workspace";
 
     [ObservableProperty]
-    private string _assignmentTitle = "CS-305: Analysis of Encrypted Local Databases in Edge Computing";
+    private string _assignmentTitle = "Loading assignment...";
 
     [ObservableProperty]
-    private string _draftContent = "In this assignment, we analyze how SQLCipher uses AES-256-CBC encryption to secure offline academic records...";
+    private string _draftContent = string.Empty;
 
     [ObservableProperty]
-    private string _statusMessage = "Draft loaded from local encrypted vault.";
+    private string _statusMessage = "Loading draft from local encrypted vault...";
 
     [ObservableProperty]
     private int _characterCount;
 
-    private readonly Guid _currentAssignmentId = Guid.NewGuid();
+    private Guid _currentAssignmentId;
 
-    public AssignmentSubmissionViewModel(ISender sender, ILogger<AssignmentSubmissionViewModel>? logger = null)
+    public AssignmentSubmissionViewModel(ISender sender, IOfflineAssignmentRepository assignmentRepository, ILogger<AssignmentSubmissionViewModel>? logger = null)
     {
         _sender = sender;
+        _assignmentRepository = assignmentRepository;
         _logger = logger;
         UpdateCharacterCount();
+    }
+
+    public async Task InitializeAsync(Guid assignmentId)
+    {
+        _currentAssignmentId = assignmentId;
+        var assignment = await _assignmentRepository.GetByIdAsync(assignmentId);
+        if (assignment != null)
+        {
+            AssignmentTitle = assignment.Title;
+            DraftContent = assignment.DraftContent ?? string.Empty;
+            StatusMessage = "Draft loaded from local encrypted vault.";
+        }
     }
 
     partial void OnDraftContentChanged(string value)

@@ -16,4 +16,5 @@ public interface IOfflineAssessmentRepository
     Task UpdateAsync(OfflineAssessment assessment, CancellationToken cancellationToken = default);
     Task AddAsync(OfflineAssessment assessment, CancellationToken cancellationToken = default);
     Task<OfflineAssessment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<List<OfflineAssessment>> GetAllAsync(CancellationToken cancellationToken = default);
 }

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using MediatR;
+using LmsOffline.Application.Features.PackageManager;
+using LmsOffline.Application.Features.DownloadModulePackage;
 
 public class InstalledCoursePackageItem : ObservableObject
 {
@@ -27,6 +30,7 @@ public class InstalledCoursePackageItem : ObservableObject
 
 public partial class PackageManagerViewModel : ObservableObject
 {
+    private readonly IMediator _mediator;
     private readonly ILogger<PackageManagerViewModel>? _logger;
 
     public string Title => "Package Library";
@@ -51,43 +55,32 @@ public partial class PackageManagerViewModel : ObservableObject
 
     public ObservableCollection<InstalledCoursePackageItem> InstalledPackages { get; } = new();
 
-    public PackageManagerViewModel(ILogger<PackageManagerViewModel>? logger = null)
+    public PackageManagerViewModel(IMediator mediator, ILogger<PackageManagerViewModel>? logger = null)
     {
+        _mediator = mediator;
         _logger = logger;
-        LoadDefaultPackages();
     }
 
-    private void LoadDefaultPackages()
+    public async Task InitializeAsync()
     {
-        InstalledPackages.Add(new InstalledCoursePackageItem
+        var result = await _mediator.Send(new GetInstalledPackagesQuery());
+        if (result.IsSuccess && result.Value != null)
         {
-            PackageId = "PKG-CS201-V142",
-            Title = "CS-201: Object Oriented Programming Core",
-            Version = "v1.4.2",
-            SizeFormatted = "1.2 GB",
-            HashSignature = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-            InstalledDate = "2026-08-01"
-        });
-
-        InstalledPackages.Add(new InstalledCoursePackageItem
-        {
-            PackageId = "PKG-CS305-V201",
-            Title = "CS-305: Database Systems & Encrypted Cache",
-            Version = "v2.0.1",
-            SizeFormatted = "1.8 GB",
-            HashSignature = "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284ddd200126d9069e",
-            InstalledDate = "2026-08-03"
-        });
-
-        InstalledPackages.Add(new InstalledCoursePackageItem
-        {
-            PackageId = "PKG-CS410-V100",
-            Title = "CS-410: Distributed Systems & Outbox Engine",
-            Version = "v1.0.0",
-            SizeFormatted = "1.2 GB",
-            HashSignature = "9b74c9897bac770ffc029102a200c5de4c0905012e5ed2843bc79691d3bc421d",
-            InstalledDate = "2026-08-05"
-        });
+            InstalledPackages.Clear();
+            foreach (var package in result.Value)
+            {
+                InstalledPackages.Add(new InstalledCoursePackageItem
+                {
+                    PackageId = $"PKG-{package.CourseCode}-V1",
+                    Title = package.Title,
+                    Version = package.VersionManifest,
+                    SizeFormatted = $"{(double)package.SizeInBytes / (1024 * 1024):F1} MB",
+                    HashSignature = package.ExpectedSignature,
+                    InstalledDate = package.InstalledOnUtc.ToString("yyyy-MM-dd"),
+                    VerificationStatus = package.IsVerified ? "Verified" : "Pending Verification"
+                });
+            }
+        }
     }
 
     [RelayCommand]
@@ -113,31 +106,29 @@ public partial class PackageManagerViewModel : ObservableObject
 
         _logger?.LogInformation("User requested delta package download scan.");
         
-        await Task.Delay(400);
-        DownloadProgress = 35;
-        DownloadProgressText = "Downloading delta bundle (CS-410 Delta: 45 MB)...";
+        // Use realistic simulated module/student IDs for demonstration
+        var moduleId = Guid.NewGuid();
+        var studentId = Guid.NewGuid(); // Or fetch from auth context
 
-        await Task.Delay(500);
-        DownloadProgress = 75;
-        DownloadProgressText = "Decrypting & verifying ECDSA signature...";
+        DownloadProgress = 50;
+        DownloadProgressText = "Downloading delta bundle...";
 
-        await Task.Delay(400);
-        DownloadProgress = 100;
-        DownloadProgressText = "Installing into SQLCipher database...";
-
-        await Task.Delay(300);
+        var result = await _mediator.Send(new DownloadModulePackageCommand(moduleId, studentId));
         
-        InstalledPackages.Add(new InstalledCoursePackageItem
+        if (result.IsSuccess)
         {
-            PackageId = $"PKG-DELTA-{Guid.NewGuid().ToString()[..4].ToUpper()}",
-            Title = "CS-410: Distributed Delta Sync & Outbox Core",
-            Version = "v2.1.0",
-            SizeFormatted = "45 MB",
-            HashSignature = "3a81c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-            InstalledDate = DateTime.Now.ToString("yyyy-MM-dd")
-        });
+            DownloadProgress = 100;
+            DownloadProgressText = "Installing into SQLCipher database...";
+            await Task.Delay(500); // Simulate UI delay for install feel
 
+            // Refresh package list
+            await InitializeAsync();
+            StatusMessage = "SUCCESS: Faculty delta package installed & verified into local SQLCipher vault.";
+        }
+        else
+        {
+            StatusMessage = $"FAILED: {result.Error.Description}";
+        }
         IsDownloading = false;
-        StatusMessage = "SUCCESS: Faculty delta package installed & verified into local SQLCipher vault.";
     }
 }
