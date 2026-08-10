@@ -1,6 +1,6 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { admissionsApi } from '@university-erp/api-clients';
 import { Badge, Button, Card, PageHeader } from '@university-erp/ui-kit';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { admissionsApi } from '@university-erp/api-clients/student-lifecycle/admissionsApi';
 import React, { useState } from 'react';
 
 export const ApplicationVerificationPage: React.FC = () => {
@@ -40,9 +40,9 @@ export const ApplicationVerificationPage: React.FC = () => {
                 <Card style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '100%', overflowY: 'auto' }}>
                     <div style={{ marginBottom: '1rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Pending Verification</div>
                     {isLoading ? <div>Loading...</div> : applications?.map((app: any, idx: number) => (
-                        <div key={idx} 
-                             onClick={() => setSelectedAppId(app.id)}
-                             style={{ padding: '1rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', background: app.id === selectedApp?.id ? 'var(--bg-hover)' : 'var(--bg-base)', cursor: 'pointer', borderLeft: app.id === selectedApp?.id ? '3px solid var(--brand-primary)' : '1px solid var(--border-color)' }}>
+                        <div key={idx}
+                            onClick={() => setSelectedAppId(app.id)}
+                            style={{ padding: '1rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', background: app.id === selectedApp?.id ? 'var(--bg-hover)' : 'var(--bg-base)', cursor: 'pointer', borderLeft: app.id === selectedApp?.id ? '3px solid var(--brand-primary)' : '1px solid var(--border-color)' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
                                 <span style={{ fontWeight: 600 }}>{app.name}</span>
                                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{new Date(app.submittedAt || Date.now()).toLocaleDateString()}</span>

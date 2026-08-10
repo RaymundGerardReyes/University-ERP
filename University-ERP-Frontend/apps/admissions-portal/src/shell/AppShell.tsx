@@ -21,15 +21,10 @@ export const AppShell = () => {
   const closeMobileMenu = () => setIsMobileOpen(false);
 
   const navItems = [
-    { label: 'Dashboard', path: '/dashboard' },
-    { label: 'Application Intake', path: '/intake' },
-    { label: 'Application Review', path: '/review' },
-    { label: 'Application Verification', path: '/verification' },
-    { label: 'Entrance Examination', path: '/examination' },
-    { label: 'Admission Fees', path: '/fees' },
-    { label: 'Application Queue', path: '/queue' },
-    { label: 'Applicant Communication', path: '/communication' },
-    { label: 'Admissions Reports', path: '/reports' }
+    { label: 'Dashboard', path: '/dashboard', icon: '⊞' },
+    { label: 'Applications', path: '/applications', icon: '📋' },
+    { label: 'Communications', path: '/communications', icon: '✉️' },
+    { label: 'Reports', path: '/reports', icon: '📊' },
   ];
 
   return (
@@ -61,7 +56,7 @@ export const AppShell = () => {
 
         <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
           {navItems.map(item => {
-            const isActive = location.pathname.startsWith(item.path);
+            const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
             return (
               <Link
                 key={item.path}
@@ -69,6 +64,7 @@ export const AppShell = () => {
                 onClick={closeMobileMenu}
                 className={`nav-item ${isActive ? 'active' : ''}`}
               >
+                <span style={{ fontSize: '1rem', lineHeight: 1 }}>{(item as any).icon}</span>
                 {item.label}
               </Link>
             );

@@ -1,6 +1,6 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { admissionsApi } from '@university-erp/api-clients';
 import { Badge, Button, Card, PageHeader } from '@university-erp/ui-kit';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { admissionsApi } from '@university-erp/api-clients/student-lifecycle/admissionsApi';
 import React, { useState } from 'react';
 
 export const ApplicationReviewPage: React.FC = () => {
@@ -37,8 +37,8 @@ export const ApplicationReviewPage: React.FC = () => {
                     <Card>
                         {isLoading ? <div>Loading...</div> : (
                             <>
-                                <select 
-                                    onChange={e => setSelectedAppId(e.target.value)} 
+                                <select
+                                    onChange={e => setSelectedAppId(e.target.value)}
                                     value={selectedAppId || selectedApp?.id || ''}
                                     style={{ width: '100%', padding: '0.5rem', marginBottom: '1rem' }}
                                 >
@@ -103,7 +103,7 @@ export const ApplicationReviewPage: React.FC = () => {
                     <Card style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                         <div className="card-accent-top" style={{ background: 'var(--brand-secondary)' }} />
                         <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-6)', color: 'var(--brand-secondary)' }}>Scoring Rubric</h2>
-                        
+
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
                             <div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
@@ -112,7 +112,7 @@ export const ApplicationReviewPage: React.FC = () => {
                                 </div>
                                 <input type="range" min="0" max="10" defaultValue="8" style={{ width: '100%' }} />
                             </div>
-                            
+
                             <div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
                                     <label style={{ fontWeight: 600, fontSize: '0.9rem' }}>Extracurricular Impact (0-10)</label>
@@ -131,8 +131,8 @@ export const ApplicationReviewPage: React.FC = () => {
 
                             <div style={{ marginTop: 'var(--space-4)' }}>
                                 <label style={{ fontWeight: 600, fontSize: '0.9rem', display: 'block', marginBottom: '0.5rem' }}>Reviewer Notes</label>
-                                <textarea 
-                                    rows={5} 
+                                <textarea
+                                    rows={5}
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
                                     placeholder="Enter your assessment notes here..."

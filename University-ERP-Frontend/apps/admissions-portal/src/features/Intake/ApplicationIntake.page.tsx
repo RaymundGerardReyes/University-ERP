@@ -1,6 +1,6 @@
 import { Badge, Button, Card, PageHeader } from '@university-erp/ui-kit';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { admissionsApi } from '@university-erp/api-clients/student-lifecycle/admissionsApi';
+import { admissionsApi } from '@university-erp/api-clients';
 import React, { useState } from 'react';
 
 export const ApplicationIntakePage: React.FC = () => {

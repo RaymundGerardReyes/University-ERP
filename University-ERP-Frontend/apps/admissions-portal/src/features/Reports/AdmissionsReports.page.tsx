@@ -1,6 +1,6 @@
-import { Badge, Card, PageHeader, Button } from '@university-erp/ui-kit';
 import { useQuery } from '@tanstack/react-query';
-import { analyticsApi } from '@university-erp/api-clients/academic/analyticsApi';
+import { analyticsApi } from '@university-erp/api-clients';
+import { Button, Card, PageHeader } from '@university-erp/ui-kit';
 import React from 'react';
 
 export const AdmissionsReportsPage: React.FC = () => {

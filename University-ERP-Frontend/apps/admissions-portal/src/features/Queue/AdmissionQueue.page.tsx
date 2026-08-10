@@ -1,6 +1,6 @@
 import { Badge, Card, PageHeader } from '@university-erp/ui-kit';
 import { useQuery } from '@tanstack/react-query';
-import { admissionsApi } from '@university-erp/api-clients/student-lifecycle/admissionsApi';
+import { admissionsApi } from '@university-erp/api-clients';
 import React, { useMemo } from 'react';
 
 export const AdmissionQueuePage: React.FC = () => {
