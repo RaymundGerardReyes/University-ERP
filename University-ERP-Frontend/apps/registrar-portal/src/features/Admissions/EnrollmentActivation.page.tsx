@@ -63,7 +63,7 @@ export const EnrollmentActivationPage: React.FC = () => {
                         Enrollment Activation
                     </h1>
                     <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
-                        Review Dean-endorsed applicants and generate official university records.
+                        Review applicants who have received <strong>FINANCIAL_CLEARANCE</strong> from the Finance Console and generate official university records.
                     </p>
                 </div>
             </div>

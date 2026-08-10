@@ -1,51 +1,50 @@
+import { Badge, Button, Card, PageHeader, Table } from '@university-erp/ui-kit';
 import React from 'react';
-import { Card, Table, Badge, Button } from '@university-erp/ui-kit';
-import { useOfficialGrades, useLockGrades } from './Records.hooks';
+import { useOfficialGrades } from './Records.hooks';
 import { OfficialGradeItem } from './Records.types';
 
 export const OfficialGradesPage: React.FC = () => {
     const { data: grades = [], isLoading } = useOfficialGrades();
-    const lockMutation = useLockGrades();
+
+    if (isLoading) return <div className="skeleton" style={{ height: '400px' }} />;
 
     return (
-        <div className="fade-in" style={{ padding: '1rem' }}>
-            <h1 style={{ fontSize: '2rem', fontWeight: 700, margin: '0 0 0.5rem 0', color: 'var(--text-primary)' }}>Official Academic Grades</h1>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Review submitted faculty grading sheets and process grade corrections.</p>
-            
-            <Card style={{ background: 'var(--surface-overlay)', backdropFilter: 'blur(10px)', border: '1px solid var(--border-light)' }}>
-                {isLoading ? <div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div> : (
-                    <Table>
-                        <thead>
-                            <tr>
-                                <th>Section Code</th>
-                                <th>Subject</th>
-                                <th>Faculty</th>
-                                <th>Submission Status</th>
-                                <th>Action</th>
+        <div className="fade-in">
+            <PageHeader title="Official Grades" subtitle="Review and lock submitted grades from faculty." />
+
+            <Card>
+                <Table>
+                    <thead>
+                        <tr>
+                            <th>Section</th>
+                            <th>Subject</th>
+                            <th>Faculty</th>
+                            <th>Credits</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {grades.map((grade: OfficialGradeItem) => (
+                            <tr key={grade.id}>
+                                <td>{grade.section}</td>
+                                <td>{grade.subject}</td>
+                                <td>{grade.faculty}</td>
+                                <td>{grade.credits}</td>
+                                <td>
+                                    <Badge colorScheme={grade.status === 'Submitted' ? 'warning' : 'success'}>
+                                        {grade.status}
+                                    </Badge>
+                                </td>
+                                <td>
+                                    <Button variant="outline" size="small" disabled={grade.status !== 'Submitted'}>
+                                        Lock Grades
+                                    </Button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {grades.map((grade: OfficialGradeItem) => (
-                                <tr key={grade.section}>
-                                    <td style={{ fontFamily: 'monospace' }}>{grade.section}</td>
-                                    <td>{grade.subject}</td>
-                                    <td>{grade.faculty}</td>
-                                    <td><Badge variant="success">{grade.status}</Badge></td>
-                                    <td>
-                                        <Button 
-                                            variant="secondary" 
-                                            size="small" 
-                                            onClick={() => lockMutation.mutate(grade.section)}
-                                            disabled={lockMutation.isPending}
-                                        >
-                                            Lock Grades
-                                        </Button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                )}
+                        ))}
+                    </tbody>
+                </Table>
             </Card>
         </div>
     );

@@ -1,51 +1,58 @@
+import { Badge, Button, Card, PageHeader, Table } from '@university-erp/ui-kit';
 import React from 'react';
-import { Card, Table, Badge, Button } from '@university-erp/ui-kit';
 import { useEnrollmentValidationQueue, useValidateEnrollment } from './Enrollment.hooks';
 import { EnrollmentValidationItem } from './Enrollment.types';
 
 export const EnrollmentValidationPage: React.FC = () => {
-    const { data: queue = [], isLoading } = useEnrollmentValidationQueue();
+    const { data: validations = [], isLoading } = useEnrollmentValidationQueue();
     const validateMutation = useValidateEnrollment();
 
+    if (isLoading) return <div className="skeleton" style={{ height: '400px' }} />;
+
+    const handleValidate = (id: string) => {
+        validateMutation.mutate(id);
+    };
+
     return (
-        <div className="fade-in" style={{ padding: '1rem' }}>
-            <h1 style={{ fontSize: '2rem', fontWeight: 700, margin: '0 0 0.5rem 0', color: 'var(--text-primary)' }}>Enrollment Validation</h1>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Validate loaded subjects before official ledger assessment.</p>
-            
-            <Card style={{ background: 'var(--surface-overlay)', backdropFilter: 'blur(10px)', border: '1px solid var(--border-light)' }}>
-                {isLoading ? <div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div> : (
-                    <Table>
-                        <thead>
-                            <tr>
-                                <th>Student ID</th>
-                                <th>Student Name</th>
-                                <th>Total Units</th>
-                                <th>Status</th>
-                                <th>Action</th>
+        <div className="fade-in">
+            <PageHeader title="Enrollment Validation" subtitle="Review and validate student subject loads." />
+
+            <Card>
+                <Table>
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Student Name</th>
+                            <th>Total Units</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {validations.map((item: EnrollmentValidationItem) => (
+                            <tr key={item.id}>
+                                <td style={{ fontFamily: 'monospace' }}>{item.id}</td>
+                                <td>{item.studentName}</td>
+                                <td>{item.units}</td>
+                                <td>
+                                    <Badge colorScheme={item.status === 'Validated' ? 'success' : 'warning'}>
+                                        {item.status}
+                                    </Badge>
+                                </td>
+                                <td>
+                                    <Button
+                                        variant="outline"
+                                        size="small"
+                                        onClick={() => handleValidate(item.id)}
+                                        disabled={item.status === 'Validated' || validateMutation.isPending}
+                                    >
+                                        {validateMutation.isPending ? 'Validating...' : 'Validate'}
+                                    </Button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {queue.map((stu: EnrollmentValidationItem) => (
-                                <tr key={stu.id}>
-                                    <td style={{ fontFamily: 'monospace' }}>{stu.id}</td>
-                                    <td>{stu.studentName}</td>
-                                    <td>{stu.units} Units</td>
-                                    <td><Badge variant="info">{stu.status}</Badge></td>
-                                    <td>
-                                        <Button 
-                                            variant="primary" 
-                                            size="small" 
-                                            onClick={() => validateMutation.mutate(stu.id)}
-                                            disabled={validateMutation.isPending}
-                                        >
-                                            Validate
-                                        </Button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                )}
+                        ))}
+                    </tbody>
+                </Table>
             </Card>
         </div>
     );
