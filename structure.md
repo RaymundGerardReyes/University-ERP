@@ -1,4 +1,5 @@
 .
+|-- Analysis_Task_Orchestration.md
 |-- CodebaseInfrastructure.md
 |-- ERPstructure.md
 |-- README.md
@@ -85,6 +86,10 @@
 |   |   |       |-- academic-cluster-dashboard.json
 |   |   |       |-- finance-cluster-dashboard.json
 |   |   |       `-- governance-cluster-dashboard.json
+|   |   |-- ops
+|   |   |   `-- db-migrations
+|   |   |       `-- Admissions
+|   |   |           `-- 20260806014149_AddAdmissionsApprovalFields.cs
 |   |   `-- pipelines
 |   |       |-- Audit_Dependencies.ps1
 |   |       |-- app-build
@@ -228,6 +233,9 @@
 |   |   |   |   |   |   |-- Features
 |   |   |   |   |   |   |   |-- CreateQuestion
 |   |   |   |   |   |   |   |   `-- CreateQuestionCommand.cs
+|   |   |   |   |   |   |   |-- GetExamSessions
+|   |   |   |   |   |   |   |   |-- GetExamSessionsQuery.cs
+|   |   |   |   |   |   |   |   `-- GetExamSessionsQueryHandler.cs
 |   |   |   |   |   |   |   |-- GetGradebook
 |   |   |   |   |   |   |   |   `-- GetGradebookQuery.cs
 |   |   |   |   |   |   |   |-- LogProctoringIncident
@@ -259,7 +267,8 @@
 |   |   |   |   |       |   |-- CreateQuestionEndpoint.cs
 |   |   |   |   |       |   |-- GradebookEndpoint.cs
 |   |   |   |   |       |   |-- LogProctoringIncidentEndpoint.cs
-|   |   |   |   |       |   `-- PublishExamResultEndpoint.cs
+|   |   |   |   |       |   |-- PublishExamResultEndpoint.cs
+|   |   |   |   |       |   `-- SessionsEndpoint.cs
 |   |   |   |   |       `-- Examination.Presentation.csproj
 |   |   |   |   |-- LearningManagement
 |   |   |   |   |   |-- LearningManagement.Application
@@ -275,7 +284,10 @@
 |   |   |   |   |   |   |   |   `-- GetClassPerformanceQuery.cs
 |   |   |   |   |   |   |   |-- Assessments
 |   |   |   |   |   |   |   |   `-- GetAssessmentsQuery.cs
+|   |   |   |   |   |   |   |-- GetOfflineGradesPackage
+|   |   |   |   |   |   |   |   `-- GetOfflineGradesPackageQuery.cs
 |   |   |   |   |   |   |   |-- GetOfflineModulePackage
+|   |   |   |   |   |   |   |   |-- GetOfflineDeltaPackageQuery.cs
 |   |   |   |   |   |   |   |   `-- GetOfflineModulePackageQuery.cs
 |   |   |   |   |   |   |   |-- ProcessOfflineAssessmentSubmission
 |   |   |   |   |   |   |   |   |-- ProcessOfflineAssessmentSubmissionCommand.cs
@@ -295,7 +307,8 @@
 |   |   |   |   |   |-- LearningManagement.Domain
 |   |   |   |   |   |   |-- Aggregates
 |   |   |   |   |   |   |   |-- Assessment.cs
-|   |   |   |   |   |   |   `-- ClassPerformance.cs
+|   |   |   |   |   |   |   |-- ClassPerformance.cs
+|   |   |   |   |   |   |   `-- StudentGradeRecord.cs
 |   |   |   |   |   |   `-- LearningManagement.Domain.csproj
 |   |   |   |   |   |-- LearningManagement.Infrastructure
 |   |   |   |   |   |   |-- LearningManagement.Infrastructure.csproj
@@ -311,6 +324,7 @@
 |   |   |   |   |       |-- Endpoints
 |   |   |   |   |       |   |-- AnalyticsEndpoint.cs
 |   |   |   |   |       |   |-- AssessmentsEndpoint.cs
+|   |   |   |   |       |   |-- DownloadGradesPackageEndpoint.cs
 |   |   |   |   |       |   |-- DownloadModulePackageEndpoint.cs
 |   |   |   |   |       |   |-- SyncOfflineAssessmentsEndpoint.cs
 |   |   |   |   |       |   `-- SyncOfflineAssignmentsEndpoint.cs
@@ -456,8 +470,19 @@
 |   |   |   |   |   |   |   `-- Handlers
 |   |   |   |   |   |   |       `-- StudentEnrolledEventHandler.cs
 |   |   |   |   |   |   |-- Features
-|   |   |   |   |   |   |   `-- IssueInvoice
-|   |   |   |   |   |   |       `-- IssueInvoiceCommand.cs
+|   |   |   |   |   |   |   |-- ApplyScholarship
+|   |   |   |   |   |   |   |   `-- ApplyScholarshipCommand.cs
+|   |   |   |   |   |   |   |-- AssessTuition
+|   |   |   |   |   |   |   |   `-- AssessTuitionCommand.cs
+|   |   |   |   |   |   |   |-- ClearBalance
+|   |   |   |   |   |   |   |   `-- ClearBalanceCommand.cs
+|   |   |   |   |   |   |   |-- GetInvoices
+|   |   |   |   |   |   |   |   |-- GetInvoicesQuery.cs
+|   |   |   |   |   |   |   |   `-- GetInvoicesQueryHandler.cs
+|   |   |   |   |   |   |   |-- IssueInvoice
+|   |   |   |   |   |   |   |   `-- IssueInvoiceCommand.cs
+|   |   |   |   |   |   |   `-- ProcessPayment
+|   |   |   |   |   |   |       `-- ProcessPaymentCommand.cs
 |   |   |   |   |   |   |-- Finance.Application.csproj
 |   |   |   |   |   |   `-- ModuleRegistration.cs
 |   |   |   |   |   |-- Finance.Contracts
@@ -475,6 +500,7 @@
 |   |   |   |   |   |       `-- StudentBillingRepository.cs
 |   |   |   |   |   `-- Finance.Presentation
 |   |   |   |   |       |-- Endpoints
+|   |   |   |   |       |   |-- InvoicesEndpoint.cs
 |   |   |   |   |       |   `-- IssueInvoiceEndpoint.cs
 |   |   |   |   |       `-- Finance.Presentation.csproj
 |   |   |   |   |-- HumanResources
@@ -971,6 +997,8 @@
 |   |   |       |   |   |   |   `-- CompleteInterviewCommand.cs
 |   |   |       |   |   |   |-- EndorseApplication
 |   |   |       |   |   |   |   `-- EndorseApplicationCommand.cs
+|   |   |       |   |   |   |-- EvaluateApplication
+|   |   |       |   |   |   |   `-- EvaluateApplicationCommand.cs
 |   |   |       |   |   |   |-- GetApplicantJourney
 |   |   |       |   |   |   |   `-- GetApplicantJourneyQuery.cs
 |   |   |       |   |   |   |-- GetApplicationStatus
@@ -1004,13 +1032,15 @@
 |   |   |       |   |   |-- Admissions.Infrastructure.csproj
 |   |   |       |   |   |-- AdmissionsModuleRegistration.cs
 |   |   |       |   |   |-- Persistence
-|   |   |       |   |   |   `-- AdmissionsDbContext.cs
+|   |   |       |   |   |   |-- AdmissionsDbContext.cs
+|   |   |       |   |   |   `-- AdmissionsDbContextDesignTimeFactory.cs  C#
 |   |   |       |   |   `-- Repositories
 |   |   |       |   |       |-- AdmissionApplicationRepository.cs
 |   |   |       |   |       `-- ProgramOfferingRepository.cs
 |   |   |       |   `-- Admissions.Presentation
 |   |   |       |       |-- Admissions.Presentation.csproj
 |   |   |       |       `-- Endpoints
+|   |   |       |           |-- AdmissionsWorkflowEndpoint.cs
 |   |   |       |           |-- ApplicationsEndpoint.cs
 |   |   |       |           |-- EligibilityEndpoint.cs
 |   |   |       |           |-- FacultyAdmissionsEndpoint.cs
@@ -1132,6 +1162,7 @@
 |   |           |-- Metrics
 |   |           |-- SharedKernel.Observability.csproj
 |   |           `-- Tracing
+|   |-- structure.md
 |   `-- tests
 |       |-- ArchitectureTests
 |       |   |-- ContractOnlyDependencyTests.cs
@@ -1165,7 +1196,8 @@
 |   |   |-- admin-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-BSAvnoD4.js
+|   |   |   |   |   |-- index-CmnkJuXB.css
+|   |   |   |   |   `-- index-D1EEkjr3.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1309,21 +1341,77 @@
 |   |   |   |-- tsconfig.node.json
 |   |   |   `-- vite.config.ts
 |   |   |-- admissions-portal
+|   |   |   |-- dist
+|   |   |   |   |-- assets
+|   |   |   |   |   |-- index-CmnkJuXB.css
+|   |   |   |   |   `-- index-jrwlIGtN.js
+|   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
 |   |   |   |-- src
 |   |   |   |   |-- App.tsx
+|   |   |   |   |-- features
+|   |   |   |   |   |-- AdmissionCases
+|   |   |   |   |   |   |-- AdmissionCases.api.ts
+|   |   |   |   |   |   |-- AdmissionCases.hooks.ts
+|   |   |   |   |   |   |-- AdmissionCases.page.tsx
+|   |   |   |   |   |   |-- AdmissionCases.test.tsx
+|   |   |   |   |   |   `-- AdmissionCases.types.ts
+|   |   |   |   |   |-- AdmissionsDecision
+|   |   |   |   |   |   |-- AdmissionsDecision.api.ts
+|   |   |   |   |   |   |-- AdmissionsDecision.hooks.ts
+|   |   |   |   |   |   |-- AdmissionsDecision.page.tsx
+|   |   |   |   |   |   |-- AdmissionsDecision.test.tsx
+|   |   |   |   |   |   `-- AdmissionsDecision.types.ts
+|   |   |   |   |   |-- Communication
+|   |   |   |   |   |   `-- ApplicantCommunication.page.tsx
+|   |   |   |   |   |-- Dashboard
+|   |   |   |   |   |   `-- Dashboard.page.tsx
+|   |   |   |   |   |-- EnrollmentHandoff
+|   |   |   |   |   |   |-- EnrollmentHandoff.api.ts
+|   |   |   |   |   |   |-- EnrollmentHandoff.hooks.ts
+|   |   |   |   |   |   |-- EnrollmentHandoff.page.tsx
+|   |   |   |   |   |   |-- EnrollmentHandoff.test.tsx
+|   |   |   |   |   |   `-- EnrollmentHandoff.types.ts
+|   |   |   |   |   |-- Examination
+|   |   |   |   |   |   `-- EntranceExamination.page.tsx
+|   |   |   |   |   |-- Fees
+|   |   |   |   |   |   `-- AdmissionFees.page.tsx
+|   |   |   |   |   |-- Intake
+|   |   |   |   |   |   `-- ApplicationIntake.page.tsx
+|   |   |   |   |   |-- Interviews
+|   |   |   |   |   |   |-- Interviews.api.ts
+|   |   |   |   |   |   |-- Interviews.hooks.ts
+|   |   |   |   |   |   |-- Interviews.page.tsx
+|   |   |   |   |   |   |-- Interviews.test.tsx
+|   |   |   |   |   |   `-- Interviews.types.ts
+|   |   |   |   |   |-- Queue
+|   |   |   |   |   |   `-- AdmissionQueue.page.tsx
+|   |   |   |   |   |-- Reports
+|   |   |   |   |   |   `-- AdmissionsReports.page.tsx
+|   |   |   |   |   |-- RequirementManagement
+|   |   |   |   |   |   |-- RequirementManagement.api.ts
+|   |   |   |   |   |   |-- RequirementManagement.hooks.ts
+|   |   |   |   |   |   |-- RequirementManagement.page.tsx
+|   |   |   |   |   |   |-- RequirementManagement.test.tsx
+|   |   |   |   |   |   `-- RequirementManagement.types.ts
+|   |   |   |   |   |-- Review
+|   |   |   |   |   |   `-- ApplicationReview.page.tsx
+|   |   |   |   |   `-- Verification
+|   |   |   |   |       `-- ApplicationVerification.page.tsx
+|   |   |   |   |-- index.css
 |   |   |   |   |-- main.tsx
 |   |   |   |   `-- shell
 |   |   |   |       |-- AppShell.tsx
 |   |   |   |       `-- Routing.tsx
 |   |   |   |-- tsconfig.json
+|   |   |   |-- tsconfig.node.json
 |   |   |   `-- vite.config.ts
 |   |   |-- applicant-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   |-- index-BAQpLcq3.js
-|   |   |   |   |   `-- index-cJBQpNUN.css
+|   |   |   |   |   |-- index-CmnkJuXB.css
+|   |   |   |   |   `-- index-_lEIkxlo.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1387,6 +1475,12 @@
 |   |   |   |   |   |   |-- EligibilityChecker.page.tsx
 |   |   |   |   |   |   |-- EligibilityChecker.test.tsx
 |   |   |   |   |   |   `-- EligibilityChecker.types.ts
+|   |   |   |   |   |-- EnrollmentPayment
+|   |   |   |   |   |   |-- EnrollmentPayment.api.ts
+|   |   |   |   |   |   |-- EnrollmentPayment.hooks.ts
+|   |   |   |   |   |   |-- EnrollmentPayment.page.tsx
+|   |   |   |   |   |   |-- EnrollmentPayment.test.tsx
+|   |   |   |   |   |   `-- EnrollmentPayment.types.ts
 |   |   |   |   |   |-- InterviewScheduling
 |   |   |   |   |   |   |-- InterviewScheduling.api.ts
 |   |   |   |   |   |   |-- InterviewScheduling.hooks.ts
@@ -1420,8 +1514,8 @@
 |   |   |-- faculty-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   |-- index-Bs2omRJ7.js
-|   |   |   |   |   `-- index-cJBQpNUN.css
+|   |   |   |   |   |-- index-cJBQpNUN.css
+|   |   |   |   |   `-- index-fCiC2hGF.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1507,6 +1601,7 @@
 |   |   |   |   |   |   |-- Students.types.ts
 |   |   |   |   |   |   `-- StudentsDashboard.page.tsx
 |   |   |   |   |   `-- Teaching
+|   |   |   |   |       |-- SectionRoster.page.tsx
 |   |   |   |   |       |-- Teaching.api.ts
 |   |   |   |   |       |-- Teaching.hooks.ts
 |   |   |   |   |       |-- Teaching.page.tsx
@@ -1526,7 +1621,7 @@
 |   |   |-- finance-console
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-CdQmVhu5.js
+|   |   |   |   |   `-- index-CKcukW0F.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1541,12 +1636,34 @@
 |   |   |   |   |   |   |-- Budgeting.page.tsx
 |   |   |   |   |   |   |-- Budgeting.test.tsx
 |   |   |   |   |   |   `-- Budgeting.types.ts
+|   |   |   |   |   |-- Cashier
+|   |   |   |   |   |   |-- ClearanceApproval.page.tsx
+|   |   |   |   |   |   `-- PaymentGateway.page.tsx
 |   |   |   |   |   |-- Dashboard
 |   |   |   |   |   |   |-- Dashboard.api.ts
 |   |   |   |   |   |   |-- Dashboard.hooks.ts
 |   |   |   |   |   |   |-- Dashboard.page.tsx
 |   |   |   |   |   |   |-- Dashboard.test.tsx
 |   |   |   |   |   |   `-- Dashboard.types.ts
+|   |   |   |   |   |-- EnrollmentFinance
+|   |   |   |   |   |   |-- AdmissionAssessment
+|   |   |   |   |   |   |   |-- AdmissionAssessment.api.ts
+|   |   |   |   |   |   |   |-- AdmissionAssessment.hooks.ts
+|   |   |   |   |   |   |   |-- AdmissionAssessment.page.tsx
+|   |   |   |   |   |   |   |-- AdmissionAssessment.test.tsx
+|   |   |   |   |   |   |   `-- AdmissionAssessment.types.ts
+|   |   |   |   |   |   |-- Downpayment
+|   |   |   |   |   |   |   |-- Downpayment.api.ts
+|   |   |   |   |   |   |   |-- Downpayment.hooks.ts
+|   |   |   |   |   |   |   |-- Downpayment.page.tsx
+|   |   |   |   |   |   |   |-- Downpayment.test.tsx
+|   |   |   |   |   |   |   `-- Downpayment.types.ts
+|   |   |   |   |   |   `-- FinancialClearance
+|   |   |   |   |   |       |-- FinancialClearance.api.ts
+|   |   |   |   |   |       |-- FinancialClearance.hooks.ts
+|   |   |   |   |   |       |-- FinancialClearance.page.tsx
+|   |   |   |   |   |       |-- FinancialClearance.test.tsx
+|   |   |   |   |   |       `-- FinancialClearance.types.ts
 |   |   |   |   |   |-- FinancialReports
 |   |   |   |   |   |   |-- FinancialReports.api.ts
 |   |   |   |   |   |   |-- FinancialReports.hooks.ts
@@ -1574,12 +1691,21 @@
 |   |   |   |   |   |-- PayrollProcessing
 |   |   |   |   |   |   |-- PayrollProcessing.hooks.ts
 |   |   |   |   |   |   `-- PayrollProcessing.page.tsx
-|   |   |   |   |   `-- StudentBilling
-|   |   |   |   |       |-- StudentBilling.api.ts
-|   |   |   |   |       |-- StudentBilling.hooks.ts
-|   |   |   |   |       |-- StudentBilling.page.tsx
-|   |   |   |   |       |-- StudentBilling.test.tsx
-|   |   |   |   |       `-- StudentBilling.types.ts
+|   |   |   |   |   |-- SemesterBilling
+|   |   |   |   |   |   |-- SemesterBilling.api.ts
+|   |   |   |   |   |   |-- SemesterBilling.hooks.ts
+|   |   |   |   |   |   |-- SemesterBilling.page.tsx
+|   |   |   |   |   |   `-- SemesterBilling.types.ts
+|   |   |   |   |   |-- StudentBilling
+|   |   |   |   |   |   |-- ScholarshipGrants.page.tsx
+|   |   |   |   |   |   |-- StatementOfAccount.page.tsx
+|   |   |   |   |   |   |-- StudentBilling.api.ts
+|   |   |   |   |   |   |-- StudentBilling.hooks.ts
+|   |   |   |   |   |   |-- StudentBilling.page.tsx
+|   |   |   |   |   |   |-- StudentBilling.test.tsx
+|   |   |   |   |   |   `-- StudentBilling.types.ts
+|   |   |   |   |   `-- TuitionAssessment
+|   |   |   |   |       `-- TuitionAssessment.page.tsx
 |   |   |   |   |-- main.tsx
 |   |   |   |   |-- shell
 |   |   |   |   |   |-- AppShell.tsx
@@ -1592,7 +1718,7 @@
 |   |   |-- governance-console
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-BRbrO4YT.js
+|   |   |   |   |   `-- index-JOshJdPf.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1659,7 +1785,7 @@
 |   |   |-- identity-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-Cao_m1XJ.js
+|   |   |   |   |   `-- index-CUdkNG6V.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1668,6 +1794,11 @@
 |   |   |   |   |-- config
 |   |   |   |   |   `-- env.ts
 |   |   |   |   |-- features
+|   |   |   |   |   |-- Email
+|   |   |   |   |   |   `-- EmailProvisioning.page.tsx
+|   |   |   |   |   |-- MFA
+|   |   |   |   |   |   |-- AccessRevocation.page.tsx
+|   |   |   |   |   |   `-- MFASetup.page.tsx
 |   |   |   |   |   |-- MfaVerification
 |   |   |   |   |   |   |-- MfaVerification.api.ts
 |   |   |   |   |   |   |-- MfaVerification.hooks.ts
@@ -1704,6 +1835,9 @@
 |   |   |   |   |   |   |-- SessionManagement.page.tsx
 |   |   |   |   |   |   |-- SessionManagement.test.tsx
 |   |   |   |   |   |   `-- SessionManagement.types.ts
+|   |   |   |   |   |-- UniversityAccount
+|   |   |   |   |   |   |-- AccountProvisioning.page.tsx
+|   |   |   |   |   |   `-- DirectorySearch.page.tsx
 |   |   |   |   |   |-- UserLogin
 |   |   |   |   |   |   |-- UserLogin.api.ts
 |   |   |   |   |   |   |-- UserLogin.hooks.ts
@@ -1728,7 +1862,7 @@
 |   |   |-- library-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-CdQzo-Ol.js
+|   |   |   |   |   `-- index-CdBEsG2V.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1781,7 +1915,7 @@
 |   |   |-- lms-web
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-CMv7xM3y.js
+|   |   |   |   |   `-- index-Cp8ru4LM.js
 |   |   |   |   |-- index.html
 |   |   |   |   |-- manifest.webmanifest
 |   |   |   |   `-- service-worker.ts
@@ -1807,6 +1941,8 @@
 |   |   |   |   |   |   |-- Calendar.page.tsx
 |   |   |   |   |   |   |-- Calendar.test.tsx
 |   |   |   |   |   |   `-- Calendar.types.ts
+|   |   |   |   |   |-- CourseAdministration
+|   |   |   |   |   |   `-- CoursePackaging.page.tsx
 |   |   |   |   |   |-- CourseContent
 |   |   |   |   |   |   |-- CourseContent.api.ts
 |   |   |   |   |   |   |-- CourseContent.hooks.ts
@@ -1825,6 +1961,8 @@
 |   |   |   |   |   |   |-- Discussions.page.tsx
 |   |   |   |   |   |   |-- Discussions.test.tsx
 |   |   |   |   |   |   `-- Discussions.types.ts
+|   |   |   |   |   |-- GradebookOrchestration
+|   |   |   |   |   |   `-- GradebookSync.page.tsx
 |   |   |   |   |   |-- Grades
 |   |   |   |   |   |   |-- Grades.api.ts
 |   |   |   |   |   |   |-- Grades.hooks.ts
@@ -1833,6 +1971,8 @@
 |   |   |   |   |   |   `-- Grades.types.ts
 |   |   |   |   |   |-- ModuleTimeline
 |   |   |   |   |   |   `-- ModuleTimeline.page.tsx
+|   |   |   |   |   |-- OfflineSubmissionReview
+|   |   |   |   |   |   `-- SubmissionReview.page.tsx
 |   |   |   |   |   |-- QuizWindowGuard
 |   |   |   |   |   `-- Quizzes
 |   |   |   |   |       |-- Quizzes.api.ts
@@ -1856,7 +1996,7 @@
 |   |   |-- platform-console
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-DPd4EBfv.js
+|   |   |   |   |   `-- index-CU9CK0HI.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1918,6 +2058,11 @@
 |   |   |   |-- tsconfig.node.json
 |   |   |   `-- vite.config.ts
 |   |   |-- registrar-portal
+|   |   |   |-- dist
+|   |   |   |   |-- assets
+|   |   |   |   |   |-- index-CmnkJuXB.css
+|   |   |   |   |   `-- index-DT_8fz9O.js
+|   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
 |   |   |   |-- src
@@ -1930,11 +2075,18 @@
 |   |   |   |   |   |   |-- Compliance.types.ts
 |   |   |   |   |   |   `-- ResidencyRules.page.tsx
 |   |   |   |   |   |-- AcademicRecordsDivision
+|   |   |   |   |   |   |-- AcademicRecordInitialization.page.tsx
 |   |   |   |   |   |   |-- AcademicStanding.page.tsx
 |   |   |   |   |   |   |-- OfficialGrades.page.tsx
 |   |   |   |   |   |   |-- Records.api.ts
 |   |   |   |   |   |   |-- Records.hooks.ts
 |   |   |   |   |   |   `-- Records.types.ts
+|   |   |   |   |   |-- AcademicSchedulingDivision
+|   |   |   |   |   |   |-- AcademicSchedulingDivision.api.ts
+|   |   |   |   |   |   |-- AcademicSchedulingDivision.hooks.ts
+|   |   |   |   |   |   |-- AcademicSchedulingDivision.page.tsx
+|   |   |   |   |   |   |-- AcademicSchedulingDivision.test.tsx
+|   |   |   |   |   |   `-- AcademicSchedulingDivision.types.ts
 |   |   |   |   |   |-- Admissions
 |   |   |   |   |   |   `-- EnrollmentActivation.page.tsx
 |   |   |   |   |   |-- AdmissionsDivision
@@ -1949,24 +2101,42 @@
 |   |   |   |   |   |   |-- Certification.types.ts
 |   |   |   |   |   |   |-- DiplomaVerification.page.tsx
 |   |   |   |   |   |   `-- TranscriptRequests.page.tsx
+|   |   |   |   |   |-- CrossEnrollmentDivision
+|   |   |   |   |   |   |-- CrossEnrollmentDivision.api.ts
+|   |   |   |   |   |   |-- CrossEnrollmentDivision.hooks.ts
+|   |   |   |   |   |   |-- CrossEnrollmentDivision.page.tsx
+|   |   |   |   |   |   |-- CrossEnrollmentDivision.test.tsx
+|   |   |   |   |   |   `-- CrossEnrollmentDivision.types.ts
 |   |   |   |   |   |-- CurriculumDivision
 |   |   |   |   |   |   |-- CourseOfferings.page.tsx
 |   |   |   |   |   |   |-- Curriculum.api.ts
 |   |   |   |   |   |   |-- Curriculum.hooks.ts
 |   |   |   |   |   |   |-- Curriculum.types.ts
+|   |   |   |   |   |   |-- Prerequisites.page.tsx
 |   |   |   |   |   |   `-- SubjectCatalog.page.tsx
 |   |   |   |   |   |-- EnrollmentDivision
+|   |   |   |   |   |   |-- AddDropOversight.page.tsx
 |   |   |   |   |   |   |-- Enrollment.api.ts
 |   |   |   |   |   |   |-- Enrollment.hooks.ts
 |   |   |   |   |   |   |-- Enrollment.types.ts
 |   |   |   |   |   |   |-- EnrollmentValidation.page.tsx
-|   |   |   |   |   |   `-- SubjectLoading.page.tsx
+|   |   |   |   |   |   |-- RegistrationExceptions.page.tsx
+|   |   |   |   |   |   |-- RegistrationRequests.page.tsx
+|   |   |   |   |   |   |-- RegistrationWindows.page.tsx
+|   |   |   |   |   |   |-- SubjectLoading.page.tsx
+|   |   |   |   |   |   `-- Waitlists.page.tsx
 |   |   |   |   |   |-- GraduationDivision
 |   |   |   |   |   |   |-- Graduation.api.ts
 |   |   |   |   |   |   |-- Graduation.hooks.ts
 |   |   |   |   |   |   |-- Graduation.types.ts
 |   |   |   |   |   |   |-- GraduationCandidates.page.tsx
 |   |   |   |   |   |   `-- LatinHonors.page.tsx
+|   |   |   |   |   |-- RegistrarDashboard
+|   |   |   |   |   |   |-- RegistrarDashboard.api.ts
+|   |   |   |   |   |   |-- RegistrarDashboard.hooks.ts
+|   |   |   |   |   |   |-- RegistrarDashboard.page.tsx
+|   |   |   |   |   |   |-- RegistrarDashboard.test.tsx
+|   |   |   |   |   |   `-- RegistrarDashboard.types.ts
 |   |   |   |   |   |-- RegistrarSecurity
 |   |   |   |   |   |   |-- RecordAccessAudit.page.tsx
 |   |   |   |   |   |   |-- Security.api.ts
@@ -1978,20 +2148,33 @@
 |   |   |   |   |   |   |-- MasterStudentList.page.tsx
 |   |   |   |   |   |   |-- Registry.api.ts
 |   |   |   |   |   |   |-- Registry.hooks.ts
-|   |   |   |   |   |   `-- Registry.types.ts
-|   |   |   |   |   `-- StudentServicesDivision
-|   |   |   |   |       |-- DataCorrections.page.tsx
-|   |   |   |   |       |-- Services.api.ts
-|   |   |   |   |       |-- Services.hooks.ts
-|   |   |   |   |       |-- Services.types.ts
-|   |   |   |   |       `-- StudentInquiries.page.tsx
+|   |   |   |   |   |   |-- Registry.types.ts
+|   |   |   |   |   |   `-- StudentNumberAssignment.page.tsx
+|   |   |   |   |   |-- StudentServicesDivision
+|   |   |   |   |   |   |-- DataCorrections.page.tsx
+|   |   |   |   |   |   |-- Services.api.ts
+|   |   |   |   |   |   |-- Services.hooks.ts
+|   |   |   |   |   |   |-- Services.types.ts
+|   |   |   |   |   |   `-- StudentInquiries.page.tsx
+|   |   |   |   |   `-- TransferDivision
+|   |   |   |   |       |-- TransferDivision.api.ts
+|   |   |   |   |       |-- TransferDivision.hooks.ts
+|   |   |   |   |       |-- TransferDivision.page.tsx
+|   |   |   |   |       |-- TransferDivision.test.tsx
+|   |   |   |   |       `-- TransferDivision.types.ts
 |   |   |   |   |-- main.tsx
 |   |   |   |   `-- shell
 |   |   |   |       |-- AppShell.tsx
 |   |   |   |       `-- Routing.tsx
 |   |   |   |-- tsconfig.json
+|   |   |   |-- tsconfig.node.json
 |   |   |   `-- vite.config.ts
 |   |   |-- security-portal
+|   |   |   |-- dist
+|   |   |   |   |-- assets
+|   |   |   |   |   |-- index-2GmAw5T2.js
+|   |   |   |   |   `-- index-cJBQpNUN.css
+|   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
 |   |   |   |-- src
@@ -2001,13 +2184,14 @@
 |   |   |   |       |-- AppShell.tsx
 |   |   |   |       `-- Routing.tsx
 |   |   |   |-- tsconfig.json
+|   |   |   |-- tsconfig.node.json
 |   |   |   `-- vite.config.ts
 |   |   |-- structuring.md
 |   |   `-- student-portal
 |   |       |-- dist
 |   |       |   |-- assets
-|   |       |   |   |-- index-DH4ubxI0.js
-|   |       |   |   `-- index-cJBQpNUN.css
+|   |       |   |   |-- index-cJBQpNUN.css
+|   |       |   |   `-- index-cOlvImd2.js
 |   |       |   `-- index.html
 |   |       |-- index.html
 |   |       |-- package.json
@@ -2040,6 +2224,18 @@
 |   |       |   |   |   |-- Clearance.page.tsx
 |   |       |   |   |   |-- Clearance.test.tsx
 |   |       |   |   |   `-- Clearance.types.ts
+|   |       |   |   |-- CrossEnrollment
+|   |       |   |   |   |-- CrossEnrollment.api.ts
+|   |       |   |   |   |-- CrossEnrollment.hooks.ts
+|   |       |   |   |   |-- CrossEnrollment.page.tsx
+|   |       |   |   |   |-- CrossEnrollment.test.tsx
+|   |       |   |   |   `-- CrossEnrollment.types.ts
+|   |       |   |   |-- CurriculumProgress
+|   |       |   |   |   |-- CurriculumProgress.api.ts
+|   |       |   |   |   |-- CurriculumProgress.hooks.ts
+|   |       |   |   |   |-- CurriculumProgress.page.tsx
+|   |       |   |   |   |-- CurriculumProgress.test.tsx
+|   |       |   |   |   `-- CurriculumProgress.types.ts
 |   |       |   |   |-- Dashboard
 |   |       |   |   |   |-- Dashboard.api.ts
 |   |       |   |   |   |-- Dashboard.hooks.ts
@@ -2052,6 +2248,12 @@
 |   |       |   |   |   |-- Enrollment.page.tsx
 |   |       |   |   |   |-- Enrollment.test.tsx
 |   |       |   |   |   `-- Enrollment.types.ts
+|   |       |   |   |-- EnrollmentHistory
+|   |       |   |   |   |-- EnrollmentHistory.api.ts
+|   |       |   |   |   |-- EnrollmentHistory.hooks.ts
+|   |       |   |   |   |-- EnrollmentHistory.page.tsx
+|   |       |   |   |   |-- EnrollmentHistory.test.tsx
+|   |       |   |   |   `-- EnrollmentHistory.types.ts
 |   |       |   |   |-- Extracurriculars
 |   |       |   |   |   |-- Extracurriculars.api.ts
 |   |       |   |   |   |-- Extracurriculars.hooks.ts
@@ -2064,6 +2266,12 @@
 |   |       |   |   |   |-- Financials.page.tsx
 |   |       |   |   |   |-- Financials.test.tsx
 |   |       |   |   |   `-- Financials.types.ts
+|   |       |   |   |-- Graduation
+|   |       |   |   |   |-- Graduation.api.ts
+|   |       |   |   |   |-- Graduation.hooks.ts
+|   |       |   |   |   |-- Graduation.page.tsx
+|   |       |   |   |   |-- Graduation.test.tsx
+|   |       |   |   |   `-- Graduation.types.ts
 |   |       |   |   |-- GuidanceSessions
 |   |       |   |   |   |-- GuidanceSessions.api.ts
 |   |       |   |   |   |-- GuidanceSessions.hooks.ts
@@ -2092,6 +2300,21 @@
 |   |       |   |   |   |-- MyEnrollments.styles.css
 |   |       |   |   |   |-- MyEnrollments.test.tsx
 |   |       |   |   |   `-- MyEnrollments.types.ts
+|   |       |   |   |-- Registration
+|   |       |   |   |   |-- BrowseCourses.page.tsx
+|   |       |   |   |   |-- MyRegistration.page.tsx
+|   |       |   |   |   |-- Registration.api.ts
+|   |       |   |   |   |-- Registration.hooks.ts
+|   |       |   |   |   |-- Registration.page.tsx
+|   |       |   |   |   |-- Registration.test.tsx
+|   |       |   |   |   |-- Registration.types.ts
+|   |       |   |   |   `-- Waitlist.page.tsx
+|   |       |   |   |-- Schedule
+|   |       |   |   |   |-- Schedule.api.ts
+|   |       |   |   |   |-- Schedule.hooks.ts
+|   |       |   |   |   |-- Schedule.page.tsx
+|   |       |   |   |   |-- Schedule.test.tsx
+|   |       |   |   |   `-- Schedule.types.ts
 |   |       |   |   |-- StudentProfile
 |   |       |   |   |   |-- StudentProfile.api.ts
 |   |       |   |   |   |-- StudentProfile.hooks.ts
@@ -2120,19 +2343,31 @@
 |   |-- bootstrap.sh
 |   |-- clients
 |   |   |-- lms-offline-avalonia
+|   |   |   |-- ApplyDynamicResources.ps1
+|   |   |   |-- FixSpacing.ps1
 |   |   |   |-- LmsOffline.Application
-|   |   |   |   |-- Commands
-|   |   |   |   |   |-- StartOfflineAssessmentCommand.cs
-|   |   |   |   |   `-- StartOfflineAssessmentCommandHandler.cs
 |   |   |   |   |-- Features
 |   |   |   |   |   |-- Analytics
 |   |   |   |   |   |   `-- LogxApiEventCommand.cs
+|   |   |   |   |   |-- Auth
+|   |   |   |   |   |   `-- AuthenticateStudentCommandHandler.cs
+|   |   |   |   |   |-- AuthenticateStudent
+|   |   |   |   |   |   |-- AuthenticateStudentCommand.cs
+|   |   |   |   |   |   |-- AuthenticateStudentCommandHandler.cs
+|   |   |   |   |   |   `-- AuthenticateStudentResult.cs
+|   |   |   |   |   |-- Dashboard
+|   |   |   |   |   |   |-- GetStudentDashboardStatsQuery.cs
+|   |   |   |   |   |   `-- GetStudentDashboardStatsQueryHandler.cs
 |   |   |   |   |   |-- Diagnostics
 |   |   |   |   |   |   `-- GetSystemHealthQuery.cs
 |   |   |   |   |   |-- DownloadModulePackage
 |   |   |   |   |   |   |-- DownloadModulePackageCommand.cs
 |   |   |   |   |   |   `-- DownloadModulePackageCommandHandler.cs
+|   |   |   |   |   |-- Grades
+|   |   |   |   |   |   |-- GetLocalGradesQuery.cs
+|   |   |   |   |   |   `-- SyncGradesFromBackendCommand.cs
 |   |   |   |   |   |-- PackageManager
+|   |   |   |   |   |   |-- GetInstalledPackagesQuery.cs
 |   |   |   |   |   |   |-- VerifyPackageCommand.cs
 |   |   |   |   |   |   `-- VerifyPackageIntegrityCommand.cs
 |   |   |   |   |   |-- StartOfflineAssessment
@@ -2148,13 +2383,20 @@
 |   |   |   |   |       |-- SyncPendingSubmissionsCommand.cs
 |   |   |   |   |       `-- SyncPendingSubmissionsCommandHandler.cs
 |   |   |   |   |-- Interfaces
+|   |   |   |   |   |-- IDashboardRepository.cs
+|   |   |   |   |   |-- IExamIntegrityService.cs
+|   |   |   |   |   |-- IExternalIdentityService.cs
+|   |   |   |   |   |-- ILocalGradeRepository.cs
 |   |   |   |   |   |-- ILocalLearningRecordStore.cs
+|   |   |   |   |   |-- ILocalPackageRepository.cs
 |   |   |   |   |   |-- ILocalStorageDiagnostics.cs
 |   |   |   |   |   |-- IOfflineAssessmentRepository.cs
 |   |   |   |   |   |-- IOfflineAssignmentRepository.cs
+|   |   |   |   |   |-- IOfflineIdentityRepository.cs
 |   |   |   |   |   |-- IOfflineModuleRepository.cs
 |   |   |   |   |   |-- IPackageSecurityService.cs
-|   |   |   |   |   `-- IPackageVerifier.cs
+|   |   |   |   |   |-- IPackageVerifier.cs
+|   |   |   |   |   `-- IPasswordHasher.cs
 |   |   |   |   |-- LmsOffline.Application.csproj
 |   |   |   |   |-- ModuleRegistration.cs
 |   |   |   |   `-- Validators
@@ -2169,10 +2411,14 @@
 |   |   |   |-- LmsOffline.Domain
 |   |   |   |   |-- Aggregates
 |   |   |   |   |   |-- CoursePackage.cs
+|   |   |   |   |   |-- GradeRecord.cs
 |   |   |   |   |   |-- LearningEvent.cs
 |   |   |   |   |   |-- OfflineAssessment.cs
 |   |   |   |   |   |-- OfflineAssignment.cs
-|   |   |   |   |   `-- OfflineModule.cs
+|   |   |   |   |   |-- OfflineModule.cs
+|   |   |   |   |   `-- StudentUser.cs
+|   |   |   |   |-- Entities
+|   |   |   |   |   `-- StudentUser.cs
 |   |   |   |   |-- Exceptions
 |   |   |   |   |   `-- AssessmentWindowClosedException.cs
 |   |   |   |   |-- LmsOffline.Domain.csproj
@@ -2184,6 +2430,7 @@
 |   |   |   |       `-- SyncStatus.cs
 |   |   |   |-- LmsOffline.Infrastructure
 |   |   |   |   |-- Auth
+|   |   |   |   |   |-- ExternalIdentityService.cs
 |   |   |   |   |   `-- OfflineTokenCache.cs
 |   |   |   |   |-- Data
 |   |   |   |   |   |-- EncryptedSqliteContext.cs
@@ -2191,46 +2438,141 @@
 |   |   |   |   |-- LmsOffline.Infrastructure.csproj
 |   |   |   |   |-- Persistence
 |   |   |   |   |   |-- EncryptedSqliteContext.cs
-|   |   |   |   |   `-- Migrations
+|   |   |   |   |   |-- Migrations
+|   |   |   |   |   `-- Repositories
+|   |   |   |   |       |-- DashboardRepository.cs
+|   |   |   |   |       `-- OfflineIdentityRepository.cs
 |   |   |   |   |-- Repositories
+|   |   |   |   |   |-- GradeRepository.cs
+|   |   |   |   |   |-- LocalPackageRepository.cs
 |   |   |   |   |   |-- OfflineAssessmentRepository.cs
 |   |   |   |   |   |-- OfflineAssignmentRepository.cs
+|   |   |   |   |   |-- OfflineIdentityRepository.cs
 |   |   |   |   |   `-- OfflineModuleRepository.cs
 |   |   |   |   |-- Security
 |   |   |   |   |   |-- EcdsaPackageSecurityService.cs
-|   |   |   |   |   `-- EcdsaPackageVerifier.cs
+|   |   |   |   |   |-- EcdsaPackageVerifier.cs
+|   |   |   |   |   `-- Pbkdf2PasswordHasher.cs
 |   |   |   |   `-- Sync
+|   |   |   |       |-- OutboxBackgroundService.cs
 |   |   |   |       |-- OutboxSyncProcessor.cs
 |   |   |   |       `-- ScheduleTokenVerifier.cs
 |   |   |   |-- LmsOffline.Presentation
 |   |   |   |   |-- App.axaml
 |   |   |   |   |-- App.axaml.cs
+|   |   |   |   |-- DesignSystem
+|   |   |   |   |   |-- Foundations
+|   |   |   |   |   |   |-- Borders.axaml
+|   |   |   |   |   |   |-- Colors.axaml
+|   |   |   |   |   |   |-- Elevation.axaml
+|   |   |   |   |   |   |-- Motion.axaml
+|   |   |   |   |   |   |-- Radius.axaml
+|   |   |   |   |   |   |-- Spacing.axaml
+|   |   |   |   |   |   |-- Typography.axaml
+|   |   |   |   |   |   `-- ZIndex.axaml
+|   |   |   |   |   |-- Themes
+|   |   |   |   |   |   |-- Dark.axaml
+|   |   |   |   |   |   `-- Light.axaml
+|   |   |   |   |   `-- Tokens
+|   |   |   |   |       |-- BadgeTokens.axaml
+|   |   |   |   |       |-- ButtonTokens.axaml
+|   |   |   |   |       |-- CardTokens.axaml
+|   |   |   |   |       `-- InputTokens.axaml
+|   |   |   |   |-- Features
+|   |   |   |   |   |-- Assessments
+|   |   |   |   |   |   |-- AssessmentView.axaml
+|   |   |   |   |   |   |-- AssessmentView.axaml.cs
+|   |   |   |   |   |   |-- AssessmentViewModel.cs
+|   |   |   |   |   |   |-- AssignmentSubmissionView.axaml
+|   |   |   |   |   |   |-- AssignmentSubmissionView.axaml.cs
+|   |   |   |   |   |   |-- AssignmentSubmissionViewModel.cs
+|   |   |   |   |   |   |-- LogicQuizView.axaml
+|   |   |   |   |   |   |-- LogicQuizView.axaml.cs
+|   |   |   |   |   |   `-- LogicQuizViewModel.cs
+|   |   |   |   |   |-- Auth
+|   |   |   |   |   |   |-- LoginView.axaml
+|   |   |   |   |   |   |-- LoginView.axaml.cs
+|   |   |   |   |   |   `-- LoginViewModel.cs
+|   |   |   |   |   |-- Calendar
+|   |   |   |   |   |   |-- TimelineScheduleView.axaml
+|   |   |   |   |   |   |-- TimelineScheduleView.axaml.cs
+|   |   |   |   |   |   `-- TimelineScheduleViewModel.cs
+|   |   |   |   |   |-- Courses
+|   |   |   |   |   |   |-- ActivityHubView.axaml
+|   |   |   |   |   |   |-- ActivityHubView.axaml.cs
+|   |   |   |   |   |   |-- ActivityHubViewModel.cs
+|   |   |   |   |   |   |-- CourseContentView.axaml
+|   |   |   |   |   |   |-- CourseContentView.axaml.cs
+|   |   |   |   |   |   |-- CourseContentViewModel.cs
+|   |   |   |   |   |   |-- CourseViewerView.axaml
+|   |   |   |   |   |   |-- CourseViewerView.axaml.cs
+|   |   |   |   |   |   |-- CourseViewerViewModel.cs
+|   |   |   |   |   |   |-- ModuleTimelineView.axaml
+|   |   |   |   |   |   |-- ModuleTimelineView.axaml.cs
+|   |   |   |   |   |   |-- ModuleTimelineViewModel.cs
+|   |   |   |   |   |   |-- ResourcesView.axaml
+|   |   |   |   |   |   |-- ResourcesView.axaml.cs
+|   |   |   |   |   |   `-- ResourcesViewModel.cs
+|   |   |   |   |   |-- Dashboard
+|   |   |   |   |   |   |-- StudentDashboardView.axaml
+|   |   |   |   |   |   |-- StudentDashboardView.axaml.cs
+|   |   |   |   |   |   `-- StudentDashboardViewModel.cs
+|   |   |   |   |   |-- Diagnostics
+|   |   |   |   |   |   |-- DiagnosticsView.axaml
+|   |   |   |   |   |   |-- DiagnosticsView.axaml.cs
+|   |   |   |   |   |   `-- DiagnosticsViewModel.cs
+|   |   |   |   |   |-- Grades
+|   |   |   |   |   |   |-- GradesView.axaml
+|   |   |   |   |   |   |-- GradesView.axaml.cs
+|   |   |   |   |   |   `-- GradesViewModel.cs
+|   |   |   |   |   |-- LearningTimeline
+|   |   |   |   |   |   |-- LearningTimelineView.axaml
+|   |   |   |   |   |   |-- LearningTimelineView.axaml.cs
+|   |   |   |   |   |   `-- LearningTimelineViewModel.cs
+|   |   |   |   |   |-- PackageManager
+|   |   |   |   |   |   |-- PackageManagerView.axaml
+|   |   |   |   |   |   |-- PackageManagerView.axaml.cs
+|   |   |   |   |   |   `-- PackageManagerViewModel.cs
+|   |   |   |   |   `-- SyncHub
+|   |   |   |   |       |-- SyncHubView.axaml
+|   |   |   |   |       |-- SyncHubView.axaml.cs
+|   |   |   |   |       `-- SyncHubViewModel.cs
 |   |   |   |   |-- LmsOffline.Presentation.csproj
 |   |   |   |   |-- MainWindow.axaml
 |   |   |   |   |-- MainWindow.axaml.cs
 |   |   |   |   |-- Program.cs
+|   |   |   |   |-- Services
+|   |   |   |   |   |-- AvaloniaExamIntegrityService.cs
+|   |   |   |   |   `-- FileLogger.cs
+|   |   |   |   |-- Shared
+|   |   |   |   |   `-- Controls
+|   |   |   |   |       |-- AppCard.axaml
+|   |   |   |   |       |-- AppCard.axaml.cs
+|   |   |   |   |       |-- NavigationItem.axaml
+|   |   |   |   |       |-- NavigationItem.axaml.cs
+|   |   |   |   |       |-- StatusBadge.axaml
+|   |   |   |   |       `-- StatusBadge.axaml.cs
+|   |   |   |   |-- Shell
+|   |   |   |   |   |-- AppSidebar.axaml
+|   |   |   |   |   |-- AppSidebar.axaml.cs
+|   |   |   |   |   |-- AppStatusBar.axaml
+|   |   |   |   |   `-- AppStatusBar.axaml.cs
+|   |   |   |   |-- ViewLocator.cs
 |   |   |   |   |-- ViewModels
 |   |   |   |   |   |-- AssessmentViewModel.cs
 |   |   |   |   |   |-- AssignmentSubmissionViewModel.cs
-|   |   |   |   |   |-- CourseContentViewModel.cs
-|   |   |   |   |   |-- DiagnosticsViewModel.cs
-|   |   |   |   |   |-- LearningTimelineViewModel.cs
-|   |   |   |   |   |-- MainWindowViewModel.cs
-|   |   |   |   |   |-- ModuleTimelineViewModel.cs
-|   |   |   |   |   |-- PackageManagerViewModel.cs
-|   |   |   |   |   `-- SyncHubViewModel.cs
+|   |   |   |   |   |-- LogicQuizViewModel.cs
+|   |   |   |   |   `-- MainWindowViewModel.cs
 |   |   |   |   |-- Views
 |   |   |   |   |   |-- AssessmentView.axaml
 |   |   |   |   |   |-- AssessmentView.axaml.cs
 |   |   |   |   |   |-- AssignmentSubmissionView.axaml
 |   |   |   |   |   |-- AssignmentSubmissionView.axaml.cs
-|   |   |   |   |   |-- CourseContentView.axaml
-|   |   |   |   |   |-- DiagnosticsView.axaml
-|   |   |   |   |   |-- LearningTimelineView.axaml
-|   |   |   |   |   |-- ModuleTimelineView.axaml
-|   |   |   |   |   |-- ModuleTimelineView.axaml.cs
-|   |   |   |   |   |-- PackageManagerView.axaml
-|   |   |   |   |   `-- SyncHubView.axaml
+|   |   |   |   |   |-- CustomControls
+|   |   |   |   |   |   |-- CustomTitleBar.axaml
+|   |   |   |   |   |   `-- CustomTitleBar.axaml.cs
+|   |   |   |   |   |-- LogicQuizView.axaml
+|   |   |   |   |   `-- LogicQuizView.axaml.cs
 |   |   |   |   `-- app.manifest
 |   |   |   |-- LmsOffline.Tests
 |   |   |   |   |-- LmsOffline.Tests.csproj
@@ -2238,7 +2580,13 @@
 |   |   |   |   |-- SyncConflictResolutionTests.cs
 |   |   |   |   |-- UnitTest1.cs
 |   |   |   |   `-- WindowEnforcementPolicyTests.cs
-|   |   |   `-- LmsOfflineClient.slnx
+|   |   |   |-- LmsOfflineClient.slnx
+|   |   |   |-- MigrateOpticalSystem.ps1
+|   |   |   |-- UpdateTokens.ps1
+|   |   |   |-- app.log
+|   |   |   |-- build-and-publish.bat
+|   |   |   |-- crash.log
+|   |   |   `-- lms_offline.db
 |   |   `-- main.txt
 |   |-- domain
 |   |   |-- adr
@@ -2310,6 +2658,9 @@
 |   |   |   `-- src
 |   |   |       `-- guards
 |   |   |           |-- FacultyGuard.tsx
+|   |   |           |-- FinanceGuard.tsx
+|   |   |           |-- IdentityGuard.tsx
+|   |   |           |-- LMSGuard.tsx
 |   |   |           `-- RegistrarGuard.tsx
 |   |   |-- core-logger
 |   |   |   |-- index.ts
@@ -2345,7 +2696,10 @@
 |   |   |   |   |   |-- Badge.tsx
 |   |   |   |   |   |-- Button.tsx
 |   |   |   |   |   |-- Card.tsx
-|   |   |   |   |   `-- PageHeader.tsx
+|   |   |   |   |   |-- FormInput.tsx
+|   |   |   |   |   |-- Modal.tsx
+|   |   |   |   |   |-- PageHeader.tsx
+|   |   |   |   |   `-- Table.tsx
 |   |   |   |   |-- index.ts
 |   |   |   |   `-- styles.css
 |   |   |   |-- theming
@@ -2354,6 +2708,7 @@
 |   |   |   |-- index.ts
 |   |   |   `-- package.json
 |   |   `-- workflow-sdk
+|   |       |-- index.ts
 |   |       |-- package.json
 |   |       |-- src
 |   |       |   |-- AcademicRecordWorkflow.ts
@@ -2400,111 +2755,11 @@
 |   |-- tsconfig.json
 |   `-- tsconfig.node.base.json
 |-- UniversityErp.slnx
-|-- apps
-|   `-- registrar-portal
-|       `-- src
-|           `-- features
-|               |-- AcademicComplianceDivision
-|               |   |-- AcademicAudit
-|               |   |-- CHEDCompliance
-|               |   |-- EnrollmentRules
-|               |   |-- GraduationRules
-|               |   |-- MaximumLoad
-|               |   |-- PolicyValidation
-|               |   |-- PrerequisiteValidation
-|               |   `-- ResidencyRules
-|               |-- AcademicRecordsDivision
-|               |   |-- AcademicDeficiencies
-|               |   |-- AcademicEvaluation
-|               |   |-- AcademicHistory
-|               |   |-- AcademicStanding
-|               |   |-- AcademicVerification
-|               |   |-- GradeCorrections
-|               |   |-- Grades
-|               |   |-- ScholasticRecords
-|               |   |-- Transcript
-|               |   `-- TrueCopyOfGrades
-|               |-- AdmissionsDivision
-|               |   |-- AdmissionDecision
-|               |   |-- AdmissionOffers
-|               |   |-- AdmissionQueue
-|               |   |-- AdmissionReports
-|               |   |-- AdmissionReview
-|               |   |-- DeferredApplications
-|               |   |-- EnrollmentActivation
-|               |   |-- FacultyEndorsements
-|               |   `-- RejectedApplications
-|               |-- CertificationDivision
-|               |   |-- CertificateRequests
-|               |   |-- DigitalCertificates
-|               |   |-- DiplomaVerification
-|               |   |-- DocumentAuthentication
-|               |   |-- EnrollmentCertificates
-|               |   |-- GovernmentVerification
-|               |   `-- TranscriptRequests
-|               |-- CurriculumDivision
-|               |   |-- AcademicCalendar
-|               |   |-- CourseOfferings
-|               |   |-- Curriculum
-|               |   |-- FacultyAssignments
-|               |   |-- Prerequisites
-|               |   |-- Programs
-|               |   |-- Schedules
-|               |   |-- SectionManagement
-|               |   `-- SubjectCatalog
-|               |-- EnrollmentDivision
-|               |   |-- ChangeOfProgram
-|               |   |-- ChangeOfSection
-|               |   |-- CrossEnrollment
-|               |   |-- EnrollmentAdjustment
-|               |   |-- EnrollmentDashboard
-|               |   |-- EnrollmentHistory
-|               |   |-- EnrollmentQueue
-|               |   |-- EnrollmentValidation
-|               |   |-- LateEnrollment
-|               |   `-- SubjectEnrollment
-|               |-- GraduationDivision
-|               |   |-- Commencement
-|               |   |-- DiplomaPrinting
-|               |   |-- GraduationCandidates
-|               |   |-- GraduationClearance
-|               |   |-- GraduationEvaluation
-|               |   |-- GraduationReports
-|               |   `-- LatinHonors
-|               |-- RegistrarSecurity
-|               |   |-- AuditTrail
-|               |   |-- Dashboard
-|               |   |-- DataRetention
-|               |   |-- DigitalSignatures
-|               |   |-- DocumentVerification
-|               |   |-- PermissionManagement
-|               |   |-- PrivacyCompliance
-|               |   |-- RecordRecovery
-|               |   |-- SensitiveDocuments
-|               |   `-- StudentRecordAccess
-|               |-- StudentRegistryDivision
-|               |   |-- Alumni
-|               |   |-- LeaveOfAbsence
-|               |   |-- MasterStudents
-|               |   |-- Readmission
-|               |   |-- ReturningStudents
-|               |   |-- StudentClassification
-|               |   |-- StudentNumber
-|               |   |-- StudentStatus
-|               |   |-- TransferStudents
-|               |   `-- UniversityID
-|               `-- StudentServicesDivision
-|                   |-- BirthdateCorrection
-|                   |-- CorrectionRequests
-|                   |-- DocumentRelease
-|                   |-- NameCorrection
-|                   |-- Notifications
-|                   |-- RequestTracking
-|                   |-- StudentInquiry
-|                   `-- StudentRequests
 |-- docker-compose.yml
 |-- fix-encodings.js
 |-- health-logger.sh
+|-- isolated_release.sh
+|-- logs.md
 |-- newupdate.md
 |-- package-lock.json
 |-- package.json
@@ -2522,4 +2777,4 @@
 |-- university-erp-frontend-features-ddd-dbma-prompt.md
 `-- university-erp-scaffolding-script-review.md
 
-953 directories, 1569 files
+932 directories, 1845 files
