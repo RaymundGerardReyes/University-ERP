@@ -102,6 +102,9 @@ services:
       - governance_dist:/output/governance-console
       - platform_dist:/output/platform-console
       - applicant_dist:/output/applicant-portal
+      - admissions_dist:/output/admissions-portal
+      - registrar_dist:/output/registrar-portal
+      - security_dist:/output/security-portal
     networks:
       - erp-internal
 
@@ -140,6 +143,9 @@ services:
       - governance_dist:/var/www/governance-console:ro
       - platform_dist:/var/www/platform-console:ro
       - applicant_dist:/var/www/applicant-portal:ro
+      - admissions_dist:/var/www/admissions-portal:ro
+      - registrar_dist:/var/www/registrar-portal:ro
+      - security_dist:/var/www/security-portal:ro
     depends_on:
       frontend-builder:
         condition: service_completed_successfully
@@ -165,6 +171,9 @@ volumes:
   governance_dist:
   platform_dist:
   applicant_dist:
+  admissions_dist:
+  registrar_dist:
+  security_dist:
 
 networks:
   erp-internal:

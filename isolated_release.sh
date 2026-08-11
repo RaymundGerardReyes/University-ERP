@@ -115,20 +115,23 @@ echo "Starting isolated semantic versioning updates..."
 process_module "academic" "backend-academic" "feat" "implement academic modules domain logic and endpoints" \
   "University-ERP-Backend/src/Modules/Academic"
 
-process_module "administration" "backend-administration" "feat" "implement administration finance logic and events" \
+process_module "administration" "backend-administration" "feat" "implement secure payment gateway webhook integration, QR Ph generation, and session idempotency" \
   "University-ERP-Backend/src/Modules/Administration"
 
 process_module "platform" "backend-platform" "fix" "return HTTP 403 Forbidden on invalid credentials in login endpoint" \
   "University-ERP-Backend/src/Modules/Platform"
 
-process_module "student-lifecycle" "backend-studentlifecycle" "feat" "implement admissions workflow and application status" \
+process_module "student-lifecycle" "backend-studentlifecycle" "feat!" "remove insecure pay-fee endpoint and implement secure payment verified event consumer" \
   "University-ERP-Backend/src/Modules/StudentLifecycle"
 
 process_module "bootstrap" "backend-bootstrap" "fix" "seed student default credentials for offline client authentication" \
   "University-ERP-Backend/src/Bootstrap"
 
-process_module "backend-ops" "ops-backend" "feat" "add db migrations for admissions module" \
-  "University-ERP-Backend/ops"
+process_module "backend-contracts" "backend-contracts" "feat" "define PaymentVerifiedIntegrationEvent contract for cross-module communication" \
+  "University-ERP-Backend/src/Contracts"
+
+process_module "backend-ops" "ops-backend" "feat" "add AddPaymentSessions EF Core migration and context updates" \
+  "University-ERP-Backend/ops" "University-ERP-Backend/src/Bootstrap/UniversityErp.Migrator"
 
 process_module "backend-docs" "docs-backend" "docs" "update backend architectural structure" \
   "University-ERP-Backend/structure.md"
@@ -137,17 +140,20 @@ process_module "backend-docs" "docs-backend" "docs" "update backend architectura
 process_module "admin-portal" "admin-portal" "feat" "update admin portal features and UI" \
   "University-ERP-Frontend/apps/admin-portal"
 
-process_module "admissions-portal" "admissions-portal" "refactor!" "consolidate UX into 5 operational surfaces and unified Case Workspace" \
+process_module "admissions-portal" "admissions-portal" "feat" "integrate unified admission cases view with payment verification status" \
   "University-ERP-Frontend/apps/admissions-portal"
 
-process_module "applicant-portal" "applicant-portal" "feat" "overhaul application wizard and submission flows" \
+process_module "applicant-portal" "applicant-portal" "feat" "integrate secure decentralized payment gateway iframe and remove raw credit card inputs" \
   "University-ERP-Frontend/apps/applicant-portal"
 
 process_module "faculty-portal" "faculty-portal" "feat" "implement students dashboard and section roster features" \
   "University-ERP-Frontend/apps/faculty-portal"
 
-process_module "finance-console" "finance-console" "feat" "implement tuition assessment and cashier modules" \
+process_module "finance-console" "finance-console" "feat" "auto-populate payment tokens from URL query parameters and implement cashier bridge" \
   "University-ERP-Frontend/apps/finance-console"
+
+process_module "payment-gateway" "payment-gateway" "feat" "scaffold isolated PCI-compliant payment gateway frontend with QR Ph and webhook polling" \
+  "University-ERP-Frontend/apps/payment-gateway"
 
 process_module "governance-console" "governance-console" "chore" "update vite config for governance console" \
   "University-ERP-Frontend/apps/governance-console"
@@ -178,19 +184,19 @@ process_module "student-portal" "student-portal" "feat" "implement online regist
   "University-ERP-Frontend/apps/student-portal"
 
 # ================= FRONTEND LIBS & CONFIG =================
-process_module "frontend-libs" "frontend-libs" "feat" "update API clients and workflow SDKs" \
+process_module "frontend-libs" "frontend-libs" "feat" "update API clients for payment session routing and admissions webhooks" \
   "University-ERP-Frontend/libs"
 
 process_module "frontend-infra" "frontend-infra" "chore" "update frontend workspace dependencies and config" \
-  "University-ERP-Frontend/package.json" "University-ERP-Frontend/package-lock.json" "University-ERP-Frontend/bootstrap.sh" "University-ERP-Frontend/apps/structuring.md"
+  "University-ERP-Frontend/package.json" "University-ERP-Frontend/package-lock.json" "University-ERP-Frontend/bootstrap.sh" "University-ERP-Frontend/Dockerfile.build-all" "University-ERP-Frontend/tsconfig.app.base.json"
 
 # ================= ROOT INFRASTRUCTURE =================
 process_module "project-docs" "docs-project" "docs" "update root architecture, analysis, and status documentation" \
   "CodebaseInfrastructure.md" "structure.md" "logs.md" "newupdate.md" "Analysis_Task_Orchestration.md"
 
 # Safely only add the release_all.sh script here (not the apps/ folder anymore!)
-process_module "project-ops" "ops-project" "chore" "update isolated release script with patch versioning support" \
-  "release_all.sh" "isolated_release.sh"
+process_module "project-ops" "ops-project" "chore" "update isolated release script with precise payment gateway commit scopes" \
+  "release_all.sh" "isolated_release.sh" "docker-compose.yml"
 
 process_module "project-config" "config-project" "chore" "update root gitignore rules" \
   ".gitignore"
