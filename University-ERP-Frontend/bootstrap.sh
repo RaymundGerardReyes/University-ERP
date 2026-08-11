@@ -26,6 +26,23 @@ echo "[3/9] Installing all workspace dependencies..."
 npm install
 
 echo ""
+echo "[3.5/9] Validating strict workspace hoisting..."
+
+# Find any node_modules inside apps/ or libs/ (maxdepth 2 to avoid scanning inside nested modules if they exist)
+NESTED_MODULES=$(find ./apps ./libs -maxdepth 2 -name "node_modules" -type d)
+
+if [ -n "$NESTED_MODULES" ]; then
+    echo "❌ ERROR: Strict workspace hoisting failed!"
+    echo "NPM created nested node_modules in the following directories because of version conflicts:"
+    echo "$NESTED_MODULES"
+    echo ""
+    echo "Rule Violation: All dependencies MUST be placed in the root node_modules."
+    echo "Please align the dependency versions across your package.json files so NPM can successfully hoist them."
+    exit 1
+fi
+echo "✅ Strict hoisting verified. No nested node_modules found."
+
+echo ""
 echo "[4/9] Deduplicating packages..."
 
 npm dedupe || true

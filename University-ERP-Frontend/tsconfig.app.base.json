@@ -15,7 +15,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["vite/client"],
+    "types": ["vite/client", "react", "react-dom", "node"],
     "paths": {
       "@university-erp/ui-kit": ["../../libs/ui-kit/src/index.ts"],
       "@university-erp/auth-sdk": ["../../libs/auth-sdk/index.ts"],

@@ -11,6 +11,7 @@ WORKDIR /app
 # Copy workspace manifests first to leverage Docker layer caching
 COPY package.json package-lock.json ./
 COPY apps/admin-portal/package.json ./apps/admin-portal/
+COPY apps/admissions-portal/package.json ./apps/admissions-portal/
 COPY apps/applicant-portal/package.json ./apps/applicant-portal/
 COPY apps/faculty-portal/package.json ./apps/faculty-portal/
 COPY apps/finance-console/package.json ./apps/finance-console/
@@ -19,6 +20,8 @@ COPY apps/identity-portal/package.json ./apps/identity-portal/
 COPY apps/library-portal/package.json ./apps/library-portal/
 COPY apps/lms-web/package.json ./apps/lms-web/
 COPY apps/platform-console/package.json ./apps/platform-console/
+COPY apps/registrar-portal/package.json ./apps/registrar-portal/
+COPY apps/security-portal/package.json ./apps/security-portal/
 COPY apps/student-portal/package.json ./apps/student-portal/
 
 COPY libs/api-clients/package.json ./libs/api-clients/
@@ -28,6 +31,7 @@ COPY libs/domain-viewmodels/package.json ./libs/domain-viewmodels/
 COPY libs/shell-kit/package.json ./libs/shell-kit/
 COPY libs/ui-kit/package.json ./libs/ui-kit/
 COPY libs/vite-config/package.json ./libs/vite-config/
+COPY libs/workflow-sdk/package.json ./libs/workflow-sdk/
 
 # Install dependencies before copying source code
 RUN npm ci
@@ -66,4 +70,7 @@ CMD echo "🚚 Delivering compiled React files to Nginx volumes..." && \
     cp -a /app/apps/governance-console/dist/* /output/governance-console/ && \
     cp -a /app/apps/platform-console/dist/* /output/platform-console/ && \
     cp -a /app/apps/applicant-portal/dist/* /output/applicant-portal/ && \
+    cp -a /app/apps/admissions-portal/dist/* /output/admissions-portal/ && \
+    cp -a /app/apps/registrar-portal/dist/* /output/registrar-portal/ && \
+    cp -a /app/apps/security-portal/dist/* /output/security-portal/ && \
     echo "✅ Delivery complete! Container exiting successfully."
