@@ -27,6 +27,7 @@ export const AppShell = () => {
     { label: 'Check Eligibility', path: '/eligibility' },
     { label: 'Application Wizard', path: '/apply' },
     { label: 'My Documents', path: '/documents' },
+    { label: 'Application Fee', path: '/payment' },
     { label: 'Interviews', path: '/interviews' },
     { label: 'Offers & Decision', path: '/offers' },
     { label: 'Journey Timeline', path: '/timeline' },

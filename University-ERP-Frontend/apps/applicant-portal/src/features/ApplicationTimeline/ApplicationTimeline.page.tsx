@@ -15,8 +15,14 @@ export const ApplicationTimelinePage: React.FC = () => {
     </div>
   );
 
-  // Fallback mock data if the API returns empty/undefined for the journey
-  const steps: JourneyStep[] = timelineData?.steps || [];
+  // Map milestones from the API DTO to the local JourneyStep shape
+  const steps: JourneyStep[] = (timelineData?.milestones ?? []).map((m, idx) => ({
+    id: m.id ?? String(idx + 1),
+    stepName: m.title,
+    description: m.description,
+    status: m.status === 'Active' ? 'Current' : (m.status === 'Completed' ? 'Completed' : 'Pending'),
+    completedDate: m.dateCompleted ?? undefined,
+  }));
 
   return (
     <div className="fade-in">

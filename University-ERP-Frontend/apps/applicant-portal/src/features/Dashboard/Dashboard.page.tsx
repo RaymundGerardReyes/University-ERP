@@ -10,8 +10,8 @@ export const DashboardPage: React.FC = () => {
   if (isLoading) return <div className="skeleton" style={{ height: '60vh', borderRadius: 'var(--radius-lg)' }} />;
   if (isError || !data) return <div className="stub-page fade-in"><div className="stub-title">Dashboard Unavailable</div></div>;
 
-  const activeApp = data.status[0]; // Assuming the most recent application
-  const journeySteps = data.journey?.steps || [];
+  const activeApp = data.status[0];
+  const journeySteps = data.journey?.milestones || [];
 
   return (
     <div className="fade-in">
@@ -47,24 +47,28 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-            {journeySteps.map((step: any, idx: number) => (
-              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
-                <div style={{
-                  width: '24px', height: '24px', borderRadius: '50%',
-                  background: step.isCompleted ? 'var(--success-text)' : 'var(--bg-elevated)',
-                  border: step.isCompleted ? 'none' : '2px solid var(--border-subtle)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--bg-base)', fontSize: '0.7rem', fontWeight: 'bold'
-                }}>
-                  {step.isCompleted ? '✓' : idx + 1}
+            {journeySteps.map((step: any, idx: number) => {
+              const isCompleted = step.status === 'Completed';
+              return (
+                <div key={step.id ?? idx} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
+                  <div style={{
+                    width: '24px', height: '24px', borderRadius: '50%',
+                    background: isCompleted ? 'var(--success-text)' : 'var(--bg-elevated)',
+                    border: isCompleted ? 'none' : '2px solid var(--border-subtle)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'var(--bg-base)', fontSize: '0.7rem', fontWeight: 'bold'
+                  }}>
+                    {isCompleted ? '✓' : idx + 1}
+                  </div>
+                  <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: idx === journeySteps.length - 1 ? 'none' : '1px solid var(--border-subtle)', paddingBottom: 'var(--space-2)' }}>
+                    <span style={{ color: isCompleted ? 'var(--text-primary)' : 'var(--text-muted)', fontWeight: isCompleted ? 600 : 500 }}>
+                      {step.title ?? step.stepName}
+                    </span>
+                    {step.dateCompleted && <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{new Date(step.dateCompleted).toLocaleDateString()}</span>}
+                  </div>
                 </div>
-                <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: idx === journeySteps.length - 1 ? 'none' : '1px solid var(--border-subtle)', paddingBottom: 'var(--space-2)' }}>
-                  <span style={{ color: step.isCompleted ? 'var(--text-primary)' : 'var(--text-muted)', fontWeight: step.isCompleted ? 600 : 500 }}>
-                    {step.stepName}
-                  </span>
-                  {step.dateCompleted && <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{new Date(step.dateCompleted).toLocaleDateString()}</span>}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </Card>
 
