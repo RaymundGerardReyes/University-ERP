@@ -465,6 +465,7 @@
 |   |   |   |   |-- Finance
 |   |   |   |   |   |-- Finance.Application
 |   |   |   |   |   |   |-- Abstractions
+|   |   |   |   |   |   |   |-- ICashTransactionRepository.cs
 |   |   |   |   |   |   |   `-- IStudentBillingRepository.cs
 |   |   |   |   |   |   |-- Events
 |   |   |   |   |   |   |   `-- Handlers
@@ -474,6 +475,10 @@
 |   |   |   |   |   |   |   |   `-- ApplyScholarshipCommand.cs
 |   |   |   |   |   |   |   |-- AssessTuition
 |   |   |   |   |   |   |   |   `-- AssessTuitionCommand.cs
+|   |   |   |   |   |   |   |-- CashTransactions
+|   |   |   |   |   |   |   |   |-- CompleteCashTransactionCommand.cs
+|   |   |   |   |   |   |   |   |-- GenerateCashTokenCommand.cs
+|   |   |   |   |   |   |   |   `-- GetPendingCashTransactionQuery.cs
 |   |   |   |   |   |   |   |-- ClearBalance
 |   |   |   |   |   |   |   |   `-- ClearBalanceCommand.cs
 |   |   |   |   |   |   |   |-- GetInvoices
@@ -489,17 +494,23 @@
 |   |   |   |   |   |   `-- Finance.Contracts.csproj
 |   |   |   |   |   |-- Finance.Domain
 |   |   |   |   |   |   |-- Aggregates
+|   |   |   |   |   |   |   |-- CashTransaction.cs
 |   |   |   |   |   |   |   `-- StudentBilling.cs
 |   |   |   |   |   |   `-- Finance.Domain.csproj
 |   |   |   |   |   |-- Finance.Infrastructure
 |   |   |   |   |   |   |-- Finance.Infrastructure.csproj
 |   |   |   |   |   |   |-- FinanceModuleRegistration.cs
+|   |   |   |   |   |   |-- Migrations
+|   |   |   |   |   |   |   `-- 20260811164412_AddCashTransactions.cs
 |   |   |   |   |   |   |-- Persistence
-|   |   |   |   |   |   |   `-- FinanceDbContext.cs
+|   |   |   |   |   |   |   |-- FinanceDbContext.cs
+|   |   |   |   |   |   |   `-- FinanceDbContextDesignTimeFactory.cs
 |   |   |   |   |   |   `-- Repositories
+|   |   |   |   |   |       |-- CashTransactionRepository.cs
 |   |   |   |   |   |       `-- StudentBillingRepository.cs
 |   |   |   |   |   `-- Finance.Presentation
 |   |   |   |   |       |-- Endpoints
+|   |   |   |   |       |   |-- CashTransactionsEndpoint.cs
 |   |   |   |   |       |   |-- InvoicesEndpoint.cs
 |   |   |   |   |       |   `-- IssueInvoiceEndpoint.cs
 |   |   |   |   |       `-- Finance.Presentation.csproj
@@ -1007,8 +1018,12 @@
 |   |   |       |   |   |   |   `-- GetPendingApplicationsQuery.cs
 |   |   |       |   |   |   |-- GetProgramCatalog
 |   |   |       |   |   |   |   `-- GetProgramCatalogQuery.cs
+|   |   |       |   |   |   |-- PayApplicationFee
+|   |   |       |   |   |   |   `-- PayApplicationFeeCommand.cs
 |   |   |       |   |   |   |-- RecommendAdmission
 |   |   |       |   |   |   |   `-- RecommendAdmissionCommand.cs
+|   |   |       |   |   |   |-- ScheduleInterview
+|   |   |       |   |   |   |   `-- ScheduleInterviewCommand.cs
 |   |   |       |   |   |   |-- SubmitApplication
 |   |   |       |   |   |   |   `-- SubmitApplicationCommand.cs
 |   |   |       |   |   |   |-- UploadDocument
@@ -1031,6 +1046,12 @@
 |   |   |       |   |-- Admissions.Infrastructure
 |   |   |       |   |   |-- Admissions.Infrastructure.csproj
 |   |   |       |   |   |-- AdmissionsModuleRegistration.cs
+|   |   |       |   |   |-- Migrations
+|   |   |       |   |   |   |-- 20260810164412_AddFeePaymentFields.Designer.cs
+|   |   |       |   |   |   |-- 20260810164412_AddFeePaymentFields.cs
+|   |   |       |   |   |   |-- 20260811000000_AddDocumentFilePath.Designer.cs
+|   |   |       |   |   |   |-- 20260811000000_AddDocumentFilePath.cs
+|   |   |       |   |   |   `-- AdmissionsDbContextModelSnapshot.cs
 |   |   |       |   |   |-- Persistence
 |   |   |       |   |   |   |-- AdmissionsDbContext.cs
 |   |   |       |   |   |   `-- AdmissionsDbContextDesignTimeFactory.cs  C#
@@ -1042,6 +1063,7 @@
 |   |   |       |       `-- Endpoints
 |   |   |       |           |-- AdmissionsWorkflowEndpoint.cs
 |   |   |       |           |-- ApplicationsEndpoint.cs
+|   |   |       |           |-- DocumentsEndpoint.cs
 |   |   |       |           |-- EligibilityEndpoint.cs
 |   |   |       |           |-- FacultyAdmissionsEndpoint.cs
 |   |   |       |           |-- GetApplicationStatusEndpoint.cs
@@ -1196,8 +1218,8 @@
 |   |   |-- admin-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   |-- index-CmnkJuXB.css
-|   |   |   |   |   `-- index-D1EEkjr3.js
+|   |   |   |   |   |-- index-BCFdKNId.js
+|   |   |   |   |   `-- index-CmnkJuXB.css
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1343,8 +1365,8 @@
 |   |   |-- admissions-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   |-- index-CmnkJuXB.css
-|   |   |   |   |   `-- index-jrwlIGtN.js
+|   |   |   |   |   |-- index-Cki9KSb7.js
+|   |   |   |   |   `-- index-CmnkJuXB.css
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1355,6 +1377,7 @@
 |   |   |   |   |   |   |-- AdmissionCases.api.ts
 |   |   |   |   |   |   |-- AdmissionCases.hooks.ts
 |   |   |   |   |   |   |-- AdmissionCases.page.tsx
+|   |   |   |   |   |   |-- AdmissionCases.page.tsx.bak
 |   |   |   |   |   |   |-- AdmissionCases.test.tsx
 |   |   |   |   |   |   `-- AdmissionCases.types.ts
 |   |   |   |   |   |-- AdmissionsDecision
@@ -1363,6 +1386,9 @@
 |   |   |   |   |   |   |-- AdmissionsDecision.page.tsx
 |   |   |   |   |   |   |-- AdmissionsDecision.test.tsx
 |   |   |   |   |   |   `-- AdmissionsDecision.types.ts
+|   |   |   |   |   |-- Applications
+|   |   |   |   |   |   |-- AdmissionCase.page.tsx
+|   |   |   |   |   |   `-- Applications.page.tsx
 |   |   |   |   |   |-- Communication
 |   |   |   |   |   |   `-- ApplicantCommunication.page.tsx
 |   |   |   |   |   |-- Dashboard
@@ -1378,7 +1404,8 @@
 |   |   |   |   |   |-- Fees
 |   |   |   |   |   |   `-- AdmissionFees.page.tsx
 |   |   |   |   |   |-- Intake
-|   |   |   |   |   |   `-- ApplicationIntake.page.tsx
+|   |   |   |   |   |   |-- ApplicationIntake.page.tsx
+|   |   |   |   |   |   `-- ApplicationIntake.page.tsx.bak
 |   |   |   |   |   |-- Interviews
 |   |   |   |   |   |   |-- Interviews.api.ts
 |   |   |   |   |   |   |-- Interviews.hooks.ts
@@ -1410,8 +1437,8 @@
 |   |   |-- applicant-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   |-- index-CmnkJuXB.css
-|   |   |   |   |   `-- index-_lEIkxlo.js
+|   |   |   |   |   |-- index-Cco9TFqz.js
+|   |   |   |   |   `-- index-CmnkJuXB.css
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1476,6 +1503,7 @@
 |   |   |   |   |   |   |-- EligibilityChecker.test.tsx
 |   |   |   |   |   |   `-- EligibilityChecker.types.ts
 |   |   |   |   |   |-- EnrollmentPayment
+|   |   |   |   |   |   |-- ApplicationFeePayment.page.tsx
 |   |   |   |   |   |   |-- EnrollmentPayment.api.ts
 |   |   |   |   |   |   |-- EnrollmentPayment.hooks.ts
 |   |   |   |   |   |   |-- EnrollmentPayment.page.tsx
@@ -1514,8 +1542,8 @@
 |   |   |-- faculty-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   |-- index-cJBQpNUN.css
-|   |   |   |   |   `-- index-fCiC2hGF.js
+|   |   |   |   |   |-- index-BpgLywDz.js
+|   |   |   |   |   `-- index-cJBQpNUN.css
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1602,6 +1630,7 @@
 |   |   |   |   |   |   `-- StudentsDashboard.page.tsx
 |   |   |   |   |   `-- Teaching
 |   |   |   |   |       |-- SectionRoster.page.tsx
+|   |   |   |   |       |-- SectionRoster.test.tsx
 |   |   |   |   |       |-- Teaching.api.ts
 |   |   |   |   |       |-- Teaching.hooks.ts
 |   |   |   |   |       |-- Teaching.page.tsx
@@ -1621,7 +1650,7 @@
 |   |   |-- finance-console
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-CKcukW0F.js
+|   |   |   |   |   `-- index-BV061Goh.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1695,6 +1724,7 @@
 |   |   |   |   |   |   |-- SemesterBilling.api.ts
 |   |   |   |   |   |   |-- SemesterBilling.hooks.ts
 |   |   |   |   |   |   |-- SemesterBilling.page.tsx
+|   |   |   |   |   |   |-- SemesterBilling.test.tsx
 |   |   |   |   |   |   `-- SemesterBilling.types.ts
 |   |   |   |   |   |-- StudentBilling
 |   |   |   |   |   |   |-- ScholarshipGrants.page.tsx
@@ -1718,7 +1748,7 @@
 |   |   |-- governance-console
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-JOshJdPf.js
+|   |   |   |   |   `-- index-w2dMAf9z.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1785,7 +1815,7 @@
 |   |   |-- identity-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-CUdkNG6V.js
+|   |   |   |   |   `-- index-DkQQ2-iQ.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1862,7 +1892,7 @@
 |   |   |-- library-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-CdBEsG2V.js
+|   |   |   |   |   `-- index-CT0zjPaw.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1915,7 +1945,7 @@
 |   |   |-- lms-web
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-Cp8ru4LM.js
+|   |   |   |   |   `-- index-BdLnS2e0.js
 |   |   |   |   |-- index.html
 |   |   |   |   |-- manifest.webmanifest
 |   |   |   |   `-- service-worker.ts
@@ -2060,8 +2090,8 @@
 |   |   |-- registrar-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   |-- index-CmnkJuXB.css
-|   |   |   |   |   `-- index-DT_8fz9O.js
+|   |   |   |   |   |-- index-ALEWLCWZ.js
+|   |   |   |   |   `-- index-CmnkJuXB.css
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -2076,8 +2106,11 @@
 |   |   |   |   |   |   `-- ResidencyRules.page.tsx
 |   |   |   |   |   |-- AcademicRecordsDivision
 |   |   |   |   |   |   |-- AcademicRecordInitialization.page.tsx
+|   |   |   |   |   |   |-- AcademicRecordInitialization.test.tsx
 |   |   |   |   |   |   |-- AcademicStanding.page.tsx
+|   |   |   |   |   |   |-- AcademicStanding.test.tsx
 |   |   |   |   |   |   |-- OfficialGrades.page.tsx
+|   |   |   |   |   |   |-- OfficialGrades.test.tsx
 |   |   |   |   |   |   |-- Records.api.ts
 |   |   |   |   |   |   |-- Records.hooks.ts
 |   |   |   |   |   |   `-- Records.types.ts
@@ -2109,22 +2142,32 @@
 |   |   |   |   |   |   `-- CrossEnrollmentDivision.types.ts
 |   |   |   |   |   |-- CurriculumDivision
 |   |   |   |   |   |   |-- CourseOfferings.page.tsx
+|   |   |   |   |   |   |-- CourseOfferings.test.tsx
 |   |   |   |   |   |   |-- Curriculum.api.ts
 |   |   |   |   |   |   |-- Curriculum.hooks.ts
 |   |   |   |   |   |   |-- Curriculum.types.ts
 |   |   |   |   |   |   |-- Prerequisites.page.tsx
-|   |   |   |   |   |   `-- SubjectCatalog.page.tsx
+|   |   |   |   |   |   |-- Prerequisites.test.tsx
+|   |   |   |   |   |   |-- SubjectCatalog.page.tsx
+|   |   |   |   |   |   `-- SubjectCatalog.test.tsx
 |   |   |   |   |   |-- EnrollmentDivision
 |   |   |   |   |   |   |-- AddDropOversight.page.tsx
+|   |   |   |   |   |   |-- AddDropOversight.test.tsx
 |   |   |   |   |   |   |-- Enrollment.api.ts
 |   |   |   |   |   |   |-- Enrollment.hooks.ts
 |   |   |   |   |   |   |-- Enrollment.types.ts
 |   |   |   |   |   |   |-- EnrollmentValidation.page.tsx
+|   |   |   |   |   |   |-- EnrollmentValidation.test.tsx
 |   |   |   |   |   |   |-- RegistrationExceptions.page.tsx
+|   |   |   |   |   |   |-- RegistrationExceptions.test.tsx
 |   |   |   |   |   |   |-- RegistrationRequests.page.tsx
+|   |   |   |   |   |   |-- RegistrationRequests.test.tsx
 |   |   |   |   |   |   |-- RegistrationWindows.page.tsx
+|   |   |   |   |   |   |-- RegistrationWindows.test.tsx
 |   |   |   |   |   |   |-- SubjectLoading.page.tsx
-|   |   |   |   |   |   `-- Waitlists.page.tsx
+|   |   |   |   |   |   |-- SubjectLoading.test.tsx
+|   |   |   |   |   |   |-- Waitlists.page.tsx
+|   |   |   |   |   |   `-- Waitlists.test.tsx
 |   |   |   |   |   |-- GraduationDivision
 |   |   |   |   |   |   |-- Graduation.api.ts
 |   |   |   |   |   |   |-- Graduation.hooks.ts
@@ -2190,8 +2233,8 @@
 |   |   `-- student-portal
 |   |       |-- dist
 |   |       |   |-- assets
-|   |       |   |   |-- index-cJBQpNUN.css
-|   |       |   |   `-- index-cOlvImd2.js
+|   |       |   |   |-- index-U5POpO5V.js
+|   |       |   |   `-- index-cJBQpNUN.css
 |   |       |   `-- index.html
 |   |       |-- index.html
 |   |       |-- package.json
@@ -2302,13 +2345,16 @@
 |   |       |   |   |   `-- MyEnrollments.types.ts
 |   |       |   |   |-- Registration
 |   |       |   |   |   |-- BrowseCourses.page.tsx
+|   |       |   |   |   |-- BrowseCourses.test.tsx
 |   |       |   |   |   |-- MyRegistration.page.tsx
+|   |       |   |   |   |-- MyRegistration.test.tsx
 |   |       |   |   |   |-- Registration.api.ts
 |   |       |   |   |   |-- Registration.hooks.ts
 |   |       |   |   |   |-- Registration.page.tsx
 |   |       |   |   |   |-- Registration.test.tsx
 |   |       |   |   |   |-- Registration.types.ts
-|   |       |   |   |   `-- Waitlist.page.tsx
+|   |       |   |   |   |-- Waitlist.page.tsx
+|   |       |   |   |   `-- Waitlist.test.tsx
 |   |       |   |   |-- Schedule
 |   |       |   |   |   |-- Schedule.api.ts
 |   |       |   |   |   |-- Schedule.hooks.ts
@@ -2622,6 +2668,7 @@
 |   |   |   |   |-- hrApi.ts
 |   |   |   |   |-- inventoryApi.ts
 |   |   |   |   `-- procurementApi.ts
+|   |   |   |-- apiClient.ts
 |   |   |   |-- campus-life
 |   |   |   |   |-- canteenApi.ts
 |   |   |   |   `-- transportApi.ts
@@ -2643,6 +2690,7 @@
 |   |   |       |-- guidanceApi.ts
 |   |   |       |-- healthCenterApi.ts
 |   |   |       |-- hostelApi.ts
+|   |   |       |-- interviewsApi.ts
 |   |   |       |-- studentInformationApi.ts
 |   |   |       `-- studentInformationReadModel.ts
 |   |   |-- auth-sdk
@@ -2696,6 +2744,7 @@
 |   |   |   |   |   |-- Badge.tsx
 |   |   |   |   |   |-- Button.tsx
 |   |   |   |   |   |-- Card.tsx
+|   |   |   |   |   |-- DocumentPreviewModal.tsx
 |   |   |   |   |   |-- FormInput.tsx
 |   |   |   |   |   |-- Modal.tsx
 |   |   |   |   |   |-- PageHeader.tsx
@@ -2764,6 +2813,7 @@
 |-- package-lock.json
 |-- package.json
 |-- release_all.sh
+|-- result.log
 |-- scaffold-frontend-cloudflare-nginx.sh
 |-- scaffold_features.ps1
 |-- setup_structure.ps1
@@ -2777,4 +2827,4 @@
 |-- university-erp-frontend-features-ddd-dbma-prompt.md
 `-- university-erp-scaffolding-script-review.md
 
-932 directories, 1845 files
+938 directories, 1889 files
