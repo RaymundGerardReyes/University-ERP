@@ -1,6 +1,6 @@
 import { Badge, Button, Card, PageHeader } from '@university-erp/ui-kit';
 import { useQuery } from '@tanstack/react-query';
-import { financeApi } from '@university-erp/api-clients/administration/financeApi';
+import { financeApi } from '@university-erp/api-clients';
 import React from 'react';
 
 export const AdmissionFeesPage: React.FC = () => {

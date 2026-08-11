@@ -43,14 +43,14 @@ export const ApplicationReviewPage: React.FC = () => {
                                     style={{ width: '100%', padding: '0.5rem', marginBottom: '1rem' }}
                                 >
                                     {applications?.map((app: any) => (
-                                        <option key={app.id} value={app.id}>{app.name} ({app.id})</option>
+                                        <option key={app.id} value={app.id}>{app.applicantName} ({app.id})</option>
                                     ))}
                                 </select>
                                 <div className="card-accent-top" style={{ background: 'var(--brand-primary)' }} />
                                 <div className="profile-hero" style={{ marginBottom: 0 }}>
-                                    <div className="profile-avatar">{selectedApp?.name?.charAt(0) || '?'}</div>
+                                    <div className="profile-avatar">{selectedApp?.applicantName?.charAt(0) || '?'}</div>
                                     <div>
-                                        <div className="profile-name">{selectedApp?.name || 'Select Applicant'}</div>
+                                        <div className="profile-name">{selectedApp?.applicantName || 'Select Applicant'}</div>
                                         <div className="profile-email">{selectedApp?.program || 'N/A'}</div>
                                         <div className="profile-id">{selectedApp?.id || ''}</div>
                                     </div>
