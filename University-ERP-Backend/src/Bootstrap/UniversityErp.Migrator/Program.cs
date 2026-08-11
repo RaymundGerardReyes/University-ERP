@@ -200,6 +200,11 @@ static async Task CreateAdmissionsSchemaAsync(IServiceProvider services, ILogger
         ALTER TABLE admissions."AdmissionApplications" ADD COLUMN IF NOT EXISTS "SubmittedDate" TIMESTAMPTZ NOT NULL DEFAULT NOW();
         ALTER TABLE admissions."AdmissionApplications" ADD COLUMN IF NOT EXISTS "FacultyRemarks" TEXT NOT NULL DEFAULT '';
         ALTER TABLE admissions."AdmissionApplications" ADD COLUMN IF NOT EXISTS "OfficialStudentId" TEXT NOT NULL DEFAULT '';
+        ALTER TABLE admissions."AdmissionApplications" ADD COLUMN IF NOT EXISTS "InterviewDate" TEXT NOT NULL DEFAULT '';
+        ALTER TABLE admissions."AdmissionApplications" ADD COLUMN IF NOT EXISTS "InterviewTime" TEXT NOT NULL DEFAULT '';
+        ALTER TABLE admissions."AdmissionApplications" ADD COLUMN IF NOT EXISTS "ApplicationFeeStatus" TEXT NOT NULL DEFAULT 'Pending';
+        ALTER TABLE admissions."AdmissionApplications" ADD COLUMN IF NOT EXISTS "ApplicationFeeTransactionId" TEXT;
+        ALTER TABLE admissions."AdmissionDocuments" ADD COLUMN IF NOT EXISTS "FilePath" TEXT;
         """;
 
     await using var cmd = new NpgsqlCommand(sql, conn);
@@ -363,6 +368,34 @@ static async Task CreateFinanceSchemaAsync(IServiceProvider services, ILogger lo
             "Status" VARCHAR(50) NOT NULL,
             "IssuedOnUtc" TIMESTAMPTZ NOT NULL
         );
+
+        CREATE TABLE IF NOT EXISTS finance."CashTransactions" (
+            "Id" UUID NOT NULL PRIMARY KEY,
+            "TransactionToken" VARCHAR(50) NOT NULL,
+            "ReferenceId" VARCHAR(100) NOT NULL,
+            "Amount" NUMERIC(18,2) NOT NULL,
+            "Status" VARCHAR(30) NOT NULL DEFAULT 'Pending',
+            "CreatedOnUtc" TIMESTAMPTZ NOT NULL,
+            "CompletedOnUtc" TIMESTAMPTZ
+        );
+
+        CREATE UNIQUE INDEX IF NOT EXISTS "IX_CashTransactions_TransactionToken" ON finance."CashTransactions" ("TransactionToken");
+
+        CREATE TABLE IF NOT EXISTS finance."PaymentSessions" (
+            "Id" UUID NOT NULL PRIMARY KEY,
+            "SessionId" VARCHAR(100) NOT NULL,
+            "InvoiceId" VARCHAR(100) NOT NULL,
+            "ApplicantId" VARCHAR(100) NOT NULL,
+            "Amount" NUMERIC(18,2) NOT NULL,
+            "Currency" VARCHAR(10) NOT NULL DEFAULT 'PHP',
+            "Purpose" VARCHAR(100) NOT NULL,
+            "Status" VARCHAR(30) NOT NULL DEFAULT 'Active',
+            "CreatedAtUtc" TIMESTAMPTZ NOT NULL,
+            "ExpiresAtUtc" TIMESTAMPTZ NOT NULL,
+            "ConsumedAtUtc" TIMESTAMPTZ
+        );
+
+        CREATE UNIQUE INDEX IF NOT EXISTS "IX_PaymentSessions_SessionId" ON finance."PaymentSessions" ("SessionId");
 
         INSERT INTO finance."StudentBillings" ("Id", "StudentId", "TotalAmount", "PaidAmount", "Description", "Status", "IssuedOnUtc")
         VALUES 
