@@ -48,7 +48,10 @@ export function createPortalConfig(options: PortalConfig): UserConfig {
       }] : [])
     ],
     resolve: {
+      dedupe: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query', 'axios'],
       alias: {
+        'react': path.resolve(process.cwd(), '../../node_modules/react'),
+        'react-dom': path.resolve(process.cwd(), '../../node_modules/react-dom'),
         '@shell': path.resolve(process.cwd(), './src/shell'),
         '@features': path.resolve(process.cwd(), './src/features'),
         '@state': path.resolve(process.cwd(), './src/state'),

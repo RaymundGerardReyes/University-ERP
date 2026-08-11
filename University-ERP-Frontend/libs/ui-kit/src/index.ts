@@ -5,3 +5,4 @@ export * from './components/PageHeader';
 export * from './components/Table';
 export * from './components/Modal';
 export * from './components/FormInput';
+export * from './components/DocumentPreviewModal'; // NEW

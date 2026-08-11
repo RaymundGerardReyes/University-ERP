@@ -34,4 +34,6 @@ export * from './student-lifecycle/facultyAdmissionsApi';
 export * from './student-lifecycle/guidanceApi';
 export * from './student-lifecycle/healthCenterApi';
 export * from './student-lifecycle/hostelApi';
+export * from './student-lifecycle/interviewsApi';
 export * from './student-lifecycle/studentInformationReadModel';
+

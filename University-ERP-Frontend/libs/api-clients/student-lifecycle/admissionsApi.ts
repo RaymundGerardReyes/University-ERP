@@ -1,17 +1,76 @@
-import axios from 'axios';
 import { ApplicationStatusViewModel } from '@university-erp/domain-viewmodels';
+import axios from 'axios';
 
 const BASE_URL = '/api/v1/admissions';
 
-export const admissionsApi = {
+// Exact mappings to C# DTOs
+export interface ApplicantDocumentDto {
+  id: string;
+  name: string;
+  status: string;
+  uploadedAt?: string | null;
+  feedback?: string | null;
+  filePath?: string | null;
+}
 
+export interface TimelineEventDto {
+  date: string;
+  event: string;
+  detail: string;
+}
+
+export interface JourneyMilestoneDto {
+  id: string;
+  title: string;
+  status: string;
+  description: string;
+  dateCompleted?: string | null;
+}
+
+export interface ProgramOfferingDto {
+  id: string;
+  college: string;
+  degree: string;
+  major: string;
+  duration: string;
+  intake: string;
+  tuitionEstimate: string;
+  tags: string[];
+}
+
+export interface JourneyStateDto {
+  applicantName: string;
+  applicantId: string;
+  currentStage: number;
+  applicationFeeStatus: string; // NEW
+  milestones: JourneyMilestoneDto[];
+  programs: ProgramOfferingDto[];
+  documents: ApplicantDocumentDto[];
+  timeline: TimelineEventDto[];
+}
+
+export interface PendingApplicationDto {
+  id: string;
+  applicantName: string;
+  program: string;
+  department: string;
+  status: string;
+  gpa: number;
+  submittedDate: string;
+  interviewDate?: string | null; // NEW
+  interviewTime?: string | null; // NEW
+  applicationFeeStatus: string; // NEW
+  documents: ApplicantDocumentDto[]; // NEW
+}
+
+export const admissionsApi = {
   getApplicationsByStage: async (stage: 'SecretaryQueue' | 'ChairpersonQueue' | 'RegistrarQueue') => {
     const response = await axios.get(`${BASE_URL}/queue`, { params: { stage } });
     return response.data;
   },
 
-  getPendingApplications: async (department?: string) => {
-    const response = await axios.get(`${BASE_URL}/faculty/pending`, { params: { department } });
+  getPendingApplications: async (department?: string): Promise<PendingApplicationDto[]> => {
+    const response = await axios.get<PendingApplicationDto[]>(`${BASE_URL}/faculty/pending`, { params: { department } });
     return response.data;
   },
 
@@ -30,80 +89,53 @@ export const admissionsApi = {
     return response.data;
   },
 
-  // Faculty Office Secretary Action
   verifyDocumentsAndForward: async (applicationId: string) => {
     const response = await axios.post(`${BASE_URL}/${applicationId}/verify-and-forward`);
     return response.data;
   },
 
-  // Department Chairperson Action
   submitAcademicEvaluation: async (applicationId: string, decision: 'Accept' | 'Reject' | 'Waitlist', notes: string) => {
     const response = await axios.post(`${BASE_URL}/${applicationId}/evaluate`, { decision, notes });
     return response.data;
   },
 
-  // Registrar Action
   generateStudentIdentityAndEnroll: async (applicationId: string) => {
     const response = await axios.post(`${BASE_URL}/${applicationId}/enroll`);
     return response.data;
   },
-  
+
   getApplicationStatus: async (studentId: string): Promise<ApplicationStatusViewModel[]> => {
-    try {
-      const response = await axios.get<ApplicationStatusViewModel[]>(`${BASE_URL}/status/${studentId}`);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await axios.get<ApplicationStatusViewModel[]>(`${BASE_URL}/status/${studentId}`);
+    return response.data;
   },
 
-  getApplicantJourney: async (studentId: string): Promise<any> => {
-    try {
-      const response = await axios.get(`${BASE_URL}/applications/journey/${studentId}`);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to fetch applicant journey', error);
-      throw error;
-    }
+  getApplicantJourney: async (studentId: string): Promise<JourneyStateDto> => {
+    const response = await axios.get<JourneyStateDto>(`${BASE_URL}/applications/journey/${studentId}`);
+    return response.data;
   },
 
   submitApplication: async (data: any): Promise<string> => {
-    try {
-      const response = await axios.post(`${BASE_URL}/applications`, data);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to submit application', error);
-      throw error;
-    }
+    const response = await axios.post(`${BASE_URL}/applications`, data);
+    return response.data;
   },
 
   uploadDocument: async (applicationId: string, data: { documentName: string, filePath: string }): Promise<boolean> => {
-    try {
-      const response = await axios.post(`${BASE_URL}/applications/${applicationId}/documents`, data);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to upload document', error);
-      throw error;
-    }
+    const response = await axios.post(`${BASE_URL}/applications/${applicationId}/documents`, data);
+    return response.data;
   },
 
-  getProgramCatalog: async (): Promise<any[]> => {
-    try {
-      const response = await axios.get(`${BASE_URL}/programs`);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to fetch programs', error);
-      throw error;
-    }
+  getProgramCatalog: async (): Promise<ProgramOfferingDto[]> => {
+    const response = await axios.get<ProgramOfferingDto[]>(`${BASE_URL}/programs`);
+    return response.data;
   },
 
   checkEligibility: async (data: any): Promise<any> => {
-    try {
-      const response = await axios.post(`${BASE_URL}/eligibility`, data);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to check eligibility', error);
-      throw error;
-    }
+    const response = await axios.post(`${BASE_URL}/eligibility`, data);
+    return response.data;
+  },
+
+  // --- NEW METHOD ---
+  scheduleInterview: async (applicationId: string, payload: { date: string, time: string }): Promise<void> => {
+    await axios.post(`${BASE_URL}/applications/${applicationId}/schedule-interview`, payload);
   }
 };
