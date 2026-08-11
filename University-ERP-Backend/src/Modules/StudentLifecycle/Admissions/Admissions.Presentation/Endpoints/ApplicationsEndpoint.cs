@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Admissions.Application.Features.SubmitApplication;
 using Admissions.Application.Features.UploadDocument;
 using Admissions.Application.Features.GetApplicantJourney;
+using Admissions.Application.Features.ScheduleInterview; // NEW
+using System.Threading;
+using System.Threading.Tasks;
 
 [ApiController]
 [Route("api/v1/admissions/applications")]
@@ -37,10 +40,27 @@ public sealed class ApplicationsEndpoint : ControllerBase
     {
         var command = new UploadDocumentCommand(id, request.DocumentName, request.FilePath);
         var result = await _sender.Send(command, cancellationToken);
+
         if (!result) return NotFound();
         
         return Ok(result);
     }
+
+    // --- NEW ENDPOINT ---
+    [HttpPost("{id}/schedule-interview")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ScheduleInterview([FromRoute] string id, [FromBody] ScheduleInterviewDto request, CancellationToken cancellationToken)
+    {
+        var command = new ScheduleInterviewCommand(id, request.Date, request.Time);
+        var result = await _sender.Send(command, cancellationToken);
+
+        if (result.IsFailure) return BadRequest(new { code = result.Error.Code, message = result.Error.Description });
+        
+        return Ok();
+    }
+
 }
 
 public sealed record UploadDocumentDto(string DocumentName, string FilePath);
+public sealed record ScheduleInterviewDto(string Date, string Time);

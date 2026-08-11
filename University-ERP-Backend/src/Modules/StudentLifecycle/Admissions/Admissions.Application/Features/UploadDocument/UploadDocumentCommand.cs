@@ -28,7 +28,15 @@ public sealed class UploadDocumentCommandHandler : IRequestHandler<UploadDocumen
         }
 
         // Simulate upload and document addition
-        application.AddDocument(request.DocumentName, "Uploaded");
+        var existingDoc = application.Documents.FirstOrDefault(d => d.Name == request.DocumentName);
+        if (existingDoc != null)
+        {
+            existingDoc.MarkAsUploaded(request.FilePath);
+        }
+        else
+        {
+            application.AddDocument(request.DocumentName, "Uploaded", request.FilePath);
+        }
 
         // Reactivate verification phase if needed
         var verificationEvent = application.TimelineEvents.FirstOrDefault(t => t.Title == "Document Verification");

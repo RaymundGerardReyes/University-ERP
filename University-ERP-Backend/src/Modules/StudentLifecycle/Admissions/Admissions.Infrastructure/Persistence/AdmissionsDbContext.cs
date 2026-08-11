@@ -35,6 +35,22 @@ public sealed class AdmissionsDbContext : DbContext
                   .IsRequired()
                   .HasDefaultValue(string.Empty);
 
+            // --- NEW MAPPINGS ---
+            entity.Property(e => e.InterviewDate)
+                  .IsRequired()
+                  .HasDefaultValue(string.Empty);
+
+            entity.Property(e => e.InterviewTime)
+                  .IsRequired()
+                  .HasDefaultValue(string.Empty);
+
+            entity.Property(e => e.ApplicationFeeStatus)
+                  .IsRequired()
+                  .HasDefaultValue("Pending");
+
+            entity.Property(e => e.ApplicationFeeTransactionId)
+                  .IsRequired(false);
+
             // Map the collections for the Aggregate Root
             entity.HasMany(e => e.Documents)
                   .WithOne()

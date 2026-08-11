@@ -13,6 +13,13 @@ public sealed class AdmissionApplication : AggregateRoot<string>
     public string OfficialStudentId { get; private set; } = string.Empty;
     public DateTime SubmittedDate { get; private set; }
     
+    // --- NEW PROPERTIES ---
+    public string InterviewDate { get; private set; } = string.Empty;
+    public string InterviewTime { get; private set; } = string.Empty;
+    
+    public string ApplicationFeeStatus { get; private set; } = "Pending";
+    public string? ApplicationFeeTransactionId { get; private set; }
+
     private readonly List<AdmissionDocument> _documents = new();
     public IReadOnlyCollection<AdmissionDocument> Documents => _documents.AsReadOnly();
 
@@ -34,11 +41,20 @@ public sealed class AdmissionApplication : AggregateRoot<string>
         AddTimelineEvent("Document Verification", "We are verifying your uploaded documents.", "Active");
         AddTimelineEvent("Under Review", "Your application is being reviewed by the admissions committee.", "Locked");
         AddTimelineEvent("Admission Decision", "Final decision on your application.", "Locked");
+
+        // Initialize default required documents
+        AddDocument("Birth Certificate (PSA)", "Pending");
+        AddDocument("Form 137 / Transcript of Records", "Pending");
+        AddDocument("Good Moral Certificate", "Pending");
     }
 
-    public void AddDocument(string name, string status)
+    public void AddDocument(string name, string status, string? filePath = null)
     {
         var doc = new AdmissionDocument(Guid.NewGuid().ToString(), Id, name, status);
+        if (status == "Uploaded")
+        {
+            doc.MarkAsUploaded(filePath);
+        }
         _documents.Add(doc);
     }
 
@@ -48,11 +64,42 @@ public sealed class AdmissionApplication : AggregateRoot<string>
         _timelineEvents.Add(evt);
     }
 
+    // --- NEW DOMAIN METHOD ---
+    public Result<bool> MarkFeeAsPaid(string transactionId)
+    {
+        if (ApplicationFeeStatus == "Paid")
+        {
+            return Result<bool>.Failure(new Error("Admissions.FeeAlreadyPaid", "The application fee has already been paid."));
+        }
+
+        ApplicationFeeStatus = "Paid";
+        ApplicationFeeTransactionId = transactionId;
+        
+        AddTimelineEvent("Application Fee Paid", $"Payment confirmed. Transaction ID: {transactionId}", "Completed", DateTime.UtcNow);
+
+        return Result<bool>.Success(true);
+    }
+
     public Result<bool> VerifyDocuments()
     {
         if (Status != "Submitted") return Result<bool>.Failure(new Error("Admissions.InvalidState", "Application is not in Submitted state."));
         Status = "InterviewPending";
         AddTimelineEvent("Document Verification Complete", "Documents have been verified by Admissions.", "Completed", DateTime.UtcNow);
+        return Result<bool>.Success(true);
+    }
+
+    // --- NEW DOMAIN METHOD ---
+    public Result<bool> ScheduleInterview(string date, string time)
+    {
+        if (Status != "InterviewPending" && Status != "Submitted" && Status != "Under Review") 
+            return Result<bool>.Failure(new Error("Admissions.InvalidState", "Application is not ready for interview scheduling."));
+
+        InterviewDate = date;
+        InterviewTime = time;
+        Status = "InterviewScheduled";
+        
+        AddTimelineEvent("Interview Scheduled", $"Your interview is scheduled for {date} at {time}.", "Completed", DateTime.UtcNow);
+
         return Result<bool>.Success(true);
     }
 

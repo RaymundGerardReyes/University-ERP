@@ -14,12 +14,33 @@ public static class AdmissionsModuleRegistration
         IConfiguration configuration)
     {
         // 1. Inject the PostgreSQL connection specifically for the Admissions context
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
         services.AddDbContext<AdmissionsDbContext>(options =>
             options.UseNpgsql(
-                configuration.GetConnectionString("DefaultConnection"),
+                connectionString,
                 // Prevent cross-module corruption by isolating the EF migration history
                 npgsqlOptions => npgsqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "admissions")
             ));
+
+        // Ensure database column FilePath exists automatically on startup
+        if (!string.IsNullOrEmpty(connectionString))
+        {
+            try
+            {
+                using var conn = new Npgsql.NpgsqlConnection(connectionString);
+                conn.Open();
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = @"
+                    CREATE SCHEMA IF NOT EXISTS admissions;
+                    ALTER TABLE admissions.""AdmissionDocuments"" ADD COLUMN IF NOT EXISTS ""FilePath"" TEXT;
+                ";
+                cmd.ExecuteNonQuery();
+            }
+            catch
+            {
+                // Non-blocking in case DB is unready during initial build
+            }
+        }
 
         // 2. Register Repositories for Dependency Injection
         services.AddScoped<IAdmissionApplicationRepository, AdmissionApplicationRepository>();

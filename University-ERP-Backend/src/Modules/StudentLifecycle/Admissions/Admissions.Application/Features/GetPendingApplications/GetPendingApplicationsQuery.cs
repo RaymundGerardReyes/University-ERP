@@ -2,10 +2,20 @@ namespace Admissions.Application.Features.GetPendingApplications;
 
 using MediatR;
 using Admissions.Application.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
+// 1. Add the Document DTO
+public sealed record PendingAppDocumentDto(
+    string Id,
+    string Name,
+    string Status,
+    DateTime? UploadedAt,
+    string? FilePath
+);
 
 // 1. DTO matching the frontend 'PendingApplication' interface
 public sealed record PendingApplicationDto(
@@ -15,7 +25,11 @@ public sealed record PendingApplicationDto(
     string Department, 
     string Status, 
     double Gpa, 
-    string SubmittedDate
+    string SubmittedDate,
+    string? InterviewDate, 
+    string? InterviewTime,
+    string ApplicationFeeStatus,
+    List<PendingAppDocumentDto> Documents // NEW
 );
 
 // 2. The MediatR Query
@@ -42,7 +56,7 @@ public sealed class GetPendingApplicationsQueryHandler : IRequestHandler<GetPend
         var allApplications = await _repository.GetAllAsync(cancellationToken); 
         
         var pendingApps = allApplications
-            .Where(a => a.Status == "Under Review" || a.Status == "Pending Faculty Approval" || a.Status == "Submitted")
+            .Where(a => a.Status == "InterviewPending" || a.Status == "Under Review" || a.Status == "Pending Faculty Approval" || a.Status == "Submitted")
             .ToList();
 
         var result = new List<PendingApplicationDto>();
@@ -73,6 +87,15 @@ public sealed class GetPendingApplicationsQueryHandler : IRequestHandler<GetPend
                 ? $"Applicant ({app.ApplicantId.Substring(0, 8)}...)" 
                 : $"Applicant ({app.ApplicantId})";
 
+            // 3. Map the documents
+            var documents = app.Documents.Select(d => new PendingAppDocumentDto(
+                d.Id,
+                d.Name,
+                d.Status,
+                d.UploadedAt,
+                d.FilePath
+            )).ToList();
+
             result.Add(new PendingApplicationDto(
                 app.Id,
                 applicantDisplayName,
@@ -80,7 +103,11 @@ public sealed class GetPendingApplicationsQueryHandler : IRequestHandler<GetPend
                 collegeName,
                 app.Status,
                 3.85,
-                app.SubmittedDate.ToString("yyyy-MM-dd")
+                app.SubmittedDate.ToString("yyyy-MM-dd"),
+                string.IsNullOrWhiteSpace(app.InterviewDate) ? null : app.InterviewDate,
+                string.IsNullOrWhiteSpace(app.InterviewTime) ? null : app.InterviewTime,
+                app.ApplicationFeeStatus,
+                documents // NEW
             ));
         }
 

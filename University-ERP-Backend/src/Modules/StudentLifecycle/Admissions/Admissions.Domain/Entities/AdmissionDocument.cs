@@ -8,6 +8,7 @@ public sealed class AdmissionDocument : Entity<string>
     public string Status { get; private set; } = string.Empty;
     public string? Feedback { get; private set; }
     public DateTime? UploadedAt { get; private set; }
+    public string? FilePath { get; private set; }
     public string AdmissionApplicationId { get; private set; } = string.Empty;
 
     private AdmissionDocument() : base() { }
@@ -20,11 +21,12 @@ public sealed class AdmissionDocument : Entity<string>
         Status = status;
     }
 
-    public void MarkAsUploaded()
+    public void MarkAsUploaded(string? filePath = null)
     {
         Status = "Uploaded";
         UploadedAt = DateTime.UtcNow;
         Feedback = null;
+        if (filePath is not null) FilePath = filePath;
     }
 
     public void Review(string status, string? feedback)

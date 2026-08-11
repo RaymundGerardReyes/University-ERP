@@ -23,6 +23,7 @@ public sealed class AdmissionApplicationRepository : IAdmissionApplicationReposi
         return await _dbContext.Applications
             .Include(a => a.Documents)
             .Include(a => a.TimelineEvents)
+            .AsSplitQuery()
             .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
     }
 
@@ -31,6 +32,7 @@ public sealed class AdmissionApplicationRepository : IAdmissionApplicationReposi
         return await _dbContext.Applications
             .Include(a => a.Documents)
             .Include(a => a.TimelineEvents)
+            .AsSplitQuery()
             .Where(a => a.ApplicantId == applicantId)
             .ToListAsync(cancellationToken);
     }
@@ -40,6 +42,7 @@ public sealed class AdmissionApplicationRepository : IAdmissionApplicationReposi
         return await _dbContext.Applications
             .Include(a => a.Documents)
             .Include(a => a.TimelineEvents)
+            .AsSplitQuery()
             .ToListAsync(cancellationToken);
     }
 

@@ -17,7 +17,8 @@ public sealed record ApplicantDocumentDto(
     string Name,
     string Status,
     DateTime? UploadedAt,
-    string? Feedback
+    string? Feedback,
+    string? FilePath
 );
 
 public sealed record TimelineEventDto(
@@ -30,6 +31,7 @@ public sealed record JourneyStateDto(
     string ApplicantName,
     string ApplicantId,
     int CurrentStage,
+    string ApplicationFeeStatus, // NEW
     List<JourneyMilestoneDto> Milestones,
     List<ProgramOfferingDto> Programs,
     List<ApplicantDocumentDto> Documents,
@@ -61,16 +63,16 @@ public sealed class GetApplicantJourneyQueryHandler : IRequestHandler<GetApplica
 
         if (latestApp == null)
         {
-            // If they haven't applied yet, just return the catalog
-            return new JourneyStateDto(
-                "Applicant",
-                request.StudentId,
-                0,
-                new List<JourneyMilestoneDto>(),
-                programDtos,
-                new List<ApplicantDocumentDto>(),
-                new List<TimelineEventDto>()
-            );
+            latestApp = new Admissions.Domain.Aggregates.AdmissionApplication(Guid.NewGuid().ToString(), request.StudentId, "BSCS");
+            _repository.Add(latestApp);
+            await _repository.SaveChangesAsync(cancellationToken);
+        }
+        else if (!latestApp.Documents.Any())
+        {
+            latestApp.AddDocument("Birth Certificate (PSA)", "Pending");
+            latestApp.AddDocument("Form 137 / Transcript of Records", "Pending");
+            latestApp.AddDocument("Good Moral Certificate", "Pending");
+            await _repository.SaveChangesAsync(cancellationToken);
         }
 
         var milestones = latestApp.TimelineEvents.Select(t => new JourneyMilestoneDto(
@@ -86,7 +88,8 @@ public sealed class GetApplicantJourneyQueryHandler : IRequestHandler<GetApplica
             d.Name,
             d.Status,
             d.UploadedAt,
-            d.Feedback
+            d.Feedback,
+            d.FilePath
         )).ToList();
 
         var timeline = latestApp.TimelineEvents
@@ -112,6 +115,7 @@ public sealed class GetApplicantJourneyQueryHandler : IRequestHandler<GetApplica
             "Applicant",
             latestApp.Id,
             stage,
+            latestApp.ApplicationFeeStatus, // NEW
             milestones,
             programDtos,
             documents,
