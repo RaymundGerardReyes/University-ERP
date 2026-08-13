@@ -25,22 +25,24 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
 
         var requestBody = new
         {
-            Token = paymentToken,
-            Amount = amount,
-            Currency = currency
+            sourceAccountNumber = paymentToken,
+            destinationAccountNumber = "UNIV-ACCT-001",
+            amount = amount,
+            idempotencyKey = System.Guid.NewGuid().ToString(),
+            description = "University ERP Payment",
+            scheduledDate = System.DateTime.UtcNow.ToString("yyyy-MM-dd")
         };
 
         try
         {
-            // Call the real external Banking System API
-            var response = await _httpClient.PostAsJsonAsync("/api/banking/v1/charge", requestBody, cancellationToken);
+            var response = await _httpClient.PostAsJsonAsync("/api/v1/transfers/internal", requestBody, cancellationToken);
             
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<BankingChargeResponse>(cancellationToken: cancellationToken);
-                if (result != null && !string.IsNullOrEmpty(result.TransactionId))
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse<TransactionResponse>>(cancellationToken: cancellationToken);
+                if (result?.Data != null && !string.IsNullOrEmpty(result.Data.TransactionId))
                 {
-                    return Result<string>.Success(result.TransactionId);
+                    return Result<string>.Success(result.Data.TransactionId);
                 }
             }
             
@@ -55,24 +57,19 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
     
     public async Task<Result<string>> GeneratePaymentInstrumentAsync(string sessionId, decimal amount, string currency, CancellationToken cancellationToken)
     {
-        var requestBody = new
-        {
-            ReferenceId = sessionId,
-            Amount = amount,
-            Currency = currency,
-            Type = "QR_PH"
-        };
-
         try
         {
-            var response = await _httpClient.PostAsJsonAsync("/api/banking/v1/instruments", requestBody, cancellationToken);
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"/api/v1/gateway/payment-intents/{sessionId}/qr");
+            requestMessage.Headers.Add("X-Merchant-Id", "UNIV-ERP-01");
+            
+            var response = await _httpClient.SendAsync(requestMessage, cancellationToken);
             
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<BankingInstrumentResponse>(cancellationToken: cancellationToken);
-                if (result != null && !string.IsNullOrEmpty(result.Payload))
+                var result = await response.Content.ReadFromJsonAsync<DynamicQrPayment>(cancellationToken: cancellationToken);
+                if (result != null && !string.IsNullOrEmpty(result.QrPayload))
                 {
-                    return Result<string>.Success(result.Payload);
+                    return Result<string>.Success(result.QrPayload);
                 }
             }
             
@@ -85,6 +82,7 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
         }
     }
     
-    private record BankingChargeResponse(string TransactionId, string Status);
-    private record BankingInstrumentResponse(string InstrumentId, string Payload, string Type);
+    private record TransactionResponse(string TransactionId, string Status, decimal Amount);
+    private record ApiResponse<T>(T Data, string Message, string CorrelationId);
+    private record DynamicQrPayment(string QrPayload, string QrReference, string Status, System.DateTime Expiration);
 }
