@@ -1,0 +1,38 @@
+.git
+.gitignore
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Node/JavaScript
+node_modules
+dist
+build
+coverage
+
+# .NET / C#
+bin
+obj
+TestResults
+
+# IDEs / OS
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+compose*.yml
+
+# Documentation
+README*
+docs/
+tests/

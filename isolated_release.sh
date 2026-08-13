@@ -115,7 +115,7 @@ echo "Starting isolated semantic versioning updates..."
 process_module "academic" "backend-academic" "feat" "implement academic modules domain logic and endpoints" \
   "University-ERP-Backend/src/Modules/Academic"
 
-process_module "administration" "backend-administration" "fix" "add BankReference to PaymentSession EF Core model and resolve missing HTTP client dependency" \
+process_module "administration" "backend-administration" "fix" "update FinanceDbContextDesignTimeFactory and BankingIntegrationService for robust payment synchronization" \
   "University-ERP-Backend/src/Modules/Administration"
 
 process_module "platform" "backend-platform" "fix" "return HTTP 403 Forbidden on invalid credentials in login endpoint" \
@@ -124,67 +124,67 @@ process_module "platform" "backend-platform" "fix" "return HTTP 403 Forbidden on
 process_module "student-lifecycle" "backend-studentlifecycle" "feat!" "remove insecure pay-fee endpoint and implement secure payment verified event consumer" \
   "University-ERP-Backend/src/Modules/StudentLifecycle"
 
-process_module "bootstrap" "backend-bootstrap" "fix" "seed student default credentials for offline client authentication" \
+process_module "bootstrap" "backend-bootstrap" "chore" "optimize Dockerfiles with multi-stage builds and harden Program.cs telemetry" \
   "University-ERP-Backend/src/Bootstrap"
 
 process_module "backend-contracts" "backend-contracts" "feat" "define PaymentVerifiedIntegrationEvent contract for cross-module communication" \
   "University-ERP-Backend/src/Contracts"
 
-process_module "backend-ops" "ops-backend" "feat" "add AddPaymentSessions EF Core migration and context updates" \
-  "University-ERP-Backend/ops" "University-ERP-Backend/src/Bootstrap/UniversityErp.Migrator"
+process_module "backend-ops" "ops-backend" "fix" "refactor Nginx dynamic DNS upstream resolution to eliminate 502 Bad Gateway errors" \
+  "University-ERP-Backend/ops"
 
 process_module "backend-docs" "docs-backend" "docs" "update backend architectural structure" \
   "University-ERP-Backend/structure.md"
 
 # ================= FRONTEND APPS =================
-process_module "admin-portal" "admin-portal" "feat" "update admin portal features and UI" \
+process_module "admin-portal" "admin-portal" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
   "University-ERP-Frontend/apps/admin-portal"
 
-process_module "admissions-portal" "admissions-portal" "feat" "finalize dynamic data integration for dashboard, communications, and reports portals" \
+process_module "admissions-portal" "admissions-portal" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
   "University-ERP-Frontend/apps/admissions-portal"
 
-process_module "applicant-portal" "applicant-portal" "feat" "integrate secure decentralized payment gateway iframe and remove raw credit card inputs" \
+process_module "applicant-portal" "applicant-portal" "fix" "refine main entry and routing fallback logic for subdirectories" \
   "University-ERP-Frontend/apps/applicant-portal"
 
-process_module "faculty-portal" "faculty-portal" "feat" "implement students dashboard and section roster features" \
+process_module "faculty-portal" "faculty-portal" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
   "University-ERP-Frontend/apps/faculty-portal"
 
-process_module "finance-console" "finance-console" "feat" "auto-populate payment tokens from URL query parameters and implement cashier bridge" \
+process_module "finance-console" "finance-console" "feat" "update routing and admission assessment layout logic" \
   "University-ERP-Frontend/apps/finance-console"
 
-process_module "payment-gateway" "payment-gateway" "feat" "scaffold isolated PCI-compliant payment gateway frontend with QR Ph and webhook polling" \
+process_module "payment-gateway" "payment-gateway" "chore" "update main entry component for React Strict Mode" \
   "University-ERP-Frontend/apps/payment-gateway"
 
-process_module "governance-console" "governance-console" "chore" "update vite config for governance console" \
+process_module "governance-console" "governance-console" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
   "University-ERP-Frontend/apps/governance-console"
 
-process_module "identity-portal" "identity-portal" "feat" "add MFA and email integration features" \
+process_module "identity-portal" "identity-portal" "fix" "harden root basename resolution and prevent infinite redirection loops in UserLogin" \
   "University-ERP-Frontend/apps/identity-portal"
 
-process_module "library-portal" "library-portal" "chore" "update vite config for library portal" \
+process_module "library-portal" "library-portal" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
   "University-ERP-Frontend/apps/library-portal"
 
-process_module "lms-web" "lms-web" "feat" "add course administration and gradebook features" \
+process_module "lms-web" "lms-web" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
   "University-ERP-Frontend/apps/lms-web"
 
-process_module "platform-console" "platform-console" "chore" "update vite config for platform console" \
+process_module "platform-console" "platform-console" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
   "University-ERP-Frontend/apps/platform-console"
 
 process_module "lms-offline-client" "lms-offline-client" "feat" "implement dynamic SQLite repositories and align auth error handling" \
   "University-ERP-Frontend/clients/lms-offline-avalonia"
 
 # CRITICAL FIX: Fixed path to strictly use University-ERP-Frontend only
-process_module "registrar-portal" "registrar-portal" "feat" "implement curriculum, academic records, and enrollment workspaces" \
+process_module "registrar-portal" "registrar-portal" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
   "University-ERP-Frontend/apps/registrar-portal"
 
-process_module "security-portal" "security-portal" "feat" "scaffold security portal application" \
+process_module "security-portal" "security-portal" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
   "University-ERP-Frontend/apps/security-portal"
 
-process_module "student-portal" "student-portal" "feat" "implement online registration, cross-enrollment, and student financials" \
+process_module "student-portal" "student-portal" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
   "University-ERP-Frontend/apps/student-portal"
 
 # ================= FRONTEND LIBS & CONFIG =================
-process_module "frontend-libs" "frontend-libs" "feat" "update API clients for payment session routing and admissions webhooks" \
+process_module "frontend-libs" "frontend-libs" "fix" "harden AuthProvider cross-origin handoff and expand internal guard roles" \
   "University-ERP-Frontend/libs"
 
 process_module "frontend-infra" "frontend-infra" "chore" "update frontend workspace lockfile" \
@@ -195,8 +195,8 @@ process_module "project-docs" "docs-project" "docs" "add comprehensive system ar
   "CodebaseInfrastructure.md" "structure.md" "logs.md" "newupdate.md" "Analysis_Task_Orchestration.md" "ERPstructure.md" "SEMANTIC_VERSIONING_PROMPT.md" "universal-semantic-versioning-prompt.md" "university-erp-*.md"
 
 # Safely only add the release_all.sh script here (not the apps/ folder anymore!)
-process_module "project-ops" "ops-project" "chore" "add environment templates and orchestration scripts" \
-  "release_all.sh" "isolated_release.sh" "docker-compose.yml" ".env.example" "health-logger.sh" "scaffold-frontend-cloudflare-nginx.sh" "scaffold_features.ps1" "setup_structure.ps1" "fix-encodings.js"
+process_module "project-ops" "ops-project" "chore" "stabilize docker-compose services and implement global dockerignore" \
+  "release_all.sh" "isolated_release.sh" "docker-compose.yml" ".env.example" "health-logger.sh" "scaffold-frontend-cloudflare-nginx.sh" "scaffold_features.ps1" "setup_structure.ps1" "fix-encodings.js" ".dockerignore"
 
 process_module "project-config" "config-project" "chore" "update root gitignore rules" \
   ".gitignore"
