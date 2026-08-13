@@ -194,7 +194,7 @@ export const AdmissionAssessmentPage: React.FC = () => {
                         <input
                             type="number"
                             value={totalTuition}
-                            onChange={(e) => setTotalTuition(e.target.value)}
+                            onChange={(e) => setTotalTuition(e.target.value === '' ? '' : Number(e.target.value))}
                             placeholder="e.g. 5000"
                             style={{
                                 width: '100%',
@@ -215,7 +215,7 @@ export const AdmissionAssessmentPage: React.FC = () => {
                         <input
                             type="number"
                             value={downpaymentAmount}
-                            onChange={(e) => setDownpaymentAmount(e.target.value)}
+                            onChange={(e) => setDownpaymentAmount(e.target.value === '' ? '' : Number(e.target.value))}
                             placeholder="e.g. 500"
                             style={{
                                 width: '100%',
