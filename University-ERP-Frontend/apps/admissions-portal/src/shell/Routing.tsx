@@ -11,7 +11,7 @@ import { AdmissionsReportsPage } from '../features/Reports/AdmissionsReports.pag
 
 export const Routing: React.FC = () => {
     return (
-        <BrowserRouter>
+        <BrowserRouter basename={import.meta.env.BASE_URL && import.meta.env.BASE_URL !== '/' ? import.meta.env.BASE_URL : '/admissions-portal/'}>
             <Routes>
                 <Route element={<AuthGuard><AppShell /></AuthGuard>}>
                     <Route path="/dashboard" element={<DashboardPage />} />
