@@ -18,7 +18,7 @@ export const IdentityGuard: React.FC<IdentityGuardProps> = ({ allowedRoles }) =>
         return <Navigate to="/login" replace />;
     }
 
-    if (user?.roles?.includes('ROLE_IDENTITY_ADMIN')) {
+    if (user?.roles?.includes('ROLE_IDENTITY_ADMIN') || user?.roles?.includes('Admin')) {
         return <Outlet />;
     }
 

@@ -8,7 +8,14 @@ export const AuthGuard: React.FC<{ children?: React.ReactNode }> = ({ children }
 
   if (!isAuthenticated) {
     // Redirect to the Identity Portal (the dedicated auth app), NOT to a local /login route.
-    const identityUrl = (import.meta as any).env?.VITE_IDENTITY_PORTAL_URL || 'http://localhost:3001';
+    let identityUrl = (import.meta as any).env?.VITE_IDENTITY_PORTAL_URL || 'http://localhost:3001';
+    
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        const port = window.location.port;
+        if (port === '8086' || port === '8080') identityUrl = 'http://localhost:8081';
+        else if (parseInt(port) >= 5173 && parseInt(port) <= 5183) identityUrl = 'http://localhost:3001';
+    }
+
     const returnTo = encodeURIComponent(window.location.origin + location.pathname);
     window.location.href = `${identityUrl}/login?redirect_uri=${returnTo}`;
     return null; // Halt rendering while the browser navigates
@@ -42,7 +49,15 @@ export const AuthGuard: React.FC<{ children?: React.ReactNode }> = ({ children }
                  <button 
                      onClick={() => {
                         localStorage.removeItem('global_identity_token');
-                        window.location.href = 'http://localhost:3001/login';
+                        
+                        let identityUrl = (import.meta as any).env?.VITE_IDENTITY_PORTAL_URL || 'http://localhost:3001';
+                        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                            const port = window.location.port;
+                            if (port === '8086' || port === '8080') identityUrl = 'http://localhost:8081';
+                            else if (parseInt(port) >= 5173 && parseInt(port) <= 5183) identityUrl = 'http://localhost:3001';
+                        }
+                        
+                        window.location.href = `${identityUrl}/login`;
                      }}
                      style={{ padding: '0.75rem 1.5rem', background: '#6366f1', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '1rem' }}
                  >

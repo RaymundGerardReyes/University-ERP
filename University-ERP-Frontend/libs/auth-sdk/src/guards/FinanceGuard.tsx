@@ -19,7 +19,7 @@ export const FinanceGuard: React.FC<FinanceGuardProps> = ({ allowedRoles }) => {
         return <Navigate to="/login" replace />;
     }
 
-    if (user?.roles?.includes('ROLE_FINANCE_ADMIN')) {
+    if (user?.roles?.includes('ROLE_FINANCE_ADMIN') || user?.roles?.includes('Admin') || user?.roles?.includes('Finance')) {
         return <Outlet />;
     }
 

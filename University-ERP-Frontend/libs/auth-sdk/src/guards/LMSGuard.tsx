@@ -18,11 +18,11 @@ export const LMSGuard: React.FC<LMSGuardProps> = ({ allowedRoles }) => {
     }
 
     // Explicitly block students, as they should use the Avalonia offline client
-    if (user?.roles?.includes('ROLE_STUDENT')) {
+    if (user?.roles?.includes('ROLE_STUDENT') || user?.roles?.includes('Student')) {
         return <Navigate to="/unauthorized-offline-client-required" replace />;
     }
 
-    if (user?.roles?.includes('ROLE_LMS_ADMIN')) {
+    if (user?.roles?.includes('ROLE_LMS_ADMIN') || user?.roles?.includes('Admin')) {
         return <Outlet />;
     }
 

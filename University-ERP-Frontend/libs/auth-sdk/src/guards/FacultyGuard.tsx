@@ -20,7 +20,7 @@ export const FacultyGuard: React.FC<FacultyGuardProps> = ({ allowedRoles }) => {
         return <Navigate to="/login" replace />;
     }
 
-    if (user?.roles?.includes('ROLE_FACULTY_ADMIN')) {
+    if (user?.roles?.includes('ROLE_FACULTY_ADMIN') || user?.roles?.includes('Admin') || user?.roles?.includes('Faculty')) {
         return <Outlet />;
     }
 

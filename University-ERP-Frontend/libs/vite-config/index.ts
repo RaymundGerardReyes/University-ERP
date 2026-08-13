@@ -33,10 +33,15 @@ export interface PortalConfig {
   apiTarget?: string;
   title?: string;
   test?: any;
+  base?: string;
 }
 
 export function createPortalConfig(options: PortalConfig): UserConfig {
+  const portalName = path.basename(process.cwd());
+  const basePath = options.base ?? `/${portalName}/`;
+
   return defineConfig({
+    base: basePath,
     plugins: [
       react(),
       terminalLoggerPlugin(),

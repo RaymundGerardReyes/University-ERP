@@ -84,7 +84,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = () => {
     logger.info('Redirecting to Identity Portal for Authentication...');
-    const identityUrl = import.meta.env.VITE_IDENTITY_PORTAL_URL || 'http://localhost:8081';
+    let identityUrl = import.meta.env.VITE_IDENTITY_PORTAL_URL || 'http://localhost:8081';
+    
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        const port = window.location.port;
+        if (port === '8086' || port === '8080') identityUrl = 'http://localhost:8081';
+        else if (parseInt(port) >= 5173 && parseInt(port) <= 5183) identityUrl = 'http://localhost:3001';
+    }
+
     // Use only origin + pathname (not full href) to prevent redirect_uri from accumulating
     // previously-encoded query params, which causes an infinite redirect loop.
     const returnTo = encodeURIComponent(window.location.origin + window.location.pathname);
