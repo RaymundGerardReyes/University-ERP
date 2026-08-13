@@ -295,50 +295,72 @@ export const LoginPage = () => {
         const response = await submitLogin({ email, password });
         localStorage.setItem('global_identity_token', response.token);
 
-        // 2. Determine Redirection URLs strictly based on runtime execution port
-        // If the browser is executing on port 3001, it is 100% native Vite.
+        // 2. Determine Redirection URLs dynamically based on environment topology
         const currentPort = window.location.port;
         const isNative = currentPort === '3001';
         
-        const defaultStudentUrl = isNative ? 'http://localhost:5173' : 'http://localhost:8080';
-        const defaultApplicantUrl = isNative ? 'http://localhost:5174' : import.meta.env.VITE_APPLICANT_PORTAL_URL;
-        const defaultAdminUrl = isNative ? 'http://localhost:5178' : import.meta.env.VITE_ADMIN_PORTAL_URL;
-        const defaultFacultyUrl = isNative ? 'http://localhost:5175' : import.meta.env.VITE_FACULTY_PORTAL_URL;
-
         const urlParams = new URLSearchParams(window.location.search);
-        let redirectUri = urlParams.get('redirect_uri') || defaultStudentUrl;
+        const rawRedirect = urlParams.get('redirect_uri');
+        
+        let proxyOrigin = window.location.origin;
+        if (rawRedirect) {
+          try {
+            proxyOrigin = new URL(rawRedirect).origin;
+          } catch (e) {}
+        } else {
+          // If no redirect_uri was provided, we must infer the main ERP gateway URL.
+          if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            if (currentPort === '8081') {
+                proxyOrigin = 'http://localhost:8086';
+            }
+          } else {
+            // Production environment - strip the "auth." or similar prefix
+            proxyOrigin = window.location.origin.replace('auth.', 'www.').replace('identity.', '');
+          }
+        }
+
+        const getPortalUrl = (nativePort: string, portalPath: string) => {
+          return isNative ? `http://localhost:${nativePort}` : `${proxyOrigin}${portalPath}`;
+        };
+
+        const defaultStudentUrl = getPortalUrl('5173', '/student-portal');
+        const defaultApplicantUrl = getPortalUrl('5174', '/applicant-portal');
+        const defaultAdminUrl = getPortalUrl('5178', '/admin-portal');
+        const defaultFacultyUrl = getPortalUrl('5175', '/faculty-portal');
+        const defaultAdmissionsUrl = getPortalUrl('5183', '/admissions-portal');
+        const defaultFinanceUrl = getPortalUrl('5176', '/finance-console');
+        const defaultRegistrarUrl = getPortalUrl('5181', '/registrar-portal');
+
+        let redirectUri = rawRedirect || defaultStudentUrl;
 
         // Role-Based Routing Interceptor
         if (response.user.role === 'Admin') {
             redirectUri = defaultAdminUrl;
-            window.location.href = `${redirectUri}#token=${response.token}`;
+            window.location.href = `${redirectUri}/#token=${response.token}`;
             return;
         }
 
         if (response.user.role === 'Faculty') {
             redirectUri = defaultFacultyUrl;
-            window.location.href = `${redirectUri}#token=${response.token}`;
+            window.location.href = `${redirectUri}/#token=${response.token}`;
             return;
         }
 
         if (response.user.role === 'Admissions') {
-            const defaultAdmissionsUrl = isNative ? 'http://localhost:5183' : import.meta.env.VITE_ADMISSIONS_PORTAL_URL;
-            redirectUri = defaultAdmissionsUrl || 'http://localhost:5183';
-            window.location.href = `${redirectUri}#token=${response.token}`;
+            redirectUri = defaultAdmissionsUrl;
+            window.location.href = `${redirectUri}/#token=${response.token}`;
             return;
         }
 
         if (response.user.role === 'Finance') {
-            const defaultFinanceUrl = isNative ? 'http://localhost:5176' : import.meta.env.VITE_FINANCE_PORTAL_URL;
-            redirectUri = defaultFinanceUrl || 'http://localhost:5176';
-            window.location.href = `${redirectUri}#token=${response.token}`;
+            redirectUri = defaultFinanceUrl;
+            window.location.href = `${redirectUri}/#token=${response.token}`;
             return;
         }
 
         if (response.user.role === 'Registrar') {
-            const defaultRegistrarUrl = isNative ? 'http://localhost:5181' : import.meta.env.VITE_REGISTRAR_PORTAL_URL;
-            redirectUri = defaultRegistrarUrl || 'http://localhost:5181';
-            window.location.href = `${redirectUri}#token=${response.token}`;
+            redirectUri = defaultRegistrarUrl;
+            window.location.href = `${redirectUri}/#token=${response.token}`;
             return;
         }
 
@@ -352,18 +374,17 @@ export const LoginPage = () => {
           );
 
           if (!isApproved) {
-            if (!defaultApplicantUrl) throw new Error("VITE_APPLICANT_PORTAL_URL is missing in environment config.");
             redirectUri = defaultApplicantUrl;
           }
         } catch (error) {
           // Failsafe: If no records exist, they are a new student. Route to Applicant Portal.
-          if (defaultApplicantUrl) {
-            redirectUri = defaultApplicantUrl;
-          }
+          redirectUri = defaultApplicantUrl;
         }
 
         // 4. Execute the final redirect with the token fragment
-        window.location.href = `${redirectUri}#token=${response.token}`;
+        // We append a trailing slash before the hash to satisfy React Router
+        const separator = redirectUri.endsWith('/') ? '' : '/';
+        window.location.href = `${redirectUri}${separator}#token=${response.token}`;
 
       } else {
         // --- NEW USER REGISTRATION FLOW ---
@@ -388,11 +409,27 @@ export const LoginPage = () => {
         // Redirect them directly to the Applicant Portal.
         const currentPort = window.location.port;
         const isNative = currentPort === '3001';
-        const applicantUrl = isNative ? 'http://localhost:5174' : import.meta.env.VITE_APPLICANT_PORTAL_URL;
         
-        if (!applicantUrl) throw new Error("VITE_APPLICANT_PORTAL_URL is missing in environment config.");
+        const urlParams = new URLSearchParams(window.location.search);
+        const rawRedirect = urlParams.get('redirect_uri');
+        let proxyOrigin = window.location.origin;
+        if (rawRedirect) {
+          try {
+            proxyOrigin = new URL(rawRedirect).origin;
+          } catch (e) {}
+        } else {
+          if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            if (currentPort === '8081') {
+                proxyOrigin = 'http://localhost:8086';
+            }
+          } else {
+            proxyOrigin = window.location.origin.replace('auth.', 'www.').replace('identity.', '');
+          }
+        }
+        
+        const applicantUrl = isNative ? 'http://localhost:5174' : `${proxyOrigin}/applicant-portal`;
 
-        window.location.href = `${applicantUrl}#token=${response.token}`;
+        window.location.href = `${applicantUrl}/#token=${response.token}`;
       }
     } catch (error: any) {
       setErrorMessage(error.response?.data?.message || error.message || 'An error occurred.');

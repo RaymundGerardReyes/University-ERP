@@ -14,7 +14,7 @@ import { AccessRevocationPage } from '../features/MFA/AccessRevocation.page';
 
 export const Routing: React.FC = () => {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/">
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         
@@ -33,6 +33,7 @@ export const Routing: React.FC = () => {
 
           <Route path="/" element={<Navigate to="/account/directory" replace />} />
         </Route>
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );
