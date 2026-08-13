@@ -1,9 +1,29 @@
+import { useQuery } from '@tanstack/react-query';
+import { admissionsApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
 import { Badge, Button, Card, PageHeader } from '@university-erp/ui-kit';
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const DashboardPage: React.FC = () => {
     const { identity } = useAuth();
+    const navigate = useNavigate();
+
+    const { data: applications = [], isLoading } = useQuery({
+        queryKey: ['pendingApplications'],
+        queryFn: () => admissionsApi.getPendingApplications()
+    });
+
+    const metrics = useMemo(() => {
+        const total = applications.length;
+        const underReview = applications.filter((a: any) => ['UnderReview', 'UnderAcademicEvaluation', 'ChairpersonQueue', 'DocumentVerification'].includes(a.status)).length;
+        const missingDocs = applications.filter((a: any) => a.documents?.some((d: any) => d.status !== 'Verified' && d.status !== 'Uploaded')).length;
+        const accepted = applications.filter((a: any) => a.status === 'Accepted' || a.status === 'Enrolled').length;
+        const acceptanceRate = total > 0 ? (accepted / total * 100).toFixed(1) : '0.0';
+        return { total, underReview, missingDocs, acceptanceRate };
+    }, [applications]);
+
+    const recentSubmissions = applications.slice(0, 5);
 
     return (
         <div className="fade-in">
@@ -16,20 +36,20 @@ export const DashboardPage: React.FC = () => {
             <div className="grid-stats fade-in-delay-1" style={{ marginBottom: 'var(--space-6)' }}>
                 <Card className="stat-card">
                     <div className="card-accent-top" style={{ background: 'var(--brand-primary)' }} />
-                    <span className="stat-label">Total Applications</span>
-                    <span className="stat-value">12,450</span>
-                    <span className="stat-trend">↑ 14% vs last year</span>
+                    <span className="stat-label">Pending Queue</span>
+                    <span className="stat-value">{isLoading ? '...' : metrics.total}</span>
+                    <span className="stat-trend">Applications to process</span>
                 </Card>
                 <Card className="stat-card">
                     <div className="card-accent-top" style={{ background: 'var(--warning-text)' }} />
                     <span className="stat-label">Under Review</span>
-                    <span className="stat-value" style={{ color: 'var(--warning-text)' }}>3,124</span>
-                    <span className="stat-trend">Avg. wait: 4 days</span>
+                    <span className="stat-value" style={{ color: 'var(--warning-text)' }}>{isLoading ? '...' : metrics.underReview}</span>
+                    <span className="stat-trend">Awaiting decisions</span>
                 </Card>
                 <Card className="stat-card">
                     <div className="card-accent-top" style={{ background: 'var(--info-text)' }} />
                     <span className="stat-label">Acceptance Rate</span>
-                    <span className="stat-value">28.4%</span>
+                    <span className="stat-value">{isLoading ? '...' : `${metrics.acceptanceRate}%`}</span>
                     <span className="stat-trend" style={{ color: 'var(--info-text)' }}>Highly competitive</span>
                 </Card>
                 <Card className="stat-card">
@@ -46,37 +66,23 @@ export const DashboardPage: React.FC = () => {
                     <div className="card-accent-top" style={{ background: 'var(--brand-primary)' }} />
                     <h2 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', margin: 0 }}>Recent Submissions</h2>
                     
-                    <div className="data-row">
-                        <div>
-                            <div className="data-value" style={{ textAlign: 'left' }}>Sarah Jenkins</div>
-                            <div className="data-label">B.S. Computer Science</div>
-                        </div>
-                        <Badge colorScheme="warning">Pending Review</Badge>
-                    </div>
-                    
-                    <div className="data-row">
-                        <div>
-                            <div className="data-value" style={{ textAlign: 'left' }}>Michael Chang</div>
-                            <div className="data-label">B.A. Business Administration</div>
-                        </div>
-                        <Badge colorScheme="success">Verified</Badge>
-                    </div>
-
-                    <div className="data-row">
-                        <div>
-                            <div className="data-value" style={{ textAlign: 'left' }}>Emily Robertson</div>
-                            <div className="data-label">B.S. Nursing</div>
-                        </div>
-                        <Badge colorScheme="warning">Pending Review</Badge>
-                    </div>
-
-                    <div className="data-row">
-                        <div>
-                            <div className="data-value" style={{ textAlign: 'left' }}>David Kim</div>
-                            <div className="data-label">B.S. Mechanical Engineering</div>
-                        </div>
-                        <Badge colorScheme="info">Exam Scheduled</Badge>
-                    </div>
+                    {isLoading ? (
+                        <div style={{ color: 'var(--text-muted)' }}>Loading submissions...</div>
+                    ) : recentSubmissions.length === 0 ? (
+                        <div style={{ color: 'var(--text-muted)' }}>No recent submissions found.</div>
+                    ) : (
+                        recentSubmissions.map((app: any) => (
+                            <div key={app.id} className="data-row" style={{ cursor: 'pointer' }} onClick={() => navigate(`/applications/${app.id}`)}>
+                                <div>
+                                    <div className="data-value" style={{ textAlign: 'left' }}>{app.applicantName}</div>
+                                    <div className="data-label">{app.program}</div>
+                                </div>
+                                <Badge colorScheme={app.status === 'Accepted' || app.status === 'Enrolled' ? 'success' : app.status === 'Rejected' ? 'danger' : 'warning'}>
+                                    {app.status}
+                                </Badge>
+                            </div>
+                        ))
+                    )}
                 </Card>
 
                 {/* Admission Funnel or Quick Actions */}
@@ -86,9 +92,9 @@ export const DashboardPage: React.FC = () => {
                         <div className="card-accent-top" style={{ background: 'var(--brand-primary)' }} />
                         <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--text-bright)' }}>Action Required</h2>
                         <p style={{ fontSize: '0.875rem', color: 'var(--text-primary)', marginBottom: '1rem' }}>
-                            There are 42 applications missing required prerequisite documents.
+                            There are {isLoading ? '...' : metrics.missingDocs} applications missing required prerequisite documents.
                         </p>
-                        <Button style={{ width: '100%', justifyContent: 'center' }} onClick={() => alert('Routing to incomplete applications filter...')}>
+                        <Button style={{ width: '100%', justifyContent: 'center' }} onClick={() => navigate('/applications?tab=attention')}>
                             Review Missing Documents
                         </Button>
                     </Card>

@@ -41,41 +41,38 @@ export const AdmissionsReportsPage: React.FC = () => {
                 <Card>
                     <h2 style={{ fontSize: '1.1rem', marginBottom: 'var(--space-6)' }}>Application Volume by College</h2>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '60%' }}>
-                        {isLoading ? <div>Loading funnel...</div> : (report?.funnel || [
-                            { stage: '1. Applications Started', count: 4821, color: 'var(--info-text)' },
-                            { stage: '2. Documents Verified', count: 3942, color: 'var(--brand-primary)' },
-                            { stage: '3. Exams Passed', count: 2105, color: 'var(--warning-text)' },
-                            { stage: '4. Offers Accepted', count: 1840, color: 'var(--success-text)' }
-                        ]).map((step: any, idx: number) => (
-                            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                <div style={{ width: '150px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{step.stage}</div>
-                                <div style={{ flex: 1, background: 'var(--bg-base)', height: '1.5rem', borderRadius: 'var(--radius-sm)', overflow: 'hidden' }}>
-                                    <div style={{ width: `${(step.count / 4821) * 100}%`, height: '100%', background: step.color, transition: 'width 1s ease-in-out' }} />
+                        {isLoading ? <div>Loading funnel...</div> : 
+                         !report?.funnel ? <div style={{ color: 'var(--text-muted)' }}>No data available.</div> :
+                         report.funnel.map((step: any, idx: number) => {
+                             // Dynamic max count for width percentage calculation
+                             const maxCount = Math.max(...report.funnel.map((s: any) => s.count));
+                             return (
+                                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                    <div style={{ width: '150px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{step.stage}</div>
+                                    <div style={{ flex: 1, background: 'var(--bg-base)', height: '1.5rem', borderRadius: 'var(--radius-sm)', overflow: 'hidden' }}>
+                                        <div style={{ width: `${(step.count / maxCount) * 100}%`, height: '100%', background: step.color || 'var(--brand-primary)', transition: 'width 1s ease-in-out' }} />
+                                    </div>
+                                    <div style={{ width: '50px', textAlign: 'right', fontWeight: 600 }}>{step.count}</div>
                                 </div>
-                                <div style={{ width: '50px', textAlign: 'right', fontWeight: 600 }}>{step.count}</div>
-                            </div>
-                        ))}
+                             );
+                        })}
                     </div>
                 </Card>
 
                 <Card>
                     <h2 style={{ fontSize: '1.1rem', marginBottom: 'var(--space-6)' }}>Pipeline Funnel</h2>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                        <div style={{ width: '100%', background: 'var(--brand-primary)', color: 'white', padding: '0.75rem', textAlign: 'center', borderRadius: 'var(--radius-md)', fontWeight: 600 }}>
-                            Applications Started (32k)
-                        </div>
-                        <div style={{ width: '85%', background: 'var(--brand-secondary)', color: 'white', padding: '0.75rem', textAlign: 'center', borderRadius: 'var(--radius-md)', fontWeight: 600 }}>
-                            Applications Submitted (24k)
-                        </div>
-                        <div style={{ width: '65%', background: 'var(--info-text)', color: 'white', padding: '0.75rem', textAlign: 'center', borderRadius: 'var(--radius-md)', fontWeight: 600 }}>
-                            Verified & Examined (18k)
-                        </div>
-                        <div style={{ width: '40%', background: 'var(--success-text)', color: 'white', padding: '0.75rem', textAlign: 'center', borderRadius: 'var(--radius-md)', fontWeight: 600 }}>
-                            Offers Extended (7k)
-                        </div>
-                        <div style={{ width: '25%', background: 'var(--warning-text)', color: 'white', padding: '0.75rem', textAlign: 'center', borderRadius: 'var(--radius-md)', fontWeight: 600 }}>
-                            Enrolled (3k)
-                        </div>
+                        {isLoading ? (
+                            <div style={{ color: 'var(--text-muted)', padding: '1rem' }}>Loading pipeline...</div>
+                        ) : !report?.pipeline ? (
+                            <div style={{ color: 'var(--text-muted)', padding: '1rem' }}>No pipeline data available.</div>
+                        ) : (
+                            report.pipeline.map((stage: any, idx: number) => (
+                                <div key={idx} style={{ width: `${stage.percentage || 100}%`, background: stage.color || 'var(--brand-primary)', color: 'white', padding: '0.75rem', textAlign: 'center', borderRadius: 'var(--radius-md)', fontWeight: 600 }}>
+                                    {stage.name} ({stage.count})
+                                </div>
+                            ))
+                        )}
                     </div>
                 </Card>
             </div>

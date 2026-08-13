@@ -12,13 +12,18 @@ export const ApplicantCommunicationPage: React.FC = () => {
 
     const [selectedMsgId, setSelectedMsgId] = useState<string | null>(null);
     const [replyText, setReplyText] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
-    const selectedMsg = messages?.find(m => m.id === selectedMsgId) || messages?.[0];
+    const filteredMessages = messages?.filter(m => 
+        m.subject.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        m.sender.toLowerCase().includes(searchQuery.toLowerCase())
+    ) || [];
+
+    const selectedMsg = messages?.find(m => m.id === selectedMsgId) || filteredMessages[0];
 
     const sendMutation = useMutation({
         mutationFn: () => communicationApi.sendMessage({ recipientId: selectedMsg?.sender || '', subject: 'Re: ' + selectedMsg?.subject, body: replyText }),
         onSuccess: () => {
-            alert('Message sent!');
             setReplyText('');
             queryClient.invalidateQueries({ queryKey: ['inbox'] });
         }
@@ -38,14 +43,16 @@ export const ApplicantCommunicationPage: React.FC = () => {
                         <input
                             type="text"
                             placeholder="Search messages..."
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
                             style={{ flex: 1, padding: '0.5rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)' }}
                         />
-                        <Button size="small" onClick={() => alert('Search filters will be applied.')}>Filter</Button>
                     </div>
 
                     <div style={{ flex: 1, overflowY: 'auto' }}>
                         {isLoading && <div style={{ padding: '1rem', color: 'var(--text-muted)' }}>Loading messages...</div>}
-                        {messages?.map((msg: any, idx: number) => (
+                        {!isLoading && filteredMessages.length === 0 && <div style={{ padding: '1rem', color: 'var(--text-muted)' }}>No messages found.</div>}
+                        {filteredMessages.map((msg: any, idx: number) => (
                             <div key={idx}
                                 onClick={() => setSelectedMsgId(msg.id)}
                                 style={{ padding: '1rem', borderBottom: '1px solid var(--border-subtle)', background: selectedMsg?.id === msg.id ? 'var(--bg-hover)' : (msg.isRead ? 'transparent' : 'var(--bg-elevated)'), cursor: 'pointer', borderLeft: !msg.isRead ? '3px solid var(--brand-primary)' : '3px solid transparent' }}>
@@ -72,12 +79,19 @@ export const ApplicantCommunicationPage: React.FC = () => {
                             <Badge colorScheme="info">Applicant Inquiry</Badge>
                         </div>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            <Button variant="secondary" size="small" onClick={() => alert('Message forwarded to Academic Department.')}>Forward to Academic Dept</Button>
+                            <Button variant="secondary" size="small" onClick={() => console.log('Forward to Academic Dept (Mock)')}>Forward to Academic Dept</Button>
                         </div>
                     </div>
 
                     <div style={{ flex: 1, padding: '1.5rem', overflowY: 'auto', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                        <p style={{ marginBottom: '1rem' }}>Message content for {selectedMsg?.id} would be loaded here from the backend.</p>
+                        {!selectedMsg ? (
+                             <p style={{ marginBottom: '1rem', color: 'var(--text-muted)' }}>Select a message to view its content.</p>
+                        ) : (
+                             <p style={{ marginBottom: '1rem' }}>
+                                 {/* Since message body is not in InboxMessage DTO yet, we mock its rendering. */}
+                                 Message content for {selectedMsg.id} would be dynamically loaded from the backend here.
+                             </p>
+                        )}
                     </div>
 
                     <div style={{ padding: '1rem', borderTop: '1px solid var(--border-color)', background: 'var(--bg-elevated)' }}>
