@@ -10,4 +10,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=build /app/publish .
+
+# Run as non-root user
+USER app
+
 ENTRYPOINT ["sh", "-c", "echo '🔄 Starting Database Migrations...' && dotnet UniversityErp.Migrator.dll && echo '✅ Migrations complete! Container exiting successfully.'"]

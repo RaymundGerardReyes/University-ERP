@@ -397,6 +397,11 @@ static async Task CreateFinanceSchemaAsync(IServiceProvider services, ILogger lo
 
         CREATE UNIQUE INDEX IF NOT EXISTS "IX_PaymentSessions_SessionId" ON finance."PaymentSessions" ("SessionId");
 
+        -- Add new columns dynamically if they don't exist
+        ALTER TABLE finance."PaymentSessions" ADD COLUMN IF NOT EXISTS "BankReference" TEXT;
+        ALTER TABLE finance."PaymentSessions" ADD COLUMN IF NOT EXISTS "GatewayTransactionId" TEXT;
+        ALTER TABLE finance."PaymentSessions" ADD COLUMN IF NOT EXISTS "IdempotencyKey" TEXT;
+
         INSERT INTO finance."StudentBillings" ("Id", "StudentId", "TotalAmount", "PaidAmount", "Description", "Status", "IssuedOnUtc")
         VALUES 
             (gen_random_uuid(), '00000000-0000-0000-0000-000000000004', 4500.00, 0.00, 'Fall 2026 Tuition', 'Pending', NOW()),

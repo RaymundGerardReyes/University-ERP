@@ -10,5 +10,14 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=build /app/publish .
+
+# Run as non-root user
+USER app
+
 EXPOSE 5191
+
+# Implement Healthcheck
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD curl -sf http://localhost:5191/health/ready || exit 1
+
 ENTRYPOINT ["dotnet", "UniversityErp.Api.dll"]

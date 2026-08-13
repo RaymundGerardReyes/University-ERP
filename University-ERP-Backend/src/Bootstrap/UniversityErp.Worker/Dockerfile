@@ -10,4 +10,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=build /app/publish .
+
+# Run as non-root user
+USER app
+
 ENTRYPOINT ["dotnet", "UniversityErp.Worker.dll"]

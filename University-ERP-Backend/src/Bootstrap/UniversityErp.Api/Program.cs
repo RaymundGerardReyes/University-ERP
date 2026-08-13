@@ -1,5 +1,6 @@
 using Scalar.AspNetCore;
 using Serilog;
+using Microsoft.AspNetCore.HttpOverrides;
 using UniversityErp.Api.ModuleRegistration;
 
 // 1. Bootstrap Centralized Logging (Serilog)
@@ -95,7 +96,19 @@ try
     builder.Services.AddPlatformCluster(builder.Configuration);
     builder.Services.AddStudentLifecycleModules(builder.Configuration);
 
+    // Configure Forwarded Headers for Cloudflare/Nginx reverse proxy
+    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+    {
+        options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        // Trust the upstream proxy completely in this controlled Docker environment.
+        options.KnownNetworks.Clear();
+        options.KnownProxies.Clear();
+    });
+
     var app = builder.Build();
+
+    // Must be first in the pipeline to correctly resolve Client IP and Scheme
+    app.UseForwardedHeaders();
 
     // 3. Replaces messy HTTP logs with a single, clean log per request
     app.UseSerilogRequestLogging();
@@ -119,8 +132,9 @@ try
     app.UseAuthorization();
     app.MapControllers();
 
-    // Expose a dedicated health check endpoint for Docker
-    app.MapGet("/health", () => Microsoft.AspNetCore.Http.Results.Ok(new { status = "Healthy", timestamp = DateTime.UtcNow }));
+    // Expose a dedicated health check endpoint for Docker Compose
+    app.MapGet("/health/live", () => Microsoft.AspNetCore.Http.Results.Ok(new { status = "Live", timestamp = DateTime.UtcNow }));
+    app.MapGet("/health/ready", () => Microsoft.AspNetCore.Http.Results.Ok(new { status = "Ready", timestamp = DateTime.UtcNow }));
 
     // Telemetry endpoint for frontend production logs
     app.MapPost("/api/v1/platform/telemetry/client-log", (ClientLogDto dto, ILogger<Program> logger) =>
