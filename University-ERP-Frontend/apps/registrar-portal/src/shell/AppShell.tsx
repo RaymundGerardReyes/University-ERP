@@ -1,171 +1,109 @@
 import { useAuth } from '@university-erp/auth-sdk';
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import { GlobalSearchModal } from './GlobalSearchModal';
 
 export const AppShell = () => {
   const { identity, logout } = useAuth();
   const location = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  // Initialize theme from localStorage or system preference
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('theme') || 'light';
-  });
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  const toggleTheme = () => setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
-  const closeMobileMenu = () => setIsMobileOpen(false);
-
+  // Restructured Information Architecture based on UX Blueprint
   const navItems = [
-    { label: 'Registrar Dashboard', path: '/dashboard', section: 'Overview' },
+    { label: 'Registrar Dashboard', path: '/dashboard', section: 'Operational Workspace' },
     
-    { label: 'Admission Processing', path: '/admissions', section: 'Admissions Division' },
-    { label: 'Faculty Endorsements', path: '/admissions/endorsements', section: 'Admissions Division' },
-  
-    { label: 'Enrollment Validation', path: '/enrollment', section: 'Enrollment Division' },
-    { label: 'Subject Loading', path: '/enrollment/subjects', section: 'Enrollment Division' },
-  
-    { label: 'Master Student List', path: '/registry', section: 'Student Registry Division' },
-    { label: 'Leave of Absence (LOA)', path: '/registry/loa', section: 'Student Registry Division' },
-  
-    { label: 'Official Grades', path: '/records/grades', section: 'Academic Records Division' },
-    { label: 'Academic Standing', path: '/records/standing', section: 'Academic Records Division' },
-  
-    { label: 'Subject Catalog', path: '/curriculum/catalog', section: 'Curriculum Division' },
-    { label: 'Course Offerings', path: '/curriculum/offerings', section: 'Curriculum Division' },
-  
-    { label: 'Graduation Candidates', path: '/graduation', section: 'Graduation Division' },
-    { label: 'Latin Honors', path: '/graduation/honors', section: 'Graduation Division' },
-  
-    { label: 'Transcript Requests', path: '/certification/transcripts', section: 'Certification Division' },
-    { label: 'Diploma Printing', path: '/certification/diploma', section: 'Certification Division' },
-  
-    { label: 'Student Inquiries', path: '/services', section: 'Student Services Division' },
-    { label: 'Name Corrections', path: '/services/corrections', section: 'Student Services Division' },
-  
-    { label: 'CHED Compliance', path: '/compliance/ched', section: 'Academic Compliance Division' },
-    { label: 'Residency Rules', path: '/compliance/residency', section: 'Academic Compliance Division' },
-  
-    { label: 'Record Access Audit', path: '/security/audit', section: 'Registrar Security' },
-    { label: 'Sensitive Documents', path: '/security/documents', section: 'Registrar Security' },
+    { label: 'Enrollment Activations', path: '/admissions/activation', section: 'Work Queues' },
+    { label: 'Registration Exceptions', path: '/enrollment/exceptions', section: 'Work Queues' },
+    { label: 'Document Requests', path: '/certification/transcripts', section: 'Work Queues' },
+    { label: 'Data Corrections', path: '/services/corrections', section: 'Work Queues' },
+
+    { label: 'Master Directory', path: '/registry', section: 'Students' },
+    { label: 'Leave of Absence', path: '/registry/loa', section: 'Students' },
+
+    { label: 'Enrollment Validation', path: '/enrollment', section: 'Enrollment & Records' },
+    { label: 'Official Grades', path: '/records/grades', section: 'Enrollment & Records' },
+    { label: 'Academic Standing', path: '/records/standing', section: 'Enrollment & Records' },
+
+    { label: 'Subject Catalog', path: '/curriculum/catalog', section: 'Curriculum' },
+    { label: 'Course Offerings', path: '/curriculum/offerings', section: 'Curriculum' },
+
+    { label: 'Candidates & Audit', path: '/graduation', section: 'Graduation' },
+
+    { label: 'CHED Compliance', path: '/compliance/ched', section: 'Compliance & Security' },
+    { label: 'Access Ledger', path: '/security/audit', section: 'Compliance & Security' },
   ];
-  
-  const sections = [
-    'Overview', 
-    'Admissions Division', 
-    'Enrollment Division', 
-    'Student Registry Division', 
-    'Academic Records Division', 
-    'Curriculum Division', 
-    'Graduation Division', 
-    'Certification Division', 
-    'Student Services Division', 
-    'Academic Compliance Division', 
-    'Registrar Security'
-  ];
+
+  const sections = ['Operational Workspace', 'Work Queues', 'Students', 'Enrollment & Records', 'Curriculum', 'Graduation', 'Compliance & Security'];
 
   return (
     <div className="app-layout">
-      {/* Mobile Top Header */}
-      <header className="mobile-header-bar">
-        <button className="icon-btn" onClick={() => setIsMobileOpen(true)} aria-label="Open Navigation Menu">
-          ☰
-        </button>
-        <span style={{ fontWeight: 700, color: 'var(--brand-primary)' }}>University ERP</span>
-        <button className="icon-btn" onClick={toggleTheme} aria-label="Toggle Theme">
-          {theme === 'light' ? '🌙' : '☀️'}
-        </button>
+      {/* Global Header */}
+      <header className="mobile-header-bar" style={{ display: 'flex', background: 'var(--bg-elevated)', padding: 'var(--space-3) var(--space-6)', borderBottom: '1px solid var(--border-color)', zIndex: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', flex: 1 }}>
+            <span style={{ fontWeight: 800, color: 'var(--text-bright, var(--text-primary))', letterSpacing: '-0.02em', fontSize: '1.2rem' }}>University ERP</span>
+        </div>
+        <div style={{ flex: 2, display: 'flex', justifyContent: 'center' }}>
+            <button 
+                onClick={() => setIsSearchOpen(true)}
+                style={{ width: '100%', maxWidth: '500px', padding: 'var(--space-2) var(--space-4)', borderRadius: 'var(--radius-full)', background: 'var(--bg-base)', border: '1px solid var(--border-color)', color: 'var(--text-muted)', textAlign: 'left', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            >
+                <span>Search students, courses, requests...</span>
+                <kbd style={{ background: 'var(--bg-surface)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', color: 'var(--text-muted)' }}>Cmd K</kbd>
+            </button>
+        </div>
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 'var(--space-4)' }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--brand-tertiary, var(--brand-primary))' }}>AY 2026-2027, Sem 1</span>
+        </div>
       </header>
 
-      {/* Primary Navigation Sidebar */}
-      <aside className={`sidebar ${isMobileOpen ? 'open' : ''}`}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.75rem', padding: '0 0.5rem' }}>
-          <div>
-            <h1 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: 'var(--brand-primary)' }}>
-              University ERP
-            </h1>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 500 }}>Registrar Portal</span>
-          </div>
-          <button className="icon-btn mobile-menu-btn" onClick={closeMobileMenu} aria-label="Close Navigation Sidebar">
-            ✕
-          </button>
-        </div>
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+          {/* Primary Navigation Sidebar */}
+          <aside className={`sidebar ${isMobileOpen ? 'open' : ''}`}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-1)', overflowY: 'auto', marginTop: 'var(--space-4)' }}>
+              {sections.map(section => (
+                <div key={section} style={{ marginBottom: '1.5rem' }}>
+                  <div className="nav-section-label">{section}</div>
+                  {navItems.filter(item => item.section === section).map(item => {
+                    const isActive = location.pathname.startsWith(item.path);
+                    return (
+                      <Link key={item.path} to={item.path} onClick={() => setIsMobileOpen(false)} className={`nav-item ${isActive ? 'active' : ''}`}>
+                        {item.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
 
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-1)', overflowY: 'auto' }}>
-          {sections.map(section => (
-            <div key={section} style={{ marginBottom: '1rem' }}>
-              <div className="nav-section-label">
-                {section}
+            <div style={{ marginTop: 'auto', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+              <div className="user-card">
+                <div className="user-avatar">{identity?.name?.charAt(0) || 'R'}</div>
+                <div className="user-info">
+                  <div className="user-name">{identity?.name || 'Registrar Officer'}</div>
+                  <div className="user-id">{identity?.roles?.[0] || 'Admin'}</div>
+                </div>
               </div>
-              {navItems.filter(item => item.section === section).map(item => {
-                const isActive = location.pathname.startsWith(item.path);
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    onClick={closeMobileMenu}
-                    className={`nav-item ${isActive ? 'active' : ''}`}
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
+              <button onClick={logout} className="logout-btn">Logout</button>
             </div>
-          ))}
-        </div>
+          </aside>
 
-        {/* Footer Actions (Theme Switcher & User Profile) */}
-        <div style={{ marginTop: 'auto', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-          <button
-            onClick={toggleTheme}
-            className="icon-btn"
-            style={{ width: '100%', justifyContent: 'center', gap: 'var(--space-2)', padding: 'var(--space-2)', fontSize: '0.85rem' }}
-          >
-            {theme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode'}
-          </button>
-
-          <div className="user-card">
-            <div className="user-avatar">
-              {identity?.name?.charAt(0) || 'R'}
+          {/* Main Page Area */}
+          <main className="main-content">
+            <div className="content-container">
+              <Outlet />
             </div>
-            <div className="user-info">
-              <div className="user-name">
-                {identity?.name || 'Registrar Officer'}
-              </div>
-              <div className="user-id">{identity?.id || 'ID-UNKNOWN'}</div>
-            </div>
-          </div>
-          
-          <button onClick={logout} className="logout-btn">
-            Logout
-          </button>
-        </div>
-      </aside>
+          </main>
+      </div>
 
-      {/* Main Page Area */}
-      <main className="main-content">
-        <div className="content-container">
-          <Outlet />
-        </div>
-      </main>
-
-      {/* Mobile Drawer Overlay */}
-      {isMobileOpen && (
-        <div
-          onClick={closeMobileMenu}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.4)',
-            backdropFilter: 'blur(2px)',
-            zIndex: 40
-          }}
-        />
-      )}
+      <GlobalSearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} onOpen={() => setIsSearchOpen(true)} />
     </div>
   );
 };

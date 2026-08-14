@@ -17,6 +17,7 @@ import { FacultyEndorsementsPage } from '../features/AdmissionsDivision/FacultyE
 import { EnrollmentValidationPage } from '../features/EnrollmentDivision/EnrollmentValidation.page';
 import { SubjectLoadingPage } from '../features/EnrollmentDivision/SubjectLoading.page';
 import { MasterStudentListPage } from '../features/StudentRegistryDivision/MasterStudentList.page';
+import { StudentProfilePage } from '../features/StudentRegistryDivision/StudentProfile.page';
 import { LeaveOfAbsencePage } from '../features/StudentRegistryDivision/LeaveOfAbsence.page';
 import { StudentNumberAssignmentPage } from '../features/StudentRegistryDivision/StudentNumberAssignment.page';
 import { OfficialGradesPage } from '../features/AcademicRecordsDivision/OfficialGrades.page';
@@ -25,13 +26,11 @@ import { AcademicRecordInitializationPage } from '../features/AcademicRecordsDiv
 import { SubjectCatalogPage } from '../features/CurriculumDivision/SubjectCatalog.page';
 import { CourseOfferingsPage } from '../features/CurriculumDivision/CourseOfferings.page';
 import { PrerequisitesPage } from '../features/CurriculumDivision/Prerequisites.page';
-
 import { RegistrationWindowsPage } from '../features/EnrollmentDivision/RegistrationWindows.page';
 import { RegistrationRequestsPage } from '../features/EnrollmentDivision/RegistrationRequests.page';
 import { AddDropOversightPage } from '../features/EnrollmentDivision/AddDropOversight.page';
 import { WaitlistsPage } from '../features/EnrollmentDivision/Waitlists.page';
 import { RegistrationExceptionsPage } from '../features/EnrollmentDivision/RegistrationExceptions.page';
-
 import { GraduationCandidatesPage } from '../features/GraduationDivision/GraduationCandidates.page';
 import { LatinHonorsPage } from '../features/GraduationDivision/LatinHonors.page';
 import { TranscriptRequestsPage } from '../features/CertificationDivision/TranscriptRequests.page';
@@ -45,7 +44,7 @@ import { SensitiveVaultPage } from '../features/RegistrarSecurity/SensitiveVault
 
 const Stub = ({ title }: { title: string }) => (
     <div className="stub-page fade-in">
-        <div className="stub-icon">🎓</div>
+        <div className="stub-icon">🗂️</div>
         <div className="stub-title">{title}</div>
         <div className="stub-subtitle">Registrar Enterprise Domain module pending UI/UX implementation.</div>
     </div>
@@ -79,6 +78,7 @@ export const Routing: React.FC = () => {
                     {/* 3. Student Registry Division */}
                     <Route element={<RegistrarGuard allowedRoles={['ROLE_REGISTRY_OFFICER']} />}>
                         <Route path="/registry" element={<MasterStudentListPage />} />
+                        <Route path="/registry/student/:id" element={<StudentProfilePage />} />
                         <Route path="/registry/loa" element={<LeaveOfAbsencePage />} />
                         <Route path="/registry/assignment" element={<StudentNumberAssignmentPage />} />
                     </Route>
@@ -127,10 +127,20 @@ export const Routing: React.FC = () => {
                         <Route path="/security/documents" element={<SensitiveVaultPage />} />
                     </Route>
 
-                    {/* New Divisions */}
-                    <Route path="/scheduling" element={<AcademicSchedulingDivisionPage />} />
-                    <Route path="/cross-enrollment" element={<CrossEnrollmentDivisionPage />} />
-                    <Route path="/transfer" element={<TransferDivisionPage />} />
+                    {/* 11. Academic Scheduling Division */}
+                    <Route element={<RegistrarGuard allowedRoles={['ROLE_CURRICULUM_OFFICER', 'ROLE_ENROLLMENT_OFFICER']} />}>
+                        <Route path="/scheduling" element={<AcademicSchedulingDivisionPage />} />
+                    </Route>
+
+                    {/* 12. Cross Enrollment Division */}
+                    <Route element={<RegistrarGuard allowedRoles={['ROLE_ENROLLMENT_OFFICER']} />}>
+                        <Route path="/cross-enrollment" element={<CrossEnrollmentDivisionPage />} />
+                    </Route>
+
+                    {/* 13. Transfer Division */}
+                    <Route element={<RegistrarGuard allowedRoles={['ROLE_RECORDS_OFFICER', 'ROLE_ADMISSIONS_OFFICER']} />}>
+                        <Route path="/transfer" element={<TransferDivisionPage />} />
+                    </Route>
                     
                     <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 </Route>

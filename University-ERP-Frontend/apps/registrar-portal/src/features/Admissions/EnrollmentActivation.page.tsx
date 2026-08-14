@@ -117,16 +117,27 @@ export const EnrollmentActivationPage: React.FC = () => {
             </Card>
 
             {selectedApplication && (
-                <Modal 
-                    isOpen={!!selectedApplication} 
-                    onClose={() => setSelectedApplication(null)}
-                >
+                <Modal isOpen={!!selectedApplication} onClose={() => setSelectedApplication(null)}>
                     <div style={{ marginBottom: '1.5rem' }}>
                         <h2 style={{ marginTop: 0, color: 'var(--text-primary)' }}>Confirm Official Enrollment</h2>
+                        
+                        {/* NEW Explicit Checklist Based on Blueprint */}
+                        <div style={{ background: 'var(--bg-elevated, var(--bg-surface))', padding: 'var(--space-4)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', marginBottom: '1.5rem' }}>
+                            <h4 style={{ margin: '0 0 var(--space-3) 0', color: 'var(--text-muted)', textTransform: 'uppercase', fontSize: '0.75rem' }}>Pre-Enrollment Verification</h4>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', color: 'var(--success-text, #10b981)', marginBottom: 'var(--space-2)' }}>
+                                <span style={{ background: 'var(--success-bg, rgba(16, 185, 129, 0.15))', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem' }}>✓</span> 
+                                <strong>Dean Endorsement Confirmed</strong>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', color: 'var(--success-text, #10b981)' }}>
+                                <span style={{ background: 'var(--success-bg, rgba(16, 185, 129, 0.15))', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem' }}>✓</span> 
+                                <strong>Financial Clearance Confirmed</strong>
+                            </div>
+                        </div>
+
                         <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>
                             You are about to officially enroll this applicant. This action will:
                         </p>
-                        <ul style={{ color: 'var(--text-primary)', background: 'var(--surface-default)', padding: '1rem 1rem 1rem 2.5rem', borderRadius: '8px', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+                        <ul style={{ color: 'var(--text-primary)', background: 'var(--surface-default, var(--bg-base))', padding: '1rem 1rem 1rem 2.5rem', borderRadius: '8px', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
                             <li style={{ marginBottom: '0.5rem' }}>Generate an official <strong>Student Number (STU-YYYY-XXXX)</strong></li>
                             <li style={{ marginBottom: '0.5rem' }}>Create a permanent entry in the <strong>Student Registry</strong></li>
                             <li style={{ marginBottom: '0.5rem' }}>Notify the Finance Console to generate initial billing</li>
