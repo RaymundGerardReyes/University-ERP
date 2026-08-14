@@ -1,8 +1,9 @@
+// src/features/Admissions/EnrollmentActivation.page.tsx
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AdmissionWorkflow } from '@university-erp/workflow-sdk';
 import { admissionsApi } from '@university-erp/api-clients';
-import { Button, Card, Table, Badge, Modal, FormInput } from '@university-erp/ui-kit';
+import { Button, Card, Table, Badge, Modal, FormInput, PageHeader, EmptyState } from '@university-erp/ui-kit';
 import { createLogger } from '@university-erp/core-logger';
 
 const logger = createLogger('registrar-portal', 'EnrollmentActivation');
@@ -16,15 +17,13 @@ interface EnrollmentActivationResponse {
 export const EnrollmentActivationPage: React.FC = () => {
     const queryClient = useQueryClient();
     const [selectedApplication, setSelectedApplication] = useState<any | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
 
-    // Fetch applications that have been Endorsed by the Dean
-    const { data: applications, isLoading } = useQuery({
+    const { data: applications = [], isLoading } = useQuery({
         queryKey: ['admissions', 'endorsed'],
-        queryFn: () => admissionsApi.getPendingApplications().then(res => 
-            // In a real API, we would filter status=Endorsed_For_Enrollment on the backend
-            res.filter((app: any) => app.status === 'Endorsed_For_Enrollment' || app.status === 'Recommended') 
+        queryFn: () => admissionsApi.getPendingApplications().then(res =>
+            res.filter((app: any) => app.status === 'Endorsed_For_Enrollment' || app.status === 'Recommended')
         ),
-        // Mock fallback for UI development
         initialData: [
             { id: 'APP-2026-001', name: 'John Doe', program: 'BS Computer Science', stage: 'Endorsed', status: 'Endorsed_For_Enrollment', deanRemarks: 'Excellent candidate.' },
             { id: 'APP-2026-002', name: 'Jane Smith', program: 'BS Information Technology', stage: 'Endorsed', status: 'Endorsed_For_Enrollment', deanRemarks: 'Approved for Fall semester.' },
@@ -45,107 +44,151 @@ export const EnrollmentActivationPage: React.FC = () => {
         }
     });
 
-    const handleActivate = (app: any) => {
-        setSelectedApplication(app);
-    };
+    if (isLoading) return <div className="skeleton" style={{ height: '400px' }} />;
 
-    const confirmActivation = () => {
-        if (selectedApplication) {
-            activateMutation.mutate(selectedApplication.id);
-        }
-    };
+    const filteredApps = applications.filter((app: any) => 
+        app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        app.id.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const totalPending = applications.length;
+
+    if (applications.length === 0) {
+        return (
+            <div className="fade-in">
+                <PageHeader 
+                    title="Enrollment Activation" 
+                    subtitle="Review applicants who have received FINANCIAL_CLEARANCE to generate official university records." 
+                />
+                <EmptyState 
+                    title="No Pending Activations" 
+                    description="All endorsed applicants have been processed successfully." 
+                    icon=" " 
+                />
+            </div>
+        );
+    }
 
     return (
-        <div className="fade-in" style={{ maxWidth: '1200px', margin: '0 auto' }}>
-            <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                <div>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 700, margin: '0 0 0.5rem 0', background: 'linear-gradient(90deg, var(--brand-primary), var(--brand-secondary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                        Enrollment Activation
-                    </h1>
-                    <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
-                        Review applicants who have received <strong>FINANCIAL_CLEARANCE</strong> from the Finance Console and generate official university records.
-                    </p>
+        <div className="fade-in">
+            <PageHeader 
+                title="Enrollment Activation" 
+                subtitle="Review applicants who have received FINANCIAL_CLEARANCE to generate official university records." 
+            />
+
+            {/* KPI STATS */}
+            <div className="grid-stats" style={{ marginBottom: 'var(--space-6)' }}>
+                <Card style={{ borderLeft: '4px solid var(--brand-primary)', padding: 'var(--space-4)' }}>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Awaiting Activation</div>
+                    <div style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--text-bright)' }}>{totalPending}</div>
+                </Card>
+            </div>
+
+            {/* TOOLBAR */}
+            <div className="toolbar">
+                <div className="search-input-wrapper">
+                    <span className="search-icon"> </span>
+                    <FormInput 
+                        placeholder="Search by Applicant Name or ID..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
             </div>
 
-            <Card style={{ padding: '0', overflow: 'hidden', background: 'var(--surface-overlay)', backdropFilter: 'blur(10px)', border: '1px solid var(--border-light)' }}>
-                {isLoading ? (
-                    <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading endorsed applicants...</div>
-                ) : applications.length === 0 ? (
-                    <div style={{ padding: '4rem', textAlign: 'center' }}>
-                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎓</div>
-                        <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--text-primary)' }}>No Pending Activations</h3>
-                        <p style={{ color: 'var(--text-secondary)', margin: 0 }}>All endorsed applicants have been processed.</p>
-                    </div>
-                ) : (
-                    <Table>
-                        <thead>
-                            <tr>
-                                <th>Application ID</th>
-                                <th>Applicant Name</th>
-                                <th>Program</th>
-                                <th>Dean Endorsement</th>
-                                <th>Status</th>
-                                <th style={{ textAlign: 'right' }}>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {applications.map((app: any) => (
-                                <tr key={app.id}>
-                                    <td style={{ fontFamily: 'monospace', color: 'var(--text-secondary)' }}>{app.id}</td>
-                                    <td style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{app.name}</td>
-                                    <td>{app.program}</td>
-                                    <td style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>"{app.deanRemarks}"</td>
-                                    <td>
-                                        <Badge variant="success">Endorsed</Badge>
-                                    </td>
-                                    <td style={{ textAlign: 'right' }}>
-                                        <Button 
-                                            variant="primary" 
-                                            size="small" 
-                                            onClick={() => handleActivate(app)}
-                                            style={{ background: 'linear-gradient(135deg, hsl(200, 80%, 45%), hsl(240, 80%, 50%))', border: 'none', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}
-                                        >
-                                            Activate Enrollment
-                                        </Button>
-                                    </td>
+            {/* DESKTOP VIEW: TABLE */}
+            <div className="desktop-only fade-in">
+                <Card style={{ padding: 0, overflow: 'hidden' }}>
+                    <div className="data-table-container">
+                        <Table>
+                            <thead>
+                                <tr>
+                                    <th>Application ID</th>
+                                    <th>Applicant Name</th>
+                                    <th>Program</th>
+                                    <th>Dean Endorsement</th>
+                                    <th>Status</th>
+                                    <th style={{ textAlign: 'right' }}>Action</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                )}
-            </Card>
+                            </thead>
+                            <tbody>
+                                {filteredApps.map((app: any) => (
+                                    <tr key={app.id}>
+                                        <td style={{ fontFamily: 'monospace', color: 'var(--text-secondary)' }}>{app.id}</td>
+                                        <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{app.name}</td>
+                                        <td>{app.program}</td>
+                                        <td style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>"{app.deanRemarks}"</td>
+                                        <td><Badge colorScheme="success">Endorsed</Badge></td>
+                                        <td style={{ textAlign: 'right' }}>
+                                            <Button variant="primary" size="small" onClick={() => setSelectedApplication(app)}>
+                                                Activate
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {filteredApps.length === 0 && (
+                                    <tr>
+                                        <td colSpan={6} style={{ textAlign: 'center', padding: 'var(--space-6)' }}>
+                                            <span style={{ color: 'var(--text-muted)' }}>No matches found for "{searchTerm}"</span>
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </Table>
+                    </div>
+                </Card>
+            </div>
 
+            {/* MOBILE VIEW: CARDS */}
+            <div className="mobile-only flex-stack fade-in">
+                {filteredApps.map((app: any) => (
+                    <Card key={app.id}>
+                        <div className="card-accent-top" />
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
+                            <span style={{ fontWeight: 'bold', fontFamily: 'monospace', color: 'var(--brand-primary)' }}>{app.id}</span>
+                            <Badge colorScheme="success">Endorsed</Badge>
+                        </div>
+                        <h3 style={{ marginBottom: 'var(--space-1)', fontSize: '1.1rem', color: 'var(--text-bright)' }}>{app.name}</h3>
+                        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{app.program}</p>
+                        <div style={{ margin: 'var(--space-3) 0', padding: 'var(--space-2)', background: 'var(--bg-base)', borderRadius: 'var(--radius-md)' }}>
+                            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Endorsement Remarks</div>
+                            <div style={{ fontStyle: 'italic', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>"{app.deanRemarks}"</div>
+                        </div>
+                        <Button variant="primary" style={{ width: '100%' }} onClick={() => setSelectedApplication(app)}>
+                            Activate Enrollment
+                        </Button>
+                    </Card>
+                ))}
+            </div>
+
+            {/* CONFIRMATION MODAL */}
             {selectedApplication && (
                 <Modal isOpen={!!selectedApplication} onClose={() => setSelectedApplication(null)}>
                     <div style={{ marginBottom: '1.5rem' }}>
-                        <h2 style={{ marginTop: 0, color: 'var(--text-primary)' }}>Confirm Official Enrollment</h2>
+                        <h2 style={{ marginTop: 0, color: 'var(--text-bright, var(--text-primary))' }}>Confirm Official Enrollment</h2>
                         
-                        {/* NEW Explicit Checklist Based on Blueprint */}
                         <div style={{ background: 'var(--bg-elevated, var(--bg-surface))', padding: 'var(--space-4)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', marginBottom: '1.5rem' }}>
                             <h4 style={{ margin: '0 0 var(--space-3) 0', color: 'var(--text-muted)', textTransform: 'uppercase', fontSize: '0.75rem' }}>Pre-Enrollment Verification</h4>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', color: 'var(--success-text, #10b981)', marginBottom: 'var(--space-2)' }}>
-                                <span style={{ background: 'var(--success-bg, rgba(16, 185, 129, 0.15))', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem' }}>✓</span> 
-                                <strong>Dean Endorsement Confirmed</strong>
+                                <span> </span> <strong>Dean Endorsement Confirmed</strong>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', color: 'var(--success-text, #10b981)' }}>
-                                <span style={{ background: 'var(--success-bg, rgba(16, 185, 129, 0.15))', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem' }}>✓</span> 
-                                <strong>Financial Clearance Confirmed</strong>
+                                <span> </span> <strong>Financial Clearance Confirmed</strong>
                             </div>
                         </div>
 
-                        <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+                        <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem', fontSize: '0.9rem' }}>
                             You are about to officially enroll this applicant. This action will:
                         </p>
-                        <ul style={{ color: 'var(--text-primary)', background: 'var(--surface-default, var(--bg-base))', padding: '1rem 1rem 1rem 2.5rem', borderRadius: '8px', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+                        <ul style={{ color: 'var(--text-primary)', background: 'var(--bg-base)', padding: '1rem 1rem 1rem 2.5rem', borderRadius: '8px', fontSize: '0.9rem', marginBottom: '1.5rem', border: '1px solid var(--border-color)' }}>
                             <li style={{ marginBottom: '0.5rem' }}>Generate an official <strong>Student Number (STU-YYYY-XXXX)</strong></li>
                             <li style={{ marginBottom: '0.5rem' }}>Create a permanent entry in the <strong>Student Registry</strong></li>
                             <li style={{ marginBottom: '0.5rem' }}>Notify the Finance Console to generate initial billing</li>
-                            <li>Publish the <code style={{ background: 'var(--bg-base)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>StudentOfficiallyEnrolledEvent</code></li>
+                            <li>Publish the <code>StudentOfficiallyEnrolledEvent</code></li>
                         </ul>
                         
-                        <div style={{ padding: '1rem', background: 'rgba(0, 200, 100, 0.1)', borderLeft: '4px solid hsl(150, 70%, 40%)', borderRadius: '4px' }}>
-                            <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>{selectedApplication.name}</div>
+                        <div style={{ padding: '1rem', background: 'var(--success-bg)', borderLeft: '4px solid var(--success-text)', borderRadius: '4px' }}>
+                            <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{selectedApplication.name}</div>
                             <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{selectedApplication.program}</div>
                         </div>
                     </div>
@@ -154,12 +197,7 @@ export const EnrollmentActivationPage: React.FC = () => {
                         <Button variant="ghost" onClick={() => setSelectedApplication(null)} disabled={activateMutation.isPending}>
                             Cancel
                         </Button>
-                        <Button 
-                            variant="primary" 
-                            onClick={confirmActivation} 
-                            disabled={activateMutation.isPending}
-                            style={{ background: 'linear-gradient(135deg, hsl(150, 80%, 40%), hsl(170, 80%, 35%))', border: 'none', boxShadow: '0 4px 15px rgba(0, 200, 100, 0.3)' }}
-                        >
+                        <Button variant="primary" onClick={() => activateMutation.mutate(selectedApplication.id)} disabled={activateMutation.isPending}>
                             {activateMutation.isPending ? 'Activating...' : 'Generate Official Identity'}
                         </Button>
                     </div>
