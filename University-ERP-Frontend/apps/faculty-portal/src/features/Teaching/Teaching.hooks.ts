@@ -1,18 +1,16 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
+import { teachingApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
-import { fetchMyCourses, logAttendance } from './Teaching.api';
 
 export const useMyCourses = () => {
-    const { user } = useAuth();
-    return useQuery({
-        queryKey: ['myCourses', user?.id],
-        queryFn: () => fetchMyCourses(user!.id),
-        enabled: !!user?.id,
-    });
-};
+    const { identity } = useAuth();
 
-export const useSubmitAttendance = () => {
-    return useMutation({
-        mutationFn: ({ sectionId, data }: { sectionId: string, data: any }) => logAttendance(sectionId, data),
+    return useQuery({
+        // Cache uniquely by the faculty ID
+        queryKey: ['faculty', 'courses', identity?.id],
+        // Dynamically fetch from the backend via the API client
+        queryFn: () => teachingApi.getMyCourses(identity?.id || ''),
+        enabled: !!identity?.id,
+        staleTime: 1000 * 60 * 15 // Cache for 15 minutes as schedules rarely change mid-day
     });
 };
