@@ -12,26 +12,8 @@ export const PrerequisitesPage: React.FC = () => {
 
     if (isLoading) return <div className="skeleton" style={{ height: '400px' }} />;
 
-    // Mock data for visual demonstration until the backend is fully populated
-    const displayCourses = courses && courses.length > 0 ? courses : [
-        { 
-            courseId: 'C-001', code: 'CS201', title: 'Data Structures and Algorithms', units: 3, 
-            prerequisites: [
-                { ruleId: 'R-1', requiredCourseId: 'CS102', minimumGrade: '2.0', isEnforced: true }
-            ] 
-        },
-        { 
-            courseId: 'C-002', code: 'CS301', title: 'Software Engineering', units: 3, 
-            prerequisites: [
-                { ruleId: 'R-2', requiredCourseId: 'CS201', minimumGrade: '2.0', isEnforced: true },
-                { ruleId: 'R-3', requiredCourseId: 'IT201', minimumGrade: '2.5', isEnforced: false }
-            ] 
-        },
-        { 
-            courseId: 'C-003', code: 'PE104', title: 'Physical Education IV', units: 2, 
-            prerequisites: [] 
-        }
-    ];
+    // Real data mapping
+    const displayCourses = courses || [];
 
     // Filter the left pane based on the search input
     const filteredCourses = displayCourses.filter((c: any) => 
@@ -42,7 +24,8 @@ export const PrerequisitesPage: React.FC = () => {
     const selectedCourse = displayCourses.find((c: any) => c.courseId === selectedCourseId);
 
     const handleToggleEnforcement = (ruleId: string, currentStatus: boolean) => {
-        updateMutation.mutate({ ruleId, payload: { isEnforced: !currentStatus } });
+        if (!selectedCourseId) return;
+        updateMutation.mutate({ courseId: selectedCourseId, ruleId, isEnforced: !currentStatus });
     };
 
     return (

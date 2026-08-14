@@ -10,13 +10,8 @@ export const SubjectCatalogPage: React.FC = () => {
 
     if (isLoading) return <div className="skeleton" style={{ height: '400px' }} />;
 
-    // Fallback mock data mapping to the master data management interface
-    const displayCatalog = catalog.length > 0 ? catalog : [
-        { code: 'CS101', title: 'Intro to Programming', units: 3, prerequisites: 'None', status: 'Active', department: 'Computer Science', description: 'Fundamental programming concepts.' },
-        { code: 'CS201', title: 'Data Structures', units: 3, prerequisites: 'CS101', status: 'Active', department: 'Computer Science', description: 'Advanced data organization and algorithm analysis.' },
-        { code: 'MTH101', title: 'Calculus I', units: 4, prerequisites: 'None', status: 'Active', department: 'Mathematics', description: 'Limits, derivatives, and integrals.' },
-        { code: 'ENG101', title: 'Purposive Communication', units: 3, prerequisites: 'None', status: 'Inactive', department: 'Languages', description: 'Effective communication in academic and professional contexts.' }
-    ];
+    // Real backend data mapping
+    const displayCatalog = catalog || [];
 
     const filteredCatalog = displayCatalog.filter((item: any) => 
         item.code.toLowerCase().includes(searchTerm.toLowerCase()) || 
