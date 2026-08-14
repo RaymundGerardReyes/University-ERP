@@ -9,6 +9,8 @@
   <ItemGroup>
     <ProjectReference Include="..\StudentInformation.Domain\StudentInformation.Domain.csproj" />
     <ProjectReference Include="..\..\..\..\SharedKernel\SharedKernel.Application\SharedKernel.Application.csproj" />
+    <ProjectReference Include="..\..\..\Platform\IdentityAccess\IdentityAccess.Contracts\IdentityAccess.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\..\Contracts\UniversityErp.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

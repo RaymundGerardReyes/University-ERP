@@ -2,20 +2,19 @@ namespace StudentInformation.Application.Consumers;
 
 using MediatR;
 using IdentityAccess.Contracts.IntegrationEvents;
+using StudentInformation.Application.Abstractions;
 using StudentInformation.Domain.Aggregates;
-using StudentInformation.Domain.ValueObjects;
-using StudentInformation.Infrastructure.Persistence;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 public sealed class UserRegisteredIntegrationEventConsumer : INotificationHandler<UserRegisteredIntegrationEvent>
 {
-    private readonly StudentInformationDbContext _dbContext;
+    private readonly IStudentAcademicRecordRepository _repository;
 
-    public UserRegisteredIntegrationEventConsumer(StudentInformationDbContext dbContext)
+    public UserRegisteredIntegrationEventConsumer(IStudentAcademicRecordRepository repository)
     {
-        _dbContext = dbContext;
+        _repository = repository;
     }
 
     public async Task Handle(UserRegisteredIntegrationEvent notification, CancellationToken cancellationToken)
@@ -26,19 +25,10 @@ public sealed class UserRegisteredIntegrationEventConsumer : INotificationHandle
             // Extract the enrollment number from the email (e.g., "student.stu-2026-1234@university.edu")
             var enrollmentNumber = notification.Email.Split('@')[0].Replace("student.", "", StringComparison.OrdinalIgnoreCase).ToUpper();
 
-            // Create the official Academic Student aggregate using the factory method
-            var studentResult = Student.Enroll(
-                StudentId.Create(Guid.NewGuid()),
-                notification.UserId,
-                enrollmentNumber,
-                DateTime.UtcNow
-            );
+            // Create the official Academic Student aggregate
+            var record = new StudentAcademicRecord(Guid.NewGuid(), enrollmentNumber);
 
-            if (studentResult.IsSuccess)
-            {
-                _dbContext.Students.Add(studentResult.Value);
-                await _dbContext.SaveChangesAsync(cancellationToken);
-            }
+            await _repository.AddAsync(record, cancellationToken);
         }
     }
 }
