@@ -1,14 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
+import { admissionsApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
-import { fetchApplicantDashboard } from './Dashboard.api';
 
 export const useApplicantDashboard = () => {
-    const { user } = useAuth();
-
+    const { identity } = useAuth();
+    
     return useQuery({
-        queryKey: ['applicantDashboard', user?.id],
-        queryFn: () => fetchApplicantDashboard(user!.id),
-        enabled: !!user?.id,
-        staleTime: 1000 * 60 * 5,
+        queryKey: ['applicant-journey', identity?.id],
+        // Dynamically fetch the journey state from the PostgreSQL backend
+        queryFn: () => admissionsApi.getApplicantJourney(identity?.id || ''),
+        enabled: !!identity?.id,
+        refetchInterval: 10000 // Poll every 10 seconds to catch real-time workflow advancements
     });
 };
