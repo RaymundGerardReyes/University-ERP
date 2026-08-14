@@ -1,5 +1,8 @@
 namespace IdentityAccess.Contracts.IntegrationEvents;
 
+using MediatR;
+using System;
+
 /// <summary>
 /// Integration event published to the message broker when a new user is registered.
 /// Other bounded contexts (e.g., StudentInformation, HumanResources) subscribe to this event.
@@ -11,4 +14,5 @@ public sealed record UserRegisteredIntegrationEvent(
     Guid UserId,
     string Email,
     string FullName
-);
+) : INotification;
+
