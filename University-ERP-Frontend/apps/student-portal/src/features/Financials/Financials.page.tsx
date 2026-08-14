@@ -1,13 +1,30 @@
 import { useAuth } from '@university-erp/auth-sdk';
 import { Badge, Button, Card, PageHeader, Table } from '@university-erp/ui-kit';
-import React from 'react';
-import { useCurrentTermInvoice } from './Financials.hooks';
+import React, { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCurrentTermInvoice, useCreatePaymentSession, usePaymentSessionStatus } from './Financials.hooks';
+import { financePaymentSessionApi } from '@university-erp/api-clients';
 
 export const FinancialsPage: React.FC = () => {
     const { identity } = useAuth();
+    const queryClient = useQueryClient();
     const currentTermId = "TERM-FALL-2026";
 
     const { data: invoice, isLoading, isError } = useCurrentTermInvoice(identity?.id || 'demo', currentTermId);
+    const createSessionMutation = useCreatePaymentSession();
+
+    const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+    const [bankQrPayload, setBankQrPayload] = useState<string | null>(null);
+
+    const { data: sessionStatus } = usePaymentSessionStatus(activeSessionId);
+
+    useEffect(() => {
+        if (sessionStatus?.status === 'Paid') {
+            queryClient.invalidateQueries({ queryKey: ['student', identity?.id || 'demo', 'invoice'] });
+            setActiveSessionId(null);
+            setBankQrPayload(null);
+        }
+    }, [sessionStatus?.status, queryClient, identity?.id]);
 
     if (isLoading) return <div className="skeleton" style={{ height: '400px' }} />;
 
@@ -21,6 +38,26 @@ export const FinancialsPage: React.FC = () => {
     }
 
     const outstandingBalance = invoice.amountDue - invoice.amountPaid;
+
+    const handleMakePayment = () => {
+        createSessionMutation.mutate({
+            invoiceId: invoice.invoiceId,
+            applicantId: identity?.id || 'unknown',
+            amount: outstandingBalance,
+            purpose: `Tuition Payment - ${currentTermId}`,
+            currency: 'PHP'
+        }, {
+            onSuccess: async (data) => {
+                setActiveSessionId(data.sessionId);
+                try {
+                    const qrData = await financePaymentSessionApi.getDynamicQR(data.sessionId);
+                    setBankQrPayload(qrData.qrPayload);
+                } catch (err) {
+                    console.error("Failed to fetch Bank QR", err);
+                }
+            }
+        });
+    };
 
     return (
         <div className="fade-in">
@@ -43,10 +80,45 @@ export const FinancialsPage: React.FC = () => {
                             ${outstandingBalance.toFixed(2)}
                         </span>
                     </div>
-                    {outstandingBalance > 0 && (
-                        <Button variant="primary" style={{ width: '100%', marginTop: 'var(--space-4)' }}>
-                            Make a Payment
+
+                    {outstandingBalance > 0 && !activeSessionId && (
+                        <Button 
+                            variant="primary" 
+                            style={{ width: '100%', marginTop: 'var(--space-4)' }}
+                            onClick={handleMakePayment}
+                            disabled={createSessionMutation.isPending}
+                        >
+                            {createSessionMutation.isPending ? 'Connecting to Bank...' : 'Make a Payment'}
                         </Button>
+                    )}
+
+                    {activeSessionId && bankQrPayload && (
+                        <div style={{ marginTop: 'var(--space-6)', textAlign: 'center', padding: '1rem', background: 'var(--bg-elevated, #f8f9fa)', borderRadius: 'var(--radius-md, 8px)' }}>
+                            <Badge colorScheme="warning" style={{ marginBottom: '1rem' }}>Awaiting Payment</Badge>
+                            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                                Scan this code with your banking app. This page will update automatically once the bank confirms your payment.
+                            </p>
+                            
+                            <div style={{ padding: '1rem', background: 'white', display: 'inline-block', borderRadius: '8px', margin: '1rem 0' }}>
+                                <div style={{ color: 'black', fontFamily: 'monospace', fontSize: '0.75rem', wordBreak: 'break-all', maxWidth: '220px' }}>
+                                    {bankQrPayload}
+                                </div>
+                            </div>
+                            
+                            <Button 
+                                variant="outline" 
+                                style={{ width: '100%' }}
+                                onClick={() => { setActiveSessionId(null); setBankQrPayload(null); }}
+                            >
+                                Cancel
+                            </Button>
+                        </div>
+                    )}
+
+                    {createSessionMutation.isError && (
+                        <div style={{ color: 'var(--danger-text)', fontSize: '0.85rem', marginTop: 'var(--space-2)' }}>
+                            Failed to initialize payment session. Please try again.
+                        </div>
                     )}
                 </Card>
 
@@ -88,4 +160,4 @@ export const FinancialsPage: React.FC = () => {
             </Card>
         </div>
     );
-};
+};

@@ -2,8 +2,7 @@ import { Button, PageHeader } from '@university-erp/ui-kit';
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { useQuery } from '@tanstack/react-query';
-const learningManagementApi: any = {};
+import { useCourseContent } from './LearningManagement.hooks';
 
 const AssessmentPeriodAccordion = ({ period, delayIndex }: { period: any, delayIndex: number }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,17 +19,22 @@ const AssessmentPeriodAccordion = ({ period, delayIndex }: { period: any, delayI
 
       {isOpen && (
         <div style={{ borderTop: '1px solid var(--border-subtle)', padding: 'var(--space-6)', background: 'var(--bg-elevated)' }}>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-4)' }}>{period.description}</p>
           <div className="grid-auto">
-            {period.activities.map((act: any, idx: number) => (
-              <div key={idx} style={{ background: 'var(--bg-base)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: 'var(--space-4)', display: 'flex', flexDirection: 'column' }}>
+            {period.items?.map((item: any) => (
+              <div key={item.id} style={{ background: 'var(--bg-base)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: 'var(--space-4)', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--brand-primary)', fontWeight: 700, textTransform: 'uppercase' }}>{act.type}</span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{act.date}</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--brand-primary)', fontWeight: 700, textTransform: 'uppercase' }}>{item.contentType}</span>
                 </div>
-                <div style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-primary)', marginBottom: 'var(--space-4)' }}>{act.title}</div>
-                <div style={{ marginTop: 'auto', fontSize: '1.25rem', fontWeight: 800, color: 'var(--success-text)' }}>{act.score}</div>
+                <div style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-primary)', marginBottom: 'var(--space-4)' }}>{item.name}</div>
+                <div style={{ marginTop: 'auto' }}>
+                  <Button variant="outline" size="small" onClick={() => window.open(item.resourceUrl, '_blank')}>View Resource</Button>
+                </div>
               </div>
             ))}
+            {(!period.items || period.items.length === 0) && (
+                <div style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>No content uploaded for this module yet.</div>
+            )}
           </div>
         </div>
       )}
@@ -41,14 +45,12 @@ const AssessmentPeriodAccordion = ({ period, delayIndex }: { period: any, delayI
 export const LearningManagementPage: React.FC = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const { data: course, isLoading, isError } = useQuery({
-    queryKey: ['courseLms', courseId],
-    queryFn: () => (learningManagementApi as any).getCourseDetails?.(courseId),
-    enabled: !!courseId
-  });
+  
+  // Use the new hook for the database-driven LMS content
+  const { data: course, isLoading, isError } = useCourseContent(courseId || '');
 
   if (isLoading) return <div className="skeleton" style={{ height: '60vh' }} />;
-  if (isError || !course) return <div className="stub-page fade-in"><div className="stub-title">Course not found or API unavailable.</div></div>;
+  if (isError || !course) return <div className="stub-page fade-in"><div className="stub-title">Course syllabus not found or API unavailable.</div></div>;
 
   return (
     <div className="fade-in">
@@ -56,17 +58,22 @@ export const LearningManagementPage: React.FC = () => {
         ← Back to Enrollments
       </Button>
 
-      <PageHeader title={`${course.code.toUpperCase()} LMS: ${course.name}`} subtitle={`Faculty: ${course.faculty}`} />
+      <PageHeader title={`LMS: ${course.title}`} subtitle={course.description} />
 
       <div className="card fade-in-delay-1" style={{ marginBottom: 'var(--space-6)', background: 'var(--brand-gradient-soft)', borderColor: 'var(--brand-primary)' }}>
-        <h3 style={{ margin: '0 0 var(--space-2) 0', color: 'var(--text-primary)' }}>Gradebook & Activities</h3>
-        <p style={{ margin: 0, color: 'var(--text-secondary)' }}>Track your granular academic progress across the primary assessment periods below.</p>
+        <h3 style={{ margin: '0 0 var(--space-2) 0', color: 'var(--text-primary)' }}>Course Syllabus & Modules</h3>
+        <p style={{ margin: 0, color: 'var(--text-secondary)' }}>Access your learning materials, videos, and assignments below.</p>
       </div>
 
       <div>
-        {course.modules.map((mod: any, index: number) => (
-          <AssessmentPeriodAccordion key={index} period={mod} delayIndex={(index % 3) + 1} />
+        {course.modules?.sort((a: any, b: any) => a.orderSequence - b.orderSequence).map((mod: any, index: number) => (
+          <AssessmentPeriodAccordion key={mod.id} period={mod} delayIndex={(index % 3) + 1} />
         ))}
+        {(!course.modules || course.modules.length === 0) && (
+            <div style={{ textAlign: 'center', padding: 'var(--space-8)', color: 'var(--text-muted)' }}>
+                The professor has not published any modules for this syllabus yet.
+            </div>
+        )}
       </div>
     </div>
   );

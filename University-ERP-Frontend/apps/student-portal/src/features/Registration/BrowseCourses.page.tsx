@@ -5,10 +5,11 @@ import { useAddCourse, useBrowseCourses, useJoinWaitlist } from './Registration.
 
 export const BrowseCoursesPage: React.FC = () => {
     const { identity } = useAuth();
-    const currentTermId = "TERM-FALL-2026"; // In a real app, this comes from a Global/Term context
-
-    // Fallback to empty array if the API stub returns null during dev
-    const { data: courses = [], isLoading } = useBrowseCourses(currentTermId);
+    const currentTermId = "TERM-FALL-2026"; 
+    
+    // Wire directly to the dynamic backend payload
+    const { data: courses, isLoading, isError } = useBrowseCourses(currentTermId);
+    
     const addCourseMutation = useAddCourse();
     const waitlistMutation = useJoinWaitlist();
 
@@ -21,16 +22,21 @@ export const BrowseCoursesPage: React.FC = () => {
     };
 
     if (isLoading) return <div className="skeleton" style={{ height: '300px' }} />;
+    if (isError) return <div style={{ color: 'var(--danger-text)' }}>Failed to load course catalog.</div>;
 
-    // Mock UI rendering if API is not yet wired up in backend
-    const mockSections = courses.length ? courses : [
-        { sectionId: 'SEC-101', code: 'CS101', title: 'Intro to Programming', credits: 3, schedule: 'MWF 9:00 AM', status: 'OPEN' },
-        { sectionId: 'SEC-102', code: 'CS305', title: 'Database Systems', credits: 4, schedule: 'TTh 1:00 PM', status: 'FULL' }
-    ];
+    // Graceful empty state when backend returns empty data
+    if (!courses || courses.length === 0) {
+        return (
+            <div className="stub-page fade-in">
+                <div className="stub-title">No Courses Available</div>
+                <div className="stub-subtitle">The catalog for {currentTermId} has not been published yet.</div>
+            </div>
+        );
+    }
 
     return (
         <div className="grid-auto fade-in-delay-1">
-            {mockSections.map((section: any) => (
+            {courses.map((section: any) => (
                 <Card key={section.sectionId}>
                     <div className="card-accent-top" />
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
@@ -50,7 +56,7 @@ export const BrowseCoursesPage: React.FC = () => {
                             disabled={addCourseMutation.isPending}
                             onClick={() => handleAdd(section.sectionId)}
                         >
-                            Add Course
+                            {addCourseMutation.isPending ? 'Processing...' : 'Add Course'}
                         </Button>
                     ) : (
                         <Button
