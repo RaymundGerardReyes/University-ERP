@@ -1,5 +1,59 @@
 import axios from 'axios';
 import { GeneratePayslipPayload, GeneratePayslipResponse, IssueInvoicePayload, IssueInvoiceResponse } from '@university-erp/domain-viewmodels';
+import { apiClient } from '../apiClient';
+
+export interface CreatePaymentSessionRequest {
+  invoiceId: string;
+  applicantId: string;
+  amount: number;
+  purpose: string;
+  currency?: string;
+}
+
+export interface PaymentSessionResponse {
+  sessionId: string;
+}
+
+export interface PaymentSessionDto {
+  sessionId: string;
+  status: string;
+  amount: number;
+  currency: string;
+}
+
+export const financePaymentSessionApi = {
+  createSession: async (payload: CreatePaymentSessionRequest): Promise<{ sessionId: string }> => {
+    const response = await apiClient.post<{ sessionId: string }>(
+      '/api/v1/finance/payment-sessions', 
+      payload
+    );
+    return response.data;
+  },
+
+  getDynamicQR: async (sessionId: string): Promise<{ qrPayload: string }> => {
+    const response = await apiClient.get<{ qrPayload: string }>(
+      `/api/v1/finance/payment-sessions/${sessionId}/qr`
+    );
+    return response.data;
+  },
+
+  validateSession: async (sessionId: string): Promise<PaymentSessionDto> => {
+    const response = await apiClient.get<PaymentSessionDto>(
+      `/api/v1/finance/payment-sessions/${sessionId}`
+    );
+    return response.data;
+  },
+
+  getAllSessions: async (): Promise<any[]> => {
+    const response = await apiClient.get('/api/v1/finance/payment-sessions');
+    return response.data;
+  },
+
+  reconcileSession: async (sessionId: string, payload: { cashierId: string, remarks: string }): Promise<void> => {
+    const response = await apiClient.post(`/api/v1/finance/payment-sessions/${sessionId}/reconcile`, payload);
+    return response.data;
+  }
+};
 
 const BASE_URL_PAYROLL = '/api/v1/payroll';
 const BASE_URL_FINANCE = '/api/v1/finance';
@@ -31,5 +85,9 @@ export const financeApi = {
       console.error('Failed to fetch invoices', error);
       throw error;
     }
-  }
+  },
+
+  createPaymentSession: financePaymentSessionApi.createSession
 };
+
+

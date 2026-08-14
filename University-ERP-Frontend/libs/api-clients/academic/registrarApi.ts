@@ -28,6 +28,18 @@ export const registrarApi = {
     const response = await axios.get(`${BASE_URL}/curriculum/catalog`);
     return response.data;
   },
+
+  updateSubjectMasterData: async (courseId: string, payload: any) => {
+    const response = await axios.post(`${BASE_URL}/curriculum/catalog/${courseId}`, payload);
+    return response.data;
+  },
+
+  togglePrerequisiteEnforcement: async (courseId: string, ruleId: string, isEnforced: boolean) => {
+    const response = await axios.post(`${BASE_URL}/curriculum/prerequisites/${courseId}/${ruleId}/enforcement`, isEnforced, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    return response.data;
+  },
   
   getGraduationCandidates: async () => {
     const response = await axios.get(`${BASE_URL}/graduation/candidates`);
@@ -64,6 +76,11 @@ export const registrarApi = {
     return response.data;
   },
   
+  approveClearance: async (studentId: string) => {
+    const response = await axios.post(`${BASE_URL}/clearances/${studentId}/approve`);
+    return response.data;
+  },
+  
   processTranscriptRequest: async (requestId: string, action: string) => {
     const response = await axios.post(`${BASE_URL}/certifications/transcript-requests/${requestId}/process`, { action });
     return response.data;
@@ -82,6 +99,11 @@ export const registrarApi = {
   
   getStudentClearance: async (studentId: string) => {
     const response = await axios.get(`${BASE_URL}/clearances/student/${studentId}`);
+    return response.data;
+  },
+
+  requestClearance: async (studentId: string) => {
+    const response = await axios.post(`${BASE_URL}/clearances/${studentId}/request`);
     return response.data;
   }
 };

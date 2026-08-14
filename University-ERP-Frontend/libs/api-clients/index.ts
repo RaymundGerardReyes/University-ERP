@@ -12,6 +12,7 @@ export * from './academic/researchApi';
 export * from './academic/scheduleApi';
 export * from './academic/studentInformationApi';
 export * from './academic/teachingApi';
+export * from './academic/lmsApi';
 export * from './administration/assetManagementApi';
 export * from './administration/financeApi';
 export * from './administration/financeBillingApi';
