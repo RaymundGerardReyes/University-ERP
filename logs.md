@@ -254,9 +254,26 @@
 |   |   |   |   |           `-- AssessmentsEndpoint.cs
 |   |   |   |   |-- Curriculum
 |   |   |   |   |   |-- Curriculum.Application
+|   |   |   |   |   |   |-- Abstractions
+|   |   |   |   |   |   |   `-- ICourseDefinitionRepository.cs
 |   |   |   |   |   |   `-- Features
-|   |   |   |   |   |       `-- BrowseCourses
-|   |   |   |   |   |           `-- BrowseCoursesQuery.cs
+|   |   |   |   |   |       |-- BrowseCourses
+|   |   |   |   |   |       |   `-- BrowseCoursesQuery.cs
+|   |   |   |   |   |       |-- GetAllCourses
+|   |   |   |   |   |       |   `-- GetAllCoursesQuery.cs
+|   |   |   |   |   |       |-- UpdateMasterData
+|   |   |   |   |   |       |   `-- UpdateCourseMasterDataCommand.cs
+|   |   |   |   |   |       `-- UpdatePrerequisite
+|   |   |   |   |   |           `-- UpdatePrerequisiteEnforcementCommand.cs
+|   |   |   |   |   |-- Curriculum.Domain
+|   |   |   |   |   |   `-- Aggregates
+|   |   |   |   |   |       `-- CourseDefinition.cs
+|   |   |   |   |   |-- Curriculum.Infrastructure
+|   |   |   |   |   |   |-- CurriculumModuleRegistration.cs
+|   |   |   |   |   |   |-- Persistence
+|   |   |   |   |   |   |   `-- CurriculumDbContext.cs
+|   |   |   |   |   |   `-- Repositories
+|   |   |   |   |   |       `-- CourseDefinitionRepository.cs
 |   |   |   |   |   `-- Curriculum.Presentation
 |   |   |   |   |       `-- Endpoints
 |   |   |   |   |           `-- CurriculumEndpoint.cs
@@ -349,10 +366,16 @@
 |   |   |   |   |   |   |   `-- Handlers
 |   |   |   |   |   |   |       `-- StudentEnrolledEventHandler.cs
 |   |   |   |   |   |   |-- Features
+|   |   |   |   |   |   |   |-- AddContentItem
+|   |   |   |   |   |   |   |   `-- AddContentItemCommand.cs
+|   |   |   |   |   |   |   |-- AddLearningModule
+|   |   |   |   |   |   |   |   `-- AddLearningModuleCommand.cs
 |   |   |   |   |   |   |   |-- Analytics
 |   |   |   |   |   |   |   |   `-- GetClassPerformanceQuery.cs
 |   |   |   |   |   |   |   |-- Assessments
 |   |   |   |   |   |   |   |   `-- GetAssessmentsQuery.cs
+|   |   |   |   |   |   |   |-- CreateSyllabus
+|   |   |   |   |   |   |   |   `-- CreateSyllabusCommand.cs
 |   |   |   |   |   |   |   |-- GetCourseContent
 |   |   |   |   |   |   |   |   `-- GetCourseContentQuery.cs
 |   |   |   |   |   |   |   |-- GetOfflineGradesPackage
@@ -470,6 +493,10 @@
 |   |   |   |   |   |   |   |   `-- GetMyStudentsQuery.cs
 |   |   |   |   |   |   |   |-- GetStudentInformation
 |   |   |   |   |   |   |   |   `-- GetStudentInformationQuery.cs
+|   |   |   |   |   |   |   |-- Graduation
+|   |   |   |   |   |   |   |   |-- ApproveGraduationCommand.cs
+|   |   |   |   |   |   |   |   |-- GetPendingClearancesQuery.cs
+|   |   |   |   |   |   |   |   `-- ReviewClearanceCommand.cs
 |   |   |   |   |   |   |   `-- UpdateContactInfo
 |   |   |   |   |   |   |       `-- UpdateContactInfoCommand.cs
 |   |   |   |   |   |   |-- ModuleRegistration.cs
@@ -1356,8 +1383,8 @@
 |   |   |-- admin-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   |-- index-BVeb3A4Z.js
-|   |   |   |   |   `-- index-CmnkJuXB.css
+|   |   |   |   |   |-- index-CmnkJuXB.css
+|   |   |   |   |   `-- index-fa44ciig.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1506,7 +1533,7 @@
 |   |   |   |-- dist
 |   |   |   |   |-- assets
 |   |   |   |   |   |-- index-CmnkJuXB.css
-|   |   |   |   |   `-- index-DmgO_Y29.js
+|   |   |   |   |   `-- index-DimZ4ETb.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1580,7 +1607,7 @@
 |   |   |-- applicant-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   |-- index-Br2GyHNN.js
+|   |   |   |   |   |-- index-7TJ7Ms84.js
 |   |   |   |   |   `-- index-CmnkJuXB.css
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
@@ -1685,7 +1712,7 @@
 |   |   |-- faculty-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   |-- index-CGn59a7q.js
+|   |   |   |   |   |-- index-Dgt8zfi3.js
 |   |   |   |   |   `-- index-cJBQpNUN.css
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
@@ -1744,6 +1771,9 @@
 |   |   |   |   |   |   |-- ApplicantAccess.page.tsx
 |   |   |   |   |   |   |-- ConfidentialDocuments.page.tsx
 |   |   |   |   |   |   `-- RecommendationAudit.page.tsx
+|   |   |   |   |   |-- LMSManager
+|   |   |   |   |   |   |-- LMSManager.hooks.ts
+|   |   |   |   |   |   `-- LMSManager.page.tsx
 |   |   |   |   |   |-- Research
 |   |   |   |   |   |   |-- Research.api.ts
 |   |   |   |   |   |   |-- Research.hooks.ts
@@ -1796,7 +1826,7 @@
 |   |   |-- finance-console
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-CFgsxxWi.js
+|   |   |   |   |   `-- index-D4VupJRD.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1894,7 +1924,7 @@
 |   |   |-- governance-console
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-BF6ljrba.js
+|   |   |   |   |   `-- index-MesTFSc4.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -1961,7 +1991,7 @@
 |   |   |-- identity-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-SXPOo0sV.js
+|   |   |   |   |   `-- index-BapRoB-Z.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -2038,7 +2068,7 @@
 |   |   |-- library-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-BBOQbW1M.js
+|   |   |   |   |   `-- index-Cg4XXSgl.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -2091,7 +2121,7 @@
 |   |   |-- lms-web
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-BXIc_p4l.js
+|   |   |   |   |   `-- index-B27XvGfG.js
 |   |   |   |   |-- index.html
 |   |   |   |   |-- manifest.webmanifest
 |   |   |   |   `-- service-worker.ts
@@ -2172,7 +2202,7 @@
 |   |   |-- payment-gateway
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   |-- index-D8amf7r8.js
+|   |   |   |   |   |-- index-DnpdxvTm.js
 |   |   |   |   |   `-- index-cJBQpNUN.css
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
@@ -2251,7 +2281,7 @@
 |   |   |   |-- dist
 |   |   |   |   |-- assets
 |   |   |   |   |   |-- index-CmnkJuXB.css
-|   |   |   |   |   `-- index-IP90HaAF.js
+|   |   |   |   |   `-- index-qmryzBB_.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -2395,7 +2425,7 @@
 |   |   `-- student-portal
 |   |       |-- dist
 |   |       |   |-- assets
-|   |       |   |   |-- index-C0BvpFcI.js
+|   |       |   |   |-- index-CT34Fv1n.js
 |   |       |   |   `-- index-cJBQpNUN.css
 |   |       |   `-- index.html
 |   |       |-- index.html
@@ -2991,4 +3021,4 @@
 |-- university-erp-frontend-features-ddd-dbma-prompt.md
 `-- university-erp-scaffolding-script-review.md
 
-1004 directories, 1987 files
+1018 directories, 2003 files
