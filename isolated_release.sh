@@ -112,44 +112,44 @@ Bump reason: ${bump_reason}"
 echo "Starting isolated semantic versioning updates..."
 
 # ================= BACKEND MODULES =================
-process_module "academic" "backend-academic" "feat" "implement academic modules domain logic and endpoints" \
+process_module "academic" "backend-academic" "feat" "implement Learning Management (LMS), Curriculum Master Data, and Graduation Clearance CQRS endpoints" \
   "University-ERP-Backend/src/Modules/Academic"
 
-process_module "administration" "backend-administration" "fix" "update FinanceDbContextDesignTimeFactory and BankingIntegrationService for robust payment synchronization" \
+process_module "administration" "backend-administration" "feat" "implement StudentBilling and PaymentSession repositories with dynamic financial reconciliation endpoints" \
   "University-ERP-Backend/src/Modules/Administration"
 
-process_module "platform" "backend-platform" "fix" "return HTTP 403 Forbidden on invalid credentials in login endpoint" \
+process_module "platform" "backend-platform" "feat" "implement StudentEnrolledIntegrationEventConsumer and notification event handlers for automated SSO provisioning" \
   "University-ERP-Backend/src/Modules/Platform"
 
-process_module "student-lifecycle" "backend-studentlifecycle" "feat!" "remove insecure pay-fee endpoint and implement secure payment verified event consumer" \
+process_module "student-lifecycle" "backend-studentlifecycle" "feat" "add admissions event handlers for enrollment transitions" \
   "University-ERP-Backend/src/Modules/StudentLifecycle"
 
 process_module "bootstrap" "backend-bootstrap" "chore" "optimize Dockerfiles with multi-stage builds and harden Program.cs telemetry" \
   "University-ERP-Backend/src/Bootstrap"
 
-process_module "backend-contracts" "backend-contracts" "feat" "define PaymentVerifiedIntegrationEvent contract for cross-module communication" \
+process_module "backend-contracts" "backend-contracts" "feat" "define academic and student lifecycle integration event contracts for saga orchestration" \
   "University-ERP-Backend/src/Contracts"
 
-process_module "backend-ops" "ops-backend" "feat" "standardize Nginx routing for applicant, faculty, and student portals" \
+process_module "backend-ops" "ops-backend" "fix" "update nginx configuration for enhanced proxy routing and rate limiting" \
   "University-ERP-Backend/ops"
 
 process_module "backend-docs" "docs-backend" "docs" "update backend architectural structure" \
   "University-ERP-Backend/structure.md"
 
 # ================= FRONTEND APPS =================
-process_module "admin-portal" "admin-portal" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
+process_module "admin-portal" "admin-portal" "feat" "replace mock data in admissions processing views with dynamic TanStack Query hooks" \
   "University-ERP-Frontend/apps/admin-portal"
 
 process_module "admissions-portal" "admissions-portal" "test" "stabilize enterprise test suite by providing mock routing and query client contexts" \
   "University-ERP-Frontend/apps/admissions-portal"
 
-process_module "applicant-portal" "applicant-portal" "test" "fix Axios network errors and stabilize unit test suite with mock contexts" \
+process_module "applicant-portal" "applicant-portal" "feat" "integrate dynamic journey state querying in applicant dashboard" \
   "University-ERP-Frontend/apps/applicant-portal"
 
-process_module "faculty-portal" "faculty-portal" "feat!" "replace legacy CRUD tables with Master-Detail workspaces and strict role-based routing" \
+process_module "faculty-portal" "faculty-portal" "feat" "implement dynamic Gradebook submission and LMS syllabus management features" \
   "University-ERP-Frontend/apps/faculty-portal"
 
-process_module "finance-console" "finance-console" "test" "wrap unit tests in context providers to resolve rendering crashes" \
+process_module "finance-console" "finance-console" "feat" "connect PaymentGateway and StudentBilling components to live CQRS endpoints" \
   "University-ERP-Frontend/apps/finance-console"
 
 process_module "payment-gateway" "payment-gateway" "chore" "update main entry component for React Strict Mode" \
@@ -174,24 +174,24 @@ process_module "lms-offline-client" "lms-offline-client" "feat" "implement dynam
   "University-ERP-Frontend/clients/lms-offline-avalonia"
 
 # CRITICAL FIX: Fixed path to strictly use University-ERP-Frontend only
-process_module "registrar-portal" "registrar-portal" "feat!" "complete massive UI/UX overhaul replacing generic tables with Master-Detail workspaces" \
+process_module "registrar-portal" "registrar-portal" "feat" "integrate dynamic Curriculum Master Data, Prerequisites, and Graduation Clearance queues" \
   "University-ERP-Frontend/apps/registrar-portal"
 
 process_module "security-portal" "security-portal" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
   "University-ERP-Frontend/apps/security-portal"
 
-process_module "student-portal" "student-portal" "chore" "update vite configuration for base routing" \
+process_module "student-portal" "student-portal" "feat" "replace static mock data with dynamic LMS and Financials querying" \
   "University-ERP-Frontend/apps/student-portal"
 
 # ================= FRONTEND LIBS & CONFIG =================
-process_module "frontend-libs" "frontend-libs" "feat" "expand registrar API client definitions for admission workflows" \
+process_module "frontend-libs" "frontend-libs" "feat" "implement lmsApi and expand registrar and finance API clients for CQRS queries" \
   "University-ERP-Frontend/libs"
 
 process_module "frontend-infra" "frontend-infra" "chore" "update frontend workspace lockfile" \
   "University-ERP-Frontend/package.json" "University-ERP-Frontend/package-lock.json" "University-ERP-Frontend/bootstrap.sh" "University-ERP-Frontend/Dockerfile.build-all" "University-ERP-Frontend/tsconfig.app.base.json"
 
 # ================= ROOT INFRASTRUCTURE =================
-process_module "project-docs" "docs-project" "docs" "update development logs and walkthrough artifacts for frontend modernization" \
+process_module "project-docs" "docs-project" "docs" "update system modernization logs with Event-Driven Sagas and CQRS implementation details" \
   "CodebaseInfrastructure.md" "structure.md" "logs.md" "newupdate.md" "Analysis_Task_Orchestration.md" "ERPstructure.md" "SEMANTIC_VERSIONING_PROMPT.md" "universal-semantic-versioning-prompt.md" "university-erp-*.md"
 
 # Safely only add the release_all.sh script here (not the apps/ folder anymore!)
