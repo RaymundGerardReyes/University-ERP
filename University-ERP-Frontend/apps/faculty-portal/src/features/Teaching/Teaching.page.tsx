@@ -18,7 +18,7 @@ export const TeachingPage: React.FC = () => {
     // 3. Fetch Detail Data (Only triggers when a section is selected)
     const { data: roster, isLoading: isRosterLoading } = useSectionRoster(selectedSectionId || '');
     const { data: gradebook, isLoading: isGradebookLoading } = useGradebook(selectedSectionId || '');
-    const submitGradesMutation = useSubmitGrades();
+    const submitGradesMutation = useSubmitGrades(selectedSectionId || '');
 
     // Safely get the selected course details for the header
     const selectedCourse = courses?.find(c => c.id === selectedSectionId);
