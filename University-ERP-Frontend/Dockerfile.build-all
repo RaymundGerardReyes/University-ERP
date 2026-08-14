@@ -9,7 +9,7 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 # Copy workspace manifests first to leverage Docker layer caching
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json* ./
 COPY apps/admin-portal/package.json ./apps/admin-portal/
 COPY apps/admissions-portal/package.json ./apps/admissions-portal/
 COPY apps/applicant-portal/package.json ./apps/applicant-portal/
@@ -35,7 +35,7 @@ COPY libs/vite-config/package.json ./libs/vite-config/
 COPY libs/workflow-sdk/package.json ./libs/workflow-sdk/
 
 # Install dependencies before copying source code
-RUN npm ci
+RUN npm install
 
 # Copy the rest of the source code
 COPY . .
