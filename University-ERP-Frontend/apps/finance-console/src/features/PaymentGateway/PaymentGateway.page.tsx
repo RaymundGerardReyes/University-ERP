@@ -1,169 +1,111 @@
-import { Badge, Button, Card, FormInput } from '@university-erp/ui-kit';
 import React, { useState } from 'react';
+import { Badge, Button, Card, PageHeader, Table } from '@university-erp/ui-kit';
+import { useAllPaymentSessions, useReconcilePayment } from './PaymentGateway.hooks';
 
-// ---------------------------------------------------------
-// PREVIOUS IMPLEMENTATION (Conceptual)
-// ---------------------------------------------------------
-// The old code likely used hardcoded styles like:
-// <div style={{ backgroundColor: '#1A2035', padding: '20px' }}>
-//   <button style={{ backgroundColor: '#2563EB' }}>Pay</button>
-// </div>
-
-// ---------------------------------------------------------
-// NEW UPDATED IMPLEMENTATION
-// ---------------------------------------------------------
 export const PaymentGatewayPage: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<'card' | 'bank' | 'ewallet'>('card');
-    const [isProcessing, setIsProcessing] = useState(false);
+    const { data: sessions, isLoading, isError } = useAllPaymentSessions();
+    const reconcileMutation = useReconcilePayment();
+    const [searchQuery, setSearchQuery] = useState('');
 
-    const handlePayment = (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsProcessing(true);
-        // Simulate API call to the Finance Backend
-        setTimeout(() => {
-            setIsProcessing(false);
-            alert('Payment successfully processed!');
-        }, 2000);
+    if (isLoading) return <div className="skeleton" style={{ height: '400px' }} />;
+    if (isError || !sessions) {
+        return (
+            <div className="stub-page fade-in">
+                <div className="stub-title">Gateway Unavailable</div>
+                <div className="stub-subtitle">Failed to load the payment sessions queue.</div>
+            </div>
+        );
+    }
+
+    // Filter to show active/pending sessions, allowing search by Student ID or Session ID
+    const activeSessions = sessions.filter((s: any) => 
+        (s.status === 'Active' || s.status === 'AwaitingPayment' || s.status === 'PendingBankConfirmation') && 
+        (s.sessionId.toLowerCase().includes(searchQuery.toLowerCase()) || s.applicantId.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+
+    const handleReconcile = (sessionId: string, amount: number) => {
+        if (window.confirm(`Confirm receipt of cash payment for $${amount.toFixed(2)}? This action will mark the student's tuition invoice as paid.`)) {
+            reconcileMutation.mutate({ 
+                sessionId, 
+                remarks: 'Over-the-counter cash payment received.' 
+            });
+        }
     };
 
     return (
-        <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '80vh'
-        }}>
+        <div className="fade-in">
+            <PageHeader 
+                title="Cashier Dashboard" 
+                subtitle="Process over-the-counter payments and reconcile active student payment sessions." 
+            />
 
-            {/* Header Section */}
-            <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                width: '100%',
-                maxWidth: '500px',
-                marginBottom: 'var(--space-6)'
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-                    <div style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: 'var(--radius-md)',
-                        background: 'var(--brand-gradient)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '1.2rem'
-                    }}>
-                        🏛️
-                    </div>
-                    <div>
-                        <h1 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-bright)' }}>University ERP</h1>
-                        <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>Secure Decoupled Payment Gateway</p>
-                    </div>
-                </div>
-                <Badge colorScheme="success" style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-                    🔒 256-Bit Encrypted
-                </Badge>
-            </div>
-
-            {/* Main Payment Card */}
-            <Card style={{ width: '100%', maxWidth: '500px', padding: 'var(--space-8)' }}>
-
-                {/* Amount Display */}
-                <div style={{
-                    background: 'var(--bg-elevated)',
-                    padding: 'var(--space-6)',
-                    borderRadius: 'var(--radius-md)',
-                    textAlign: 'center',
-                    border: '1px solid var(--border-subtle)',
-                    marginBottom: 'var(--space-6)'
-                }}>
-                    <p style={{ margin: '0 0 var(--space-2) 0', fontSize: '0.8rem', color: 'var(--text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                        Application Processing Fee
-                    </p>
-                    <h2 style={{ margin: 0, fontSize: '2.5rem', color: 'var(--text-bright)', letterSpacing: '-0.02em' }}>
-                        PHP 50.00
-                    </h2>
-                    <p style={{ margin: 'var(--space-4) 0 0 0', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                        Invoice: APP-FEE-b030ff09-7be5-413f-b35d-6a86d9d14bb6
-                    </p>
-                </div>
-
-                {/* Payment Method Tabs */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>
-                    <Button
-                        variant={activeTab === 'card' ? 'primary' : 'outline'}
-                        onClick={() => setActiveTab('card')}
-                        style={{ padding: 'var(--space-3)', fontSize: '0.85rem' }}
-                    >
-                        💳 Card
-                    </Button>
-                    <Button
-                        variant={activeTab === 'bank' ? 'primary' : 'outline'}
-                        onClick={() => setActiveTab('bank')}
-                        style={{ padding: 'var(--space-3)', fontSize: '0.85rem' }}
-                    >
-                        🏦 Online Bank
-                    </Button>
-                    <Button
-                        variant={activeTab === 'ewallet' ? 'primary' : 'outline'}
-                        onClick={() => setActiveTab('ewallet')}
-                        style={{ padding: 'var(--space-3)', fontSize: '0.85rem' }}
-                    >
-                        📱 e-Wallet
-                    </Button>
-                </div>
-
-                {/* Payment Form */}
-                <form onSubmit={handlePayment}>
-                    <div style={{ marginBottom: 'var(--space-4)' }}>
-                        <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: 'var(--space-2)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                            Card Number
+            <Card style={{ marginBottom: 'var(--space-6)' }}>
+                <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'center' }}>
+                    <div style={{ flex: 1 }}>
+                        <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: 'var(--space-2)', color: 'var(--text-secondary)' }}>
+                            Search Active Sessions
                         </label>
-                        <FormInput
-                            type="text"
-                            placeholder="4532 •••• •••• 8892"
-                            required
-                            style={{ background: 'var(--bg-elevated)', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}
+                        <input 
+                            type="text" 
+                            placeholder="Enter Session ID or Student ID..." 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            style={{ 
+                                width: '100%', padding: 'var(--space-2)', borderRadius: 'var(--radius-sm)', 
+                                border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' 
+                            }}
                         />
                     </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
-                        <div>
-                            <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: 'var(--space-2)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                Expiry Date
-                            </label>
-                            <FormInput
-                                type="text"
-                                placeholder="MM/YY"
-                                required
-                                style={{ background: 'var(--bg-elevated)', color: 'var(--text-primary)' }}
-                            />
-                        </div>
-                        <div>
-                            <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: 'var(--space-2)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                CVC / CVV
-                            </label>
-                            <FormInput
-                                type="text"
-                                placeholder="•••"
-                                required
-                                style={{ background: 'var(--bg-elevated)', color: 'var(--text-primary)' }}
-                            />
-                        </div>
-                    </div>
-
-                    <Button
-                        type="submit"
-                        variant="primary"
-                        disabled={isProcessing}
-                        style={{ width: '100%', padding: 'var(--space-4)', fontSize: '1rem' }}
-                    >
-                        {isProcessing ? 'Processing Securely...' : 'Pay PHP 50.00 Now'}
-                    </Button>
-                </form>
-
+                    <Badge colorScheme="warning" style={{ marginTop: '1.5rem' }}>
+                        {activeSessions.length} Pending Payments
+                    </Badge>
+                </div>
+            </Card>
+            
+            <Card>
+                <Table>
+                    <thead>
+                        <tr>
+                            <th>Session ID</th>
+                            <th>Student / Applicant ID</th>
+                            <th>Purpose</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {activeSessions.length === 0 ? (
+                            <tr>
+                                <td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
+                                    No pending payment sessions match your search.
+                                </td>
+                            </tr>
+                        ) : (
+                            activeSessions.map((session: any) => (
+                                <tr key={session.id || session.sessionId}>
+                                    <td style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>{session.sessionId}</td>
+                                    <td style={{ fontWeight: 600 }}>{session.applicantId}</td>
+                                    <td>{session.purpose || 'Tuition Fee Payment'}</td>
+                                    <td style={{ color: 'var(--success-text)', fontWeight: 'bold' }}>
+                                        ${session.amount.toFixed(2)} {session.currency || 'PHP'}
+                                    </td>
+                                    <td><Badge colorScheme="warning">Awaiting Funds</Badge></td>
+                                    <td>
+                                        <Button 
+                                            variant="primary" 
+                                            size="small"
+                                            disabled={reconcileMutation.isPending}
+                                            onClick={() => handleReconcile(session.sessionId, session.amount)}
+                                        >
+                                            {reconcileMutation.isPending ? 'Processing...' : 'Receive Cash & Reconcile'}
+                                        </Button>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </Table>
             </Card>
         </div>
     );

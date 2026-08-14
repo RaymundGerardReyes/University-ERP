@@ -1,9 +1,9 @@
-import { useMutation } from '@tanstack/react-query';
-import { financeApi } from '@university-erp/api-clients';
-import { IssueInvoicePayload } from '@university-erp/domain-viewmodels';
+import { useQuery } from '@tanstack/react-query';
+import { studentBillingApi } from './StudentBilling.api';
 
-export const useIssueInvoice = () => {
-    return useMutation({
-        mutationFn: (payload: IssueInvoicePayload) => financeApi.issueInvoice(payload),
+export const useStudentBillings = () => {
+    return useQuery({
+        queryKey: ['finance', 'student-billings'],
+        queryFn: () => studentBillingApi.getAllBillings()
     });
 };

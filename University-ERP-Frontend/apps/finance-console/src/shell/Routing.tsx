@@ -8,7 +8,9 @@ import AppShell from './AppShell';
 import { TuitionAssessmentPage } from '../features/TuitionAssessment/TuitionAssessment.page';
 import { StatementOfAccountPage } from '../features/StudentBilling/StatementOfAccount.page';
 import { ScholarshipGrantsPage } from '../features/StudentBilling/ScholarshipGrants.page';
+import { StudentBillingPage } from '../features/StudentBilling/StudentBilling.page';
 import { PaymentGatewayPage } from '../features/Cashier/PaymentGateway.page';
+import { PaymentGatewayPage as PaymentGatewayMonitorPage } from '../features/PaymentGateway/PaymentGateway.page';
 import { ClearanceApprovalPage } from '../features/Cashier/ClearanceApproval.page';
 
 // New Enrollment Finance Workspace
@@ -40,11 +42,14 @@ export const Routing: React.FC = () => {
             <Route path="/billing/statement" element={<StatementOfAccountPage />} />
             <Route path="/billing/scholarships" element={<ScholarshipGrantsPage />} />
             <Route path="/billing/semester" element={<SemesterBillingPage />} />
+            <Route path="/billing/administration" element={<StudentBillingPage />} />
           </Route>
 
           {/* Cashier & Payments Workspace */}
           <Route element={<FinanceGuard allowedRoles={['ROLE_FINANCE_ADMIN', 'ROLE_FINANCE_CASHIER']} />}>
             <Route path="/cashier/payments" element={<PaymentGatewayPage />} />
+            <Route path="/cashier/monitor" element={<PaymentGatewayMonitorPage />} />
+            <Route path="/cashier/gateway" element={<PaymentGatewayMonitorPage />} />
             <Route path="/cashier/clearance" element={<ClearanceApprovalPage />} />
           </Route>
 
