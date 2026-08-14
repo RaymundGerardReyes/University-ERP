@@ -1,43 +1,17 @@
-using LearningManagement.Application;
+namespace LearningManagement.Infrastructure;
+
+using Microsoft.Extensions.DependencyInjection;
 using LearningManagement.Application.Abstractions;
 using LearningManagement.Infrastructure.Persistence;
 using LearningManagement.Infrastructure.Repositories;
-using LearningManagement.Infrastructure.Security;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace LearningManagement.Infrastructure;
-
-/// <summary>
-/// Composition root for the LearningManagement bounded context.
-/// Registers all Application and Infrastructure services.
-/// </summary>
 public static class LearningManagementModuleRegistration
 {
-    public static IServiceCollection AddLearningManagementModule(
-        this IServiceCollection services,
-        IConfiguration configuration)
+    public static IServiceCollection AddLearningManagementInfrastructure(this IServiceCollection services)
     {
-        // 1. Application layer (MediatR handlers)
-        services.AddLearningManagementApplication();
-
-        // 2. EF Core DbContext (PostgreSQL)
-        services.AddDbContext<LearningManagementDbContext>(options =>
-            options.UseNpgsql(
-                configuration.GetConnectionString("DefaultConnection"),
-                npgsqlOptions => npgsqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "learningmanagement")
-            ));
-        // 3. Repository (Dependency Inversion)
-        services.AddScoped<ILearningManagementRepository, LearningManagementRepository>();
-
-        // 4. Schedule Token Verifier
-        var scheduleSecret = configuration["LmsOffline:ScheduleTokenSecret"]
-            ?? throw new InvalidOperationException("LmsOffline:ScheduleTokenSecret is not configured.");
-        services.AddSingleton<IScheduleTokenVerifier>(_ => new ScheduleTokenVerifier(scheduleSecret));
-
-        services.AddScoped<ILearningManagementRepository, LearningManagementRepository>();
-        services.AddScoped<IOfflineSubmissionRepository, OfflineSubmissionRepository>();
+        // Register the repository for MediatR to resolve
+        services.AddScoped<ICourseSyllabusRepository, CourseSyllabusRepository>();
+        
         return services;
     }
 }
