@@ -68,6 +68,51 @@ public sealed class StudentBilling : AggregateRoot<Guid>
         return Result<bool>.Success(true);
     }
 
+    public Result<bool> RecordPayment(decimal amount)
+    {
+        PaidAmount += amount;
+        
+        if (PaidAmount >= TotalAmount)
+        {
+            Status = "PAID";
+        }
+        else if (PaidAmount > 0)
+        {
+            Status = "PARTIAL";
+        }
+
+        return Result<bool>.Success(true);
+    }
+
+    public Result<bool> AdjustTuition(decimal adjustmentAmount, string reason)
+    {
+        TotalAmount += adjustmentAmount;
+        
+        // Append the reason to the description for the audit trail
+        Description += $" | Adjustment: {reason}";
+        
+        // Dynamically recalculate the ledger status based on the new total
+        if (TotalAmount <= 0) 
+        {
+            TotalAmount = 0;
+            Status = "PAID"; // Fully refunded or zero balance
+        }
+        else if (PaidAmount >= TotalAmount)
+        {
+            Status = "PAID";
+        }
+        else if (PaidAmount > 0)
+        {
+            Status = "PARTIAL";
+        }
+        else 
+        {
+            Status = "UNPAID";
+        }
+
+        return Result<bool>.Success(true);
+    }
+
     public Result<bool> ClearBalance()
     {
         if (PaidAmount < TotalAmount) return Result<bool>.Failure(new Error("Finance.BalanceRemaining", "Cannot clear balance. Ledger has outstanding debt."));

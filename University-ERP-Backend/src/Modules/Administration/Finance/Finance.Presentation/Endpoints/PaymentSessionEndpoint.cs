@@ -4,6 +4,7 @@ using Finance.Application.Features.PaymentSessions;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,6 +15,17 @@ public sealed class PaymentSessionEndpoint : ControllerBase
     private readonly ISender _sender;
 
     public PaymentSessionEndpoint(ISender sender) => _sender = sender;
+
+    [HttpGet]
+    [ProducesResponseType(typeof(IReadOnlyList<PaymentSessionRecordDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllSessions(CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetAllPaymentSessionsQuery(), cancellationToken);
+        
+        return result.IsSuccess 
+            ? Ok(result.Value) 
+            : BadRequest(new { code = result.Error.Code, message = result.Error.Description });
+    }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -51,6 +63,19 @@ public sealed class PaymentSessionEndpoint : ControllerBase
             : BadRequest(new { code = result.Error.Code, message = result.Error.Description });
     }
 
+    [HttpPost("{sessionId}/reconcile")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ReconcileSession([FromRoute] string sessionId, [FromBody] ReconcilePaymentSessionRequest payload, CancellationToken cancellationToken)
+    {
+        var command = new ReconcilePaymentSessionCommand(sessionId, payload.CashierId, payload.Remarks);
+        var result = await _sender.Send(command, cancellationToken);
+        
+        return result.IsSuccess 
+            ? Ok() 
+            : BadRequest(new { code = result.Error.Code, message = result.Error.Description });
+    }
+
     [HttpGet("{sessionId}/qr")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -70,3 +95,6 @@ public sealed class PaymentSessionEndpoint : ControllerBase
         return Ok(new { qrPayload = result.Value });
     }
 }
+
+public sealed record ReconcilePaymentSessionRequest(string CashierId, string Remarks);
+

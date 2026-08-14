@@ -29,6 +29,12 @@ public sealed class StudentBillingRepository : IStudentBillingRepository
             .FirstOrDefaultAsync(b => b.StudentId == studentId, cancellationToken);
     }
 
+    public async Task<StudentBilling?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.StudentBillings
+            .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
+    }
+
     public async Task<System.Collections.Generic.IReadOnlyList<StudentBilling>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _dbContext.StudentBillings.ToListAsync(cancellationToken);

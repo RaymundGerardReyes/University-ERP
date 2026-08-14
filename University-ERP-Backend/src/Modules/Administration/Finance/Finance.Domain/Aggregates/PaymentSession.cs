@@ -106,4 +106,17 @@ public sealed class PaymentSession : AggregateRoot<Guid>
 
         return Result<bool>.Success(true);
     }
+
+    public Result<bool> Reconcile(string cashierId, string remarks)
+    {
+        if (Status == "Paid" || Status == "Completed")
+        {
+            return Result<bool>.Failure(new Error("PaymentSession.AlreadyPaid", "Session is already paid or completed."));
+        }
+            
+        Status = "Paid";
+        ConsumedAtUtc = DateTime.UtcNow;
+        
+        return Result<bool>.Success(true);
+    }
 }
