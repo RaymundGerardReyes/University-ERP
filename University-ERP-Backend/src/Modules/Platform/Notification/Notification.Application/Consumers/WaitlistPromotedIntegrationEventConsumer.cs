@@ -1,7 +1,7 @@
 namespace Notification.Application.Consumers;
 
 using MediatR;
-using Contracts.IntegrationEvents.Academic;
+using global::Contracts.IntegrationEvents.Academic;
 using Notification.Application.Features.SendNotification;
 using System.Threading;
 using System.Threading.Tasks;

@@ -10,6 +10,7 @@
     <ProjectReference Include="..\IdentityAccess.Domain\IdentityAccess.Domain.csproj" />
     <ProjectReference Include="..\IdentityAccess.Contracts\IdentityAccess.Contracts.csproj" />
     <ProjectReference Include="..\..\..\..\SharedKernel\SharedKernel.Application\SharedKernel.Application.csproj" />
+    <ProjectReference Include="..\..\..\..\Contracts\UniversityErp.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>

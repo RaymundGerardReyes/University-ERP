@@ -1,7 +1,7 @@
 namespace IdentityAccess.Application.EventHandlers.IntegrationEventHandlers;
 
 using MediatR;
-using Contracts.IntegrationEvents.StudentLifecycle;
+using global::Contracts.IntegrationEvents.StudentLifecycle;
 using IdentityAccess.Application.Features.RegisterUser;
 using System.Threading;
 using System.Threading.Tasks;
