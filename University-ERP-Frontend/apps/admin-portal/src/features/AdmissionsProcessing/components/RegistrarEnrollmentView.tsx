@@ -1,48 +1,91 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { admissionsApi } from '@university-erp/api-clients';
-import { Badge, Button, Card } from '@university-erp/ui-kit';
 import React from 'react';
+import { Badge, Button, Card, Table } from '@university-erp/ui-kit';
+import { useRegistrarQueue, useActivateEnrollment } from '../AdmissionsProcessing.hooks';
 
 export const RegistrarEnrollmentView: React.FC = () => {
-    const queryClient = useQueryClient();
-    const { data: queue, isLoading } = useQuery({
-        queryKey: ['admissionsQueue', 'RegistrarQueue'],
-        queryFn: () => admissionsApi.getApplicationsByStage('RegistrarQueue')
-    });
+    const { data: applications, isLoading, isError } = useRegistrarQueue();
+    const activateMutation = useActivateEnrollment();
 
-    const enrollMutation = useMutation({
-        mutationFn: (id: string) => admissionsApi.generateStudentIdentityAndEnroll(id),
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admissionsQueue'] })
-    });
+    if (isLoading) return <div className="skeleton" style={{ height: '400px' }} />;
+    if (!applications || applications.length === 0) {
+        return (
+            <div className="stub-page fade-in">
+                <div className="stub-title">Registry Unavailable</div>
+                <div className="stub-subtitle">Failed to load the final enrollment queue.</div>
+            </div>
+        );
+    }
 
-    if (isLoading) return <div className="skeleton" style={{ height: '300px' }} />;
+    // Filter to strictly show applications endorsed by the College Dean or ready for final activation
+    const queue = applications.filter(app => app.status === 'Endorsed_For_Enrollment' || app.status === 'Endorsed');
+
+    const handleActivate = (applicationId: string, applicantName: string) => {
+        if (window.confirm(`Are you ready to finalize admission and generate an official Student ID for ${applicantName}?`)) {
+            activateMutation.mutate(applicationId);
+        }
+    };
 
     return (
-        <div className="fade-in-delay-1">
-            <h3 style={{ marginBottom: 'var(--space-4)' }}>Enrollment & Identity Generation Queue</h3>
+        <div className="fade-in">
             <Card>
-                <div className="card-accent-top" />
-                <p className="text-muted" style={{ marginBottom: 'var(--space-4)' }}>
-                    These applicants have been accepted by the Department Chairperson. Generate their official university identities to finalize enrollment.
-                </p>
-                {queue?.map((app: any) => (
-                    <div key={app.id} className="data-row" style={{ padding: 'var(--space-4) 0' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span className="data-value" style={{ fontSize: '1.1rem' }}>{app.applicantName}</span>
-                            <span className="data-label">{app.program} • Accepted by Chairperson</span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
-                            <Badge colorScheme="success">Ready for Enrollment</Badge>
-                            <Button
-                                variant="primary"
-                                onClick={() => enrollMutation.mutate(app.id)}
-                                disabled={enrollMutation.isPending}
-                            >
-                                Generate ID & Enroll
-                            </Button>
-                        </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
+                    <div>
+                        <h3 style={{ margin: 0 }}>University Registry</h3>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: '4px 0 0 0' }}>
+                            Final Enrollment & ID Generation Queue
+                        </p>
                     </div>
-                ))}
+                    <Badge colorScheme="success">{queue.length} Ready for Activation</Badge>
+                </div>
+
+                <Table>
+                    <thead>
+                        <tr>
+                            <th>Applicant Name</th>
+                            <th>Confirmed Program</th>
+                            <th>College</th>
+                            <th>Academic Clearance</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {queue.length === 0 ? (
+                            <tr>
+                                <td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
+                                    No applications are currently awaiting ID generation.
+                                </td>
+                            </tr>
+                        ) : (
+                            queue.map(app => (
+                                <tr key={app.id}>
+                                    <td>
+                                        <div style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                                            {app.applicantName}
+                                        </div>
+                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                            App ID: {app.id.substring(0, 8)}...
+                                        </div>
+                                    </td>
+                                    <td style={{ fontWeight: 600 }}>{app.program}</td>
+                                    <td>{app.department}</td>
+                                    <td>
+                                        <Badge colorScheme="info">Dean Endorsed</Badge>
+                                    </td>
+                                    <td>
+                                        <Button 
+                                            variant="primary" 
+                                            size="small"
+                                            disabled={activateMutation.isPending}
+                                            onClick={() => handleActivate(app.id, app.applicantName)}
+                                        >
+                                            {activateMutation.isPending ? 'Generating ID...' : 'Activate Enrollment'}
+                                        </Button>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </Table>
             </Card>
         </div>
     );

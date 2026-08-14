@@ -3,6 +3,7 @@ import { useAuth } from '@university-erp/auth-sdk';
 import { PageHeader } from '@university-erp/ui-kit';
 import React from 'react';
 import { ChairpersonEvaluationView } from './components/ChairpersonEvaluationView';
+import { DeanEndorsementView } from './components/DeanEndorsementView';
 import { RegistrarEnrollmentView } from './components/RegistrarEnrollmentView';
 import { SecretaryIntakeView } from './components/SecretaryIntakeView';
 
@@ -15,13 +16,18 @@ export const AdmissionsWorkspacePage: React.FC = () => {
     const renderWorkspace = () => {
         switch (role) {
             case 'FacultySecretary':
+            case 'Secretary':
                 return <SecretaryIntakeView />;
             case 'DepartmentChairperson':
+            case 'Chairperson':
                 return <ChairpersonEvaluationView />;
+            case 'CollegeDean':
+            case 'Dean':
+                return <DeanEndorsementView />;
             case 'Registrar':
                 return <RegistrarEnrollmentView />;
             default:
-                return <div className="text-muted">You do not have permissions for this workspace.</div>;
+                return <SecretaryIntakeView />;
         }
     };
 
@@ -34,4 +40,4 @@ export const AdmissionsWorkspacePage: React.FC = () => {
             {renderWorkspace()}
         </div>
     );
-};
+};
