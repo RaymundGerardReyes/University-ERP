@@ -11,3 +11,5 @@ export const useAdvisees = () => {
         enabled: !!user?.id,
     });
 };
+
+export const useMyAdvisees = useAdvisees;
