@@ -174,7 +174,7 @@ process_module "lms-offline-client" "lms-offline-client" "feat" "implement dynam
   "University-ERP-Frontend/clients/lms-offline-avalonia"
 
 # CRITICAL FIX: Fixed path to strictly use University-ERP-Frontend only
-process_module "registrar-portal" "registrar-portal" "feat" "implement responsive master-detail UI across 11 Registrar feature divisions and update AppShell" \
+process_module "registrar-portal" "registrar-portal" "feat" "update SubjectCatalog master-detail page and resolve form selection attributes" \
   "University-ERP-Frontend/apps/registrar-portal"
 
 process_module "security-portal" "security-portal" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
@@ -184,7 +184,7 @@ process_module "student-portal" "student-portal" "chore" "update vite.config.ts 
   "University-ERP-Frontend/apps/student-portal"
 
 # ================= FRONTEND LIBS & CONFIG =================
-process_module "frontend-libs" "frontend-libs" "feat" "add EmptyState component and update ui-kit styles.css" \
+process_module "frontend-libs" "frontend-libs" "feat" "enhance Button and Table components and update ui-kit design system styles" \
   "University-ERP-Frontend/libs"
 
 process_module "frontend-infra" "frontend-infra" "chore" "update Dockerfile.build-all instructions" \
