@@ -155,9 +155,12 @@ export const SubjectCatalogPage: React.FC = () => {
                             </div>
                             <div>
                                 <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Status</label>
-                                <select style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)' }}>
-                                    <option selected={selectedSubject.status === 'Active'}>Active</option>
-                                    <option selected={selectedSubject.status === 'Inactive'}>Inactive / Phased Out</option>
+                                <select 
+                                    defaultValue={selectedSubject.status === 'Active' ? 'Active' : 'Inactive / Phased Out'}
+                                    style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)' }}
+                                >
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive / Phased Out">Inactive / Phased Out</option>
                                 </select>
                             </div>
                         </div>
