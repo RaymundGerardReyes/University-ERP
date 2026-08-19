@@ -23,8 +23,6 @@ COPY apps/platform-console/package.json ./apps/platform-console/
 COPY apps/registrar-portal/package.json ./apps/registrar-portal/
 COPY apps/security-portal/package.json ./apps/security-portal/
 COPY apps/student-portal/package.json ./apps/student-portal/
-COPY apps/payment-gateway/package.json ./apps/payment-gateway/
-
 COPY libs/api-clients/package.json ./libs/api-clients/
 COPY libs/auth-sdk/package.json ./libs/auth-sdk/
 COPY libs/core-logger/package.json ./libs/core-logger/
@@ -74,5 +72,4 @@ CMD echo "🚚 Delivering compiled React files to Nginx volumes..." && \
     cp -a /app/apps/admissions-portal/dist/* /output/admissions-portal/ && \
     cp -a /app/apps/registrar-portal/dist/* /output/registrar-portal/ && \
     cp -a /app/apps/security-portal/dist/* /output/security-portal/ && \
-    cp -a /app/apps/payment-gateway/dist/* /output/payment-gateway/ && \
     echo "✅ Delivery complete! Container exiting successfully."
