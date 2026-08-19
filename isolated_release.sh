@@ -118,19 +118,19 @@ process_module "academic" "backend-academic" "feat" "implement Registrar clearan
 process_module "administration" "backend-administration" "feat" "migrate internal payment gateway to hosted checkout webhook architecture" \
   "University-ERP-Backend/src/Modules/Administration"
 
-process_module "platform" "backend-platform" "feat" "implement IdentityAccess and Notification integration event consumers" \
+process_module "platform" "backend-platform" "feat" "implement gateway-level JWT session validation endpoint and cross-subdomain SSO cookies" \
   "University-ERP-Backend/src/Modules/Platform"
 
 process_module "student-lifecycle" "backend-studentlifecycle" "feat" "add admissions event handlers for enrollment transitions" \
   "University-ERP-Backend/src/Modules/StudentLifecycle"
 
-process_module "bootstrap" "backend-bootstrap" "feat" "configure PaymentGateway settings for checkout sessions" \
+process_module "bootstrap" "backend-bootstrap" "feat" "register module authorization conventions and configure JWT authentication middleware" \
   "University-ERP-Backend/src/Bootstrap"
 
 process_module "backend-contracts" "backend-contracts" "feat" "define academic and student lifecycle integration event contracts for saga orchestration" \
   "University-ERP-Backend/src/Contracts"
 
-process_module "backend-ops" "ops-backend" "fix" "remove deprecated payment-gateway proxy configurations" \
+process_module "backend-ops" "ops-backend" "feat" "enforce Nginx auth_request gateway authorization, security headers, and deploy observability stack" \
   "University-ERP-Backend/ops"
 
 process_module "backend-docs" "docs-backend" "docs" "update backend architectural structure" \
@@ -187,15 +187,15 @@ process_module "student-portal" "student-portal" "feat" "refactor financials pay
 process_module "frontend-libs" "frontend-libs" "feat" "update finance API client to return checkoutUrl" \
   "University-ERP-Frontend/libs"
 
-process_module "frontend-infra" "frontend-infra" "chore" "deprecate payment-gateway from build pipeline" \
-  "University-ERP-Frontend/package.json" "University-ERP-Frontend/package-lock.json" "University-ERP-Frontend/bootstrap.sh" "University-ERP-Frontend/Dockerfile.build-all" "University-ERP-Frontend/tsconfig.app.base.json"
+process_module "frontend-infra" "frontend-infra" "build" "implement immutable frontend container architecture and restructure build pipeline" \
+  "University-ERP-Frontend/package.json" "University-ERP-Frontend/package-lock.json" "University-ERP-Frontend/bootstrap.sh" "University-ERP-Frontend/Dockerfile.build-all" "University-ERP-Frontend/Dockerfile.applicant" "University-ERP-Frontend/Dockerfile.portal" "University-ERP-Frontend/tsconfig.app.base.json"
 
 # ================= ROOT INFRASTRUCTURE =================
 process_module "project-docs" "docs-project" "docs" "update logs.md with recent modernization events" \
   "CodebaseInfrastructure.md" "structure.md" "logs.md" "newupdate.md" "Analysis_Task_Orchestration.md" "ERPstructure.md" "SEMANTIC_VERSIONING_PROMPT.md" "universal-semantic-versioning-prompt.md" "university-erp-*.md"
 
 # Safely only add the release_all.sh script here (not the apps/ folder anymore!)
-process_module "project-ops" "ops-project" "chore" "remove payment_dist volume mount and update release scripts" \
+process_module "project-ops" "ops-project" "fix" "enforce internal network exposure for database and apply production resource limits" \
   "release_all.sh" "isolated_release.sh" "docker-compose.yml" ".env.example" "health-logger.sh" "scaffold-frontend-cloudflare-nginx.sh" "scaffold_features.ps1" "setup_structure.ps1" "fix-encodings.js" ".dockerignore"
 
 process_module "project-config" "config-project" "chore" "update root gitignore rules" \

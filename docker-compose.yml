@@ -1,3 +1,13 @@
+x-portal-deploy: &portal-deploy
+  restart: "no"
+  deploy:
+    resources:
+      limits:
+        cpus: '1.0'
+        memory: 1G
+  networks:
+    - erp-internal
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -9,9 +19,14 @@ services:
       POSTGRES_DB: ${DB_NAME}
     volumes:
       - pgdata:/var/lib/postgresql/data
-    ports:
-      # Maps external host DB_PORT (e.g. 5433) to internal Postgres port 5432
-      - "${DB_PORT}:5432"
+    expose:
+      # Expose internally to the bridge network instead of publishing to the host
+      - "5432"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
       interval: 10s
@@ -30,8 +45,37 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      # Internal Docker container communication uses service name 'postgres' on port 5432
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}"
+    networks:
+      - erp-internal
+
+  postgres-backup:
+    build:
+      context: ./University-ERP-Backend/ops/db
+      dockerfile: Dockerfile.backup
+    container_name: universityerp-postgres-backup
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      S3_BACKUP_BUCKET: ${S3_BACKUP_BUCKET:-}
+      APP_VERSION: ${APP_VERSION:-latest}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION:-us-east-1}
+    volumes:
+      - pgbackups_local:/backups
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 128M
     networks:
       - erp-internal
 
@@ -53,6 +97,11 @@ services:
       JWT_AUDIENCE: ${JWT_AUDIENCE}
     expose:
       - "5191"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1.5G
     healthcheck:
       test: [ "CMD-SHELL", "curl -sf http://127.0.0.1:5191/health/ready || exit 1" ]
       interval: 30s
@@ -79,37 +128,184 @@ services:
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_ISSUER: ${JWT_ISSUER}
       JWT_AUDIENCE: ${JWT_AUDIENCE}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - erp-internal
 
-  frontend-builder:
+  identity-portal-data:
+    <<: *portal-deploy
+    container_name: universityerp-identity-data
     build:
       context: ./University-ERP-Frontend
-      dockerfile: Dockerfile.build-all
+      dockerfile: Dockerfile.portal
       args:
+        PORTAL_NAME: identity-portal
         VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_AUTH_AUTHORITY: ${VITE_AUTH_AUTHORITY}
         VITE_IDENTITY_PORTAL_URL: ${VITE_IDENTITY_PORTAL_URL}
+    volumes:
+      - identity_dist:/var/www/identity-portal
+
+  student-portal-data:
+    <<: *portal-deploy
+    container_name: universityerp-student-data
+    build:
+      context: ./University-ERP-Frontend
+      dockerfile: Dockerfile.portal
+      args:
+        PORTAL_NAME: student-portal
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_AUTH_AUTHORITY: ${VITE_AUTH_AUTHORITY}
+    volumes:
+      - student_dist:/var/www/student-portal
+
+  faculty-portal-data:
+    <<: *portal-deploy
+    container_name: universityerp-faculty-data
+    build:
+      context: ./University-ERP-Frontend
+      dockerfile: Dockerfile.portal
+      args:
+        PORTAL_NAME: faculty-portal
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_AUTH_AUTHORITY: ${VITE_AUTH_AUTHORITY}
+    volumes:
+      - faculty_dist:/var/www/faculty-portal
+
+  admin-portal-data:
+    <<: *portal-deploy
+    container_name: universityerp-admin-data
+    build:
+      context: ./University-ERP-Frontend
+      dockerfile: Dockerfile.portal
+      args:
+        PORTAL_NAME: admin-portal
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_AUTH_AUTHORITY: ${VITE_AUTH_AUTHORITY}
+    volumes:
+      - admin_dist:/var/www/admin-portal
+
+  lms-web-data:
+    <<: *portal-deploy
+    container_name: universityerp-lms-data
+    build:
+      context: ./University-ERP-Frontend
+      dockerfile: Dockerfile.portal
+      args:
+        PORTAL_NAME: lms-web
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_AUTH_AUTHORITY: ${VITE_AUTH_AUTHORITY}
+    volumes:
+      - lms_dist:/var/www/lms-web
+
+  finance-console-data:
+    <<: *portal-deploy
+    container_name: universityerp-finance-data
+    build:
+      context: ./University-ERP-Frontend
+      dockerfile: Dockerfile.portal
+      args:
+        PORTAL_NAME: finance-console
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_AUTH_AUTHORITY: ${VITE_AUTH_AUTHORITY}
+    volumes:
+      - finance_dist:/var/www/finance-console
+
+  library-portal-data:
+    <<: *portal-deploy
+    container_name: universityerp-library-data
+    build:
+      context: ./University-ERP-Frontend
+      dockerfile: Dockerfile.portal
+      args:
+        PORTAL_NAME: library-portal
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_AUTH_AUTHORITY: ${VITE_AUTH_AUTHORITY}
+    volumes:
+      - library_dist:/var/www/library-portal
+
+  governance-console-data:
+    <<: *portal-deploy
+    container_name: universityerp-governance-data
+    build:
+      context: ./University-ERP-Frontend
+      dockerfile: Dockerfile.portal
+      args:
+        PORTAL_NAME: governance-console
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_AUTH_AUTHORITY: ${VITE_AUTH_AUTHORITY}
+    volumes:
+      - governance_dist:/var/www/governance-console
+
+  platform-console-data:
+    <<: *portal-deploy
+    container_name: universityerp-platform-data
+    build:
+      context: ./University-ERP-Frontend
+      dockerfile: Dockerfile.portal
+      args:
+        PORTAL_NAME: platform-console
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_AUTH_AUTHORITY: ${VITE_AUTH_AUTHORITY}
+    volumes:
+      - platform_dist:/var/www/platform-console
+
+  applicant-portal-data:
+    <<: *portal-deploy
+    container_name: universityerp-applicant-data
+    build:
+      context: ./University-ERP-Frontend
+      dockerfile: Dockerfile.portal
+      args:
+        PORTAL_NAME: applicant-portal
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
         VITE_AUTH_AUTHORITY: ${VITE_AUTH_AUTHORITY}
         VITE_APPLICANT_PORTAL_URL: ${VITE_APPLICANT_PORTAL_URL}
-    container_name: universityerp-frontend-builder
-    restart: "no"
     volumes:
-      - identity_dist:/output/identity-portal
-      - student_dist:/output/student-portal
-      - faculty_dist:/output/faculty-portal
-      - admin_dist:/output/admin-portal
-      - lms_dist:/output/lms-web
-      - finance_dist:/output/finance-console
-      - library_dist:/output/library-portal
-      - governance_dist:/output/governance-console
-      - platform_dist:/output/platform-console
-      - applicant_dist:/output/applicant-portal
-      - admissions_dist:/output/admissions-portal
-      - registrar_dist:/output/registrar-portal
-      - security_dist:/output/security-portal
-      - payment_dist:/output/payment-gateway
-    networks:
-      - erp-internal
+      - applicant_dist:/var/www/applicant-portal
+
+  admissions-portal-data:
+    <<: *portal-deploy
+    container_name: universityerp-admissions-data
+    build:
+      context: ./University-ERP-Frontend
+      dockerfile: Dockerfile.portal
+      args:
+        PORTAL_NAME: admissions-portal
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_AUTH_AUTHORITY: ${VITE_AUTH_AUTHORITY}
+    volumes:
+      - admissions_dist:/var/www/admissions-portal
+
+  registrar-portal-data:
+    <<: *portal-deploy
+    container_name: universityerp-registrar-data
+    build:
+      context: ./University-ERP-Frontend
+      dockerfile: Dockerfile.portal
+      args:
+        PORTAL_NAME: registrar-portal
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_AUTH_AUTHORITY: ${VITE_AUTH_AUTHORITY}
+    volumes:
+      - registrar_dist:/var/www/registrar-portal
+
+  security-portal-data:
+    <<: *portal-deploy
+    container_name: universityerp-security-data
+    build:
+      context: ./University-ERP-Frontend
+      dockerfile: Dockerfile.portal
+      args:
+        PORTAL_NAME: security-portal
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_AUTH_AUTHORITY: ${VITE_AUTH_AUTHORITY}
+    volumes:
+      - security_dist:/var/www/security-portal
 
   cloudflared:
     image: cloudflare/cloudflared:latest
@@ -127,13 +323,82 @@ services:
     networks:
       - erp-internal
 
+  alloy:
+    image: grafana/alloy:v1.2.0
+    container_name: universityerp-alloy
+    restart: unless-stopped
+    command: run --server.http.listen-addr=0.0.0.0:12345 /etc/alloy/config.alloy
+    volumes:
+      - ./University-ERP-Backend/ops/observability/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 150M
+    networks:
+      - erp-internal
+    depends_on:
+      - loki
+
+  loki:
+    image: grafana/loki:3.0.0
+    container_name: universityerp-loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./University-ERP-Backend/ops/observability/loki/local-config.yaml:/etc/loki/local-config.yaml:ro
+      - loki_data:/tmp/loki
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 200M
+    networks:
+      - erp-internal
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://localhost:3100/ready || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  grafana:
+    image: grafana/grafana:11.0.0
+    container_name: universityerp-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 250M
+    networks:
+      - erp-internal
+    depends_on:
+      loki:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://localhost:3000/api/health || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   nginx:
     image: nginx:alpine
     container_name: universityerp-nginx
     restart: unless-stopped
-    ports:
-      - "8086:80"
-      - "8081:8081"
+    expose:
+      - "80"
+      - "8081"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
     volumes:
       - ./University-ERP-Backend/ops/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./University-ERP-Backend/ops/nginx/sites-available:/etc/nginx/sites-available:ro
@@ -152,7 +417,31 @@ services:
       - registrar_dist:/var/www/registrar-portal:ro
       - security_dist:/var/www/security-portal:ro
     depends_on:
-      frontend-builder:
+      identity-portal-data:
+        condition: service_completed_successfully
+      student-portal-data:
+        condition: service_completed_successfully
+      faculty-portal-data:
+        condition: service_completed_successfully
+      admin-portal-data:
+        condition: service_completed_successfully
+      lms-web-data:
+        condition: service_completed_successfully
+      finance-console-data:
+        condition: service_completed_successfully
+      library-portal-data:
+        condition: service_completed_successfully
+      governance-console-data:
+        condition: service_completed_successfully
+      platform-console-data:
+        condition: service_completed_successfully
+      applicant-portal-data:
+        condition: service_completed_successfully
+      admissions-portal-data:
+        condition: service_completed_successfully
+      registrar-portal-data:
+        condition: service_completed_successfully
+      security-portal-data:
         condition: service_completed_successfully
       api:
         condition: service_healthy
@@ -179,6 +468,9 @@ volumes:
   admissions_dist:
   registrar_dist:
   security_dist:
+  loki_data:
+  grafana_data:
+  pgbackups_local:
 
 networks:
   erp-internal:
