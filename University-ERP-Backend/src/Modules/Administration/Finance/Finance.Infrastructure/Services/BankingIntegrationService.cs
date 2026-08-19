@@ -133,6 +133,57 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
         }
     }
     
+    public async Task<Result<string>> GeneratePaymentInstrumentAsync(string sessionId, decimal amount, string currency, CancellationToken cancellationToken)
+    {
+        // Mock fallback for local dev if hitting the dummy payload
+        if (_httpClient.BaseAddress?.Host == "api.banking.university.edu" || string.IsNullOrEmpty(_options.SecretKey))
+        {
+            return Result<string>.Success($"qrph_mock_payload_for_session_{sessionId}");
+        }
+
+        try
+        {
+            var amountInCentavos = (long)(amount * 100);
+            
+            var payload = new
+            {
+                data = new
+                {
+                    attributes = new
+                    {
+                        amount = amountInCentavos,
+                        description = $"QR Payment for Session {sessionId}"
+                    }
+                }
+            };
+
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/v1/links");
+            var authHeader = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{_options.SecretKey}:"));
+            requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authHeader);
+            requestMessage.Content = JsonContent.Create(payload);
+            
+            var response = await _httpClient.SendAsync(requestMessage, cancellationToken);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>(cancellationToken: cancellationToken);
+                var checkoutUrl = result.GetProperty("data").GetProperty("attributes").GetProperty("checkout_url").GetString();
+                
+                if (!string.IsNullOrEmpty(checkoutUrl))
+                {
+                    return Result<string>.Success(checkoutUrl);
+                }
+            }
+            
+            var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+            return Result<string>.Failure(new Error("Finance.PaymentGatewayError", $"Failed to generate QR payment link: {errorContent}"));
+        }
+        catch (HttpRequestException ex)
+        {
+            return Result<string>.Failure(new Error("Finance.BankingConnectionError", $"Could not connect to payment gateway: {ex.Message}"));
+        }
+    }
+    
     private record TransactionResponse(string TransactionId, string Status, decimal Amount);
     private record ApiResponse<T>(T Data, string Message, string CorrelationId);
 }
