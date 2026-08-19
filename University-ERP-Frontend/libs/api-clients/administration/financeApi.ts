@@ -22,8 +22,8 @@ export interface PaymentSessionDto {
 }
 
 export const financePaymentSessionApi = {
-  createSession: async (payload: CreatePaymentSessionRequest): Promise<{ sessionId: string }> => {
-    const response = await apiClient.post<{ sessionId: string }>(
+  createSession: async (payload: CreatePaymentSessionRequest): Promise<{ sessionId: string, checkoutUrl: string }> => {
+    const response = await apiClient.post<{ sessionId: string, checkoutUrl: string }>(
       '/api/v1/finance/payment-sessions', 
       payload
     );
