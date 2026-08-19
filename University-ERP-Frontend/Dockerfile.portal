@@ -1,14 +1,14 @@
 # -----------------------------------------------------------------------------
-# University ERP - Frontend Builder (Pattern B)
+# University ERP - Generic Portal Data Container (Phase 6)
 # -----------------------------------------------------------------------------
-# This Dockerfile builds all 8 Vite portals and copies their output into a
-# volume structure that matches the Nginx named volume expectations.
+# Builds a specific portal using the PORTAL_NAME build arg and encapsulates
+# its assets into an immutable Alpine data container.
 # -----------------------------------------------------------------------------
 
 FROM node:22-alpine AS builder
 
 WORKDIR /app
-# Copy workspace manifests first to leverage Docker layer caching
+# Leverage Docker layer caching by copying manifests first
 COPY package.json package-lock.json* ./
 COPY apps/admin-portal/package.json ./apps/admin-portal/
 COPY apps/admissions-portal/package.json ./apps/admissions-portal/
@@ -32,43 +32,36 @@ COPY libs/ui-kit/package.json ./libs/ui-kit/
 COPY libs/vite-config/package.json ./libs/vite-config/
 COPY libs/workflow-sdk/package.json ./libs/workflow-sdk/
 
-# Install dependencies before copying source code
 RUN npm install
 
-# Copy the rest of the source code
+# Copy source code
 COPY . .
 
-# Accept build arguments from docker-compose
+# Accept shared Vite arguments
+ARG PORTAL_NAME
 ARG VITE_API_BASE_URL
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
-
 ARG VITE_AUTH_AUTHORITY
 ENV VITE_AUTH_AUTHORITY=$VITE_AUTH_AUTHORITY
-
 ARG VITE_IDENTITY_PORTAL_URL
 ENV VITE_IDENTITY_PORTAL_URL=$VITE_IDENTITY_PORTAL_URL
-
-# --- ADD THESE TWO LINES ---
 ARG VITE_APPLICANT_PORTAL_URL
 ENV VITE_APPLICANT_PORTAL_URL=$VITE_APPLICANT_PORTAL_URL
 
-# Build all portals simultaneously
-RUN npm run build --workspaces --if-present
+# Build ONLY the target portal
+RUN npm run build --workspace=apps/${PORTAL_NAME} && mv /app/apps/${PORTAL_NAME}/dist /app/dist-temp
 
-# We do NOT run Nginx inside this container. 
-# This container's ONLY job is to copy the built files into named volumes 
-# before exiting (restart: "no" in docker-compose).
-CMD echo "🚚 Delivering compiled React files to Nginx volumes..." && \
-    cp -a /app/apps/identity-portal/dist/* /output/identity-portal/ && \
-    cp -a /app/apps/student-portal/dist/* /output/student-portal/ && \
-    cp -a /app/apps/faculty-portal/dist/* /output/faculty-portal/ && \
-    cp -a /app/apps/admin-portal/dist/* /output/admin-portal/ && \
-    cp -a /app/apps/lms-web/dist/* /output/lms-web/ && \
-    cp -a /app/apps/finance-console/dist/* /output/finance-console/ && \
-    cp -a /app/apps/library-portal/dist/* /output/library-portal/ && \
-    cp -a /app/apps/governance-console/dist/* /output/governance-console/ && \
-    cp -a /app/apps/platform-console/dist/* /output/platform-console/ && \
-    cp -a /app/apps/admissions-portal/dist/* /output/admissions-portal/ && \
-    cp -a /app/apps/registrar-portal/dist/* /output/registrar-portal/ && \
-    cp -a /app/apps/security-portal/dist/* /output/security-portal/ && \
-    echo "✅ Delivery complete! Container exiting successfully."
+# -----------------------------------------------------------------------------
+# Stage 2: Immutable Data Image
+# -----------------------------------------------------------------------------
+FROM alpine:latest
+
+# We must pass the ARG into stage 2 to use it in the CMD
+ARG PORTAL_NAME
+ENV RUNTIME_PORTAL_NAME=${PORTAL_NAME}
+
+# Copy the compiled assets from the builder stage
+COPY --from=builder /app/dist-temp /app-data
+
+# Copy assets to the shared volume mount point and exit gracefully
+CMD cp -a /app-data/. /var/www/${RUNTIME_PORTAL_NAME}/ && echo "✅ ${RUNTIME_PORTAL_NAME} assets delivered."
