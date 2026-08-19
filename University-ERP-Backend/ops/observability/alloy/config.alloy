@@ -51,10 +51,10 @@ loki.process "docker_logs_format" {
         
         stage.json {
             expressions = {
-                level = "Level",
-                msg = "MessageTemplate",
-                request_id = "Properties.RequestId",
-                cf_ray = "Properties.CFRay"
+                "level" = "Level",
+                "msg" = "MessageTemplate",
+                "request_id" = "Properties.RequestId",
+                "cf_ray" = "Properties.CFRay",
             }
         }
         
@@ -62,7 +62,7 @@ loki.process "docker_logs_format" {
             values = {
                 "level" = "level",
                 "request_id" = "request_id",
-                "cf_ray" = "cf_ray"
+                "cf_ray" = "cf_ray",
             }
         }
     }
