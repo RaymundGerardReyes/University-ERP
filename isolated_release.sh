@@ -115,7 +115,7 @@ echo "Starting isolated semantic versioning updates..."
 process_module "academic" "backend-academic" "feat" "implement Registrar clearance queues, UserRegistered consumer, and LMS module registration" \
   "University-ERP-Backend/src/Modules/Academic"
 
-process_module "administration" "backend-administration" "feat" "implement StudentBilling and PaymentSession repositories with dynamic financial reconciliation endpoints" \
+process_module "administration" "backend-administration" "feat" "migrate internal payment gateway to hosted checkout webhook architecture" \
   "University-ERP-Backend/src/Modules/Administration"
 
 process_module "platform" "backend-platform" "feat" "implement IdentityAccess and Notification integration event consumers" \
@@ -124,13 +124,13 @@ process_module "platform" "backend-platform" "feat" "implement IdentityAccess an
 process_module "student-lifecycle" "backend-studentlifecycle" "feat" "add admissions event handlers for enrollment transitions" \
   "University-ERP-Backend/src/Modules/StudentLifecycle"
 
-process_module "bootstrap" "backend-bootstrap" "refactor" "update UniversityErp.Api Program.cs startup configuration" \
+process_module "bootstrap" "backend-bootstrap" "feat" "configure PaymentGateway settings for checkout sessions" \
   "University-ERP-Backend/src/Bootstrap"
 
 process_module "backend-contracts" "backend-contracts" "feat" "define academic and student lifecycle integration event contracts for saga orchestration" \
   "University-ERP-Backend/src/Contracts"
 
-process_module "backend-ops" "ops-backend" "fix" "update Nginx proxy-common and site configurations for portals" \
+process_module "backend-ops" "ops-backend" "fix" "remove deprecated payment-gateway proxy configurations" \
   "University-ERP-Backend/ops"
 
 process_module "backend-docs" "docs-backend" "docs" "update backend architectural structure" \
@@ -143,7 +143,7 @@ process_module "admin-portal" "admin-portal" "feat" "replace mock data in admiss
 process_module "admissions-portal" "admissions-portal" "test" "stabilize enterprise test suite by providing mock routing and query client contexts" \
   "University-ERP-Frontend/apps/admissions-portal"
 
-process_module "applicant-portal" "applicant-portal" "chore" "update vite.config.ts build configuration" \
+process_module "applicant-portal" "applicant-portal" "feat" "refactor application fee payment to external provider checkoutUrl" \
   "University-ERP-Frontend/apps/applicant-portal"
 
 process_module "faculty-portal" "faculty-portal" "feat" "update Teaching.page.tsx and vite.config.ts" \
@@ -152,7 +152,7 @@ process_module "faculty-portal" "faculty-portal" "feat" "update Teaching.page.ts
 process_module "finance-console" "finance-console" "feat" "connect PaymentGateway and StudentBilling components to live CQRS endpoints" \
   "University-ERP-Frontend/apps/finance-console"
 
-process_module "payment-gateway" "payment-gateway" "chore" "update main entry component for React Strict Mode" \
+process_module "payment-gateway" "payment-gateway" "chore" "deprecate internal payment gateway portal" \
   "University-ERP-Frontend/apps/payment-gateway"
 
 process_module "governance-console" "governance-console" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
@@ -180,14 +180,14 @@ process_module "registrar-portal" "registrar-portal" "feat" "update SubjectCatal
 process_module "security-portal" "security-portal" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
   "University-ERP-Frontend/apps/security-portal"
 
-process_module "student-portal" "student-portal" "chore" "update vite.config.ts build configuration" \
+process_module "student-portal" "student-portal" "feat" "refactor financials payment to external provider checkoutUrl" \
   "University-ERP-Frontend/apps/student-portal"
 
 # ================= FRONTEND LIBS & CONFIG =================
-process_module "frontend-libs" "frontend-libs" "feat" "enhance Button and Table components and update ui-kit design system styles" \
+process_module "frontend-libs" "frontend-libs" "feat" "update finance API client to return checkoutUrl" \
   "University-ERP-Frontend/libs"
 
-process_module "frontend-infra" "frontend-infra" "chore" "update Dockerfile.build-all instructions" \
+process_module "frontend-infra" "frontend-infra" "chore" "deprecate payment-gateway from build pipeline" \
   "University-ERP-Frontend/package.json" "University-ERP-Frontend/package-lock.json" "University-ERP-Frontend/bootstrap.sh" "University-ERP-Frontend/Dockerfile.build-all" "University-ERP-Frontend/tsconfig.app.base.json"
 
 # ================= ROOT INFRASTRUCTURE =================
@@ -195,7 +195,7 @@ process_module "project-docs" "docs-project" "docs" "update logs.md with recent 
   "CodebaseInfrastructure.md" "structure.md" "logs.md" "newupdate.md" "Analysis_Task_Orchestration.md" "ERPstructure.md" "SEMANTIC_VERSIONING_PROMPT.md" "universal-semantic-versioning-prompt.md" "university-erp-*.md"
 
 # Safely only add the release_all.sh script here (not the apps/ folder anymore!)
-process_module "project-ops" "ops-project" "chore" "update isolated_release.sh commit messages" \
+process_module "project-ops" "ops-project" "chore" "remove payment_dist volume mount and update release scripts" \
   "release_all.sh" "isolated_release.sh" "docker-compose.yml" ".env.example" "health-logger.sh" "scaffold-frontend-cloudflare-nginx.sh" "scaffold_features.ps1" "setup_structure.ps1" "fix-encodings.js" ".dockerignore"
 
 process_module "project-config" "config-project" "chore" "update root gitignore rules" \
