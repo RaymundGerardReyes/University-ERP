@@ -118,7 +118,7 @@ process_module "academic" "backend-academic" "feat" "implement Registrar clearan
 process_module "administration" "backend-administration" "feat" "migrate internal payment gateway to hosted checkout webhook architecture" \
   "University-ERP-Backend/src/Modules/Administration"
 
-process_module "platform" "backend-platform" "feat" "implement gateway-level JWT session validation endpoint and cross-subdomain SSO cookies" \
+process_module "platform" "backend-platform" "fix" "cryptographically validate SSO JWT signature and claims in Nginx auth_request endpoint" \
   "University-ERP-Backend/src/Modules/Platform"
 
 process_module "student-lifecycle" "backend-studentlifecycle" "feat" "add admissions event handlers for enrollment transitions" \
@@ -130,7 +130,7 @@ process_module "bootstrap" "backend-bootstrap" "feat" "register module authoriza
 process_module "backend-contracts" "backend-contracts" "feat" "define academic and student lifecycle integration event contracts for saga orchestration" \
   "University-ERP-Backend/src/Contracts"
 
-process_module "backend-ops" "ops-backend" "feat" "enforce Nginx auth_request gateway authorization, security headers, and deploy observability stack" \
+process_module "backend-ops" "ops-backend" "feat" "deploy Loki and Grafana Alloy observability stack for distributed tracing" \
   "University-ERP-Backend/ops"
 
 process_module "backend-docs" "docs-backend" "docs" "update backend architectural structure" \
@@ -195,7 +195,7 @@ process_module "project-docs" "docs-project" "docs" "update logs.md with recent 
   "CodebaseInfrastructure.md" "structure.md" "logs.md" "newupdate.md" "Analysis_Task_Orchestration.md" "ERPstructure.md" "SEMANTIC_VERSIONING_PROMPT.md" "universal-semantic-versioning-prompt.md" "university-erp-*.md"
 
 # Safely only add the release_all.sh script here (not the apps/ folder anymore!)
-process_module "project-ops" "ops-project" "fix" "enforce internal network exposure for database and apply production resource limits" \
+process_module "project-ops" "ops-project" "feat" "integrate Loki log aggregation service and enforce production resource limits" \
   "release_all.sh" "isolated_release.sh" "docker-compose.yml" ".env.example" "health-logger.sh" "scaffold-frontend-cloudflare-nginx.sh" "scaffold_features.ps1" "setup_structure.ps1" "fix-encodings.js" ".dockerignore"
 
 process_module "project-config" "config-project" "chore" "update root gitignore rules" \
