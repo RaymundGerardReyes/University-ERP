@@ -44,13 +44,16 @@ try
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
-        // This template creates the beautiful "[IdentityAccess] User Logged In" format!
-        .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}"));
+        // Use structured JSON so Grafana Alloy can easily ingest it without complex regex
+        .WriteTo.Console(new Serilog.Formatting.Json.JsonFormatter()));
 
     // =========================================================================
     // 2. Core Framework Services & Controllers
     // =========================================================================
-    builder.Services.AddControllers()
+    builder.Services.AddControllers(options => 
+        {
+            options.Conventions.Add(new UniversityErp.Api.Middleware.ModuleAuthorizationConvention());
+        })
         .AddApplicationPart(typeof(StudentInformation.Presentation.Endpoints.GetStudentInformationEndpoints).Assembly)
         .AddApplicationPart(typeof(LearningManagement.Presentation.Endpoints.DownloadModulePackageEndpoint).Assembly)
         .AddApplicationPart(typeof(Registrar.Presentation.Endpoints.RegisterCourseEndpoint).Assembly)
@@ -105,13 +108,69 @@ try
         options.KnownProxies.Clear();
     });
 
+    // =========================================================================
+    // 3b. Security & Authentication
+    // =========================================================================
+    builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT_SECRET_KEY"] ?? "")),
+                ValidateIssuer = true,
+                ValidIssuer = builder.Configuration["JWT_ISSUER"],
+                ValidateAudience = true,
+                ValidAudience = builder.Configuration["JWT_AUDIENCE"],
+                ClockSkew = TimeSpan.Zero
+            };
+
+            // Support reading JWT from the HttpOnly AuthToken cookie (used by Nginx auth_request)
+            options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    if (string.IsNullOrEmpty(context.Token) && context.Request.Cookies.TryGetValue("AuthToken", out var token))
+                    {
+                        context.Token = token;
+                    }
+                    return Task.CompletedTask;
+                }
+            };
+        });
+
+    builder.Services.AddAuthorization(options =>
+    {
+        // Require authentication for ALL endpoints by default
+        options.FallbackPolicy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+
+        // Define specific business/portal access policies
+        options.AddPolicy("Portal.Admin.Access", policy => policy.RequireRole("Admin"));
+        options.AddPolicy("Portal.Applicant.Access", policy => policy.RequireRole("Applicant"));
+        options.AddPolicy("Portal.Admission.Access", policy => policy.RequireRole("Admissions", "Admin"));
+        options.AddPolicy("Portal.Finance.Access", policy => policy.RequireRole("Finance", "Admin"));
+        options.AddPolicy("Portal.Student.Access", policy => policy.RequireRole("Student"));
+        options.AddPolicy("Portal.Faculty.Access", policy => policy.RequireRole("Faculty"));
+        options.AddPolicy("Portal.Registrar.Access", policy => policy.RequireRole("Registrar"));
+    });
+
     var app = builder.Build();
 
     // Must be first in the pipeline to correctly resolve Client IP and Scheme
     app.UseForwardedHeaders();
 
     // 3. Replaces messy HTTP logs with a single, clean log per request
-    app.UseSerilogRequestLogging();
+    app.UseSerilogRequestLogging(options =>
+    {
+        options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+        {
+            diagnosticContext.Set("RequestId", httpContext.Request.Headers["X-Request-ID"].FirstOrDefault());
+            diagnosticContext.Set("CFRay", httpContext.Request.Headers["CF-Ray"].FirstOrDefault());
+            diagnosticContext.Set("ClientIP", httpContext.Connection.RemoteIpAddress?.ToString());
+        };
+    });
     
     // Add global exception handling
     app.UseMiddleware<UniversityErp.Api.Middleware.GlobalExceptionMiddleware>();
@@ -129,19 +188,20 @@ try
         });
     }
 
+    app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
 
     // Expose a dedicated health check endpoint for Docker Compose
-    app.MapGet("/health/live", () => Microsoft.AspNetCore.Http.Results.Ok(new { status = "Live", timestamp = DateTime.UtcNow }));
-    app.MapGet("/health/ready", () => Microsoft.AspNetCore.Http.Results.Ok(new { status = "Ready", timestamp = DateTime.UtcNow }));
+    app.MapGet("/health/live", () => Microsoft.AspNetCore.Http.Results.Ok(new { status = "Live", timestamp = DateTime.UtcNow })).AllowAnonymous();
+    app.MapGet("/health/ready", () => Microsoft.AspNetCore.Http.Results.Ok(new { status = "Ready", timestamp = DateTime.UtcNow })).AllowAnonymous();
 
     // Telemetry endpoint for frontend production logs
     app.MapPost("/api/v1/platform/telemetry/client-log", (ClientLogDto dto, ILogger<Program> logger) =>
     {
         logger.LogInformation("🖥️ [Frontend {Level}] {Prefix} {Message}", dto.Level, dto.Prefix, dto.Message);
         return Microsoft.AspNetCore.Http.Results.Ok();
-    });
+    }).AllowAnonymous();
 
     app.Run();
 }
