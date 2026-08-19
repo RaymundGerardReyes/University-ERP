@@ -54,11 +54,15 @@ export const EnrollmentPaymentPage: React.FC = () => {
                 purpose: activeInvoice.description
             });
 
-            return response.data.sessionId;
+            return response.data;
         },
-        onSuccess: (sessionId) => {
-            // Redirect the user to the isolated Payment Gateway surface
-            window.location.href = `http://localhost:5177?sessionId=${sessionId}`;
+        onSuccess: (data) => {
+            // Redirect the user to the provider's Hosted Checkout surface
+            if (data.checkoutUrl) {
+                window.location.href = data.checkoutUrl;
+            } else {
+                alert("Failed to retrieve checkout URL from the payment gateway.");
+            }
         },
         onError: (error: any) => {
             alert(error?.response?.data?.message || "Failed to create payment session. Please try again.");

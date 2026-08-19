@@ -25,7 +25,8 @@ export const ApplicationFeePaymentPage: React.FC = () => {
 
     const handleRerouteToFinance = (tokenId: string | null) => {
         if (!tokenId) return;
-        const financeConsoleUrl = `http://localhost:5176/cashier/payments?token=${encodeURIComponent(tokenId)}`;
+        const baseUrl = import.meta.env.VITE_FINANCE_CONSOLE_URL || '/finance-console';
+        const financeConsoleUrl = `${baseUrl}/cashier/payments?token=${encodeURIComponent(tokenId)}`;
         window.open(financeConsoleUrl, '_blank', 'noopener,noreferrer');
     };
 
@@ -48,10 +49,13 @@ export const ApplicationFeePaymentPage: React.FC = () => {
                 purpose: 'Application Processing Fee'
             });
 
-            const sessionId = response.data.sessionId;
+            const checkoutUrl = response.data.checkoutUrl;
 
-            // Redirect the user to the standalone Payment Gateway surface
-            window.location.href = `http://localhost:5184?sessionId=${sessionId}`;
+            if (checkoutUrl) {
+                window.location.href = checkoutUrl;
+            } else {
+                throw new Error("Failed to retrieve checkout URL from the payment gateway.");
+            }
         } catch (error: any) {
             console.error("Online payment session generation failed:", error);
             setPaymentStatus('error');

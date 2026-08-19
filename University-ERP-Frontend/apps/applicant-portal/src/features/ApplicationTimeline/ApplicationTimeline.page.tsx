@@ -47,7 +47,7 @@ export const ApplicationTimelinePage: React.FC = () => {
                 background: step.status === 'Completed' ? 'var(--success-bg)' : step.status === 'Current' ? 'var(--brand-primary)' : 'var(--bg-hover)',
                 color: step.status === 'Completed' ? 'var(--success-text)' : step.status === 'Current' ? '#fff' : 'var(--text-muted)'
               }}>
-                {step.status === 'Completed' ? '✓' : step.id}
+                {step.status === 'Completed' ? '✓' : idx + 1}
               </div>
 
               <div style={{ flex: 1 }}>
