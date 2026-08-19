@@ -22,7 +22,6 @@ export const FinancialsPage: React.FC = () => {
         if (sessionStatus?.status === 'Paid') {
             queryClient.invalidateQueries({ queryKey: ['student', identity?.id || 'demo', 'invoice'] });
             setActiveSessionId(null);
-            setBankQrPayload(null);
         }
     }, [sessionStatus?.status, queryClient, identity?.id]);
 
@@ -47,13 +46,11 @@ export const FinancialsPage: React.FC = () => {
             purpose: `Tuition Payment - ${currentTermId}`,
             currency: 'PHP'
         }, {
-            onSuccess: async (data) => {
-                setActiveSessionId(data.sessionId);
-                try {
-                    const qrData = await financePaymentSessionApi.getDynamicQR(data.sessionId);
-                    setBankQrPayload(qrData.qrPayload);
-                } catch (err) {
-                    console.error("Failed to fetch Bank QR", err);
+            onSuccess: (data) => {
+                if (data.checkoutUrl) {
+                    window.location.href = data.checkoutUrl;
+                } else {
+                    alert("Failed to retrieve checkout URL from the payment gateway.");
                 }
             }
         });
@@ -92,28 +89,6 @@ export const FinancialsPage: React.FC = () => {
                         </Button>
                     )}
 
-                    {activeSessionId && bankQrPayload && (
-                        <div style={{ marginTop: 'var(--space-6)', textAlign: 'center', padding: '1rem', background: 'var(--bg-elevated, #f8f9fa)', borderRadius: 'var(--radius-md, 8px)' }}>
-                            <Badge colorScheme="warning" style={{ marginBottom: '1rem' }}>Awaiting Payment</Badge>
-                            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                                Scan this code with your banking app. This page will update automatically once the bank confirms your payment.
-                            </p>
-                            
-                            <div style={{ padding: '1rem', background: 'white', display: 'inline-block', borderRadius: '8px', margin: '1rem 0' }}>
-                                <div style={{ color: 'black', fontFamily: 'monospace', fontSize: '0.75rem', wordBreak: 'break-all', maxWidth: '220px' }}>
-                                    {bankQrPayload}
-                                </div>
-                            </div>
-                            
-                            <Button 
-                                variant="outline" 
-                                style={{ width: '100%' }}
-                                onClick={() => { setActiveSessionId(null); setBankQrPayload(null); }}
-                            >
-                                Cancel
-                            </Button>
-                        </div>
-                    )}
 
                     {createSessionMutation.isError && (
                         <div style={{ color: 'var(--danger-text)', fontSize: '0.85rem', marginTop: 'var(--space-2)' }}>
