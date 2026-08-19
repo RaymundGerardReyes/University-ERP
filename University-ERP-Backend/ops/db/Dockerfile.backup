@@ -1,0 +1,14 @@
+FROM alpine:latest
+
+# Install PostgreSQL client for pg_dump/pg_restore, and AWS CLI for S3 sync
+RUN apk add --no-cache postgresql-client aws-cli tzdata
+
+WORKDIR /backups
+COPY ./backup.sh /usr/local/bin/backup.sh
+COPY ./restore.sh /usr/local/bin/restore.sh
+RUN chmod +x /usr/local/bin/backup.sh /usr/local/bin/restore.sh
+
+# Run the backup script daily at 2:00 AM via crond
+RUN echo "0 2 * * * /usr/local/bin/backup.sh >> /var/log/cron.log 2>&1" > /etc/crontabs/root
+
+CMD ["crond", "-f", "-d", "8"]

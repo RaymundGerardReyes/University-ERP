@@ -1,0 +1,76 @@
+// -----------------------------------------------------------------------------
+// Grafana Alloy Configuration
+// -----------------------------------------------------------------------------
+// This collects Docker container logs from the Docker socket and ships them to Loki.
+
+// 1. Discover Docker containers
+discovery.docker "erp_containers" {
+    host = "unix:///var/run/docker.sock"
+    
+    // Filter to only collect logs from containers that have the 'loki.enable' label
+    // or collect all containers on the erp-internal network. For simplicity, we collect all.
+}
+
+// 2. Extract and parse Docker logs
+loki.source.docker "docker_logs" {
+    host       = "unix:///var/run/docker.sock"
+    targets    = discovery.docker.erp_containers.targets
+    forward_to = [loki.process.docker_logs_format.receiver]
+    
+    // We explicitly exclude Loki and Grafana to prevent log feedback loops (log ingestion logging about log ingestion)
+    relabel_rules = discovery.relabel.exclude_observability.rules
+}
+
+// Relabeling to exclude the observability stack itself
+discovery.relabel "exclude_observability" {
+    targets = []
+    
+    rule {
+        source_labels = ["__meta_docker_container_name"]
+        regex         = "/universityerp-(loki|grafana|alloy)"
+        action        = "drop"
+    }
+}
+
+// 3. Process logs (extract metadata, parse JSON)
+loki.process "docker_logs_format" {
+    forward_to = [loki.write.local_loki.receiver]
+
+    stage.docker {}
+
+    // Add labels based on container names
+    stage.labels {
+        values = {
+            "container" = "__meta_docker_container_name",
+        }
+    }
+    
+    // For the API container, parse the JSON so we can extract RequestId and CFRay as searchable labels
+    stage.match {
+        selector = "{container=\"/universityerp-api\"}"
+        
+        stage.json {
+            expressions = {
+                level = "Level",
+                msg = "MessageTemplate",
+                request_id = "Properties.RequestId",
+                cf_ray = "Properties.CFRay"
+            }
+        }
+        
+        stage.labels {
+            values = {
+                "level" = "level",
+                "request_id" = "request_id",
+                "cf_ray" = "cf_ray"
+            }
+        }
+    }
+}
+
+// 4. Write to local Loki instance
+loki.write "local_loki" {
+    endpoint {
+        url = "http://loki:3100/loki/api/v1/push"
+    }
+}
