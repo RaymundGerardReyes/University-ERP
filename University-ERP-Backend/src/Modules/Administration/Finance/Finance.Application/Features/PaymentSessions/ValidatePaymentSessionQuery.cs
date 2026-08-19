@@ -27,7 +27,7 @@ public sealed class ValidatePaymentSessionQueryHandler : IRequestHandler<Validat
         if (session == null)
             return Result<PaymentSessionDto>.Failure(new Error("PaymentSession.NotFound", "Invalid or unrecognized payment session."));
 
-        if (session.Status != "Active" || DateTime.UtcNow > session.ExpiresAtUtc)
+        if ((session.Status != "AwaitingPayment" && session.Status != "PendingBankConfirmation") || DateTime.UtcNow > session.ExpiresAtUtc)
             return Result<PaymentSessionDto>.Failure(new Error("PaymentSession.Expired", "This payment session is expired or already consumed."));
 
         var dto = new PaymentSessionDto(

@@ -28,14 +28,14 @@ public sealed class PaymentSessionEndpoint : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(CreatePaymentSessionResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateSession([FromBody] CreatePaymentSessionCommand command, CancellationToken cancellationToken)
     {
         var result = await _sender.Send(command, cancellationToken);
         
         return result.IsSuccess 
-            ? Ok(new { sessionId = result.Value }) 
+            ? Ok(result.Value) 
             : BadRequest(new { code = result.Error.Code, message = result.Error.Description });
     }
 

@@ -22,6 +22,8 @@ public static class FinanceModuleRegistration
                 npgsqlOptions => npgsqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "finance")
             ));
 
+        services.Configure<PaymentGatewayOptions>(configuration.GetSection("PaymentGateway"));
+
         services.AddScoped<IStudentBillingRepository, StudentBillingRepository>();
         
         // NEW: Register CashTransactionRepository
@@ -30,9 +32,10 @@ public static class FinanceModuleRegistration
         // NEW: Register PaymentSessionRepository
         services.AddScoped<IPaymentSessionRepository, PaymentSessionRepository>();
 
-        services.AddHttpClient<IPaymentGatewayService, Finance.Infrastructure.Services.BankingIntegrationService>(client =>
+        services.AddHttpClient<IPaymentGatewayService, Finance.Infrastructure.Services.BankingIntegrationService>((provider, client) =>
         {
-            var baseUrl = configuration["BankingApi:BaseUrl"] ?? "https://api.banking.university.edu";
+            var options = provider.GetRequiredService<Microsoft.Extensions.Options.IOptions<PaymentGatewayOptions>>().Value;
+            var baseUrl = options.BaseUrl;
             client.BaseAddress = new System.Uri(baseUrl);
             client.Timeout = System.TimeSpan.FromSeconds(30);
         });
