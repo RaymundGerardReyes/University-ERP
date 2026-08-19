@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 [ApiController]
 [Route("api/v1/platform/identity")]
+[Microsoft.AspNetCore.Authorization.AllowAnonymous]
 public class LoginEndpoint : ControllerBase
 {
     private readonly ISender _sender;
@@ -27,7 +28,21 @@ public class LoginEndpoint : ControllerBase
         var result = await _sender.Send(query, cancellationToken);
         
         if (result.IsSuccess)
+        {
+            var host = Request.Host.Host;
+            var domain = host.Contains("localhost") ? "localhost" : ".university.edu";
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true, // Cloudflare tunnel enforces HTTPS
+                SameSite = SameSiteMode.Lax, // Lax allows cross-subdomain navigation to send the cookie
+                Expires = DateTimeOffset.UtcNow.AddHours(8),
+                Domain = domain // CRITICAL: Allow cookie to be sent across all portals
+            };
+            Response.Cookies.Append("AuthToken", result.Value.Token, cookieOptions);
             return Ok(result.Value);
+        }
 
         if (result.Error.Code == "Auth.InvalidCredentials")
         {
