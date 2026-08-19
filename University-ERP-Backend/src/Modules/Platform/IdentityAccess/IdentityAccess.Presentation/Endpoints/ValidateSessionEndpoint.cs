@@ -28,7 +28,7 @@ public class ValidateSessionEndpoint : ControllerBase
         var policyName = $"Portal.{portalTarget}.Access";
 
         // 3. Evaluate the Policy using the native ASP.NET Core Authorization Pipeline
-        var result = await _authorizationService.AuthorizeAsync(User, policyName);
+        var result = await _authorizationService.AuthorizeAsync(User, null, policyName);
 
         if (result.Succeeded)
         {
