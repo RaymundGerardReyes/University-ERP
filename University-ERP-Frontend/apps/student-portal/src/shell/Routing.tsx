@@ -31,7 +31,7 @@ export const Routing: React.FC = () => {
   logger.debug('Building application route tree');
 
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL && import.meta.env.BASE_URL !== '/' ? import.meta.env.BASE_URL : '/student-portal/'}>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <NavigationLogger />
       <Routes>
 
