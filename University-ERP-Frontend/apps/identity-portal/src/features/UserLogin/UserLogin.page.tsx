@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { admissionsApi } from '@university-erp/api-clients';
+import { portalRegistry, getAllowedOrigins } from '@university-erp/shell-kit';
 import { useUserRegistration } from '../UserRegistration/UserRegistration.hooks';
 import { submitLogin } from './UserLogin.api';
 
@@ -296,42 +297,34 @@ export const LoginPage = () => {
         localStorage.setItem('global_identity_token', response.token);
 
         // 2. Determine Redirection URLs dynamically based on environment topology
-        const currentPort = window.location.port;
-        const isNative = currentPort === '3001';
-        
         const urlParams = new URLSearchParams(window.location.search);
         const rawRedirect = urlParams.get('redirect_uri');
         
-        let proxyOrigin = window.location.origin;
+        const defaultStudentUrl = portalRegistry.student.url;
+        const defaultApplicantUrl = portalRegistry.applicant.url;
+        const defaultAdminUrl = portalRegistry.admin.url;
+        const defaultFacultyUrl = portalRegistry.faculty.url;
+        const defaultAdmissionsUrl = portalRegistry.admissions.url;
+        const defaultFinanceUrl = portalRegistry.finance.url;
+        const defaultRegistrarUrl = portalRegistry.registrar.url;
+        
+        // Define allowed prefixes for redirect_uri validation
+        const allowedOrigins = [
+            ...getAllowedOrigins(),
+            window.location.origin
+        ];
+
+        let redirectUri = defaultStudentUrl;
+        
         if (rawRedirect) {
-          try {
-            proxyOrigin = new URL(rawRedirect).origin;
-          } catch (e) {}
-        } else {
-          // If no redirect_uri was provided, we must infer the main ERP gateway URL.
-          if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            if (currentPort === '8081') {
-                proxyOrigin = 'http://localhost:8086';
+            // Validate redirect_uri against allowed origins
+            const isValid = allowedOrigins.some(allowed => rawRedirect.startsWith(allowed));
+            if (isValid) {
+                redirectUri = rawRedirect;
+            } else {
+                console.warn(`Blocked redirect to unapproved origin: ${rawRedirect}`);
             }
-          } else {
-            // Production environment - strip the "auth." or similar prefix
-            proxyOrigin = window.location.origin.replace('auth.', 'www.').replace('identity.', '');
-          }
         }
-
-        const getPortalUrl = (nativePort: string, portalPath: string) => {
-          return isNative ? `http://localhost:${nativePort}` : `${proxyOrigin}${portalPath}`;
-        };
-
-        const defaultStudentUrl = getPortalUrl('5173', '/student-portal');
-        const defaultApplicantUrl = getPortalUrl('5174', '/applicant-portal');
-        const defaultAdminUrl = getPortalUrl('5178', '/admin-portal');
-        const defaultFacultyUrl = getPortalUrl('5175', '/faculty-portal');
-        const defaultAdmissionsUrl = getPortalUrl('5183', '/admissions-portal');
-        const defaultFinanceUrl = getPortalUrl('5176', '/finance-console');
-        const defaultRegistrarUrl = getPortalUrl('5181', '/registrar-portal');
-
-        let redirectUri = rawRedirect || defaultStudentUrl;
 
         // Role-Based Routing Interceptor
         if (response.user.role === 'Admin') {
@@ -407,27 +400,7 @@ export const LoginPage = () => {
 
         // 3. Since they JUST registered, they are 100% a new student. 
         // Redirect them directly to the Applicant Portal.
-        const currentPort = window.location.port;
-        const isNative = currentPort === '3001';
-        
-        const urlParams = new URLSearchParams(window.location.search);
-        const rawRedirect = urlParams.get('redirect_uri');
-        let proxyOrigin = window.location.origin;
-        if (rawRedirect) {
-          try {
-            proxyOrigin = new URL(rawRedirect).origin;
-          } catch (e) {}
-        } else {
-          if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            if (currentPort === '8081') {
-                proxyOrigin = 'http://localhost:8086';
-            }
-          } else {
-            proxyOrigin = window.location.origin.replace('auth.', 'www.').replace('identity.', '');
-          }
-        }
-        
-        const applicantUrl = isNative ? 'http://localhost:5174' : `${proxyOrigin}/applicant-portal`;
+        const applicantUrl = portalRegistry.applicant.url;
 
         window.location.href = `${applicantUrl}/#token=${response.token}`;
       }
