@@ -1,0 +1,256 @@
+{
+  "project": "university-erp",
+  "result": "PASSED",
+  "ports": [
+    {
+      "host_ip": "0.0.0.0",
+      "host_port": 8081,
+      "protocol": "tcp",
+      "requested": {
+        "project": "university-erp",
+        "service": "nginx"
+      },
+      "registry": {
+        "status": "ACTIVE",
+        "owner_project": "university-erp",
+        "owner_service": "nginx"
+      },
+      "runtime": {
+        "type": "docker",
+        "container_id": "a65386fb50d2",
+        "container_name": "universityerp-nginx",
+        "compose_project": "university-erp",
+        "compose_service": "nginx",
+        "container_port": 8081,
+        "protocol": "tcp"
+      },
+      "classification": "OWNED BY CURRENT PROJECT",
+      "result": "PASS"
+    },
+    {
+      "host_ip": "0.0.0.0",
+      "host_port": 5173,
+      "protocol": "tcp",
+      "requested": {
+        "project": "university-erp",
+        "service": "nginx"
+      },
+      "registry": {
+        "status": "ACTIVE",
+        "owner_project": "university-erp",
+        "owner_service": "nginx"
+      },
+      "runtime": {
+        "type": "docker",
+        "container_id": "a65386fb50d2",
+        "container_name": "universityerp-nginx",
+        "compose_project": "university-erp",
+        "compose_service": "nginx",
+        "container_port": 5173,
+        "protocol": "tcp"
+      },
+      "classification": "OWNED BY CURRENT PROJECT",
+      "result": "PASS"
+    },
+    {
+      "host_ip": "0.0.0.0",
+      "host_port": 5174,
+      "protocol": "tcp",
+      "requested": {
+        "project": "university-erp",
+        "service": "nginx"
+      },
+      "registry": {
+        "status": "ACTIVE",
+        "owner_project": "university-erp",
+        "owner_service": "nginx"
+      },
+      "runtime": {
+        "type": "docker",
+        "container_id": "a65386fb50d2",
+        "container_name": "universityerp-nginx",
+        "compose_project": "university-erp",
+        "compose_service": "nginx",
+        "container_port": 5174,
+        "protocol": "tcp"
+      },
+      "classification": "OWNED BY CURRENT PROJECT",
+      "result": "PASS"
+    },
+    {
+      "host_ip": "0.0.0.0",
+      "host_port": 5175,
+      "protocol": "tcp",
+      "requested": {
+        "project": "university-erp",
+        "service": "nginx"
+      },
+      "registry": {
+        "status": "ACTIVE",
+        "owner_project": "university-erp",
+        "owner_service": "nginx"
+      },
+      "runtime": {
+        "type": "docker",
+        "container_id": "a65386fb50d2",
+        "container_name": "universityerp-nginx",
+        "compose_project": "university-erp",
+        "compose_service": "nginx",
+        "container_port": 5175,
+        "protocol": "tcp"
+      },
+      "classification": "OWNED BY CURRENT PROJECT",
+      "result": "PASS"
+    },
+    {
+      "host_ip": "0.0.0.0",
+      "host_port": 5176,
+      "protocol": "tcp",
+      "requested": {
+        "project": "university-erp",
+        "service": "nginx"
+      },
+      "registry": {
+        "status": "ACTIVE",
+        "owner_project": "university-erp",
+        "owner_service": "nginx"
+      },
+      "runtime": {
+        "type": "docker",
+        "container_id": "a65386fb50d2",
+        "container_name": "universityerp-nginx",
+        "compose_project": "university-erp",
+        "compose_service": "nginx",
+        "container_port": 5176,
+        "protocol": "tcp"
+      },
+      "classification": "OWNED BY CURRENT PROJECT",
+      "result": "PASS"
+    },
+    {
+      "host_ip": "0.0.0.0",
+      "host_port": 5177,
+      "protocol": "tcp",
+      "requested": {
+        "project": "university-erp",
+        "service": "nginx"
+      },
+      "registry": {
+        "status": "ACTIVE",
+        "owner_project": "university-erp",
+        "owner_service": "nginx"
+      },
+      "runtime": {
+        "type": "docker",
+        "container_id": "a65386fb50d2",
+        "container_name": "universityerp-nginx",
+        "compose_project": "university-erp",
+        "compose_service": "nginx",
+        "container_port": 5177,
+        "protocol": "tcp"
+      },
+      "classification": "OWNED BY CURRENT PROJECT",
+      "result": "PASS"
+    },
+    {
+      "host_ip": "0.0.0.0",
+      "host_port": 5178,
+      "protocol": "tcp",
+      "requested": {
+        "project": "university-erp",
+        "service": "nginx"
+      },
+      "registry": {
+        "status": "ACTIVE",
+        "owner_project": "university-erp",
+        "owner_service": "nginx"
+      },
+      "runtime": {
+        "type": "docker",
+        "container_id": "a65386fb50d2",
+        "container_name": "universityerp-nginx",
+        "compose_project": "university-erp",
+        "compose_service": "nginx",
+        "container_port": 5178,
+        "protocol": "tcp"
+      },
+      "classification": "OWNED BY CURRENT PROJECT",
+      "result": "PASS"
+    },
+    {
+      "host_ip": "0.0.0.0",
+      "host_port": 5179,
+      "protocol": "tcp",
+      "requested": {
+        "project": "university-erp",
+        "service": "nginx"
+      },
+      "registry": {
+        "status": "ACTIVE",
+        "owner_project": "university-erp",
+        "owner_service": "nginx"
+      },
+      "runtime": {
+        "type": "docker",
+        "container_id": "a65386fb50d2",
+        "container_name": "universityerp-nginx",
+        "compose_project": "university-erp",
+        "compose_service": "nginx",
+        "container_port": 5179,
+        "protocol": "tcp"
+      },
+      "classification": "OWNED BY CURRENT PROJECT",
+      "result": "PASS"
+    },
+    {
+      "host_ip": "0.0.0.0",
+      "host_port": 5180,
+      "protocol": "tcp",
+      "requested": {
+        "project": "university-erp",
+        "service": "nginx"
+      },
+      "registry": {
+        "status": "ACTIVE",
+        "owner_project": "university-erp",
+        "owner_service": "nginx"
+      },
+      "runtime": {
+        "type": "docker",
+        "container_id": "a65386fb50d2",
+        "container_name": "universityerp-nginx",
+        "compose_project": "university-erp",
+        "compose_service": "nginx",
+        "container_port": 5180,
+        "protocol": "tcp"
+      },
+      "classification": "OWNED BY CURRENT PROJECT",
+      "result": "PASS"
+    },
+    {
+      "host_ip": "0.0.0.0",
+      "host_port": 3006,
+      "protocol": "tcp",
+      "requested": {
+        "project": "university-erp",
+        "service": "nginx"
+      },
+      "registry": {
+        "status": "ACTIVE",
+        "owner_project": "university-erp",
+        "owner_service": "nginx"
+      },
+      "runtime": {
+        "type": "docker",
+        "container_id": "a65386fb50d2",
+        "container_name": "universityerp-nginx",
+        "compose_project": "university-erp",
+        "compose_service": "nginx",
+        "container_port": 3006,
+        "protocol": "tcp"
+      },
+      "classification": "OWNED BY CURRENT PROJECT",
+      "result": "PASS"
+    }
+  ]
+}

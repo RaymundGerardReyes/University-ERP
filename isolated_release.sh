@@ -115,10 +115,10 @@ echo "Starting isolated semantic versioning updates..."
 process_module "academic" "backend-academic" "feat" "implement Registrar clearance queues, UserRegistered consumer, and LMS module registration" \
   "University-ERP-Backend/src/Modules/Academic"
 
-process_module "administration" "backend-administration" "feat" "migrate internal payment gateway to hosted checkout webhook architecture" \
+process_module "administration" "backend-administration" "feat" "integrate external banking adapters and parameterize payment gateway" \
   "University-ERP-Backend/src/Modules/Administration"
 
-process_module "platform" "backend-platform" "fix" "cryptographically validate SSO JWT signature and claims in Nginx auth_request endpoint" \
+process_module "platform" "backend-platform" "fix" "stabilize IdentityAccess login endpoint routing for strict network isolation" \
   "University-ERP-Backend/src/Modules/Platform"
 
 process_module "student-lifecycle" "backend-studentlifecycle" "feat" "add admissions event handlers for enrollment transitions" \
@@ -130,64 +130,64 @@ process_module "bootstrap" "backend-bootstrap" "feat" "register module authoriza
 process_module "backend-contracts" "backend-contracts" "feat" "define academic and student lifecycle integration event contracts for saga orchestration" \
   "University-ERP-Backend/src/Contracts"
 
-process_module "backend-ops" "ops-backend" "feat" "deploy Loki and Grafana Alloy observability stack for distributed tracing" \
+process_module "backend-ops" "ops-backend" "feat!" "harden Nginx routing with dynamic domain whitelisting and decoupled Cloudflare tunnel" \
   "University-ERP-Backend/ops"
 
 process_module "backend-docs" "docs-backend" "docs" "update backend architectural structure" \
   "University-ERP-Backend/structure.md"
 
 # ================= FRONTEND APPS =================
-process_module "admin-portal" "admin-portal" "feat" "replace mock data in admissions processing views with dynamic TanStack Query hooks" \
+process_module "admin-portal" "admin-portal" "fix" "parameterize environment URLs and stabilize portal routing" \
   "University-ERP-Frontend/apps/admin-portal"
 
-process_module "admissions-portal" "admissions-portal" "test" "stabilize enterprise test suite by providing mock routing and query client contexts" \
+process_module "admissions-portal" "admissions-portal" "fix" "parameterize environment URLs and stabilize portal routing" \
   "University-ERP-Frontend/apps/admissions-portal"
 
-process_module "applicant-portal" "applicant-portal" "feat" "refactor application fee payment to external provider checkoutUrl" \
+process_module "applicant-portal" "applicant-portal" "fix" "parameterize environment URLs and stabilize portal routing" \
   "University-ERP-Frontend/apps/applicant-portal"
 
-process_module "faculty-portal" "faculty-portal" "feat" "update Teaching.page.tsx and vite.config.ts" \
+process_module "faculty-portal" "faculty-portal" "fix" "parameterize environment URLs and stabilize portal routing" \
   "University-ERP-Frontend/apps/faculty-portal"
 
-process_module "finance-console" "finance-console" "feat" "connect PaymentGateway and StudentBilling components to live CQRS endpoints" \
+process_module "finance-console" "finance-console" "fix" "parameterize environment URLs and stabilize portal routing" \
   "University-ERP-Frontend/apps/finance-console"
 
-process_module "payment-gateway" "payment-gateway" "chore" "deprecate internal payment gateway portal" \
+process_module "payment-gateway" "payment-gateway" "fix" "parameterize environment URLs and stabilize portal routing" \
   "University-ERP-Frontend/apps/payment-gateway"
 
-process_module "governance-console" "governance-console" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
+process_module "governance-console" "governance-console" "fix" "parameterize environment URLs and stabilize portal routing" \
   "University-ERP-Frontend/apps/governance-console"
 
-process_module "identity-portal" "identity-portal" "fix" "harden root basename resolution and prevent infinite redirection loops in UserLogin" \
+process_module "identity-portal" "identity-portal" "fix" "align identity-portal UserLogin flow with dynamic SSO redirection constraints" \
   "University-ERP-Frontend/apps/identity-portal"
 
-process_module "library-portal" "library-portal" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
+process_module "library-portal" "library-portal" "fix" "parameterize environment URLs and stabilize portal routing" \
   "University-ERP-Frontend/apps/library-portal"
 
-process_module "lms-web" "lms-web" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
+process_module "lms-web" "lms-web" "fix" "parameterize environment URLs and stabilize portal routing" \
   "University-ERP-Frontend/apps/lms-web"
 
-process_module "platform-console" "platform-console" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
+process_module "platform-console" "platform-console" "fix" "parameterize environment URLs and stabilize portal routing" \
   "University-ERP-Frontend/apps/platform-console"
 
-process_module "lms-offline-client" "lms-offline-client" "feat" "implement dynamic SQLite repositories and align auth error handling" \
+process_module "lms-offline-client" "lms-offline-client" "feat" "synchronize backend grade commands and update external identity adapters" \
   "University-ERP-Frontend/clients/lms-offline-avalonia"
 
 # CRITICAL FIX: Fixed path to strictly use University-ERP-Frontend only
-process_module "registrar-portal" "registrar-portal" "feat" "update SubjectCatalog master-detail page and resolve form selection attributes" \
+process_module "registrar-portal" "registrar-portal" "fix" "parameterize environment URLs and stabilize portal routing" \
   "University-ERP-Frontend/apps/registrar-portal"
 
-process_module "security-portal" "security-portal" "fix" "implement robust basename fallback logic for dynamic Nginx subdirectories" \
+process_module "security-portal" "security-portal" "fix" "parameterize environment URLs and stabilize portal routing" \
   "University-ERP-Frontend/apps/security-portal"
 
-process_module "student-portal" "student-portal" "feat" "refactor financials payment to external provider checkoutUrl" \
+process_module "student-portal" "student-portal" "fix" "parameterize environment URLs and stabilize portal routing" \
   "University-ERP-Frontend/apps/student-portal"
 
 # ================= FRONTEND LIBS & CONFIG =================
-process_module "frontend-libs" "frontend-libs" "feat" "update finance API client to return checkoutUrl" \
+process_module "frontend-libs" "frontend-libs" "feat" "standardize auth guard and implement dynamic portal registry" \
   "University-ERP-Frontend/libs"
 
-process_module "frontend-infra" "frontend-infra" "build" "implement immutable frontend container architecture and restructure build pipeline" \
+process_module "frontend-infra" "frontend-infra" "fix" "parameterize environment URLs and stabilize portal routing build configurations" \
   "University-ERP-Frontend/package.json" "University-ERP-Frontend/package-lock.json" "University-ERP-Frontend/bootstrap.sh" "University-ERP-Frontend/Dockerfile.build-all" "University-ERP-Frontend/Dockerfile.applicant" "University-ERP-Frontend/Dockerfile.portal" "University-ERP-Frontend/tsconfig.app.base.json"
 
 # ================= ROOT INFRASTRUCTURE =================
@@ -195,8 +195,8 @@ process_module "project-docs" "docs-project" "docs" "update logs.md with recent 
   "CodebaseInfrastructure.md" "structure.md" "logs.md" "newupdate.md" "Analysis_Task_Orchestration.md" "ERPstructure.md" "SEMANTIC_VERSIONING_PROMPT.md" "universal-semantic-versioning-prompt.md" "university-erp-*.md"
 
 # Safely only add the release_all.sh script here (not the apps/ folder anymore!)
-process_module "project-ops" "ops-project" "feat" "integrate Loki log aggregation service and enforce production resource limits" \
-  "release_all.sh" "isolated_release.sh" "docker-compose.yml" ".env.example" "health-logger.sh" "scaffold-frontend-cloudflare-nginx.sh" "scaffold_features.ps1" "setup_structure.ps1" "fix-encodings.js" ".dockerignore"
+process_module "project-ops" "ops-project" "fix" "resolve docker-compose startup sequence and centralize port registry" \
+  "release_all.sh" "isolated_release.sh" "docker-compose.yml" ".env.example" "health-logger.sh" "scaffold-frontend-cloudflare-nginx.sh" "scaffold_features.ps1" "setup_structure.ps1" "fix-encodings.js" ".dockerignore" "PORT_REGISTRY.md" ".port-audit.json" "scripts/"
 
 process_module "project-config" "config-project" "chore" "update root gitignore rules" \
   ".gitignore"
