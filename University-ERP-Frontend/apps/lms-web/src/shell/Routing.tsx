@@ -11,7 +11,7 @@ import { GradebookSyncPage } from '../features/GradebookOrchestration/GradebookS
 
 export function Routing() {
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL && import.meta.env.BASE_URL !== '/' ? import.meta.env.BASE_URL : '/lms-web/'}>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         <Route element={<AuthGuard><AppShell /></AuthGuard>}>
           
