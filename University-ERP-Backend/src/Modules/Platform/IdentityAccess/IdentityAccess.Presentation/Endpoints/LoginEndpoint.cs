@@ -30,7 +30,15 @@ public class LoginEndpoint : ControllerBase
         if (result.IsSuccess)
         {
             var host = Request.Host.Host;
-            var domain = host.Contains("localhost") ? "localhost" : ".university.edu";
+            var domain = "localhost";
+            if (!host.Contains("localhost"))
+            {
+                var parts = host.Split('.');
+                if (parts.Length >= 2)
+                {
+                    domain = "." + parts[parts.Length - 2] + "." + parts[parts.Length - 1];
+                }
+            }
 
             var cookieOptions = new CookieOptions
             {
