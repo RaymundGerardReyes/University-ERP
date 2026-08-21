@@ -84,12 +84,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = () => {
     logger.info('Redirecting to Identity Portal for Authentication...');
-    let identityUrl = import.meta.env.VITE_IDENTITY_PORTAL_URL || 'http://localhost:8081';
+    const identityUrl = import.meta.env.VITE_IDENTITY_PORTAL_URL;
     
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        const port = window.location.port;
-        if (port === '8086' || port === '8080') identityUrl = 'http://localhost:8081';
-        else if (parseInt(port) >= 5173 && parseInt(port) <= 5183) identityUrl = 'http://localhost:3001';
+    if (!identityUrl) {
+        logger.error('VITE_IDENTITY_PORTAL_URL is missing from the environment! Check your .env file.');
+        return;
     }
 
     // Use only origin + pathname (not full href) to prevent redirect_uri from accumulating

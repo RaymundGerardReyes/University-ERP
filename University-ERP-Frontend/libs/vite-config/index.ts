@@ -38,7 +38,7 @@ export interface PortalConfig {
 
 export function createPortalConfig(options: PortalConfig): UserConfig {
   const portalName = path.basename(process.cwd());
-  const basePath = options.base ?? `/${portalName}/`;
+  const basePath = options.base ?? `/`;
 
   return defineConfig({
     base: basePath,
@@ -76,7 +76,7 @@ export function createPortalConfig(options: PortalConfig): UserConfig {
       strictPort: true,
       proxy: {
         '/api': {
-          target: options.apiTarget ?? 'http://localhost:5191',
+          target: options.apiTarget ?? process.env.VITE_API_BASE_URL,
           changeOrigin: true,
         },
       },

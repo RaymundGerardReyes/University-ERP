@@ -1,0 +1,57 @@
+2026-08-21 00:48:24.970 | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+2026-08-21 00:48:24.971 | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+2026-08-21 00:48:24.972 | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+2026-08-21 00:48:24.983 | 10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+2026-08-21 00:48:25.004 | 10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf
+2026-08-21 00:48:25.004 | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+2026-08-21 00:48:25.005 | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+2026-08-21 00:48:25.012 | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+2026-08-21 00:48:25.015 | /docker-entrypoint.sh: Configuration complete; ready for start up
+2026-08-21 00:48:25.271 | 2026/08/20 16:48:25 [warn] 1#1: conflicting server name "localhost" on 0.0.0.0:80, ignored
+2026-08-21 00:48:25.271 | nginx: [warn] conflicting server name "localhost" on 0.0.0.0:80, ignored
+2026-08-21 00:48:25.271 | 2026/08/20 16:48:25 [warn] 1#1: conflicting server name "localhost" on 0.0.0.0:80, ignored
+2026-08-21 00:48:25.271 | nginx: [warn] conflicting server name "localhost" on 0.0.0.0:80, ignored
+2026-08-21 00:48:25.271 | 2026/08/20 16:48:25 [warn] 1#1: conflicting server name "localhost" on 0.0.0.0:80, ignored
+2026-08-21 00:48:25.271 | nginx: [warn] conflicting server name "localhost" on 0.0.0.0:80, ignored
+2026-08-21 00:48:25.271 | 2026/08/20 16:48:25 [warn] 1#1: conflicting server name "localhost" on 0.0.0.0:80, ignored
+2026-08-21 00:48:25.271 | nginx: [warn] conflicting server name "localhost" on 0.0.0.0:80, ignored
+2026-08-21 00:48:25.271 | 2026/08/20 16:48:25 [warn] 1#1: conflicting server name "localhost" on 0.0.0.0:80, ignored
+2026-08-21 00:48:25.271 | nginx: [warn] conflicting server name "localhost" on 0.0.0.0:80, ignored
+2026-08-21 00:48:25.271 | 2026/08/20 16:48:25 [warn] 1#1: conflicting server name "localhost" on 0.0.0.0:80, ignored
+2026-08-21 00:48:25.271 | nginx: [warn] conflicting server name "localhost" on 0.0.0.0:80, ignored
+2026-08-21 00:48:25.271 | 2026/08/20 16:48:25 [warn] 1#1: conflicting server name "localhost" on 0.0.0.0:80, ignored
+2026-08-21 00:48:25.271 | nginx: [warn] conflicting server name "localhost" on 0.0.0.0:80, ignored
+2026-08-21 00:48:25.271 | 2026/08/20 16:48:25 [warn] 1#1: conflicting server name "localhost" on 0.0.0.0:80, ignored
+2026-08-21 00:48:25.271 | nginx: [warn] conflicting server name "localhost" on 0.0.0.0:80, ignored
+2026-08-21 00:48:55.139 | client_ip=::1 cf_ip=- xff="-" request="GET / HTTP/1.1" status=302 request_time=0.000 upstream_status=- upstream_response_time=- correlation_id="-" cf_ray="-"
+2026-08-21 00:49:20.572 | client_ip=172.18.0.10 cf_ip=49.394.192.12 xff="49.394.192.12" request="GET / HTTP/1.1" status=200 request_time=0.000 upstream_status=- upstream_response_time=- correlation_id="-" cf_ray="a2e2e4037846fb4f-MNL"
+2026-08-21 00:49:25.234 | client_ip=::1 cf_ip=- xff="-" request="GET / HTTP/1.1" status=302 request_time=0.000 upstream_status=- upstream_response_time=- correlation_id="-" cf_ray="-"
+2026-08-21 00:49:32.179 | client_ip=172.18.0.10 cf_ip=49.394.192.12 xff="49.394.192.12" request="GET /favicon.ico HTTP/1.1" status=200 request_time=0.000 upstream_status=- upstream_response_time=- correlation_id="-" cf_ray="a2e2e44c0b81fb4f-MNL"
+2026-08-21 00:49:32.949 | client_ip=172.18.0.10 cf_ip=49.394.192.12 xff="49.394.192.12" request="GET /identity-portal HTTP/1.1" status=200 request_time=0.000 upstream_status=- upstream_response_time=- correlation_id="-" cf_ray="a2e2e450dd02fb4f-MNL"
+2026-08-21 00:49:33.040 | client_ip=172.18.0.10 cf_ip=49.394.192.12 xff="49.394.192.12" request="GET /assets/index-C2u8_Yu3.js HTTP/1.1" status=200 request_time=0.000 upstream_status=- upstream_response_time=- correlation_id="-" cf_ray="a2e2e4516d23fb4f-MNL"
+2026-08-21 00:49:33.370 | client_ip=172.18.0.10 cf_ip=49.394.192.12 xff="49.394.192.12" request="GET /vite.svg HTTP/1.1" status=200 request_time=0.000 upstream_status=- upstream_response_time=- correlation_id="-" cf_ray="a2e2e4537dd0fb4f-MNL"
+2026-08-21 00:49:43.010 | client_ip=172.18.0.10 cf_ip=49.394.192.12 xff="49.394.192.12" request="POST /api/v1/platform/telemetry/client-log HTTP/1.1" status=200 request_time=0.038 upstream_status=200 upstream_response_time=0.037 correlation_id="-" cf_ray="a2e2e48f7c5cfb4f-MNL"
+2026-08-21 00:49:44.745 | client_ip=172.18.0.10 cf_ip=49.394.192.12 xff="49.394.192.12" request="POST /api/v1/platform/identity/login HTTP/1.1" status=403 request_time=1.714 upstream_status=403 upstream_response_time=1.714 correlation_id="-" cf_ray="a2e2e48f8c5efb4f-MNL"
+2026-08-21 00:49:53.315 | client_ip=172.18.0.1 cf_ip=- xff="-" request="GET / HTTP/1.1" status=200 request_time=0.000 upstream_status=- upstream_response_time=- correlation_id="-" cf_ray="-"
+2026-08-21 00:49:53.396 | client_ip=172.18.0.1 cf_ip=- xff="-" request="GET /assets/index-C2u8_Yu3.js HTTP/1.1" status=200 request_time=0.000 upstream_status=- upstream_response_time=- correlation_id="-" cf_ray="-"
+2026-08-21 00:49:53.482 | client_ip=172.18.0.1 cf_ip=- xff="-" request="GET /vite.svg HTTP/1.1" status=200 request_time=0.000 upstream_status=- upstream_response_time=- correlation_id="-" cf_ray="-"
+2026-08-21 00:49:53.642 | client_ip=172.18.0.1 cf_ip=- xff="-" request="POST /api/v1/platform/telemetry/client-log HTTP/1.1" status=200 request_time=0.146 upstream_status=200 upstream_response_time=0.102 correlation_id="-" cf_ray="-"
+2026-08-21 00:49:53.643 | client_ip=172.18.0.1 cf_ip=- xff="-" request="POST /api/v1/platform/telemetry/client-log HTTP/1.1" status=200 request_time=0.140 upstream_status=200 upstream_response_time=0.139 correlation_id="-" cf_ray="-"
+2026-08-21 00:49:53.854 | client_ip=172.18.0.1 cf_ip=- xff="-" request="GET /vite.svg HTTP/1.1" status=200 request_time=0.000 upstream_status=- upstream_response_time=- correlation_id="-" cf_ray="-"
+2026-08-21 00:49:55.320 | client_ip=::1 cf_ip=- xff="-" request="GET / HTTP/1.1" status=302 request_time=0.000 upstream_status=- upstream_response_time=- correlation_id="-" cf_ray="-"
+2026-08-21 00:50:01.331 | client_ip=172.18.0.1 cf_ip=- xff="-" request="GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" status=200 request_time=0.000 upstream_status=- upstream_response_time=- correlation_id="-" cf_ray="-"
+2026-08-21 00:50:11.990 | client_ip=172.18.0.10 cf_ip=49.394.192.12 xff="49.394.192.12" request="POST /api/v1/platform/telemetry/client-log HTTP/1.1" status=200 request_time=0.005 upstream_status=200 upstream_response_time=0.004 correlation_id="-" cf_ray="a2e2e544d931fb4f-MNL"
+2026-08-21 00:50:13.085 | client_ip=172.18.0.10 cf_ip=49.394.192.12 xff="49.394.192.12" request="POST /api/v1/platform/identity/login HTTP/1.1" status=200 request_time=0.745 upstream_status=200 upstream_response_time=0.745 correlation_id="-" cf_ray="a2e2e544d930fb4f-MNL"
+2026-08-21 00:50:13.189 | client_ip=172.18.0.10 cf_ip=49.394.192.12 xff="49.394.192.12" request="GET /api/v1/admissions/status/1187b2d7-2587-4825-bf53-8280d67c5b53 HTTP/1.1" status=401 request_time=0.029 upstream_status=401 upstream_response_time=0.030 correlation_id="-" cf_ray="a2e2e54c2aecfb4f-MNL"
+2026-08-21 00:50:13.305 | client_ip=172.18.0.1 cf_ip=- xff="-" request="GET / HTTP/1.1" status=200 request_time=0.045 upstream_status=- upstream_response_time=- correlation_id="-" cf_ray="-"
+2026-08-21 00:50:13.415 | client_ip=172.18.0.1 cf_ip=- xff="-" request="GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" status=200 request_time=0.014 upstream_status=- upstream_response_time=- correlation_id="-" cf_ray="-"
+2026-08-21 00:50:13.501 | 2026/08/20 16:50:13 [error] 39#39: *19 open() "/var/www/applicant-portal/vite.svg" failed (2: No such file or directory), client: 172.18.0.1, server: applicant.university.edu, request: "GET /vite.svg HTTP/1.1", host: "localhost:5174", referrer: "http://localhost:5174/"
+2026-08-21 00:50:13.538 | client_ip=172.18.0.1 cf_ip=- xff="-" request="POST /api/v1/platform/telemetry/client-log HTTP/1.1" status=200 request_time=0.046 upstream_status=200 upstream_response_time=0.004 correlation_id="-" cf_ray="-"
+2026-08-21 00:50:13.542 | 2026/08/20 16:50:13 [error] 40#40: *17 open() "/var/www/applicant-portal/vite.svg" failed (2: No such file or directory), client: 172.18.0.1, server: applicant.university.edu, request: "GET /vite.svg HTTP/1.1", host: "localhost:5174", referrer: "http://localhost:5174/"
+2026-08-21 00:50:13.548 | client_ip=172.18.0.1 cf_ip=- xff="-" request="POST /api/v1/platform/telemetry/client-log HTTP/1.1" status=200 request_time=0.006 upstream_status=200 upstream_response_time=0.005 correlation_id="-" cf_ray="-"
+2026-08-21 00:50:13.580 | client_ip=172.18.0.1 cf_ip=- xff="-" request="POST /api/v1/platform/telemetry/client-log HTTP/1.1" status=200 request_time=0.048 upstream_status=200 upstream_response_time=0.004 correlation_id="-" cf_ray="-"
+2026-08-21 00:50:14.846 | client_ip=172.18.0.1 cf_ip=- xff="-" request="GET /api/v1/admissions/applications/journey/1187b2d7-2587-4825-bf53-8280d67c5b53 HTTP/1.1" status=200 request_time=0.946 upstream_status=200 upstream_response_time=0.946 correlation_id="-" cf_ray="-"
+2026-08-21 00:50:24.884 | client_ip=172.18.0.1 cf_ip=- xff="-" request="GET /api/v1/admissions/applications/journey/1187b2d7-2587-4825-bf53-8280d67c5b53 HTTP/1.1" status=200 request_time=0.021 upstream_status=200 upstream_response_time=0.021 correlation_id="-" cf_ray="-"
+2026-08-21 00:50:25.400 | client_ip=::1 cf_ip=- xff="-" request="GET / HTTP/1.1" status=302 request_time=0.000 upstream_status=- upstream_response_time=- correlation_id="-" cf_ray="-"
+2026-08-21 00:50:34.927 | client_ip=172.18.0.1 cf_ip=- xff="-" request="GET /api/v1/admissions/applications/journey/1187b2d7-2587-4825-bf53-8280d67c5b53 HTTP/1.1" status=200 request_time=0.027 upstream_status=200 upstream_response_time=0.027 correlation_id="-" cf_ray="-"
+2026-08-21 00:50:44.966 | client_ip=172.18.0.1 cf_ip=- xff="-" request="GET /api/v1/admissions/applications/journey/1187b2d7-2587-4825-bf53-8280d67c5b53 HTTP/1.1" status=200 request_time=0.022 upstream_status=200 upstream_response_time=0.021 correlation_id="-" cf_ray="-"

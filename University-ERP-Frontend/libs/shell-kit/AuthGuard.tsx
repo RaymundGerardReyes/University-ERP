@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@university-erp/auth-sdk';
+import { portalRegistry } from './portalRegistry';
 
 export const AuthGuard: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const { user, isAuthenticated } = useAuth();
@@ -8,13 +9,7 @@ export const AuthGuard: React.FC<{ children?: React.ReactNode }> = ({ children }
 
   if (!isAuthenticated) {
     // Redirect to the Identity Portal (the dedicated auth app), NOT to a local /login route.
-    let identityUrl = (import.meta as any).env?.VITE_IDENTITY_PORTAL_URL || 'http://localhost:3001';
-    
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        const port = window.location.port;
-        if (port === '8086' || port === '8080') identityUrl = 'http://localhost:8081';
-        else if (parseInt(port) >= 5173 && parseInt(port) <= 5183) identityUrl = 'http://localhost:3001';
-    }
+    const identityUrl = portalRegistry.identity.url;
 
     const returnTo = encodeURIComponent(window.location.origin + location.pathname);
     window.location.href = `${identityUrl}/login?redirect_uri=${returnTo}`;
@@ -22,17 +17,17 @@ export const AuthGuard: React.FC<{ children?: React.ReactNode }> = ({ children }
   }
 
   // Cross-portal Role Enforcement
-  const port = window.location.port;
+  const currentOrigin = window.location.origin;
   const hostname = window.location.hostname;
   
   let expectedRole = '';
 
-  if (port === '5178' || hostname.startsWith('admin')) expectedRole = 'Admin';
-  else if (port === '5175' || hostname.startsWith('faculty')) expectedRole = 'Faculty';
-  else if (port === '5183' || hostname.startsWith('admissions')) expectedRole = 'Admissions';
-  else if (port === '5176' || hostname.startsWith('finance')) expectedRole = 'Finance';
-  else if (port === '5181' || hostname.startsWith('registrar')) expectedRole = 'Registrar';
-  else if (port === '5174' || hostname.startsWith('applicant')) expectedRole = 'Applicant';
+  if (currentOrigin === portalRegistry.admin.url || hostname.startsWith('admin')) expectedRole = 'Admin';
+  else if (currentOrigin === portalRegistry.faculty.url || hostname.startsWith('faculty')) expectedRole = 'Faculty';
+  else if (currentOrigin === portalRegistry.admissions.url || hostname.startsWith('admissions')) expectedRole = 'Admissions';
+  else if (currentOrigin === portalRegistry.finance.url || hostname.startsWith('finance')) expectedRole = 'Finance';
+  else if (currentOrigin === portalRegistry.registrar.url || hostname.startsWith('registrar')) expectedRole = 'Registrar';
+  else if (currentOrigin === portalRegistry.applicant.url || hostname.startsWith('applicant')) expectedRole = 'Applicant';
 
   if (expectedRole && user?.roles) {
       // Allow access if they have the exact role, or if they are System Admin (except for Applicant portal)
@@ -50,12 +45,7 @@ export const AuthGuard: React.FC<{ children?: React.ReactNode }> = ({ children }
                      onClick={() => {
                         localStorage.removeItem('global_identity_token');
                         
-                        let identityUrl = (import.meta as any).env?.VITE_IDENTITY_PORTAL_URL || 'http://localhost:3001';
-                        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                            const port = window.location.port;
-                            if (port === '8086' || port === '8080') identityUrl = 'http://localhost:8081';
-                            else if (parseInt(port) >= 5173 && parseInt(port) <= 5183) identityUrl = 'http://localhost:3001';
-                        }
+                        const identityUrl = portalRegistry.identity.url;
                         
                         window.location.href = `${identityUrl}/login`;
                      }}
