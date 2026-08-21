@@ -45,7 +45,7 @@ const StubPage = ({ title }: { title: string }) => (
 
 export const Routing: React.FC = () => {
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL && import.meta.env.BASE_URL !== '/' ? import.meta.env.BASE_URL : '/faculty-portal/'}>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         <Route element={<AuthGuard><AppShell /></AuthGuard>}>
           
