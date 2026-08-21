@@ -68,7 +68,7 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
     public async Task<Result<string>> CreateCheckoutSessionAsync(string sessionId, decimal amount, string currency, string successUrl, string cancelUrl, CancellationToken cancellationToken)
     {
         // Mock fallback for local dev if hitting the dummy payload
-        if (_httpClient.BaseAddress?.Host == "api.banking.university.edu" || string.IsNullOrEmpty(_options.SecretKey))
+        if (_httpClient.BaseAddress?.Host == "api.banking.university.edu" || string.IsNullOrEmpty(_options.SecretKey) || _options.SecretKey == "sk_test_mocked")
         {
             return Result<string>.Success($"https://mock-checkout.paymongo.com/checkout?session={sessionId}");
         }
@@ -106,7 +106,7 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
                 }
             };
 
-            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/v2/checkout_sessions");
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/v1/checkout_sessions");
             var authHeader = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{_options.SecretKey}:"));
             requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authHeader);
             requestMessage.Content = JsonContent.Create(payload);
@@ -136,7 +136,7 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
     public async Task<Result<string>> GeneratePaymentInstrumentAsync(string sessionId, decimal amount, string currency, CancellationToken cancellationToken)
     {
         // Mock fallback for local dev if hitting the dummy payload
-        if (_httpClient.BaseAddress?.Host == "api.banking.university.edu" || string.IsNullOrEmpty(_options.SecretKey))
+        if (_httpClient.BaseAddress?.Host == "api.banking.university.edu" || string.IsNullOrEmpty(_options.SecretKey) || _options.SecretKey == "sk_test_mocked")
         {
             return Result<string>.Success($"qrph_mock_payload_for_session_{sessionId}");
         }

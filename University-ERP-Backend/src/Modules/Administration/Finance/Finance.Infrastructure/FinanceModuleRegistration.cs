@@ -32,13 +32,12 @@ public static class FinanceModuleRegistration
         // NEW: Register PaymentSessionRepository
         services.AddScoped<IPaymentSessionRepository, PaymentSessionRepository>();
 
-        services.AddHttpClient<IPaymentGatewayService, Finance.Infrastructure.Services.BankingIntegrationService>((provider, client) =>
+        services.AddHttpClient("PaymentGatewayClient", client =>
         {
-            var options = provider.GetRequiredService<Microsoft.Extensions.Options.IOptions<PaymentGatewayOptions>>().Value;
-            var baseUrl = options.BaseUrl;
-            client.BaseAddress = new System.Uri(baseUrl);
             client.Timeout = System.TimeSpan.FromSeconds(30);
         });
+
+        services.AddScoped<IPaymentGatewayService, Finance.Infrastructure.ExternalAdapters.PaymentGatewayService>();
 
         return services;
     }
