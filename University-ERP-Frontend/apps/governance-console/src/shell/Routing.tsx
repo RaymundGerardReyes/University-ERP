@@ -26,7 +26,7 @@ const AppShell = ({ children }: { children: React.ReactNode }) => (
 
 export const Routing: React.FC = () => {
     return (
-        <BrowserRouter basename={import.meta.env.BASE_URL && import.meta.env.BASE_URL !== '/' ? import.meta.env.BASE_URL : '/governance-console/'}>
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
             <AppShell>
                 <Routes>
                     <Route path="/grievances" element={<GrievancesPage />} />
