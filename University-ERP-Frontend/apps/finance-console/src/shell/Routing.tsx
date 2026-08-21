@@ -21,7 +21,7 @@ import { SemesterBillingPage } from '../features/SemesterBilling/SemesterBilling
 
 export const Routing: React.FC = () => {
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL && import.meta.env.BASE_URL !== '/' ? import.meta.env.BASE_URL : '/finance-console/'}>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         <Route element={<AuthGuard><AppShell /></AuthGuard>}>
           
