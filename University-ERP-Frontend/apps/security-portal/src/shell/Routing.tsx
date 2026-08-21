@@ -13,7 +13,7 @@ const Stub = ({ title }: { title: string }) => (
 
 export const Routing: React.FC = () => {
     return (
-        <BrowserRouter basename={import.meta.env.BASE_URL && import.meta.env.BASE_URL !== '/' ? import.meta.env.BASE_URL : '/security-portal/'}>
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
             <Routes>
                 <Route element={<AuthGuard><AppShell /></AuthGuard>}>
                     <Route path="/dashboard" element={<Stub title="Security Dashboard" />} />
