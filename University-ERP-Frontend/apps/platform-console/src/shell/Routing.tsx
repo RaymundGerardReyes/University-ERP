@@ -30,7 +30,7 @@ const AppShell = ({ children }: { children: React.ReactNode }) => (
 
 export const Routing = () => {
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL && import.meta.env.BASE_URL !== '/' ? import.meta.env.BASE_URL : '/platform-console/'}>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <AppShell>
         <Routes>
           <Route path="/" element={<h1>Platform Dashboard Overview</h1>} />
