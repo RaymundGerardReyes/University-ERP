@@ -18,7 +18,7 @@ const AppShell = ({ children }: { children: React.ReactNode }) => (
 
 export const Routing: React.FC = () => {
     return (
-        <BrowserRouter basename={import.meta.env.BASE_URL && import.meta.env.BASE_URL !== '/' ? import.meta.env.BASE_URL : '/library-portal/'}>
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
             <AppShell>
                 <Routes>
                     <Route path="/circulation" element={<CirculationPage />} />
