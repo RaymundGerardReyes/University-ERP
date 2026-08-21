@@ -21,7 +21,7 @@ import { ApplicationFeePaymentPage } from '../features/EnrollmentPayment/Applica
 
 export const Routing: React.FC = () => {
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL && import.meta.env.BASE_URL !== '/' ? import.meta.env.BASE_URL : '/applicant-portal/'}>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         <Route element={<AuthGuard><AppShell /></AuthGuard>}>
           <Route path="/status" element={<AdmissionStatusPage />} />
