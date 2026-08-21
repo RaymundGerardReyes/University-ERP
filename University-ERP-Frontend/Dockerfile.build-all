@@ -1,14 +1,11 @@
 # -----------------------------------------------------------------------------
-# University ERP - Frontend Builder (Pattern B)
+# University ERP - Unified Frontend Builder
 # -----------------------------------------------------------------------------
-# This Dockerfile builds all 8 Vite portals and copies their output into a
-# volume structure that matches the Nginx named volume expectations.
-# -----------------------------------------------------------------------------
-
 FROM node:22-alpine AS builder
 
 WORKDIR /app
-# Copy workspace manifests first to leverage Docker layer caching
+
+# Leverage Docker layer caching by copying manifests first
 COPY package.json package-lock.json* ./
 COPY apps/admin-portal/package.json ./apps/admin-portal/
 COPY apps/admissions-portal/package.json ./apps/admissions-portal/
@@ -32,43 +29,70 @@ COPY libs/ui-kit/package.json ./libs/ui-kit/
 COPY libs/vite-config/package.json ./libs/vite-config/
 COPY libs/workflow-sdk/package.json ./libs/workflow-sdk/
 
-# Install dependencies before copying source code
 RUN npm install
 
-# Copy the rest of the source code
+# Copy source code
 COPY . .
 
-# Accept build arguments from docker-compose
+# Accept shared Vite arguments
 ARG VITE_API_BASE_URL
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
-
 ARG VITE_AUTH_AUTHORITY
 ENV VITE_AUTH_AUTHORITY=$VITE_AUTH_AUTHORITY
-
 ARG VITE_IDENTITY_PORTAL_URL
 ENV VITE_IDENTITY_PORTAL_URL=$VITE_IDENTITY_PORTAL_URL
-
-# --- ADD THESE TWO LINES ---
 ARG VITE_APPLICANT_PORTAL_URL
 ENV VITE_APPLICANT_PORTAL_URL=$VITE_APPLICANT_PORTAL_URL
+ARG VITE_STUDENT_PORTAL_URL
+ENV VITE_STUDENT_PORTAL_URL=$VITE_STUDENT_PORTAL_URL
+ARG VITE_FACULTY_PORTAL_URL
+ENV VITE_FACULTY_PORTAL_URL=$VITE_FACULTY_PORTAL_URL
+ARG VITE_FINANCE_CONSOLE_URL
+ENV VITE_FINANCE_CONSOLE_URL=$VITE_FINANCE_CONSOLE_URL
+ARG VITE_GOVERNANCE_CONSOLE_URL
+ENV VITE_GOVERNANCE_CONSOLE_URL=$VITE_GOVERNANCE_CONSOLE_URL
+ARG VITE_ADMIN_PORTAL_URL
+ENV VITE_ADMIN_PORTAL_URL=$VITE_ADMIN_PORTAL_URL
+ARG VITE_LIBRARY_PORTAL_URL
+ENV VITE_LIBRARY_PORTAL_URL=$VITE_LIBRARY_PORTAL_URL
+ARG VITE_LMS_WEB_URL
+ENV VITE_LMS_WEB_URL=$VITE_LMS_WEB_URL
+ARG VITE_REGISTRAR_PORTAL_URL
+ENV VITE_REGISTRAR_PORTAL_URL=$VITE_REGISTRAR_PORTAL_URL
+ARG VITE_SECURITY_PORTAL_URL
+ENV VITE_SECURITY_PORTAL_URL=$VITE_SECURITY_PORTAL_URL
+ARG VITE_ADMISSIONS_PORTAL_URL
+ENV VITE_ADMISSIONS_PORTAL_URL=$VITE_ADMISSIONS_PORTAL_URL
+ARG VITE_PAYMENT_GATEWAY_URL
+ENV VITE_PAYMENT_GATEWAY_URL=$VITE_PAYMENT_GATEWAY_URL
+ARG VITE_PLATFORM_CONSOLE_URL
+ENV VITE_PLATFORM_CONSOLE_URL=$VITE_PLATFORM_CONSOLE_URL
 
-# Build all portals simultaneously
-RUN npm run build --workspaces --if-present
+# Build all portals sequentially to avoid Docker daemon memory exhaustion
+RUN mkdir -p /app/dist-temp \
+    && npm run build --workspace=apps/admin-portal && mv /app/apps/admin-portal/dist /app/dist-temp/admin-portal \
+    && npm run build --workspace=apps/admissions-portal && mv /app/apps/admissions-portal/dist /app/dist-temp/admissions-portal \
+    && npm run build --workspace=apps/applicant-portal && mv /app/apps/applicant-portal/dist /app/dist-temp/applicant-portal \
+    && npm run build --workspace=apps/faculty-portal && mv /app/apps/faculty-portal/dist /app/dist-temp/faculty-portal \
+    && npm run build --workspace=apps/finance-console && mv /app/apps/finance-console/dist /app/dist-temp/finance-console \
+    && npm run build --workspace=apps/governance-console && mv /app/apps/governance-console/dist /app/dist-temp/governance-console \
+    && npm run build --workspace=apps/identity-portal && mv /app/apps/identity-portal/dist /app/dist-temp/identity-portal \
+    && npm run build --workspace=apps/library-portal && mv /app/apps/library-portal/dist /app/dist-temp/library-portal \
+    && npm run build --workspace=apps/lms-web && mv /app/apps/lms-web/dist /app/dist-temp/lms-web \
+    && npm run build --workspace=apps/platform-console && mv /app/apps/platform-console/dist /app/dist-temp/platform-console \
+    && npm run build --workspace=apps/registrar-portal && mv /app/apps/registrar-portal/dist /app/dist-temp/registrar-portal \
+    && npm run build --workspace=apps/security-portal && mv /app/apps/security-portal/dist /app/dist-temp/security-portal \
+    && npm run build --workspace=apps/student-portal && mv /app/apps/student-portal/dist /app/dist-temp/student-portal
 
-# We do NOT run Nginx inside this container. 
-# This container's ONLY job is to copy the built files into named volumes 
-# before exiting (restart: "no" in docker-compose).
-CMD echo "🚚 Delivering compiled React files to Nginx volumes..." && \
-    cp -a /app/apps/identity-portal/dist/* /output/identity-portal/ && \
-    cp -a /app/apps/student-portal/dist/* /output/student-portal/ && \
-    cp -a /app/apps/faculty-portal/dist/* /output/faculty-portal/ && \
-    cp -a /app/apps/admin-portal/dist/* /output/admin-portal/ && \
-    cp -a /app/apps/lms-web/dist/* /output/lms-web/ && \
-    cp -a /app/apps/finance-console/dist/* /output/finance-console/ && \
-    cp -a /app/apps/library-portal/dist/* /output/library-portal/ && \
-    cp -a /app/apps/governance-console/dist/* /output/governance-console/ && \
-    cp -a /app/apps/platform-console/dist/* /output/platform-console/ && \
-    cp -a /app/apps/admissions-portal/dist/* /output/admissions-portal/ && \
-    cp -a /app/apps/registrar-portal/dist/* /output/registrar-portal/ && \
-    cp -a /app/apps/security-portal/dist/* /output/security-portal/ && \
-    echo "✅ Delivery complete! Container exiting successfully."
+# -----------------------------------------------------------------------------
+# Stage 2: Immutable Delivery Container
+# -----------------------------------------------------------------------------
+FROM alpine:latest
+
+# Copy the compiled assets from the builder stage
+COPY --from=builder /app/dist-temp /app-data
+
+# Copy assets to the shared volume mount point and exit gracefully
+CMD echo "🚚 Delivering compiled React files to Nginx volumes..." \
+    && cp -a /app-data/* /output/ \
+    && echo "✅ Delivery complete! Container exiting successfully."
