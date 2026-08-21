@@ -11,6 +11,7 @@ using LmsOffline.Application.Interfaces;
 using LmsOffline.Domain.Aggregates;
 using LmsOffline.Domain.ValueObjects;
 using System;
+using Microsoft.Extensions.Configuration;
 
 public class DownloadModulePackageCommandHandler : IRequestHandler<DownloadModulePackageCommand, Result<bool>>
 {
@@ -19,19 +20,23 @@ public class DownloadModulePackageCommandHandler : IRequestHandler<DownloadModul
     private readonly ILocalPackageRepository _packageRepository;
     private readonly IOfflineAssessmentRepository _assessmentRepository;
     private readonly IOfflineAssignmentRepository _assignmentRepository;
+    private readonly IConfiguration _configuration;
+    private string ApiBaseUrl => _configuration["ApiBaseUrl"];
 
     public DownloadModulePackageCommandHandler(
         IHttpClientFactory httpClientFactory,
         IOfflineModuleRepository moduleRepository,
         ILocalPackageRepository packageRepository,
         IOfflineAssessmentRepository assessmentRepository,
-        IOfflineAssignmentRepository assignmentRepository)
+        IOfflineAssignmentRepository assignmentRepository,
+        IConfiguration configuration)
     {
         _httpClientFactory = httpClientFactory;
         _moduleRepository = moduleRepository;
         _packageRepository = packageRepository;
         _assessmentRepository = assessmentRepository;
         _assignmentRepository = assignmentRepository;
+        _configuration = configuration;
     }
 
     public async Task<Result<bool>> Handle(DownloadModulePackageCommand request, CancellationToken cancellationToken)
@@ -39,7 +44,7 @@ public class DownloadModulePackageCommandHandler : IRequestHandler<DownloadModul
         try
         {
             var client = _httpClientFactory.CreateClient();
-            var response = await client.GetAsync($"http://localhost:5191/api/v1/lms/packages/{request.ModuleId}/student/{request.StudentId}", cancellationToken);
+            var response = await client.GetAsync($"{ApiBaseUrl}/lms/packages/{request.ModuleId}/student/{request.StudentId}", cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {

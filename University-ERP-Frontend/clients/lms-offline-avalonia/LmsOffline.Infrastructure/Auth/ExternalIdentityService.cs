@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using LmsOffline.Application.Interfaces;
 using LmsOffline.Domain.Aggregates; 
 using LmsOffline.Domain.ValueObjects;
@@ -47,19 +48,23 @@ public class ExternalIdentityService : IExternalIdentityService
     private readonly IPasswordHasher _passwordHasher;
     private readonly OfflineTokenCache _tokenCache;
     private readonly ILogger<ExternalIdentityService> _logger;
+    private readonly IConfiguration _configuration;
+    private string ApiBaseUrl => _configuration["ApiBaseUrl"];
 
     public ExternalIdentityService(
         IHttpClientFactory httpClientFactory,
         IOfflineIdentityRepository identityRepository,
         IPasswordHasher passwordHasher,
         OfflineTokenCache tokenCache,
-        ILogger<ExternalIdentityService> logger)
+        ILogger<ExternalIdentityService> logger,
+        IConfiguration configuration)
     {
         _httpClientFactory = httpClientFactory;
         _identityRepository = identityRepository;
         _passwordHasher = passwordHasher;
         _tokenCache = tokenCache;
         _logger = logger;
+        _configuration = configuration;
     }
 
     public async Task<Result<bool>> AuthenticateAndSyncAsync(string email, string plaintextPassword, CancellationToken cancellationToken = default)
@@ -69,7 +74,7 @@ public class ExternalIdentityService : IExternalIdentityService
             var client = _httpClientFactory.CreateClient();
             var payload = new { Email = email, Password = plaintextPassword };
             
-            var response = await client.PostAsJsonAsync("http://localhost:5191/api/v1/platform/identity/login", payload, cancellationToken);
+            var response = await client.PostAsJsonAsync($"{ApiBaseUrl}/platform/identity/login", payload, cancellationToken);
             
             if (response.IsSuccessStatusCode)
             {

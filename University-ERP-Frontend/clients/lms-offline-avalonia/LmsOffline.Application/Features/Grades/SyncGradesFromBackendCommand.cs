@@ -11,6 +11,7 @@ using SharedKernel.Domain.Primitives;
 using LmsOffline.Domain.Aggregates;
 using LmsOffline.Application.Interfaces;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 
 public record SyncGradesFromBackendCommand(string StudentIdNumber) : IRequest<Result<bool>>;
 
@@ -36,12 +37,19 @@ public class SyncGradesFromBackendCommandHandler : IRequestHandler<SyncGradesFro
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILocalGradeRepository _gradeRepository;
     private readonly ILogger<SyncGradesFromBackendCommandHandler> _logger;
+    private readonly IConfiguration _configuration;
+    private string ApiBaseUrl => _configuration["ApiBaseUrl"];
 
-    public SyncGradesFromBackendCommandHandler(IHttpClientFactory httpClientFactory, ILocalGradeRepository gradeRepository, ILogger<SyncGradesFromBackendCommandHandler> logger)
+    public SyncGradesFromBackendCommandHandler(
+        IHttpClientFactory httpClientFactory, 
+        ILocalGradeRepository gradeRepository, 
+        ILogger<SyncGradesFromBackendCommandHandler> logger,
+        IConfiguration configuration)
     {
         _httpClientFactory = httpClientFactory;
         _gradeRepository = gradeRepository;
         _logger = logger;
+        _configuration = configuration;
     }
 
     public async Task<Result<bool>> Handle(SyncGradesFromBackendCommand request, CancellationToken cancellationToken)
@@ -49,7 +57,7 @@ public class SyncGradesFromBackendCommandHandler : IRequestHandler<SyncGradesFro
         try
         {
             var client = _httpClientFactory.CreateClient();
-            var response = await client.GetAsync($"http://localhost:5191/api/v1/academic/lms/grades/delta/{request.StudentIdNumber}", cancellationToken);
+            var response = await client.GetAsync($"{ApiBaseUrl}/academic/lms/grades/delta/{request.StudentIdNumber}", cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {

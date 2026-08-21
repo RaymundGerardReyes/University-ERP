@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using LmsOffline.Infrastructure.Auth;
 
 /// <summary>
@@ -21,20 +22,22 @@ public class OutboxBackgroundService : BackgroundService
     private readonly ILogger<OutboxBackgroundService> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly OfflineTokenCache _tokenCache;
-
-    private const string BackendHealthCheckUrl = "http://localhost:5000/api/v1/lms/sync/assessments";
+    private readonly IConfiguration _configuration;
+    private string ApiBaseUrl => _configuration["ApiBaseUrl"] ?? "http://localhost:5191/api/v1";
     private DateTime _lastSyncUtc = DateTime.MinValue;
 
     public OutboxBackgroundService(
         IServiceProvider serviceProvider,
         ILogger<OutboxBackgroundService> logger,
         IHttpClientFactory httpClientFactory,
-        OfflineTokenCache tokenCache)
+        OfflineTokenCache tokenCache,
+        IConfiguration configuration)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
         _httpClientFactory = httpClientFactory;
         _tokenCache = tokenCache;
+        _configuration = configuration;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -78,7 +81,7 @@ public class OutboxBackgroundService : BackgroundService
 
     private async Task PullFacultyUpdatesAsync(string studentId, CancellationToken cancellationToken)
     {
-        var pullUrl = $"http://localhost:5000/api/v1/lms/packages/delta/{studentId}?lastSyncUtc={_lastSyncUtc:O}";
+        var pullUrl = $"{ApiBaseUrl}/lms/packages/delta/{studentId}?lastSyncUtc={_lastSyncUtc:O}";
 
         _logger.LogInformation("Checking for new Faculty updates for Student '{StudentId}' since {LastSyncDate}...", studentId, _lastSyncUtc);
 
@@ -105,7 +108,7 @@ public class OutboxBackgroundService : BackgroundService
 
     private async Task PullGradeUpdatesAsync(string studentId, CancellationToken cancellationToken)
     {
-        var pullUrl = $"http://localhost:5000/api/v1/academic/lms/grades/delta/{studentId}?lastSyncUtc={_lastSyncUtc:O}";
+        var pullUrl = $"{ApiBaseUrl}/academic/lms/grades/delta/{studentId}?lastSyncUtc={_lastSyncUtc:O}";
 
         _logger.LogInformation("Checking for newly evaluated Grades for Student '{StudentId}' since {LastSyncDate}...", studentId, _lastSyncUtc);
 
@@ -131,10 +134,11 @@ public class OutboxBackgroundService : BackgroundService
     {
         try
         {
+            var healthCheckUrl = $"{ApiBaseUrl}/lms/sync/assessments";
             using var client = _httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromSeconds(3);
             
-            using var request = new HttpRequestMessage(HttpMethod.Head, BackendHealthCheckUrl);
+            using var request = new HttpRequestMessage(HttpMethod.Head, healthCheckUrl);
             using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             
             return true;
