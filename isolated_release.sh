@@ -115,7 +115,7 @@ echo "Starting isolated semantic versioning updates..."
 process_module "academic" "backend-academic" "feat" "implement Registrar clearance queues, UserRegistered consumer, and LMS module registration" \
   "University-ERP-Backend/src/Modules/Academic"
 
-process_module "administration" "backend-administration" "feat" "integrate external banking adapters and parameterize payment gateway" \
+process_module "administration" "backend-administration" "fix" "resolve NovaBank 401 errors by migrating to Bearer token authentication" \
   "University-ERP-Backend/src/Modules/Administration"
 
 process_module "platform" "backend-platform" "fix" "stabilize IdentityAccess login endpoint routing for strict network isolation" \
@@ -124,7 +124,7 @@ process_module "platform" "backend-platform" "fix" "stabilize IdentityAccess log
 process_module "student-lifecycle" "backend-studentlifecycle" "feat" "add admissions event handlers for enrollment transitions" \
   "University-ERP-Backend/src/Modules/StudentLifecycle"
 
-process_module "bootstrap" "backend-bootstrap" "feat" "register module authorization conventions and configure JWT authentication middleware" \
+process_module "bootstrap" "backend-bootstrap" "chore" "update application settings for finance gateway configuration" \
   "University-ERP-Backend/src/Bootstrap"
 
 process_module "backend-contracts" "backend-contracts" "feat" "define academic and student lifecycle integration event contracts for saga orchestration" \
@@ -184,19 +184,19 @@ process_module "student-portal" "student-portal" "fix" "parameterize environment
   "University-ERP-Frontend/apps/student-portal"
 
 # ================= FRONTEND LIBS & CONFIG =================
-process_module "frontend-libs" "frontend-libs" "feat" "standardize auth guard and implement dynamic portal registry" \
+process_module "frontend-libs" "frontend-libs" "fix" "align finance API client with updated backend payment gateway contracts" \
   "University-ERP-Frontend/libs"
 
 process_module "frontend-infra" "frontend-infra" "fix" "parameterize environment URLs and stabilize portal routing build configurations" \
   "University-ERP-Frontend/package.json" "University-ERP-Frontend/package-lock.json" "University-ERP-Frontend/bootstrap.sh" "University-ERP-Frontend/Dockerfile.build-all" "University-ERP-Frontend/Dockerfile.applicant" "University-ERP-Frontend/Dockerfile.portal" "University-ERP-Frontend/tsconfig.app.base.json"
 
 # ================= ROOT INFRASTRUCTURE =================
-process_module "project-docs" "docs-project" "docs" "update logs.md with recent modernization events" \
-  "CodebaseInfrastructure.md" "structure.md" "logs.md" "newupdate.md" "Analysis_Task_Orchestration.md" "ERPstructure.md" "SEMANTIC_VERSIONING_PROMPT.md" "universal-semantic-versioning-prompt.md" "university-erp-*.md"
+process_module "project-docs" "docs-project" "docs" "consolidate architecture documentation and update task orchestration logs" \
+  "CodebaseInfrastructure.md" "structure.md" "logs.md" "newupdate.md" "Analysis_Task_Orchestration.md" "ERPstructure.md" "SEMANTIC_VERSIONING_PROMPT.md" "universal-semantic-versioning-prompt.md" "university-erp-*.md" "University-ERP-Backend/University-ERP-Backend.md" "University-ERP-Frontend/University-ERP-Frontend.md" "University-ERP-Frontend/logs.md" "errorlogs.md"
 
 # Safely only add the release_all.sh script here (not the apps/ folder anymore!)
-process_module "project-ops" "ops-project" "fix" "resolve docker-compose startup sequence and centralize port registry" \
-  "release_all.sh" "isolated_release.sh" "docker-compose.yml" ".env.example" "health-logger.sh" "scaffold-frontend-cloudflare-nginx.sh" "scaffold_features.ps1" "setup_structure.ps1" "fix-encodings.js" ".dockerignore" "PORT_REGISTRY.md" ".port-audit.json" "scripts/"
+process_module "project-ops" "ops-project" "fix" "ensure environment variables are decrypted before docker compose evaluation" \
+  "release_all.sh" "isolated_release.sh" "docker-compose.yml" ".env.example" "health-logger.sh" "scaffold-frontend-cloudflare-nginx.sh" "scaffold_features.ps1" "setup_structure.ps1" "fix-encodings.js" ".dockerignore" "PORT_REGISTRY.md" ".port-audit.json" "scripts/" "package.json"
 
 process_module "project-config" "config-project" "chore" "update root gitignore rules" \
   ".gitignore"

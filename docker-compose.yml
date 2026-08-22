@@ -95,7 +95,12 @@ services:
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_ISSUER: ${JWT_ISSUER}
       JWT_AUDIENCE: ${JWT_AUDIENCE}
-      PaymentGateway__SecretKey: ${PAYMENT_GATEWAY_SECRET_KEY:-sk_test_mocked}
+      PaymentGateway__SecretKey: ${PaymentGateway__SecretKey:-${PAYMENT_GATEWAY_SECRET_KEY:-sk_test_mocked}}
+      PaymentGateway__WebhookSecret: ${PaymentGateway__WebhookSecret:-whsec_mocked}
+      PaymentGateway__WebhookUrl: ${PaymentGateway__WebhookUrl:-}
+      PaymentGateway__SuccessUrl: ${PaymentGateway__SuccessUrl:-}
+      PaymentGateway__CancelUrl: ${PaymentGateway__CancelUrl:-}
+      PaymentGateway__BaseUrl: ${PaymentGateway__BaseUrl:-}
     expose:
       - "${INTERNAL_API_PORT:-5191}"
     deploy:
@@ -129,7 +134,12 @@ services:
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_ISSUER: ${JWT_ISSUER}
       JWT_AUDIENCE: ${JWT_AUDIENCE}
-      PaymentGateway__SecretKey: ${PAYMENT_GATEWAY_SECRET_KEY:-sk_test_mocked}
+      PaymentGateway__SecretKey: ${PaymentGateway__SecretKey:-${PAYMENT_GATEWAY_SECRET_KEY:-sk_test_mocked}}
+      PaymentGateway__WebhookSecret: ${PaymentGateway__WebhookSecret:-whsec_mocked}
+      PaymentGateway__WebhookUrl: ${PaymentGateway__WebhookUrl:-}
+      PaymentGateway__SuccessUrl: ${PaymentGateway__SuccessUrl:-}
+      PaymentGateway__CancelUrl: ${PaymentGateway__CancelUrl:-}
+      PaymentGateway__BaseUrl: ${PaymentGateway__BaseUrl:-}
     deploy:
       resources:
         limits:
@@ -258,70 +268,45 @@ services:
     container_name: universityerp-nginx
     restart: unless-stopped
     environment:
-      - VITE_IDENTITY_PORTAL_URL=${VITE_IDENTITY_PORTAL_URL:-http://localhost:8081}
-      - VITE_PLATFORM_CONSOLE_URL=${VITE_PLATFORM_CONSOLE_URL:-http://localhost:3006}
-      - VITE_STUDENT_PORTAL_URL=${VITE_STUDENT_PORTAL_URL}
-      - VITE_APPLICANT_PORTAL_URL=${VITE_APPLICANT_PORTAL_URL}
-      - VITE_FACULTY_PORTAL_URL=${VITE_FACULTY_PORTAL_URL}
-      - VITE_FINANCE_CONSOLE_URL=${VITE_FINANCE_CONSOLE_URL}
-      - VITE_GOVERNANCE_CONSOLE_URL=${VITE_GOVERNANCE_CONSOLE_URL}
-      - VITE_ADMIN_PORTAL_URL=${VITE_ADMIN_PORTAL_URL}
-      - VITE_LIBRARY_PORTAL_URL=${VITE_LIBRARY_PORTAL_URL}
-      - VITE_LMS_WEB_URL=${VITE_LMS_WEB_URL}
-      - VITE_API_BASE_URL=${VITE_API_BASE_URL}
-      - API_INTERNAL_PORT=${INTERNAL_API_PORT:-5191}
+      - DOMAIN_IDENTITY=${DOMAIN_IDENTITY:-identity.developerph.dev}
+      - DOMAIN_STUDENT=${DOMAIN_STUDENT:-student.developerph.dev}
+      - DOMAIN_APPLICANT=${DOMAIN_APPLICANT:-applicant.developerph.dev}
+      - DOMAIN_FACULTY=${DOMAIN_FACULTY:-faculty.developerph.dev}
+      - DOMAIN_FINANCE=${DOMAIN_FINANCE:-finance.developerph.dev}
+      - DOMAIN_GOVERNANCE=${DOMAIN_GOVERNANCE:-governance.developerph.dev}
+      - DOMAIN_ADMIN=${DOMAIN_ADMIN:-admin.developerph.dev}
+      - DOMAIN_LIBRARY=${DOMAIN_LIBRARY:-library.developerph.dev}
+      - DOMAIN_LMS=${DOMAIN_LMS:-lms.developerph.dev}
+      - DOMAIN_PLATFORM=${DOMAIN_PLATFORM:-platform.developerph.dev}
+      - DOMAIN_PORTAL=${DOMAIN_PORTAL:-portal.developerph.dev}
+      - DOMAIN_API=${API_PUBLIC_DOMAIN:-api.developerph.dev}
+      - API_INTERNAL_PORT=${PORT_API:-5191}
     command:
       - /bin/sh
       - -c
       - |
-        export IDENTITY_DOMAIN=$$(echo "$$VITE_IDENTITY_PORTAL_URL" | sed -E 's|https?://([^/]+).*|\1|')
-        export STUDENT_DOMAIN=$$(echo "$$VITE_STUDENT_PORTAL_URL" | sed -E 's|https?://([^/]+).*|\1|')
-        export APPLICANT_DOMAIN=$$(echo "$$VITE_APPLICANT_PORTAL_URL" | sed -E 's|https?://([^/]+).*|\1|')
-        export FACULTY_DOMAIN=$$(echo "$$VITE_FACULTY_PORTAL_URL" | sed -E 's|https?://([^/]+).*|\1|')
-        export FINANCE_DOMAIN=$$(echo "$$VITE_FINANCE_CONSOLE_URL" | sed -E 's|https?://([^/]+).*|\1|')
-        export GOVERNANCE_DOMAIN=$$(echo "$$VITE_GOVERNANCE_CONSOLE_URL" | sed -E 's|https?://([^/]+).*|\1|')
-        export ADMIN_DOMAIN=$$(echo "$$VITE_ADMIN_PORTAL_URL" | sed -E 's|https?://([^/]+).*|\1|')
-        export LIBRARY_DOMAIN=$$(echo "$$VITE_LIBRARY_PORTAL_URL" | sed -E 's|https?://([^/]+).*|\1|')
-        export LMS_DOMAIN=$$(echo "$$VITE_LMS_WEB_URL" | sed -E 's|https?://([^/]+).*|\1|')
-        export PLATFORM_DOMAIN=$$(echo "$$VITE_PLATFORM_CONSOLE_URL" | sed -E 's|https?://([^/]+).*|\1|')
-        export PORTAL_DOMAIN=$$(echo "$$PLATFORM_DOMAIN" | sed 's/^platform/portal/')
-        export API_DOMAIN=$$(echo "$$VITE_API_BASE_URL" | sed -E 's|https?://([^/]+).*|\1|')
-
-        export IDENTITY_DOMAIN=$${IDENTITY_DOMAIN:-_}
-        export STUDENT_DOMAIN=$${STUDENT_DOMAIN:-_}
-        export APPLICANT_DOMAIN=$${APPLICANT_DOMAIN:-_}
-        export FACULTY_DOMAIN=$${FACULTY_DOMAIN:-_}
-        export FINANCE_DOMAIN=$${FINANCE_DOMAIN:-_}
-        export GOVERNANCE_DOMAIN=$${GOVERNANCE_DOMAIN:-_}
-        export ADMIN_DOMAIN=$${ADMIN_DOMAIN:-_}
-        export LIBRARY_DOMAIN=$${LIBRARY_DOMAIN:-_}
-        export LMS_DOMAIN=$${LMS_DOMAIN:-_}
-        export PLATFORM_DOMAIN=$${PLATFORM_DOMAIN:-_}
-        export PORTAL_DOMAIN=$${PORTAL_DOMAIN:-_}
-        export API_DOMAIN=$${API_DOMAIN:-_}
-
         cp -r /tmp/nginx_config/* /etc/nginx/
 
-        sed -i "s|__IDENTITY_DOMAIN__|$$IDENTITY_DOMAIN|g" /etc/nginx/sites-available/auth.university.edu.conf
-        sed -i "s|__STUDENT_DOMAIN__|$$STUDENT_DOMAIN|g" /etc/nginx/sites-available/student.university.edu.conf
-        sed -i "s|__APPLICANT_DOMAIN__|$$APPLICANT_DOMAIN|g" /etc/nginx/sites-available/applicant.university.edu.conf
-        sed -i "s|__FACULTY_DOMAIN__|$$FACULTY_DOMAIN|g" /etc/nginx/sites-available/faculty.university.edu.conf
-        sed -i "s|__FINANCE_DOMAIN__|$$FINANCE_DOMAIN|g" /etc/nginx/sites-available/finance.university.edu.conf
-        sed -i "s|__GOVERNANCE_DOMAIN__|$$GOVERNANCE_DOMAIN|g" /etc/nginx/sites-available/governance.university.edu.conf
-        sed -i "s|__ADMIN_DOMAIN__|$$ADMIN_DOMAIN|g" /etc/nginx/sites-available/admin.university.edu.conf
-        sed -i "s|__LIBRARY_DOMAIN__|$$LIBRARY_DOMAIN|g" /etc/nginx/sites-available/library.university.edu.conf
-        sed -i "s|__LMS_DOMAIN__|$$LMS_DOMAIN|g" /etc/nginx/sites-available/lms.university.edu.conf
-        sed -i "s|__PLATFORM_DOMAIN__|$$PLATFORM_DOMAIN|g" /etc/nginx/sites-available/platform.university.edu.conf
-        sed -i "s|__API_DOMAIN__|$$API_DOMAIN|g" /etc/nginx/sites-available/api.university.edu.conf
-        sed -i "s|__PORTAL_DOMAIN__|$$PORTAL_DOMAIN|g" /etc/nginx/sites-available/portal.university.edu.conf
+        sed -i "s|__IDENTITY_DOMAIN__|$$DOMAIN_IDENTITY|g" /etc/nginx/sites-available/auth.university.edu.conf
+        sed -i "s|__STUDENT_DOMAIN__|$$DOMAIN_STUDENT|g" /etc/nginx/sites-available/student.university.edu.conf
+        sed -i "s|__APPLICANT_DOMAIN__|$$DOMAIN_APPLICANT|g" /etc/nginx/sites-available/applicant.university.edu.conf
+        sed -i "s|__FACULTY_DOMAIN__|$$DOMAIN_FACULTY|g" /etc/nginx/sites-available/faculty.university.edu.conf
+        sed -i "s|__FINANCE_DOMAIN__|$$DOMAIN_FINANCE|g" /etc/nginx/sites-available/finance.university.edu.conf
+        sed -i "s|__GOVERNANCE_DOMAIN__|$$DOMAIN_GOVERNANCE|g" /etc/nginx/sites-available/governance.university.edu.conf
+        sed -i "s|__ADMIN_DOMAIN__|$$DOMAIN_ADMIN|g" /etc/nginx/sites-available/admin.university.edu.conf
+        sed -i "s|__LIBRARY_DOMAIN__|$$DOMAIN_LIBRARY|g" /etc/nginx/sites-available/library.university.edu.conf
+        sed -i "s|__LMS_DOMAIN__|$$DOMAIN_LMS|g" /etc/nginx/sites-available/lms.university.edu.conf
+        sed -i "s|__PLATFORM_DOMAIN__|$$DOMAIN_PLATFORM|g" /etc/nginx/sites-available/platform.university.edu.conf
+        sed -i "s|__API_DOMAIN__|$$DOMAIN_API|g" /etc/nginx/sites-available/api.university.edu.conf
+        sed -i "s|__PORTAL_DOMAIN__|$$DOMAIN_PORTAL|g" /etc/nginx/sites-available/portal.university.edu.conf
 
         sed -i "s|__API_INTERNAL_PORT__|$$API_INTERNAL_PORT|g" /etc/nginx/nginx.conf /etc/nginx/snippets/*.conf /etc/nginx/sites-available/*.conf
 
-        export ALL_VALID_DOMAINS="$$IDENTITY_DOMAIN $$STUDENT_DOMAIN $$APPLICANT_DOMAIN $$FACULTY_DOMAIN $$FINANCE_DOMAIN $$GOVERNANCE_DOMAIN $$ADMIN_DOMAIN $$LIBRARY_DOMAIN $$LMS_DOMAIN $$PLATFORM_DOMAIN $$PORTAL_DOMAIN $$API_DOMAIN"
+        export ALL_VALID_DOMAINS="$$DOMAIN_IDENTITY $$DOMAIN_STUDENT $$DOMAIN_APPLICANT $$DOMAIN_FACULTY $$DOMAIN_FINANCE $$DOMAIN_GOVERNANCE $$DOMAIN_ADMIN $$DOMAIN_LIBRARY $$DOMAIN_LMS $$DOMAIN_PLATFORM $$DOMAIN_PORTAL $$DOMAIN_API"
         sed -i "s|__ALL_VALID_DOMAINS__|$$ALL_VALID_DOMAINS|g" /etc/nginx/nginx.conf
 
-        sed -i "s|__IDENTITY_PORTAL_URL__|$$VITE_IDENTITY_PORTAL_URL|g" /etc/nginx/snippets/auth-request.conf
-        sed -i "s|__PLATFORM_CONSOLE_URL__|$$VITE_PLATFORM_CONSOLE_URL|g" /etc/nginx/sites-available/portal.university.edu.conf
+        sed -i "s|__IDENTITY_PORTAL_URL__|http://$$DOMAIN_IDENTITY|g" /etc/nginx/snippets/auth-request.conf
+        sed -i "s|__PLATFORM_CONSOLE_URL__|http://$$DOMAIN_PLATFORM|g" /etc/nginx/sites-available/portal.university.edu.conf
         
         nginx -g "daemon off;"
     ports:
