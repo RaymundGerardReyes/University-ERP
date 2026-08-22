@@ -26,12 +26,6 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
         {
             return Result<string>.Failure(new Error("PaymentGateway.InvalidToken", "Payment token is missing or invalid."));
         }
-        
-        // Mock fallback for local dev
-        if (_httpClient.BaseAddress?.Host == "api.banking.university.edu")
-        {
-            return Result<string>.Success(System.Guid.NewGuid().ToString("N"));
-        }
 
         var requestBody = new
         {
@@ -45,7 +39,12 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
 
         try
         {
-            var response = await _httpClient.PostAsJsonAsync("/api/v1/transfers/internal", requestBody, cancellationToken);
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/api/v1/transfers/internal");
+            requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _options.SecretKey);
+
+            requestMessage.Content = JsonContent.Create(requestBody);
+
+            var response = await _httpClient.SendAsync(requestMessage, cancellationToken);
             
             if (response.IsSuccessStatusCode)
             {
@@ -67,56 +66,27 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
     
     public async Task<Result<string>> CreateCheckoutSessionAsync(string sessionId, decimal amount, string currency, string successUrl, string cancelUrl, CancellationToken cancellationToken)
     {
-        // Mock fallback for local dev if hitting the dummy payload
-        if (_httpClient.BaseAddress?.Host == "api.banking.university.edu" || string.IsNullOrEmpty(_options.SecretKey) || _options.SecretKey == "sk_test_mocked")
-        {
-            return Result<string>.Success($"https://mock-checkout.paymongo.com/checkout?session={sessionId}");
-        }
-
         try
         {
-            var amountInCentavos = (long)(amount * 100);
-            
             var payload = new
             {
-                data = new
-                {
-                    attributes = new
-                    {
-                        line_items = new[]
-                        {
-                            new
-                            {
-                                name = $"Payment Session {sessionId}",
-                                amount = amountInCentavos,
-                                currency = currency,
-                                quantity = 1
-                            }
-                        },
-                        payment_method_types = new[]
-                        {
-                            "card",
-                            "gcash",
-                            "qrph"
-                        },
-                        reference_number = sessionId,
-                        success_url = successUrl,
-                        cancel_url = cancelUrl
-                    }
-                }
+                sourceAccountId = "UNIV-ACCT-001",
+                amount = amount,
+                description = $"Payment Session {sessionId}",
+                merchantReference = sessionId
             };
 
-            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/v1/checkout_sessions");
-            var authHeader = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{_options.SecretKey}:"));
-            requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authHeader);
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/api/v1/gateway/payments/intents");
+            requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _options.SecretKey);
+
             requestMessage.Content = JsonContent.Create(payload);
             
             var response = await _httpClient.SendAsync(requestMessage, cancellationToken);
             
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>(cancellationToken: cancellationToken);
-                var checkoutUrl = result.GetProperty("data").GetProperty("attributes").GetProperty("checkout_url").GetString();
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse<PaymentSessionResponse>>(cancellationToken: cancellationToken);
+                var checkoutUrl = result?.Data?.CheckoutUrl;
                 
                 if (!string.IsNullOrEmpty(checkoutUrl))
                 {
@@ -131,6 +101,11 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
         {
             return Result<string>.Failure(new Error("Finance.BankingConnectionError", $"Could not connect to payment gateway: {ex.Message}"));
         }
+    }
+    
+    public Task<Result<string>> CreateCheckoutSessionAsync(string transactionId, decimal amount, string gatewayName, CancellationToken cancellationToken)
+    {
+        throw new System.NotImplementedException("Use the 6-parameter overload for NovaBank integration.");
     }
     
     public async Task<Result<string>> GeneratePaymentInstrumentAsync(string sessionId, decimal amount, string currency, CancellationToken cancellationToken)
@@ -185,5 +160,6 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
     }
     
     private record TransactionResponse(string TransactionId, string Status, decimal Amount);
+    private record PaymentSessionResponse(string PaymentIntentId, string Provider, string CheckoutType, string CheckoutUrl, System.DateTime ExpiresAt, string TransactionReference);
     private record ApiResponse<T>(T Data, string Message, string CorrelationId);
 }

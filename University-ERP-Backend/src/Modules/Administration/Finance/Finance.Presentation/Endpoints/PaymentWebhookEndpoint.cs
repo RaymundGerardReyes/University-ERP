@@ -27,26 +27,25 @@ public sealed class PaymentWebhookEndpoint : ControllerBase
         _options = options.Value;
     }
 
-    [HttpPost("paymongo")]
+    [HttpPost("banking")]
     public async Task<IActionResult> Webhook(CancellationToken cancellationToken)
     {
         using var reader = new StreamReader(Request.Body);
         var rawBody = await reader.ReadToEndAsync(cancellationToken);
 
-        if (!Request.Headers.TryGetValue("Paymongo-Signature", out var signatureHeader))
+        // Accept standard Bank headers
+        Request.Headers.TryGetValue("X-Bank-Signature", out var bankSignatureHeader);
+        Request.Headers.TryGetValue("X-Bank-Timestamp", out var bankTimestampHeader);
+
+        string signatureString = bankSignatureHeader.ToString();
+        string timestampString = bankTimestampHeader.ToString();
+
+        if (string.IsNullOrEmpty(signatureString))
         {
             return BadRequest(new { error = "Missing signature header." });
         }
 
-        var signatureString = signatureHeader.ToString();
-        var (t, te, li) = ParseSignature(signatureString);
-
-        if (string.IsNullOrEmpty(t))
-        {
-            return BadRequest(new { error = "Invalid signature format." });
-        }
-
-        if (!VerifySignature(t, rawBody, te, li, _options.WebhookSecret))
+        if (!VerifyNovaBankSignature(timestampString, rawBody, signatureString, _options.WebhookSecret))
         {
             return Unauthorized(new { error = "Invalid webhook signature." });
         }
@@ -56,24 +55,26 @@ public sealed class PaymentWebhookEndpoint : ControllerBase
             using var document = JsonDocument.Parse(rawBody);
             var root = document.RootElement;
             
-            var eventType = root.GetProperty("data").GetProperty("attributes").GetProperty("type").GetString();
+            // Extract event type resiliently
+            string eventType = string.Empty;
+            if (root.TryGetProperty("eventType", out var etProp)) eventType = etProp.GetString() ?? string.Empty;
+            else if (root.TryGetProperty("data", out var data) && data.TryGetProperty("attributes", out var attr) && attr.TryGetProperty("type", out var typeProp)) eventType = typeProp.GetString() ?? string.Empty;
             
-            if (eventType == "checkout_session.payment.paid")
+            // Supported success events
+            if (eventType == "PAYMENT_COMPLETED" || eventType == "payment_intent.succeeded" || eventType == "checkout_session.payment.paid" || eventType == "TRANSFER_COMPLETED")
             {
-                var checkoutSession = root.GetProperty("data").GetProperty("attributes").GetProperty("data").GetProperty("attributes");
-                var referenceNumber = checkoutSession.GetProperty("reference_number").GetString();
+                string? referenceNumber = ExtractReferenceNumber(root);
                 
                 if (!string.IsNullOrEmpty(referenceNumber))
                 {
-                    // The reference_number is our SessionId
+                    // The reference_number maps to our SessionId
                     var completeCommand = new CompletePaymentSessionCommand(referenceNumber);
                     var completeResult = await _sender.Send(completeCommand, cancellationToken);
                     
                     if (completeResult.IsFailure)
                     {
-                        // In a real system, we'd log this and possibly return 200 to prevent retries if it's already paid
                         if (completeResult.Error.Code == "PaymentSession.AlreadyPaid")
-                            return Ok();
+                            return Ok(new { received = true, status = "already_processed" });
                             
                         return BadRequest(new { error = completeResult.Error.Description });
                     }
@@ -88,45 +89,40 @@ public sealed class PaymentWebhookEndpoint : ControllerBase
         }
     }
 
-    private (string t, string te, string li) ParseSignature(string header)
+    private string? ExtractReferenceNumber(JsonElement root)
     {
-        string t = string.Empty, te = string.Empty, li = string.Empty;
-        var parts = header.Split(',');
+        if (root.TryGetProperty("transactionReference", out var trProp)) return trProp.GetString();
+        if (root.TryGetProperty("merchantReference", out var mrProp)) return mrProp.GetString();
         
-        foreach (var part in parts)
+        // Deep traversal fallback for wrapped attributes
+        if (root.TryGetProperty("data", out var data) && 
+            data.TryGetProperty("attributes", out var attr) && 
+            attr.TryGetProperty("data", out var innerData) && 
+            innerData.TryGetProperty("attributes", out var innerAttr) && 
+            innerAttr.TryGetProperty("reference_number", out var refNum))
         {
-            var kv = part.Split('=', 2);
-            if (kv.Length == 2)
-            {
-                var key = kv[0].Trim();
-                var value = kv[1].Trim();
-                
-                if (key == "t") t = value;
-                else if (key == "te") te = value;
-                else if (key == "li") li = value;
-            }
+            return refNum.GetString();
         }
         
-        return (t, te, li);
+        return null;
     }
 
-    private bool VerifySignature(string timestamp, string rawBody, string te, string li, string secret)
+
+    private bool VerifyNovaBankSignature(string timestamp, string rawBody, string providedSignature, string secret)
     {
         // Mock fallback for local dev when secrets aren't set
         if (secret == "whsec_mocked") return true;
 
-        var signedPayload = $"{timestamp}.{rawBody}";
+        var signedPayload = string.IsNullOrEmpty(timestamp) ? rawBody : $"{timestamp}.{rawBody}";
         
         using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
         var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(signedPayload));
-        var calculatedSignature = Convert.ToHexString(hash).ToLowerInvariant();
-
-        // Compare against test or live depending on what's available
-        var targetSignature = !string.IsNullOrEmpty(te) ? te : li;
         
-        return CryptographicOperations.FixedTimeEquals(
-            Encoding.UTF8.GetBytes(calculatedSignature),
-            Encoding.UTF8.GetBytes(targetSignature)
-        );
+        // Check both Base64 (NovaBank style) and Hex (PayMongo style)
+        var calculatedBase64 = Convert.ToBase64String(hash);
+        var calculatedHex = Convert.ToHexString(hash).ToLowerInvariant();
+
+        return CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(calculatedBase64), Encoding.UTF8.GetBytes(providedSignature)) ||
+               CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(calculatedHex), Encoding.UTF8.GetBytes(providedSignature));
     }
 }

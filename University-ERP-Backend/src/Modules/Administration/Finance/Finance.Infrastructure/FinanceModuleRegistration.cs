@@ -16,6 +16,8 @@ public static class FinanceModuleRegistration
 
     public static IServiceCollection AddFinanceInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddHttpContextAccessor();
+
         services.AddDbContext<FinanceDbContext>(options =>
             options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection"),
@@ -32,12 +34,17 @@ public static class FinanceModuleRegistration
         // NEW: Register PaymentSessionRepository
         services.AddScoped<IPaymentSessionRepository, PaymentSessionRepository>();
 
-        services.AddHttpClient("PaymentGatewayClient", client =>
+        services.AddHttpClient<IPaymentGatewayService, Finance.Infrastructure.Services.BankingIntegrationService>((provider, client) =>
         {
+            var options = provider.GetRequiredService<Microsoft.Extensions.Options.IOptions<PaymentGatewayOptions>>().Value;
+            if (string.IsNullOrEmpty(options.BaseUrl))
+            {
+                throw new System.InvalidOperationException("PaymentGateway:BaseUrl is missing in the configuration.");
+            }
+            
+            client.BaseAddress = new System.Uri(options.BaseUrl);
             client.Timeout = System.TimeSpan.FromSeconds(30);
         });
-
-        services.AddScoped<IPaymentGatewayService, Finance.Infrastructure.ExternalAdapters.PaymentGatewayService>();
 
         return services;
     }
