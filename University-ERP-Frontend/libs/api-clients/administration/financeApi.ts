@@ -23,34 +23,40 @@ export interface PaymentSessionDto {
 
 export const financePaymentSessionApi = {
   createSession: async (payload: CreatePaymentSessionRequest): Promise<{ sessionId: string, checkoutUrl: string }> => {
+    const token = localStorage.getItem('global_identity_token');
+    
+    // Use relative endpoint matching apiClient baseURL ('/api/v1')
     const response = await apiClient.post<{ sessionId: string, checkoutUrl: string }>(
-      '/api/v1/finance/payment-sessions', 
-      payload
+      'finance/payment-sessions', 
+      payload,
+      {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      }
     );
     return response.data;
   },
 
   getDynamicQR: async (sessionId: string): Promise<{ qrPayload: string }> => {
     const response = await apiClient.get<{ qrPayload: string }>(
-      `/api/v1/finance/payment-sessions/${sessionId}/qr`
+      `finance/payment-sessions/${sessionId}/qr`
     );
     return response.data;
   },
 
   validateSession: async (sessionId: string): Promise<PaymentSessionDto> => {
     const response = await apiClient.get<PaymentSessionDto>(
-      `/api/v1/finance/payment-sessions/${sessionId}`
+      `finance/payment-sessions/${sessionId}`
     );
     return response.data;
   },
 
   getAllSessions: async (): Promise<any[]> => {
-    const response = await apiClient.get('/api/v1/finance/payment-sessions');
+    const response = await apiClient.get('finance/payment-sessions');
     return response.data;
   },
 
   reconcileSession: async (sessionId: string, payload: { cashierId: string, remarks: string }): Promise<void> => {
-    const response = await apiClient.post(`/api/v1/finance/payment-sessions/${sessionId}/reconcile`, payload);
+    const response = await apiClient.post(`finance/payment-sessions/${sessionId}/reconcile`, payload);
     return response.data;
   }
 };
