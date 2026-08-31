@@ -42,11 +42,16 @@ export const ApplicationFeePaymentPage: React.FC = () => {
             }
 
             // Create a Payment Session in Finance Bounded Context
+            const idempotencyKey = crypto.randomUUID();
             const response = await apiClient.post('/finance/payment-sessions', {
                 invoiceId: `APP-FEE-${trueApplicationId}`,
                 applicantId: identity?.id || trueApplicationId,
                 amount: 50.00,
                 purpose: 'Application Processing Fee'
+            }, {
+                headers: {
+                    'Idempotency-Key': idempotencyKey
+                }
             });
 
             const checkoutUrl = response.data.checkoutUrl;
