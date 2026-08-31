@@ -1,6 +1,7 @@
 namespace IdentityAccess.Tests.Unit.Domain.ValueObjects;
 
 using IdentityAccess.Domain.ValueObjects;
+using SharedKernel.Domain.Primitives;
 using FluentAssertions;
 using Xunit;
 
@@ -8,32 +9,32 @@ using Xunit;
 public class PersonNameTests
 {
     [Fact]
-    public void Should_Create_Valid_PersonName()
+    public void Should_Create_Valid_PersonName_And_Format_FullName()
     {
         // Arrange
+        var firstName = "  John  ";
+        var lastName = " Doe ";
 
         // Act
+        var result = PersonName.Create(firstName, lastName);
 
         // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.FirstName.Should().Be("John");
+        result.Value.LastName.Should().Be("Doe");
+        result.Value.FullName.Should().Be("John Doe");
     }
 
-    [Fact]
-    public void Should_Reject_Invalid_PersonName_State()
+    [Theory]
+    [InlineData("", "Doe", "PersonName.FirstNameEmpty")]
+    [InlineData("John", "", "PersonName.LastNameEmpty")]
+    public void Should_Reject_Creation_When_Fields_Are_Empty(string firstName, string lastName, string expectedErrorCode)
     {
-        // Arrange
-
-        // Act
+        // Arrange & Act
+        var result = PersonName.Create(firstName, lastName);
 
         // Assert
-    }
-
-    [Fact]
-    public void Should_Raise_Expected_DomainEvent_When_State_Changes()
-    {
-        // Arrange
-
-        // Act
-
-        // Assert
+        result.IsFailure.Should().BeTrue();
+        result.Error.Code.Should().Be(expectedErrorCode);
     }
 }
