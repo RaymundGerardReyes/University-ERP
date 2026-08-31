@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 public sealed record CreatePaymentSessionResponse(string SessionId, string CheckoutUrl);
 
-public sealed record CreatePaymentSessionCommand(string InvoiceId, string ApplicantId, decimal Amount, string Purpose) : IRequest<Result<CreatePaymentSessionResponse>>;
+public sealed record CreatePaymentSessionCommand(string InvoiceId, string ApplicantId, decimal Amount, string Purpose, string? IdempotencyKey = null) : IRequest<Result<CreatePaymentSessionResponse>>;
 
 public sealed class CreatePaymentSessionCommandHandler : IRequestHandler<CreatePaymentSessionCommand, Result<CreatePaymentSessionResponse>>
 {
@@ -38,7 +38,12 @@ public sealed class CreatePaymentSessionCommandHandler : IRequestHandler<CreateP
         var successUrl = _options.Value.SuccessUrl;
         var cancelUrl = _options.Value.CancelUrl;
 
-        var checkoutResult = await _gatewayService.CreateCheckoutSessionAsync(session.SessionId, session.Amount, session.Currency, successUrl, cancelUrl, cancellationToken);
+        var checkoutResult = await _gatewayService.CreateCheckoutSessionAsync(
+            session.SessionId, 
+            session.Amount, 
+            session.Currency, 
+            request.IdempotencyKey,
+            cancellationToken);
         
         if (checkoutResult.IsFailure)
         {

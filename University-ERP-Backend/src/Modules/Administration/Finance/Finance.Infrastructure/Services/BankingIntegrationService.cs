@@ -2,6 +2,7 @@ namespace Finance.Infrastructure.Services;
 
 using Finance.Application.Abstractions;
 using SharedKernel.Domain.Primitives;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
@@ -30,7 +31,6 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
         var requestBody = new
         {
             sourceAccountNumber = paymentToken,
-            destinationAccountNumber = "UNIV-ACCT-001",
             amount = amount,
             idempotencyKey = System.Guid.NewGuid().ToString(),
             description = "University ERP Payment",
@@ -64,13 +64,13 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
         }
     }
     
-    public async Task<Result<string>> CreateCheckoutSessionAsync(string sessionId, decimal amount, string currency, string successUrl, string cancelUrl, CancellationToken cancellationToken)
+    public async Task<Result<string>> CreateCheckoutSessionAsync(string sessionId, decimal amount, string currency, string? idempotencyKey = null, CancellationToken cancellationToken = default)
     {
         try
         {
             var payload = new
             {
-                sourceAccountId = "UNIV-ACCT-001",
+                sourceAccountId = _options.SourceAccountId,
                 amount = amount,
                 description = $"Payment Session {sessionId}",
                 merchantReference = sessionId
@@ -78,6 +78,9 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
 
             using var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/api/v1/gateway/payments/intents");
             requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _options.SecretKey);
+            
+            string safeBankKey = GenerateDeterministicKey(idempotencyKey ?? sessionId);
+            requestMessage.Headers.TryAddWithoutValidation("Idempotency-Key", safeBankKey);
 
             requestMessage.Content = JsonContent.Create(payload);
             
@@ -95,12 +98,30 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
             }
             
             var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+            if ((int)response.StatusCode >= 500)
+            {
+                return Result<string>.Failure(new Error("PaymentGateway.Unavailable", $"Failed to create checkout session: error code: {(int)response.StatusCode}. Details: {errorContent}"));
+            }
+
             return Result<string>.Failure(new Error("Finance.PaymentGatewayError", $"Failed to create checkout session: {errorContent}"));
         }
         catch (HttpRequestException ex)
         {
-            return Result<string>.Failure(new Error("Finance.BankingConnectionError", $"Could not connect to payment gateway: {ex.Message}"));
+            return Result<string>.Failure(new Error("PaymentGateway.NetworkError", $"Failed to connect to payment gateway: error code: 502. Details: {ex.Message}"));
         }
+    }
+
+    private static string GenerateDeterministicKey(string clientKey)
+    {
+        if (string.IsNullOrWhiteSpace(clientKey))
+        {
+            return System.Guid.NewGuid().ToString();
+        }
+
+        using var sha256 = System.Security.Cryptography.SHA256.Create();
+        var hashBytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes($"BANK_PREFIX_{clientKey}"));
+        
+        return new System.Guid(hashBytes.Take(16).ToArray()).ToString();
     }
     
     public Task<Result<string>> CreateCheckoutSessionAsync(string transactionId, decimal amount, string gatewayName, CancellationToken cancellationToken)

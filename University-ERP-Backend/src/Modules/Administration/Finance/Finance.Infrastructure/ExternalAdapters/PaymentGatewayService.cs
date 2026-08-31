@@ -93,7 +93,7 @@ public class PaymentGatewayService : IPaymentGatewayService
         return Task.FromResult(Result<string>.Success(Guid.NewGuid().ToString("N")));
     }
 
-    public Task<Result<string>> CreateCheckoutSessionAsync(string sessionId, decimal amount, string currency, string successUrl, string cancelUrl, CancellationToken cancellationToken)
+    public Task<Result<string>> CreateCheckoutSessionAsync(string sessionId, decimal amount, string currency, string? idempotencyKey = null, CancellationToken cancellationToken = default)
     {
         return CreateCheckoutSessionAsync(sessionId, amount, "Paynamics", cancellationToken);
     }

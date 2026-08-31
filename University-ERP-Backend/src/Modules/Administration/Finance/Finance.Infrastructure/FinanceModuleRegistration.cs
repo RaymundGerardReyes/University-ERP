@@ -6,6 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Finance.Application.Abstractions;
 using Finance.Infrastructure.Persistence;
 using Finance.Infrastructure.Repositories;
+using Polly;
+using Polly.Extensions.Http;
+using System;
+using System.Net.Http;
 
 public static class FinanceModuleRegistration
 {
@@ -39,13 +43,26 @@ public static class FinanceModuleRegistration
             var options = provider.GetRequiredService<Microsoft.Extensions.Options.IOptions<PaymentGatewayOptions>>().Value;
             if (string.IsNullOrEmpty(options.BaseUrl))
             {
-                throw new System.InvalidOperationException("PaymentGateway:BaseUrl is missing in the configuration.");
+                throw new InvalidOperationException("PaymentGateway:BaseUrl is missing in the configuration.");
+            }
+            if (string.IsNullOrEmpty(options.SourceAccountId))
+            {
+                throw new InvalidOperationException("PaymentGateway:SourceAccountId is missing in the configuration.");
             }
             
-            client.BaseAddress = new System.Uri(options.BaseUrl);
-            client.Timeout = System.TimeSpan.FromSeconds(30);
-        });
+            client.BaseAddress = new Uri(options.BaseUrl);
+            client.Timeout = TimeSpan.FromSeconds(30);
+        })
+        .AddPolicyHandler(GetRetryPolicy());
 
         return services;
+    }
+
+    private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+    {
+        return HttpPolicyExtensions
+            .HandleTransientHttpError()
+            .WaitAndRetryAsync(3, retryAttempt => 
+                TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
     }
 }
