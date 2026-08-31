@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <!--
+    This project compiles the generated traceability scaffolds only.
+    Generated classes intentionally contain no test framework attributes
+    yet (no [Fact]/[Theory]) because their content is still comment-only
+    guidance plus source references. Once you add real xunit test methods
+    to a generated file, wire that module's own <Module>.Tests.csproj
+    (see generate-unit-test-templates.sh) with the needed package
+    references, or add them here if you keep using this shared project.
+  -->
+</Project>
