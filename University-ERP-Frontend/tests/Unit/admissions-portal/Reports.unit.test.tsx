@@ -205,4 +205,60 @@ describe('Admissions Portal - Reports Unit Tests', () => {
         expect(screen.getByText('↑ 2.4% vs last year')).toBeDefined();
         expect(screen.getByText('↓ 1.2 days slower')).toBeDefined();
     });
+
+    // Data Export & Format
+    it.todo('should securely dispatch a request to generate a PDF export of the full analytics dashboard');
+    it.todo('should properly format the raw JSON data into a valid, downloadable CSV file');
+    it.todo('should correctly apply the selected filters (e.g. Fall 2026) to the exported payload');
+    it.todo('should cleanly display a loading spinner while a heavy multi-page PDF report is being generated');
+    it.todo('should enforce strict rate-limiting on report generation to prevent server exhaustion');
+
+    // Date Range Filters
+    it.todo('should accurately filter the application volume chart based on a custom "Last 30 Days" range');
+    it.todo('should correctly resolve leap year anomalies when calculating year-over-year metrics');
+    it.todo('should disable the "Apply Filter" button if the End Date is chronologically before the Start Date');
+    it.todo('should cleanly map ISO-8601 timestamps from the API into human-readable localized formats');
+    it.todo('should reset all visual widgets to their factory state when the "Clear Filters" button is clicked');
+
+    // Chart Interactions & Rendering
+    it.todo('should render an interactive tooltip showing precise counts when hovering over a D3 bar chart');
+    it.todo('should securely redraw the chart canvas without memory leaks when window size changes');
+    it.todo('should dynamically color-code demographic pie charts utilizing a standard, high-contrast palette');
+    it.todo('should cleanly display a "No Data Available" fallback graphic if a specific chart array is empty');
+    it.todo('should allow the user to toggle a specific dataset (e.g. "Waitlisted") on and off within the chart legend');
+
+    // Cohort Comparisons
+    it.todo('should render a dual-axis line chart comparing current intake velocity vs the previous academic year');
+    it.todo('should correctly calculate and highlight the delta (percentage growth or decline) between two cohorts');
+    it.todo('should strictly isolate the comparison to identical timeframes (e.g. Day 1 to Day 30 of both intakes)');
+    it.todo('should allow comparing male vs female conversion rates side-by-side in a grouped bar chart');
+    it.todo('should cleanly handle scenarios where the historical baseline dataset is completely missing');
+
+    // Custom Report Builder
+    it.todo('should allow a manager to drag-and-drop distinct metric blocks to build a custom tabular report');
+    it.todo('should validate that at least one primary key (e.g. Application ID) is selected in the custom report');
+    it.todo('should save the custom report JSON schema to the database for future one-click re-runs');
+    it.todo('should accurately execute complex aggregations (SUM, AVG) defined in the custom report schema');
+    it.todo('should seamlessly render a preview of the first 10 rows before executing the full custom report query');
+
+    // Access & RBAC
+    it.todo('should strictly block standard admission officers from viewing highly sensitive financial reports');
+    it.todo('should automatically redact Personally Identifiable Information (PII) from generic aggregate reports');
+    it.todo('should instantly crash or return a 403 Forbidden if a bypassed UI attempts to fetch admin metrics');
+    it.todo('should allow the Admissions Director to explicitly grant temporary report access to an auditor');
+    it.todo('should log a permanent audit trail indicating exactly who downloaded which report and when');
+
+    // Data Accuracy & Caching
+    it.todo('should accurately reflect real-time data if the "Live Data" toggle is enabled');
+    it.todo('should effectively utilize local cache to render heavy reports instantly on subsequent visits');
+    it.todo('should visually indicate to the user if the displayed report data is heavily cached/stale (> 24 hours)');
+    it.todo('should provide a manual "Force Refresh" button to explicitly bypass the cache and fetch fresh data');
+    it.todo('should cleanly recover and retry the fetch request if the analytics microservice times out');
+
+    // Scheduled Reports
+    it.todo('should allow an admin to configure a weekly automated email delivery of the Pipeline Funnel report');
+    it.todo('should properly validate the cron-expression syntax for the automated report scheduler');
+    it.todo('should correctly attach the generated PDF report to the scheduled automated email payload');
+    it.todo('should allow suspending or pausing a scheduled report without permanently deleting its configuration');
+    it.todo('should alert the system administrator if a scheduled automated report completely fails to generate');
 });

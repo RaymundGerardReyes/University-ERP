@@ -220,4 +220,60 @@ describe('Admissions Portal - Fees Unit Tests', () => {
         
         expect(window.alert).toHaveBeenCalledWith('Viewing details for invoice ID: INV-TEST-99');
     });
+
+  // Application Fee UI & Status
+  it.todo('should render the applicant\'s Fee Status dashboard without crashing');
+  it.todo('should accurately display the standard non-refundable application fee amount');
+  it.todo('should display a prominent "Unpaid" badge if no transaction history exists');
+  it.todo('should instantly update the badge to "Paid" upon receiving a successful mock webhook');
+  it.todo('should strictly block submission of the final application if the fee remains unpaid');
+
+  // Fee Waivers & Exemptions
+  it.todo('should allow an applicant to input a promotional Fee Waiver code');
+  it.todo('should successfully validate an active Fee Waiver code against the database');
+  it.todo('should correctly apply a 100% discount and bypass the payment gateway if a full waiver is used');
+  it.todo('should render an error message if an expired or invalid Fee Waiver code is entered');
+  it.todo('should allow an Admissions Manager to manually override and exempt a specific applicant\'s fee');
+
+  // Gateway Integrations (Stripe/PayPal)
+  it.todo('should securely render the external Stripe iframe/component for credit card entry');
+  it.todo('should securely generate a distinct client-secret token for the Stripe intent');
+  it.todo('should gracefully handle a mock "Insufficient Funds" error from the payment gateway');
+  it.todo('should cleanly redirect the user to PayPal if the alternative payment method is selected');
+  it.todo('should securely lock the UI while the asynchronous payment authorization is processing');
+
+  // Receipt Generation & Emails
+  it.todo('should instantly generate a standardized PDF Receipt upon successful payment');
+  it.todo('should map the transaction reference ID uniquely onto the PDF Receipt');
+  it.todo('should send an automated confirmation email to the applicant containing the receipt attachment');
+  it.todo('should allow the applicant to historically download past receipts from their portal');
+  it.todo('should accurately parse and display the specific date and time the payment cleared');
+
+  // Refunds & Chargebacks
+  it.todo('should allow a SuperAdmin to explicitly initiate a manual refund for a duplicate charge');
+  it.todo('should flag an applicant\'s profile in red if a bank Chargeback is detected via webhook');
+  it.todo('should automatically revert the application status to "Pending Payment" upon a chargeback');
+  it.todo('should log an unalterable financial audit trail event whenever a refund is processed');
+  it.todo('should cleanly disable the Refund button if 30 days have passed since the original transaction');
+
+  // Multi-Currency Conversions
+  it.todo('should allow international applicants to view the fee in their native currency');
+  it.todo('should dynamically fetch the daily exchange rate from the foreign exchange API');
+  it.todo('should accurately calculate and append the necessary cross-border transaction margins');
+  it.todo('should correctly process the payment payload in USD regardless of the display currency');
+  it.todo('should render a localized error if the exchange rate API fails to respond');
+
+  // Reconciliation & Finance Sync
+  it.todo('should successfully package daily fee transactions into a batch payload');
+  it.todo('should securely synchronize the daily batch payload to the core Finance module');
+  it.todo('should correctly match gateway payouts to the internal ledger to ensure 100% reconciliation');
+  it.todo('should flag a critical discrepancy if the gateway total differs from the internal DB total');
+  it.todo('should allow exporting a CSV of all fee transactions for a specific date range');
+
+  // Late Fees & Penalties
+  it.todo('should accurately calculate a late penalty if the enrollment deposit is submitted past the deadline');
+  it.todo('should dynamically update the total amount due to include the accrued late fee');
+  it.todo('should allow a Dean to manually waive a late penalty with a written justification');
+  it.todo('should generate a distinct line item on the PDF receipt specifying the "Late Penalty"');
+  it.todo('should automatically dispatch a warning email 48 hours before late fees are applied');
 });

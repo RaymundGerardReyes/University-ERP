@@ -124,4 +124,60 @@ describe('Applicant Portal - Core Scenarios', () => {
         // Expect the AuthGuard to block access (UI will render the 403 fallback configured in AuthGuard)
         expect(screen.queryByText('Applicant Dashboard')).toBeNull();
     });
+
+  // Account Creation & Onboarding
+  it.todo('should successfully mock the submission of the initial account creation payload');
+  it.todo('should strictly enforce strong password complexity (e.g., 1 uppercase, 1 number, 1 special character)');
+  it.todo('should explicitly block the creation of an account if the email is already registered in the system');
+  it.todo('should render an interactive onboarding modal explaining the application process on first login');
+  it.todo('should allow the user to easily skip the onboarding tutorial and go straight to the dashboard');
+
+  // Email/Phone Verification
+  it.todo('should lock all core application features until the user\'s primary email address is verified');
+  it.todo('should seamlessly trigger a request to resend the 6-digit email verification OTP');
+  it.todo('should securely enforce a 60-second cooldown timer before the user can request another OTP');
+  it.todo('should correctly validate a mock 6-digit OTP and instantly unlock the dashboard');
+  it.todo('should allow the user to securely bind and verify a mobile phone number for SMS alerts');
+
+  // Program Discovery & Selection
+  it.todo('should render a rich catalog of available Academic Programs for the applicant to browse');
+  it.todo('should accurately filter the program catalog based on degree level (e.g., Undergraduate vs Masters)');
+  it.todo('should allow the applicant to search for a program using a fuzzy-search text input');
+  it.todo('should explicitly grey out and disable selection for programs that have reached maximum capacity');
+  it.todo('should cleanly pass the selected Program ID context into the initialization of the Application Form');
+
+  // Multi-Application Handling
+  it.todo('should elegantly allow an applicant to apply to two distinct programs simultaneously (if policies permit)');
+  it.todo('should clearly separate the progress and status of Application A vs Application B on the dashboard');
+  it.todo('should allow the applicant to completely withdraw a specific draft application without affecting the others');
+  it.todo('should definitively prevent an applicant from submitting a second application to the exact same program');
+  it.todo('should cleanly aggregate the total application fees owed for all active drafts during checkout');
+
+  // Notification Center
+  it.todo('should render a dedicated "Notification Bell" icon with an accurate unread badge count');
+  it.todo('should open a dropdown displaying a chronological list of all system alerts and messages');
+  it.todo('should cleanly mark a specific notification as "Read" when the user clicks on it');
+  it.todo('should securely connect to a WebSocket to receive real-time push notifications while the portal is open');
+  it.todo('should allow the user to click "Mark all as read" to instantly clear the unread badge counter');
+
+  // Communication History
+  it.todo('should provide a dedicated "My Messages" inbox strictly for official university communications');
+  it.todo('should render a full back-and-forth thread if the applicant replies to an admission officer\'s query');
+  it.todo('should cleanly allow the applicant to attach a PDF document to their outbound message');
+  it.todo('should explicitly block the applicant from sending executable files (.exe) via the message portal');
+  it.todo('should correctly display localized timestamps for every message sent and received');
+
+  // Technical Support / Helpdesk
+  it.todo('should render a floating "Help / Support" widget in the bottom corner of the portal');
+  it.todo('should successfully submit a mock technical support ticket containing the user\'s exact browser and OS metadata');
+  it.todo('should intelligently recommend FAQ articles based on the page the user is currently viewing (e.g., Payment FAQs)');
+  it.todo('should gracefully handle an offline state by informing the user that support tickets cannot be sent right now');
+  it.todo('should allow the user to attach a screenshot to their technical support ticket for easier debugging');
+
+  // Account Deletion & GDPR
+  it.todo('should provide a clear, accessible option for the applicant to request complete account deletion (Right to be Forgotten)');
+  it.todo('should explicitly warn the user that deleting their account will instantly withdraw all pending applications');
+  it.todo('should require the user to manually type "DELETE" as a hard confirmation before executing the request');
+  it.todo('should securely dispatch the GDPR deletion payload and immediately terminate the active session');
+  it.todo('should cleanly prevent account deletion if the applicant is actively enrolled and owes a financial balance');
 });

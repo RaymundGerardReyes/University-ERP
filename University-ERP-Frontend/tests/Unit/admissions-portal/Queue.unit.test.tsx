@@ -252,4 +252,60 @@ describe('Admissions Portal - Queue Unit Tests', () => {
         expect(cols[2].querySelector('span')?.textContent).toBe('0');
         expect(cols[3].querySelector('span')?.textContent).toBe('0');
     });
+
+  // Real-time Queue Dashboard
+  it.todo('should render the central Admissions Queue board without crashing');
+  it.todo('should connect to the WebSocket and reflect new incoming applications instantly');
+  it.todo('should cleanly render Kanban-style swimlanes for different processing stages');
+  it.todo('should allow dragging and dropping an application card to a different stage');
+  it.todo('should display a loading overlay when the queue data is being synchronized');
+
+  // Priority Triage & Sorting
+  it.todo('should strictly pin "High Priority" flagged applications to the top of the queue');
+  it.todo('should dynamically color-code application cards based on their time-in-queue (e.g., Red > 5 days)');
+  it.todo('should allow sorting a specific lane by "Date Submitted" ascending or descending');
+  it.todo('should correctly filter the overarching queue by specific Academic Programs');
+  it.todo('should display a visual warning icon for applications with missing critical documents');
+
+  // Assignment & Re-assignment
+  it.todo('should allow a manager to explicitly assign an application to a specific officer from the queue');
+  it.todo('should automatically assign incoming applications to officers using a Round-Robin algorithm');
+  it.todo('should cleanly reassign an application if the originally assigned officer goes "Offline"');
+  it.todo('should visually display the assigned officer\'s avatar on the application card');
+  it.todo('should prevent two officers from simultaneously opening and claiming the exact same application');
+
+  // Bottleneck Detection
+  it.todo('should render a specific "Bottleneck" warning if a swimlane exceeds 500 unassigned applications');
+  it.todo('should calculate and display the average processing time for the "Initial Review" lane');
+  it.todo('should allow exporting a CSV report of the slowest processed applications over the last 30 days');
+  it.todo('should notify the Admissions Director if the overall queue volume spikes unexpectedly by 50%');
+  it.todo('should temporarily lock intake of new applications if the queue hits a hard physical capacity limit');
+
+  // Service Level Agreements (SLAs)
+  it.todo('should display a countdown timer on applications nearing their 48-hour SLA deadline');
+  it.todo('should trigger an automated escalation email to a manager if the SLA is breached');
+  it.todo('should correctly pause the SLA timer when an application is waiting for the applicant to reply');
+  it.todo('should track the exact percentage of applications that met their SLA for the current week');
+  it.todo('should allow SuperAdmins to dynamically update the SLA hour limit configuration');
+
+  // Multi-Stage Queue Routing
+  it.todo('should automatically route an application to the "Medical Review" queue if a disability is flagged');
+  it.todo('should route international applications to a dedicated Visa/Immigration processing queue');
+  it.todo('should ensure the application accurately maintains its state when transitioning between distinct queues');
+  it.todo('should cleanly merge sub-queue approvals back into the main final decision queue');
+  it.todo('should securely obscure sensitive queues (e.g., Disciplinary Review) from unauthorized officers');
+
+  // Bulk Queue Actions
+  it.todo('should allow selecting multiple application cards across a single swimlane');
+  it.todo('should execute a bulk-assignment of 20 applications to a newly onboarded officer');
+  it.todo('should successfully execute a bulk-transition of 50 evaluated applications to "Pending Dean Approval"');
+  it.todo('should cleanly clear the selection context once a bulk action completes successfully');
+  it.todo('should gracefully handle partial failures during a bulk operation (e.g. 2 out of 50 failed to move)');
+
+  // Telemetry & Error Handling
+  it.todo('should log a strict audit trail every time an application is moved between queues manually');
+  it.todo('should gracefully render a fallback "Offline Mode" if the WebSocket connection drops');
+  it.todo('should queue offline movements locally and sync them once the network is restored');
+  it.todo('should catch and display a 409 Conflict if an officer attempts to move a locked application');
+  it.todo('should cleanly handle rendering 10,000+ items in the queue using DOM virtualization to prevent lag');
 });
