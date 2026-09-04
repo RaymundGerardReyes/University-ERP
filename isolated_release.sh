@@ -68,8 +68,8 @@ process_module() {
     echo "Committing: $commit_msg"
     git commit -m "$commit_msg"
 
-    # Only tag if the commit is NOT a chore or docs (per Semantic Versioning Rules)
-    if [[ "$commit_type" != "chore" && "$commit_type" != "docs" ]]; then
+    # Only tag if the commit is NOT a chore, docs, or test (per Semantic Versioning Rules)
+    if [[ "$commit_type" != "chore" && "$commit_type" != "docs" && "$commit_type" != "test" ]]; then
       local current_tag
       # Safely sort tags to find the absolute highest one matching the prefix
       current_tag=$(git tag -l "${tag_prefix}-v*" | sort -V | tail -n 1)
@@ -111,95 +111,40 @@ Bump reason: ${bump_reason}"
 
 echo "Starting isolated semantic versioning updates..."
 
-# ================= BACKEND MODULES =================
-process_module "academic" "backend-academic" "feat" "implement Registrar clearance queues, UserRegistered consumer, and LMS module registration" \
-  "University-ERP-Backend/src/Modules/Academic"
+# ================= BACKEND OPS =================
+process_module "backend-ops" "ops-backend" "feat" "configure Nginx site availability for ERP domains" \
+  "University-ERP-Backend/ops/nginx/sites-available"
 
-process_module "administration" "backend-administration" "fix" "resolve NovaBank 401 errors by migrating to Bearer token authentication" \
-  "University-ERP-Backend/src/Modules/Administration"
+# ================= FRONTEND APPS (Specific Files to avoid swallowing deleted tests) =================
+process_module "applicant-portal" "applicant-portal" "fix" "resolve enrollment payment processing pages" \
+  "University-ERP-Frontend/apps/applicant-portal/src/features/EnrollmentPayment/ApplicationFeePayment.page.tsx" \
+  "University-ERP-Frontend/apps/applicant-portal/src/features/EnrollmentPayment/EnrollmentPayment.page.tsx"
 
-process_module "platform" "backend-platform" "fix" "stabilize IdentityAccess login endpoint routing for strict network isolation" \
-  "University-ERP-Backend/src/Modules/Platform"
+process_module "registrar-portal" "registrar-portal" "fix" "stabilize enrollment activation flow" \
+  "University-ERP-Frontend/apps/registrar-portal/src/features/Admissions/EnrollmentActivation.page.tsx"
 
-process_module "student-lifecycle" "backend-studentlifecycle" "feat" "add admissions event handlers for enrollment transitions" \
-  "University-ERP-Backend/src/Modules/StudentLifecycle"
+# ================= FRONTEND TESTS =================
+# This catches all deleted *.test.tsx in apps/ and the new tests/ directory
+process_module "frontend-tests" "frontend-tests" "test" "migrate all test suites to centralized cross-portal architecture" \
+  "University-ERP-Frontend/apps" \
+  "University-ERP-Frontend/tests" \
+  "University-ERP-Frontend/vitest.config.ts" \
+  "generate-frontend-test-structure.sh"
 
-process_module "bootstrap" "backend-bootstrap" "chore" "update application settings for finance gateway configuration" \
-  "University-ERP-Backend/src/Bootstrap"
+# ================= FRONTEND INFRA =================
+process_module "frontend-infra" "frontend-infra" "chore" "update test runner configuration and dependencies" \
+  "University-ERP-Frontend/package.json" "University-ERP-Frontend/package-lock.json"
 
-process_module "backend-contracts" "backend-contracts" "feat" "define academic and student lifecycle integration event contracts for saga orchestration" \
-  "University-ERP-Backend/src/Contracts"
+# ================= ROOT INFRA & DOCS =================
+process_module "root-infra" "root-infra" "chore" "update port registry and docker compose environment" \
+  ".env.example" "PORT_REGISTRY.md" "docker-compose.yml"
 
-process_module "backend-ops" "ops-backend" "feat!" "harden Nginx routing with dynamic domain whitelisting and decoupled Cloudflare tunnel" \
-  "University-ERP-Backend/ops"
+process_module "docs" "docs" "docs" "restructure architecture documentation and task orchestration logs" \
+  "ERPstructure.md" "university-ERPstructure.md" "structure.md" "University-ERP-Backend/University-ERP-Backend.md" \
+  "Analysis_Task_Orchestration.md" "runtimelogs.md" "tests.logs" "commit.logs"
 
-process_module "backend-docs" "docs-backend" "docs" "update backend architectural structure" \
-  "University-ERP-Backend/structure.md"
-
-# ================= FRONTEND APPS =================
-process_module "admin-portal" "admin-portal" "fix" "parameterize environment URLs and stabilize portal routing" \
-  "University-ERP-Frontend/apps/admin-portal"
-
-process_module "admissions-portal" "admissions-portal" "fix" "parameterize environment URLs and stabilize portal routing" \
-  "University-ERP-Frontend/apps/admissions-portal"
-
-process_module "applicant-portal" "applicant-portal" "fix" "parameterize environment URLs and stabilize portal routing" \
-  "University-ERP-Frontend/apps/applicant-portal"
-
-process_module "faculty-portal" "faculty-portal" "fix" "parameterize environment URLs and stabilize portal routing" \
-  "University-ERP-Frontend/apps/faculty-portal"
-
-process_module "finance-console" "finance-console" "fix" "parameterize environment URLs and stabilize portal routing" \
-  "University-ERP-Frontend/apps/finance-console"
-
-process_module "payment-gateway" "payment-gateway" "fix" "parameterize environment URLs and stabilize portal routing" \
-  "University-ERP-Frontend/apps/payment-gateway"
-
-process_module "governance-console" "governance-console" "fix" "parameterize environment URLs and stabilize portal routing" \
-  "University-ERP-Frontend/apps/governance-console"
-
-process_module "identity-portal" "identity-portal" "fix" "align identity-portal UserLogin flow with dynamic SSO redirection constraints" \
-  "University-ERP-Frontend/apps/identity-portal"
-
-process_module "library-portal" "library-portal" "fix" "parameterize environment URLs and stabilize portal routing" \
-  "University-ERP-Frontend/apps/library-portal"
-
-process_module "lms-web" "lms-web" "fix" "parameterize environment URLs and stabilize portal routing" \
-  "University-ERP-Frontend/apps/lms-web"
-
-process_module "platform-console" "platform-console" "fix" "parameterize environment URLs and stabilize portal routing" \
-  "University-ERP-Frontend/apps/platform-console"
-
-process_module "lms-offline-client" "lms-offline-client" "feat" "synchronize backend grade commands and update external identity adapters" \
-  "University-ERP-Frontend/clients/lms-offline-avalonia"
-
-# CRITICAL FIX: Fixed path to strictly use University-ERP-Frontend only
-process_module "registrar-portal" "registrar-portal" "fix" "parameterize environment URLs and stabilize portal routing" \
-  "University-ERP-Frontend/apps/registrar-portal"
-
-process_module "security-portal" "security-portal" "fix" "parameterize environment URLs and stabilize portal routing" \
-  "University-ERP-Frontend/apps/security-portal"
-
-process_module "student-portal" "student-portal" "fix" "parameterize environment URLs and stabilize portal routing" \
-  "University-ERP-Frontend/apps/student-portal"
-
-# ================= FRONTEND LIBS & CONFIG =================
-process_module "frontend-libs" "frontend-libs" "fix" "align finance API client with updated backend payment gateway contracts" \
-  "University-ERP-Frontend/libs"
-
-process_module "frontend-infra" "frontend-infra" "fix" "parameterize environment URLs and stabilize portal routing build configurations" \
-  "University-ERP-Frontend/package.json" "University-ERP-Frontend/package-lock.json" "University-ERP-Frontend/bootstrap.sh" "University-ERP-Frontend/Dockerfile.build-all" "University-ERP-Frontend/Dockerfile.applicant" "University-ERP-Frontend/Dockerfile.portal" "University-ERP-Frontend/tsconfig.app.base.json"
-
-# ================= ROOT INFRASTRUCTURE =================
-process_module "project-docs" "docs-project" "docs" "consolidate architecture documentation and update task orchestration logs" \
-  "CodebaseInfrastructure.md" "structure.md" "logs.md" "newupdate.md" "Analysis_Task_Orchestration.md" "ERPstructure.md" "SEMANTIC_VERSIONING_PROMPT.md" "universal-semantic-versioning-prompt.md" "university-erp-*.md" "University-ERP-Backend/University-ERP-Backend.md" "University-ERP-Frontend/University-ERP-Frontend.md" "University-ERP-Frontend/logs.md" "errorlogs.md"
-
-# Safely only add the release_all.sh script here (not the apps/ folder anymore!)
-process_module "project-ops" "ops-project" "fix" "ensure environment variables are decrypted before docker compose evaluation" \
-  "release_all.sh" "isolated_release.sh" "docker-compose.yml" ".env.example" "health-logger.sh" "scaffold-frontend-cloudflare-nginx.sh" "scaffold_features.ps1" "setup_structure.ps1" "fix-encodings.js" ".dockerignore" "PORT_REGISTRY.md" ".port-audit.json" "scripts/" "package.json"
-
-process_module "project-config" "config-project" "chore" "update root gitignore rules" \
-  ".gitignore"
+process_module "release-scripts" "ops-release" "chore" "update release orchestration for test migration" \
+  "isolated_release.sh"
 
 echo "----------------------------------------------------"
 echo "All applicable modules have been safely committed and strictly isolated tags have been generated!"
