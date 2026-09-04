@@ -1,219 +1,132 @@
-import React, { useState } from 'react';
-import { PageHeader, Card, Button, Badge } from '@university-erp/ui-kit';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { admissionsApi, financeApi, financeBillingApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
-import { financeBillingApi, admissionsApi, apiClient } from '@university-erp/api-clients';
-import { useQuery } from '@tanstack/react-query';
-
-type PaymentStatus = 'pending' | 'paid' | 'awaiting_cash' | 'error';
-type PaymentMethod = 'online' | 'cash' | null;
+import { Badge, Button, Card, PageHeader } from '@university-erp/ui-kit';
+import axios from 'axios';
+import React, { useState } from 'react';
 
 export const ApplicationFeePaymentPage: React.FC = () => {
     const { identity } = useAuth();
+    const [paymentMethod, setPaymentMethod] = useState<'online' | 'cash' | null>(null);
+    const [generatedToken, setGeneratedToken] = useState<string | null>(null);
+    const [actionError, setActionError] = useState<string | null>(null);
 
-    const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
-    const [processing, setProcessing] = useState<boolean>(false);
-    const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>('pending');
-    const [transactionId, setTransactionId] = useState<string | null>(null);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-    // Fetch the actual application data to retrieve the true Application ID
-    const { data: journey, isLoading } = useQuery({
-        queryKey: ['applicantJourney', identity?.id],
+    const { data: journey, isLoading: isJourneyLoading, isError: isJourneyError } = useQuery({
+        queryKey: ['admissions', 'journey', identity?.id],
         queryFn: () => admissionsApi.getApplicantJourney(identity!.id),
         enabled: !!identity?.id
     });
 
-    const handleRerouteToFinance = (tokenId: string | null) => {
-        if (!tokenId) return;
-        const baseUrl = import.meta.env.VITE_FINANCE_CONSOLE_URL || '/finance-console';
-        const financeConsoleUrl = `${baseUrl}/cashier/payments?token=${encodeURIComponent(tokenId)}`;
-        window.open(financeConsoleUrl, '_blank', 'noopener,noreferrer');
-    };
-
-    const handleOnlinePayment = async () => {
-        setProcessing(true);
-        setErrorMessage(null);
-
-        try {
-            const trueApplicationId = journey?.applicantId;
-
-            if (!trueApplicationId) {
-                throw new Error("Application ID could not be found. Please ensure your application is submitted.");
-            }
-
-            // Create a Payment Session in Finance Bounded Context
-            const idempotencyKey = crypto.randomUUID();
-            const response = await apiClient.post('/finance/payment-sessions', {
-                invoiceId: `APP-FEE-${trueApplicationId}`,
-                applicantId: identity?.id || trueApplicationId,
-                amount: 50.00,
+    const onlinePaymentMutation = useMutation({
+        mutationFn: async () => {
+            if (!journey?.applicantId) throw new Error("Application identifier not found.");
+            
+            return await financeApi.createPaymentSession({
+                invoiceId: journey.applicantId, 
+                applicantId: identity!.id,
+                amount: 50.00, 
                 purpose: 'Application Processing Fee'
-            }, {
-                headers: {
-                    'Idempotency-Key': idempotencyKey
-                }
             });
-
-            const checkoutUrl = response.data.checkoutUrl;
-
-            if (checkoutUrl) {
-                window.location.href = checkoutUrl;
+        },
+        onSuccess: (data) => {
+            if (data.checkoutUrl) {
+                window.location.href = data.checkoutUrl;
             } else {
-                throw new Error("Failed to retrieve checkout URL from the payment gateway.");
+                setActionError("Gateway configuration error: No checkout URL returned.");
             }
-        } catch (error: any) {
-            console.error("Online payment session generation failed:", error);
-            setPaymentStatus('error');
-            setErrorMessage(error?.response?.data?.message || error?.message || "Failed to create payment session. Please try again.");
-        } finally {
-            setProcessing(false);
+        },
+        onError: (error: unknown) => {
+            let msg = "Failed to initiate online payment session.";
+            if (axios.isAxiosError(error)) msg = error.response?.data?.message || error.message;
+            else if (error instanceof Error) msg = error.message;
+            setActionError(msg);
         }
-    };
+    });
 
-    const handleCashPayment = async () => {
-        setProcessing(true);
-        setErrorMessage(null);
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-        const generatedToken = `TXN-CSH-${Math.floor(Math.random() * 1000000)}`;
-        setTransactionId(generatedToken);
-
-        try {
-            const existingTokensRaw = localStorage.getItem('pending_cash_transactions');
-            const existingTokens = existingTokensRaw ? JSON.parse(existingTokensRaw) : [];
-            
-            const trueApplicationId = journey?.applicantId || 'APP-DEFAULT-001';
-
-            existingTokens.push({
-                transactionId: generatedToken,
-                applicantId: trueApplicationId,
-                applicantName: identity?.name || 'Guest Applicant',
-                amount: 50.00,
-                status: 'Pending',
-                date: new Date().toISOString()
-            });
-            
-            localStorage.setItem('pending_cash_transactions', JSON.stringify(existingTokens));
-            setPaymentStatus('awaiting_cash');
-        } catch (error) {
-            console.error("Failed to write to local shared state:", error);
-            setPaymentStatus('error');
-            setErrorMessage("Failed to generate cash token.");
-        } finally {
-            setProcessing(false);
+    const cashTokenMutation = useMutation({
+        mutationFn: async () => {
+            if (!journey?.applicantId) throw new Error("Application identifier not found.");
+            return await financeBillingApi.generateCashToken(journey.applicantId, 50.00);
+        },
+        onSuccess: (token) => setGeneratedToken(token),
+        onError: (error: unknown) => {
+            let msg = "Failed to generate official cashier token.";
+            if (axios.isAxiosError(error)) msg = error.response?.data?.message || error.message;
+            else if (error instanceof Error) msg = error.message;
+            setActionError(msg);
         }
-    };
+    });
 
     const handleSubmit = () => {
-        if (paymentMethod === 'online') handleOnlinePayment();
-        if (paymentMethod === 'cash') handleCashPayment();
+        setActionError(null);
+        if (paymentMethod === 'online') onlinePaymentMutation.mutate();
+        if (paymentMethod === 'cash') cashTokenMutation.mutate();
     };
 
-    if (isLoading) {
-        return <div className="skeleton" style={{ height: '400px', borderRadius: 'var(--radius-lg)' }} />;
-    }
-
-    if (paymentStatus === 'paid') {
+    if (isJourneyLoading) return <div className="skeleton" style={{ height: '400px', borderRadius: 'var(--radius-lg)' }} />;
+    if (isJourneyError || !journey) {
         return (
-            <div className="fade-in stub-page">
-                <div className="stub-icon">✅</div>
-                <div className="stub-title">Payment Successful</div>
-                <div className="stub-subtitle" style={{ marginBottom: 'var(--space-4)' }}>
-                    Your application fee has been processed securely. Your unique Transaction ID is <strong>{transactionId}</strong>.
-                </div>
-                <Badge colorScheme="success" style={{ marginBottom: 'var(--space-6)' }}>Requirement Complete</Badge>
-                
-                <Button 
-                    variant="outline" 
-                    onClick={() => handleRerouteToFinance(transactionId)}
-                >
-                    Verify Receipt in Finance Console ↗
-                </Button>
+            <div className="stub-page fade-in">
+                <div className="stub-title">Application Unavailable</div>
+                <div className="stub-subtitle">Unable to load application details. Please ensure your intake form is submitted.</div>
             </div>
         );
     }
 
-    if (paymentStatus === 'awaiting_cash') {
+    if (journey.applicationFeeStatus === 'Paid') {
+        return (
+            <div className="fade-in stub-page">
+                <div className="stub-title" style={{ color: 'var(--success-text)' }}>Payment Settled</div>
+                <div className="stub-subtitle">Your application fee has been verified by the Finance Office.</div>
+                <Badge colorScheme="success" style={{ marginTop: 'var(--space-4)' }}>Requirement Complete</Badge>
+            </div>
+        );
+    }
+
+    if (generatedToken) {
         return (
             <div className="fade-in">
-                <PageHeader 
-                    title="Transaction Stub Generated" 
-                    subtitle="Please present this token at the University Finance Office to clear your fee." 
-                />
+                <PageHeader title="Transaction Stub Generated" subtitle="Please present this token at the University Cashier." />
                 <Card style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center', borderStyle: 'dashed', borderWidth: '2px' }}>
-                    <h2 style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.85rem' }}>
-                        Queue Ticket / Transaction Stub
-                    </h2>
+                    <h2 style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.85rem' }}>Queue Ticket</h2>
                     <div style={{ margin: 'var(--space-6) 0' }}>
                         <span style={{ fontSize: '1rem', color: 'var(--text-secondary)' }}>Amount Due:</span>
                         <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--brand-primary)' }}>$50.00</div>
                     </div>
                     <div style={{ background: 'var(--bg-elevated)', padding: 'var(--space-4)', borderRadius: 'var(--radius-md)' }}>
-                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 'var(--space-2)' }}>
-                            Your Transaction ID
-                        </div>
-                        <div style={{ fontSize: '1.5rem', fontFamily: "'JetBrains Mono', monospace", color: 'var(--text-bright)', letterSpacing: '0.05em' }}>
-                            {transactionId}
-                        </div>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 'var(--space-2)' }}>Your Transaction Reference</div>
+                        <div style={{ fontSize: '1.5rem', fontFamily: "'JetBrains Mono', monospace", color: 'var(--text-bright)' }}>{generatedToken}</div>
                     </div>
                     <p style={{ marginTop: 'var(--space-6)', fontSize: '0.85rem', color: 'var(--warning-text)', marginBottom: 'var(--space-4)' }}>
                         Status: Awaiting Cash Payment Verification
                     </p>
-
-                    <Button 
-                        variant="primary" 
-                        style={{ width: '100%' }}
-                        onClick={() => handleRerouteToFinance(transactionId)}
-                    >
-                        Process at Finance Console ↗
-                    </Button>
                 </Card>
             </div>
         );
     }
 
+    const isProcessing = onlinePaymentMutation.isPending || cashTokenMutation.isPending;
+
     return (
         <div className="fade-in">
-            <PageHeader 
-                title="Application Fee Payment" 
-                subtitle="Select a payment method to fulfill your admission requirements." 
-            />
+            <PageHeader title="Application Fee Payment" subtitle="Select a payment method to fulfill your admission requirements." />
             
-            {paymentStatus === 'error' && (
+            {actionError && (
                 <div style={{ padding: 'var(--space-4)', marginBottom: 'var(--space-4)', background: 'var(--danger-bg)', border: '1px solid var(--danger-border)', borderRadius: 'var(--radius-md)', color: 'var(--danger-text)' }}>
-                    <strong>Error:</strong> {errorMessage}
+                    <strong>System Error:</strong> {actionError}
                 </div>
             )}
 
             <div className="grid-2 fade-in-delay-1">
-                <Card 
-                    style={{ 
-                        cursor: 'pointer', 
-                        borderColor: paymentMethod === 'online' ? 'var(--brand-primary)' : 'var(--border-color)',
-                        boxShadow: paymentMethod === 'online' ? 'var(--shadow-glow)' : 'var(--shadow-card)'
-                    }}
-                    onClick={() => setPaymentMethod('online')}
-                >
+                <Card style={{ cursor: 'pointer', borderColor: paymentMethod === 'online' ? 'var(--brand-primary)' : 'var(--border-color)', boxShadow: paymentMethod === 'online' ? 'var(--shadow-glow)' : 'var(--shadow-card)' }} onClick={() => setPaymentMethod('online')}>
                     <div className="card-accent-top" style={{ opacity: paymentMethod === 'online' ? 1 : 0 }} />
-                    <h3 style={{ marginBottom: 'var(--space-2)' }}>Online Bank Transfer</h3>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                        Process your payment dynamically via our secure online gateway.
-                    </p>
+                    <h3 style={{ marginBottom: 'var(--space-2)' }}>Online Payment Gateway</h3>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Process your payment securely via the university's unified gateway.</p>
                 </Card>
-
-                <Card 
-                    style={{ 
-                        cursor: 'pointer', 
-                        borderColor: paymentMethod === 'cash' ? 'var(--brand-primary)' : 'var(--border-color)',
-                        boxShadow: paymentMethod === 'cash' ? 'var(--shadow-glow)' : 'var(--shadow-card)'
-                    }}
-                    onClick={() => setPaymentMethod('cash')}
-                >
+                <Card style={{ cursor: 'pointer', borderColor: paymentMethod === 'cash' ? 'var(--brand-primary)' : 'var(--border-color)', boxShadow: paymentMethod === 'cash' ? 'var(--shadow-glow)' : 'var(--shadow-card)' }} onClick={() => setPaymentMethod('cash')}>
                     <div className="card-accent-top" style={{ opacity: paymentMethod === 'cash' ? 1 : 0 }} />
-                    <h3 style={{ marginBottom: 'var(--space-2)' }}>Cash at Finance Office</h3>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                        Generate a transaction stub to pay in person at the cashier desk.
-                    </p>
+                    <h3 style={{ marginBottom: 'var(--space-2)' }}>Over-the-Counter Cash</h3>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Generate a secure transaction stub to present at the on-campus Cashier.</p>
                 </Card>
             </div>
 
@@ -223,14 +136,8 @@ export const ApplicationFeePaymentPage: React.FC = () => {
                         <span className="data-label">Total Fee:</span>
                         <span className="data-value" style={{ fontSize: '1.5rem', color: 'var(--text-bright)' }}>$50.00</span>
                     </div>
-                    <Button 
-                        variant="primary" 
-                        size="large" 
-                        style={{ width: '100%' }}
-                        disabled={!paymentMethod || processing || !journey}
-                        onClick={handleSubmit}
-                    >
-                        {processing ? 'Processing Request...' : 'Proceed with Payment'}
+                    <Button variant="primary" size="large" style={{ width: '100%', justifyContent: 'center' }} disabled={!paymentMethod || isProcessing} onClick={handleSubmit}>
+                        {isProcessing ? 'Processing Request...' : 'Proceed with Payment'}
                     </Button>
                 </div>
             </div>
