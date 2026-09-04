@@ -11,7 +11,7 @@
 
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { InterviewSchedulingPage } from '../../../../apps/applicant-portal/src/features/InterviewScheduling/InterviewScheduling.page';
+import { InterviewSchedulingPage } from '../../../apps/applicant-portal/src/features/InterviewScheduling/InterviewScheduling.page';
 
 const mockScheduleInterview = vi.fn();
 vi.mock('@university-erp/api-clients', () => ({

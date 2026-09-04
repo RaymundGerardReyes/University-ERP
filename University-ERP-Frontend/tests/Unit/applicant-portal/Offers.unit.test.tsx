@@ -11,7 +11,7 @@
 
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { OffersPage } from '../../../../apps/applicant-portal/src/features/Offers/Offers.page';
+import { OffersPage } from '../../../apps/applicant-portal/src/features/Offers/Offers.page';
 
 describe('Offers Feature', () => {
   it('TC13: Offers_Should_Render_Accept_Offer_Button_When_Status_Is_Accepted', () => {

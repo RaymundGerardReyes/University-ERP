@@ -12,7 +12,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi } from 'vitest';
-import { ApplicationStatusPage } from '../../../../apps/applicant-portal/src/features/ApplicationStatus/ApplicationStatus.page';
+import { ApplicationStatusPage } from '../../../apps/applicant-portal/src/features/ApplicationStatus/ApplicationStatus.page';
 
 const mockGetApplicationStatus = vi.fn();
 vi.mock('@university-erp/api-clients', () => ({

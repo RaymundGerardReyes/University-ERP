@@ -4,12 +4,21 @@
 // Feature: EnrollmentHistory
 //
 // Source References:
-// University-ERP-Frontend/apps/student-portal/src/features/EnrollmentHistory/EnrollmentHistory.api.ts
-// University-ERP-Frontend/apps/student-portal/src/features/EnrollmentHistory/EnrollmentHistory.hooks.ts
-// University-ERP-Frontend/apps/student-portal/src/features/EnrollmentHistory/EnrollmentHistory.page.tsx
-// University-ERP-Frontend/apps/student-portal/src/features/EnrollmentHistory/EnrollmentHistory.types.ts
-import { describe, it } from 'vitest';
+// University-ERP-Frontend/apps/student-portal/src/features/EnrollmentHistory
 
-describe('EnrollmentHistory - Unit Testing', () => {
-  it.todo('Unit-test scenarios should cover EnrollmentHistory's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.');
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
+import { EnrollmentHistoryPage } from '../../../apps/student-portal/src/features/EnrollmentHistory/EnrollmentHistory.page';
+
+describe('EnrollmentHistoryPage', () => {
+    it('renders the standard title', () => {
+        const queryClient = new QueryClient();
+        render(
+            <QueryClientProvider client={queryClient}>
+                <EnrollmentHistoryPage />
+            </QueryClientProvider>
+        );
+        expect(screen.getByText('EnrollmentHistory Workspace')).toBeDefined();
+    });
 });

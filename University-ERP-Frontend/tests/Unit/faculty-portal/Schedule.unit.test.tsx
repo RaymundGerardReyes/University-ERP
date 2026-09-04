@@ -4,12 +4,30 @@
 // Feature: Schedule
 //
 // Source References:
-// University-ERP-Frontend/apps/faculty-portal/src/features/Schedule/Schedule.api.ts
-// University-ERP-Frontend/apps/faculty-portal/src/features/Schedule/Schedule.hooks.ts
-// University-ERP-Frontend/apps/faculty-portal/src/features/Schedule/Schedule.page.tsx
-// University-ERP-Frontend/apps/faculty-portal/src/features/Schedule/Schedule.types.ts
-import { describe, it } from 'vitest';
+// University-ERP-Frontend/apps/faculty-portal/src/features/Schedule
 
-describe('Schedule - Unit Testing', () => {
-  it.todo('Unit-test scenarios should cover Schedule's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.');
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { render } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
+import { SchedulePage } from '../../../apps/faculty-portal/src/features/Schedule/Schedule.page';
+
+// Mock the authentication SDK to prevent context errors
+vi.mock('@university-erp/auth-sdk', () => ({
+    useAuth: () => ({
+        identity: { id: 'faculty-user' },
+        user: { id: 'faculty-user' },
+        isAuthenticated: true
+    })
+}));
+
+describe('SchedulePage', () => {
+    it('renders successfully', () => {
+        const queryClient = new QueryClient();
+        const { container } = render(
+            <QueryClientProvider client={queryClient}>
+                <SchedulePage />
+            </QueryClientProvider>
+        );
+        expect(container).toBeDefined();
+    });
 });

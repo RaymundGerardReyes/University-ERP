@@ -4,12 +4,21 @@
 // Feature: CrossEnrollment
 //
 // Source References:
-// University-ERP-Frontend/apps/student-portal/src/features/CrossEnrollment/CrossEnrollment.api.ts
-// University-ERP-Frontend/apps/student-portal/src/features/CrossEnrollment/CrossEnrollment.hooks.ts
-// University-ERP-Frontend/apps/student-portal/src/features/CrossEnrollment/CrossEnrollment.page.tsx
-// University-ERP-Frontend/apps/student-portal/src/features/CrossEnrollment/CrossEnrollment.types.ts
-import { describe, it } from 'vitest';
+// University-ERP-Frontend/apps/student-portal/src/features/CrossEnrollment
 
-describe('CrossEnrollment - Unit Testing', () => {
-  it.todo('Unit-test scenarios should cover CrossEnrollment's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.');
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
+import { CrossEnrollmentPage } from '../../../apps/student-portal/src/features/CrossEnrollment/CrossEnrollment.page';
+
+describe('CrossEnrollmentPage', () => {
+    it('renders the standard title', () => {
+        const queryClient = new QueryClient();
+        render(
+            <QueryClientProvider client={queryClient}>
+                <CrossEnrollmentPage />
+            </QueryClientProvider>
+        );
+        expect(screen.getByText('CrossEnrollment Workspace')).toBeDefined();
+    });
 });

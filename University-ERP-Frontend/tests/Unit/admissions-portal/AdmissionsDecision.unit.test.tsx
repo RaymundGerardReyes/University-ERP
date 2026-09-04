@@ -13,7 +13,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi } from 'vitest';
-import { EndorsementPage } from '../../../../apps/faculty-portal/src/features/DeanWorkspace/Endorsement.page';
+import { EndorsementPage } from '../../../apps/faculty-portal/src/features/DeanWorkspace/Endorsement.page';
 
 const mockApproveApplication = vi.fn();
 vi.mock('@university-erp/api-clients', () => ({

@@ -12,7 +12,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { DocumentUploadPage } from '../../../../apps/applicant-portal/src/features/DocumentUpload/DocumentUpload.page';
+import { DocumentUploadPage } from '../../../apps/applicant-portal/src/features/DocumentUpload/DocumentUpload.page';
 
 const mockUploadDocument = vi.fn();
 vi.mock('@university-erp/api-clients', () => ({

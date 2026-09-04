@@ -13,7 +13,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi } from 'vitest';
-import { DocumentVerificationPage } from '../../../../apps/faculty-portal/src/features/SecretaryWorkspace/DocumentVerification.page';
+import { DocumentVerificationPage } from '../../../apps/faculty-portal/src/features/SecretaryWorkspace/DocumentVerification.page';
 
 const mockVerifyDocuments = vi.fn();
 vi.mock('@university-erp/api-clients', () => ({

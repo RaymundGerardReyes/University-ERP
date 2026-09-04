@@ -13,7 +13,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi } from 'vitest';
-import { RegistrarEnrollmentView } from '../../../../apps/admin-portal/src/features/AdmissionsProcessing/components/RegistrarEnrollmentView';
+import { RegistrarEnrollmentView } from '../../../apps/admin-portal/src/features/AdmissionsProcessing/components/RegistrarEnrollmentView';
 
 const mockActivateEnrollment = vi.fn();
 vi.mock('@university-erp/api-clients', () => ({

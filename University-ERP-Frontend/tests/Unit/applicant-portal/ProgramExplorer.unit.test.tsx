@@ -12,7 +12,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi } from 'vitest';
-import { ProgramExplorerPage } from '../../../../apps/applicant-portal/src/features/ProgramExplorer/ProgramExplorer.page';
+import { ProgramExplorerPage } from '../../../apps/applicant-portal/src/features/ProgramExplorer/ProgramExplorer.page';
 
 const mockGetProgramCatalog = vi.fn();
 vi.mock('@university-erp/api-clients', () => ({

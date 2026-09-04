@@ -1,12 +1,208 @@
 // Test Type: Unit Testing
 //
 // Portal: admissions-portal
-// Feature: Reports
+// Feature: AdmissionsReports
 //
 // Source References:
 // University-ERP-Frontend/apps/admissions-portal/src/features/Reports/AdmissionsReports.page.tsx
-import { describe, it } from 'vitest';
 
-describe('Reports - Unit Testing', () => {
-  it.todo('Unit-test scenarios should cover Reports's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.');
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { useQuery } from '@tanstack/react-query';
+import { AdmissionsReportsPage } from '../../../apps/admissions-portal/src/features/Reports/AdmissionsReports.page';
+
+vi.mock('@tanstack/react-query', () => ({
+    useQuery: vi.fn()
+}));
+vi.mock('@university-erp/api-clients', () => ({
+    analyticsApi: {
+        getAdmissionsReport: vi.fn()
+    }
+}));
+
+describe('Admissions Portal - Reports Unit Tests', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        (useQuery as any).mockReturnValue({ data: undefined, isLoading: false });
+    });
+
+    const setup = () => render(<AdmissionsReportsPage />);
+
+    it('UT-REPORTS-001: Renders PageHeader with correct title "Admissions Analytics & Reports"', () => {
+        setup();
+        expect(screen.getByText('Admissions Analytics & Reports')).toBeDefined();
+    });
+
+    it('UT-REPORTS-002: Renders PageHeader subtitle correctly', () => {
+        setup();
+        expect(screen.getByText(/Track application velocity, demographic distribution, and yield rates/i)).toBeDefined();
+    });
+
+    it('UT-REPORTS-003: Renders the "Export PDF Report" button', () => {
+        setup();
+        expect(screen.getByRole('button', { name: /Export PDF Report/i })).toBeDefined();
+    });
+
+    it('UT-REPORTS-004: KPI: "TOTAL APPLICATIONS YTD" label is present', () => {
+        setup();
+        expect(screen.getByText('TOTAL APPLICATIONS YTD')).toBeDefined();
+    });
+
+    it('UT-REPORTS-005: KPI: "CONVERSION RATE" label is present', () => {
+        setup();
+        expect(screen.getByText('CONVERSION RATE')).toBeDefined();
+    });
+
+    it('UT-REPORTS-006: KPI: "AVG PROCESSING TIME" label is present', () => {
+        setup();
+        expect(screen.getByText('AVG PROCESSING TIME')).toBeDefined();
+    });
+
+    it('UT-REPORTS-007: KPI: Displays "..." for TOTAL APPLICATIONS while loading', () => {
+        (useQuery as any).mockReturnValue({ data: undefined, isLoading: true });
+        setup();
+        const totalNode = screen.getByText('TOTAL APPLICATIONS YTD').nextElementSibling;
+        expect(totalNode?.textContent).toBe('...');
+    });
+
+    it('UT-REPORTS-008: KPI: Displays "..." for CONVERSION RATE while loading', () => {
+        (useQuery as any).mockReturnValue({ data: undefined, isLoading: true });
+        setup();
+        const rateNode = screen.getByText('CONVERSION RATE').nextElementSibling;
+        expect(rateNode?.textContent).toBe('...');
+    });
+
+    it('UT-REPORTS-009: KPI: Displays "..." for AVG PROCESSING TIME while loading', () => {
+        (useQuery as any).mockReturnValue({ data: undefined, isLoading: true });
+        setup();
+        const timeNode = screen.getByText('AVG PROCESSING TIME').nextElementSibling;
+        // The text is "... Days" according to the component `{isLoading ? '...' : ...} Days`
+        expect(timeNode?.textContent).toBe('... Days');
+    });
+
+    it('UT-REPORTS-010: KPI: Displays 0 for TOTAL APPLICATIONS when data is undefined', () => {
+        setup();
+        const totalNode = screen.getByText('TOTAL APPLICATIONS YTD').nextElementSibling;
+        expect(totalNode?.textContent).toBe('0');
+    });
+
+    it('UT-REPORTS-011: KPI: Displays "0%" for CONVERSION RATE when data is undefined', () => {
+        setup();
+        const rateNode = screen.getByText('CONVERSION RATE').nextElementSibling;
+        expect(rateNode?.textContent).toBe('0%');
+    });
+
+    it('UT-REPORTS-012: KPI: Displays "0 Days" for AVG PROCESSING TIME when data is undefined', () => {
+        setup();
+        const timeNode = screen.getByText('AVG PROCESSING TIME').nextElementSibling;
+        expect(timeNode?.textContent).toBe('0 Days');
+    });
+
+    it('UT-REPORTS-013: KPI: Displays accurate totalApplications from API payload', () => {
+        (useQuery as any).mockReturnValue({
+            data: { totalApplications: 1500 },
+            isLoading: false
+        });
+        setup();
+        const totalNode = screen.getByText('TOTAL APPLICATIONS YTD').nextElementSibling;
+        expect(totalNode?.textContent).toBe('1500');
+    });
+
+    it('UT-REPORTS-014: KPI: Displays accurate conversionRate from API payload', () => {
+        (useQuery as any).mockReturnValue({
+            data: { conversionRate: '15%' },
+            isLoading: false
+        });
+        setup();
+        const rateNode = screen.getByText('CONVERSION RATE').nextElementSibling;
+        expect(rateNode?.textContent).toBe('15%');
+    });
+
+    it('UT-REPORTS-015: KPI: Displays accurate avgProcessingDays from API payload', () => {
+        (useQuery as any).mockReturnValue({
+            data: { avgProcessingDays: 5 },
+            isLoading: false
+        });
+        setup();
+        const timeNode = screen.getByText('AVG PROCESSING TIME').nextElementSibling;
+        expect(timeNode?.textContent).toBe('5 Days');
+    });
+
+    it('UT-REPORTS-016: Section: Renders "Application Volume by College" heading', () => {
+        setup();
+        expect(screen.getByText('Application Volume by College')).toBeDefined();
+    });
+
+    it('UT-REPORTS-017: Section: Displays "Loading funnel..." when loading', () => {
+        (useQuery as any).mockReturnValue({ data: undefined, isLoading: true });
+        setup();
+        expect(screen.getByText('Loading funnel...')).toBeDefined();
+    });
+
+    it('UT-REPORTS-018: Section: Displays "No data available." when funnel is undefined', () => {
+        setup();
+        expect(screen.getByText('No data available.')).toBeDefined();
+    });
+
+    it('UT-REPORTS-019: Funnel: Renders stage names correctly', () => {
+        (useQuery as any).mockReturnValue({
+            data: { funnel: [{ stage: 'Engineering', count: 120 }] },
+            isLoading: false
+        });
+        setup();
+        expect(screen.getByText('Engineering')).toBeDefined();
+    });
+
+    it('UT-REPORTS-020: Funnel: Renders stage counts accurately', () => {
+        (useQuery as any).mockReturnValue({
+            data: { funnel: [{ stage: 'Engineering', count: 120 }] },
+            isLoading: false
+        });
+        setup();
+        expect(screen.getByText('120')).toBeDefined();
+    });
+
+    it('UT-REPORTS-021: Section: Renders "Pipeline Funnel" heading', () => {
+        setup();
+        expect(screen.getByText('Pipeline Funnel')).toBeDefined();
+    });
+
+    it('UT-REPORTS-022: Section: Displays "Loading pipeline..." when loading', () => {
+        (useQuery as any).mockReturnValue({ data: undefined, isLoading: true });
+        setup();
+        expect(screen.getByText('Loading pipeline...')).toBeDefined();
+    });
+
+    it('UT-REPORTS-023: Section: Displays "No pipeline data available." when pipeline is undefined', () => {
+        setup();
+        expect(screen.getByText('No pipeline data available.')).toBeDefined();
+    });
+
+    it('UT-REPORTS-024: Pipeline: Renders stage names and counts correctly', () => {
+        (useQuery as any).mockReturnValue({
+            data: { pipeline: [{ name: 'Applications', count: 500, percentage: 100 }] },
+            isLoading: false
+        });
+        setup();
+        expect(screen.getByText('Applications (500)')).toBeDefined();
+    });
+
+    it('UT-REPORTS-025: Pipeline: Applies correct percentage widths based on data', () => {
+        (useQuery as any).mockReturnValue({
+            data: { pipeline: [{ name: 'Interviews', count: 50, percentage: 10 }] },
+            isLoading: false
+        });
+        const { container } = setup();
+        // The container div for the pipeline stage should have width: 10%
+        const stageDiv = screen.getByText('Interviews (50)');
+        expect(stageDiv.style.width).toBe('10%');
+    });
+
+    it('UT-REPORTS-026: KPI: Renders directional trend indicators properly', () => {
+        setup();
+        expect(screen.getByText('↑ 12% vs last year')).toBeDefined();
+        expect(screen.getByText('↑ 2.4% vs last year')).toBeDefined();
+        expect(screen.getByText('↓ 1.2 days slower')).toBeDefined();
+    });
 });
