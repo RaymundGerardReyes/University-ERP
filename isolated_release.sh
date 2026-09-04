@@ -125,7 +125,7 @@ process_module "registrar-portal" "registrar-portal" "fix" "stabilize enrollment
 
 # ================= FRONTEND TESTS =================
 # This catches all deleted *.test.tsx in apps/ and the new tests/ directory
-process_module "frontend-tests" "frontend-tests" "test" "migrate all test suites to centralized cross-portal architecture" \
+process_module "frontend-tests" "frontend-tests" "test" "convert placeholder test suites to fully executable TDD scripts across all portals" \
   "University-ERP-Frontend/apps" \
   "University-ERP-Frontend/tests" \
   "University-ERP-Frontend/vitest.config.ts" \
