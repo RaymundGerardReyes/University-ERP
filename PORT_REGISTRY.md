@@ -15,4 +15,8 @@ This registry tracks the allocated host ports for the University ERP project to 
 | 5178 | tcp      | university-erp | nginx   | 0.0.0.0 | ACTIVE |
 | 5179 | tcp      | university-erp | nginx   | 0.0.0.0 | ACTIVE |
 | 5180 | tcp      | university-erp | nginx   | 0.0.0.0 | ACTIVE |
+| 5181 | tcp      | university-erp | nginx   | 0.0.0.0 | ACTIVE |
+| 5182 | tcp      | university-erp | nginx   | 0.0.0.0 | ACTIVE |
+| 5183 | tcp      | university-erp | nginx   | 0.0.0.0 | ACTIVE |
+| 5184 | tcp      | university-erp | nginx   | 0.0.0.0 | ACTIVE |
 | 3006 | tcp      | university-erp | nginx   | 0.0.0.0 | ACTIVE |

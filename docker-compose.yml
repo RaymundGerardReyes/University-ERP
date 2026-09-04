@@ -101,6 +101,7 @@ services:
       PaymentGateway__SuccessUrl: ${PaymentGateway__SuccessUrl:-}
       PaymentGateway__CancelUrl: ${PaymentGateway__CancelUrl:-}
       PaymentGateway__BaseUrl: ${PaymentGateway__BaseUrl:-}
+      PaymentGateway__SourceAccountId: ${PaymentGateway__SourceAccountId:-}
     expose:
       - "${INTERNAL_API_PORT:-5191}"
     deploy:
@@ -279,6 +280,10 @@ services:
       - DOMAIN_LMS=${DOMAIN_LMS:-lms.developerph.dev}
       - DOMAIN_PLATFORM=${DOMAIN_PLATFORM:-platform.developerph.dev}
       - DOMAIN_PORTAL=${DOMAIN_PORTAL:-portal.developerph.dev}
+      - DOMAIN_ADMISSIONS=${DOMAIN_ADMISSIONS:-admissions.developerph.dev}
+      - DOMAIN_REGISTRAR=${DOMAIN_REGISTRAR:-registrar.developerph.dev}
+      - DOMAIN_SECURITY=${DOMAIN_SECURITY:-security.developerph.dev}
+      - DOMAIN_PAYMENT=${DOMAIN_PAYMENT:-payment.developerph.dev}
       - DOMAIN_API=${API_PUBLIC_DOMAIN:-api.developerph.dev}
       - API_INTERNAL_PORT=${PORT_API:-5191}
     command:
@@ -297,12 +302,16 @@ services:
         sed -i "s|__LIBRARY_DOMAIN__|$$DOMAIN_LIBRARY|g" /etc/nginx/sites-available/library.university.edu.conf
         sed -i "s|__LMS_DOMAIN__|$$DOMAIN_LMS|g" /etc/nginx/sites-available/lms.university.edu.conf
         sed -i "s|__PLATFORM_DOMAIN__|$$DOMAIN_PLATFORM|g" /etc/nginx/sites-available/platform.university.edu.conf
+        sed -i "s|__ADMISSIONS_DOMAIN__|$$DOMAIN_ADMISSIONS|g" /etc/nginx/sites-available/admissions.university.edu.conf
+        sed -i "s|__REGISTRAR_DOMAIN__|$$DOMAIN_REGISTRAR|g" /etc/nginx/sites-available/registrar.university.edu.conf
+        sed -i "s|__SECURITY_DOMAIN__|$$DOMAIN_SECURITY|g" /etc/nginx/sites-available/security.university.edu.conf
+        sed -i "s|__PAYMENT_DOMAIN__|$$DOMAIN_PAYMENT|g" /etc/nginx/sites-available/payment.university.edu.conf
         sed -i "s|__API_DOMAIN__|$$DOMAIN_API|g" /etc/nginx/sites-available/api.university.edu.conf
         sed -i "s|__PORTAL_DOMAIN__|$$DOMAIN_PORTAL|g" /etc/nginx/sites-available/portal.university.edu.conf
 
         sed -i "s|__API_INTERNAL_PORT__|$$API_INTERNAL_PORT|g" /etc/nginx/nginx.conf /etc/nginx/snippets/*.conf /etc/nginx/sites-available/*.conf
 
-        export ALL_VALID_DOMAINS="$$DOMAIN_IDENTITY $$DOMAIN_STUDENT $$DOMAIN_APPLICANT $$DOMAIN_FACULTY $$DOMAIN_FINANCE $$DOMAIN_GOVERNANCE $$DOMAIN_ADMIN $$DOMAIN_LIBRARY $$DOMAIN_LMS $$DOMAIN_PLATFORM $$DOMAIN_PORTAL $$DOMAIN_API"
+        export ALL_VALID_DOMAINS="$$DOMAIN_IDENTITY $$DOMAIN_STUDENT $$DOMAIN_APPLICANT $$DOMAIN_FACULTY $$DOMAIN_FINANCE $$DOMAIN_GOVERNANCE $$DOMAIN_ADMIN $$DOMAIN_LIBRARY $$DOMAIN_LMS $$DOMAIN_PLATFORM $$DOMAIN_PORTAL $$DOMAIN_ADMISSIONS $$DOMAIN_REGISTRAR $$DOMAIN_SECURITY $$DOMAIN_PAYMENT $$DOMAIN_API"
         sed -i "s|__ALL_VALID_DOMAINS__|$$ALL_VALID_DOMAINS|g" /etc/nginx/nginx.conf
 
         sed -i "s|__IDENTITY_PORTAL_URL__|http://$$DOMAIN_IDENTITY|g" /etc/nginx/snippets/auth-request.conf
@@ -320,6 +329,10 @@ services:
       - "${PORT_LIBRARY:?PORT_LIBRARY must be defined}:5179"
       - "${PORT_LMS:?PORT_LMS must be defined}:5180"
       - "${PORT_PLATFORM:?PORT_PLATFORM must be defined}:3006"
+      - "${PORT_REGISTRAR:-5181}:5181"
+      - "${PORT_SECURITY:-5182}:5182"
+      - "${PORT_ADMISSIONS:-5183}:5183"
+      - "${PORT_PAYMENT:-5184}:5184"
     deploy:
       resources:
         limits:
