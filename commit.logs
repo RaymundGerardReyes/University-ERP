@@ -1,0 +1,30 @@
+Unstaging files to prepare for strictly isolated commits...
+Unstaged changes after reset:
+D	Analysis_Task_Orchestration.md
+M	ERPstructure.md
+D	University-ERP-Backend/University-ERP-Backend.md
+D	University-ERP-Backend/structure.md
+M	docker-compose.yml
+M	isolated_release.sh
+D	structure.md
+Fetching remote tags to ensure accuracy and avoid existing tag collisions...
+Starting isolated semantic versioning updates...
+----------------------------------------------------
+Isolating and processing: backend-docs
+Committing: docs(backend-docs): update backend architectural structure
+[main 357c049] docs(backend-docs): update backend architectural structure
+ 1 file changed, 1161 deletions(-)
+ delete mode 100644 University-ERP-Backend/structure.md
+Skipping tag for backend-docs because commit type is 'docs' (no release needed).
+----------------------------------------------------
+Isolating and processing: project-ops
+Committing: feat(project-ops): add automated test scaffolding scripts
+[main 0eafbb2] feat(project-ops): add automated test scaffolding scripts
+ 3 files changed, 730 insertions(+)
+ create mode 100644 generate-test-templates-v2.sh
+ create mode 100644 scaffold-backend-tests.sh
+ create mode 100644 scaffold-frontend-tests.sh
+Tagging project-ops: Current(ops-project-v0.1.2) -> Next(ops-project-v0.2.0)
+----------------------------------------------------
+All applicable modules have been safely committed and strictly isolated tags have been generated!
+Please review with 'git log -n 24 --oneline' and then push with: git push origin main && git push --tags
