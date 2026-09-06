@@ -11,5 +11,5 @@
 import { describe, it } from 'vitest';
 
 describe('CatalogSearch - Unit Testing', () => {
-  it.todo('Unit-test scenarios should cover CatalogSearch's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.');
+  it.todo("Unit-test scenarios should cover CatalogSearch's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
 });

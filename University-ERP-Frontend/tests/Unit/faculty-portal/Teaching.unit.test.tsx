@@ -13,5 +13,5 @@
 import { describe, it } from 'vitest';
 
 describe('Teaching - Unit Testing', () => {
-  it.todo('Unit-test scenarios should cover Teaching's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.');
+  it.todo("Unit-test scenarios should cover Teaching's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
 });

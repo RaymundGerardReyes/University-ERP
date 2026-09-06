@@ -172,7 +172,7 @@ generate_feature_tests() {
       echo "import { describe, it } from 'vitest';"
       echo ""
       echo "describe('${feature} - ${label}', () => {"
-      echo "  it.todo('${guidance}');"
+      echo "  it.todo(\"${guidance}\");"
       echo "});"
     } | safe_write_file "$test_file"
   done

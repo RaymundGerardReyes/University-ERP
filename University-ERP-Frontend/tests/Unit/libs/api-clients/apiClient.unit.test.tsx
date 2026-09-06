@@ -8,5 +8,5 @@
 import { describe, it } from 'vitest';
 
 describe('apiClient - Unit Testing', () => {
-  it.todo('Unit-test scenarios should cover apiClient's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.');
+  it.todo("Unit-test scenarios should cover apiClient's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
 });

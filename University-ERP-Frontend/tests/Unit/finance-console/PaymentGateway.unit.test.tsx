@@ -11,5 +11,5 @@
 import { describe, it } from 'vitest';
 
 describe('PaymentGateway - Unit Testing', () => {
-  it.todo('Unit-test scenarios should cover PaymentGateway's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.');
+  it.todo("Unit-test scenarios should cover PaymentGateway's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
 });
