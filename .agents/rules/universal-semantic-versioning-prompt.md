@@ -1,3 +1,9 @@
+---
+trigger: model_decision
+description: >-
+  Universal Semantic Versioning (SemVer 2.0.0) advisor and bump calculation rules for multi-runtime architectures.
+---
+
 # Universal Semantic Versioning & Release Advisor Prompt
 
 ## Purpose
