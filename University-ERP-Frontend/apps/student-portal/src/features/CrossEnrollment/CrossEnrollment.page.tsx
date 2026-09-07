@@ -1,9 +1,10 @@
 import React from 'react';
+import { PageHeader } from '@university-erp/ui-kit';
 
 export const CrossEnrollmentPage: React.FC = () => {
   return (
     <div className="fade-in stub-page">
-      <h3>CrossEnrollment Workspace</h3>
+      <PageHeader title="CrossEnrollment Workspace" subtitle="Manage cross-enrollment requests and partnerships." />
     </div>
   );
 };

@@ -1,9 +1,10 @@
 import React from 'react';
+import { PageHeader } from '@university-erp/ui-kit';
 
 export const CurriculumProgressPage: React.FC = () => {
   return (
     <div className="fade-in stub-page">
-      <h3>CurriculumProgress Workspace</h3>
+      <PageHeader title="CurriculumProgress Workspace" subtitle="Track course completion and degree progress." />
     </div>
   );
 };

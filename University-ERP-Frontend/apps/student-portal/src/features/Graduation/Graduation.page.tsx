@@ -1,9 +1,10 @@
 import React from 'react';
+import { PageHeader } from '@university-erp/ui-kit';
 
 export const GraduationPage: React.FC = () => {
   return (
     <div className="fade-in stub-page">
-      <h3>Graduation Workspace</h3>
+      <PageHeader title="Graduation Workspace" subtitle="Monitor degree conferral and commencement steps." />
     </div>
   );
 };
