@@ -1,15 +1,25 @@
-// Test Type: Unit Testing
-//
-// Portal: finance-console
-// Feature: Invoicing
-//
-// Source References:
-// University-ERP-Frontend/apps/finance-console/src/features/Invoicing/Invoicing.api.ts
-// University-ERP-Frontend/apps/finance-console/src/features/Invoicing/Invoicing.hooks.ts
-// University-ERP-Frontend/apps/finance-console/src/features/Invoicing/Invoicing.page.tsx
-// University-ERP-Frontend/apps/finance-console/src/features/Invoicing/Invoicing.types.ts
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { InvoicingPage } from '../../../apps/finance-console/src/features/Invoicing/Invoicing.page';
 
-describe('Invoicing - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover Invoicing's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({ user: { id: 'fin-1', roles: ['Finance'] } })
+}));
+
+describe("Invoicing - Unit Testing", () => {
+  let queryClient: QueryClient;
+  beforeEach(() => {
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    vi.clearAllMocks();
+  });
+
+  it("renders invoicing page heading", async () => {
+    render(<QueryClientProvider client={queryClient}><MemoryRouter><InvoicingPage /></MemoryRouter></QueryClientProvider>);
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    });
+  });
 });

@@ -9,11 +9,21 @@ import { admissionsApi } from '@university-erp/api-clients';
 vi.mock('@university-erp/api-clients', () => ({
   admissionsApi: {
     getTimelineEvents: vi.fn(),
+    getApplicantJourney: vi.fn().mockResolvedValue({
+      currentStage: 2,
+      timeline: [
+        { title: 'Application Submitted', date: '2026-01-01', completed: true },
+        { title: 'Document Verification', date: '2026-01-05', completed: true }
+      ]
+    }),
   },
 }));
 
 vi.mock('@university-erp/auth-sdk', () => ({
-  useAuth: () => ({ user: { id: 'test-applicant' } }),
+  useAuth: () => ({
+    identity: { id: 'test-applicant' },
+    user: { id: 'test-applicant' }
+  }),
 }));
 
 describe('ApplicationTimeline Integration', () => {
@@ -35,7 +45,9 @@ describe('ApplicationTimeline Integration', () => {
 
   it('renders timeline page header and structure correctly', async () => {
     renderComponent();
-    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    });
   });
 
   it('displays event details when interacting with timeline elements', async () => {

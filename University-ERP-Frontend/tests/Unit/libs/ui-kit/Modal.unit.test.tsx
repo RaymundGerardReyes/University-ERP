@@ -1,12 +1,15 @@
-// Test Type: Unit Testing
-//
-// Library: ui-kit
-// Module: Modal
-//
-// Source References:
-// University-ERP-Frontend/libs/ui-kit/src/components/Modal.tsx
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { vi, describe, it, expect } from 'vitest';
+import { Modal } from '../../../../libs/ui-kit/src/components/Modal';
 
-describe('Modal - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover Modal's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+describe("Modal - Unit Testing", () => {
+  it("renders modal children when isOpen is true", () => {
+    render(
+      <Modal isOpen={true} onClose={vi.fn()}>
+        <div>Modal Content Visible</div>
+      </Modal>
+    );
+    expect(screen.getByText('Modal Content Visible')).toBeInTheDocument();
+  });
 });

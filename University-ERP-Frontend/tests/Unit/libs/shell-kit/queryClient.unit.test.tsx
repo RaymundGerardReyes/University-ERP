@@ -1,12 +1,9 @@
-// Test Type: Unit Testing
-//
-// Library: shell-kit
-// Module: queryClient
-//
-// Source References:
-// University-ERP-Frontend/libs/shell-kit/queryClient.ts
-import { describe, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
+import { queryClient } from '../../../../libs/shell-kit/queryClient';
 
-describe('queryClient - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover queryClient's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+describe("queryClient - Unit Testing", () => {
+  it("exports a configured TanStack QueryClient instance", () => {
+    expect(queryClient).toBeDefined();
+    expect(typeof queryClient.getQueryCache).toBe('function');
+  });
 });

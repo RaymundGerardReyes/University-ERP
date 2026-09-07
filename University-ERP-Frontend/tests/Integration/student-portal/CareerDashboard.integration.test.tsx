@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
@@ -29,7 +29,12 @@ describe('CareerDashboard Integration', () => {
     );
 
   it('loads career dashboard correctly', async () => {
+    (careerApi.getJobPostings as any).mockResolvedValue([
+      { id: '1', jobTitle: 'Software Engineer', companyName: 'Acme Corp', location: 'Remote', deadline: '2026-12-31', tags: ['Tech'] }
+    ]);
     renderComponent();
-    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    });
   });
 });

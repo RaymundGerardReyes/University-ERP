@@ -1,12 +1,8 @@
-// Test Type: Unit Testing
-//
-// Library: offline-sync
-// Module: syncEngineContracts
-//
-// Source References:
-// University-ERP-Frontend/libs/offline-sync/syncEngineContracts.ts
-import { describe, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
+import * as SyncModule from '../../../../libs/offline-sync/syncEngineContracts';
 
-describe('syncEngineContracts - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover syncEngineContracts's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+describe("syncEngineContracts - Unit Testing", () => {
+  it("defines offline sync payload and contract interfaces", () => {
+    expect(SyncModule).toBeDefined();
+  });
 });

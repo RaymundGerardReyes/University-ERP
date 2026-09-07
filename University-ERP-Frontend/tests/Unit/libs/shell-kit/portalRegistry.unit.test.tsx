@@ -1,12 +1,17 @@
-// Test Type: Unit Testing
-//
-// Library: shell-kit
-// Module: portalRegistry
-//
-// Source References:
-// University-ERP-Frontend/libs/shell-kit/portalRegistry.ts
-import { describe, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
+import { portalRegistry, getAllowedOrigins } from '../../../../libs/shell-kit/portalRegistry';
 
-describe('portalRegistry - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover portalRegistry's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+describe("portalRegistry - Unit Testing", () => {
+  it("contains registry entries for all standard portals", () => {
+    expect(portalRegistry.admin).toBeDefined();
+    expect(portalRegistry.faculty).toBeDefined();
+    expect(portalRegistry.student).toBeDefined();
+    expect(portalRegistry.finance).toBeDefined();
+  });
+
+  it("returns list of allowed origins", () => {
+    const origins = getAllowedOrigins();
+    expect(Array.isArray(origins)).toBe(true);
+    expect(origins.length).toBeGreaterThan(0);
+  });
 });

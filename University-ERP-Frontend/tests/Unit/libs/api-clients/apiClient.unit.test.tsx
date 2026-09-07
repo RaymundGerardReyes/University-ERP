@@ -1,12 +1,10 @@
-// Test Type: Unit Testing
-//
-// Library: api-clients
-// Module: apiClient
-//
-// Source References:
-// University-ERP-Frontend/libs/api-clients/apiClient.ts
-import { describe, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
+import { apiClient } from '../../../../libs/api-clients/apiClient';
 
-describe('apiClient - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover apiClient's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+describe("apiClient - Unit Testing", () => {
+  it("exports configured axios apiClient instance", () => {
+    expect(apiClient).toBeDefined();
+    expect(typeof apiClient.get).toBe('function');
+    expect(typeof apiClient.post).toBe('function');
+  });
 });

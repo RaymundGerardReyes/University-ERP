@@ -1,12 +1,25 @@
-// Test Type: Unit Testing
-//
-// Library: shell-kit
-// Module: AuthGuard
-//
-// Source References:
-// University-ERP-Frontend/libs/shell-kit/AuthGuard.tsx
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { vi, describe, it, expect } from 'vitest';
+import { AuthGuard } from '../../../../libs/shell-kit/AuthGuard';
 
-describe('AuthGuard - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover AuthGuard's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({
+    user: { id: 'u-1', roles: ['Admin'] },
+    isAuthenticated: true
+  })
+}));
+
+describe("AuthGuard - Unit Testing", () => {
+  it("renders protected children when authenticated as Admin", () => {
+    render(
+      <MemoryRouter>
+        <AuthGuard allowedRoles={['Admin']}>
+          <div>Admin Dashboard Access</div>
+        </AuthGuard>
+      </MemoryRouter>
+    );
+    expect(screen.getByText('Admin Dashboard Access')).toBeInTheDocument();
+  });
 });

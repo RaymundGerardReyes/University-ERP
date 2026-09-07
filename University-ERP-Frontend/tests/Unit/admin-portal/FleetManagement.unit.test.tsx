@@ -61,7 +61,7 @@ describe('FleetManagement - Unit Testing', () => {
         await waitFor(() => {
             // Checks KPI values
             expect(screen.getByText('Total Fleet').nextElementSibling?.textContent).toBe('3');
-            expect(screen.getByText('In Transit').nextElementSibling?.textContent).toBe('1');
+            expect(screen.getAllByText('In Transit')[0].nextElementSibling?.textContent).toBe('1');
         });
     });
 

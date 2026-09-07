@@ -27,6 +27,9 @@ vi.mock('@university-erp/auth-sdk', async (importOriginal) => {
         useAuth: () => mockUseAuth(),
     };
 });
+vi.mock('../../../libs/auth-sdk/react/useAuth', () => ({
+    useAuth: () => mockUseAuth(),
+}));
 
 // --- Dummy Components for Testing ---
 const GraduationClearance = () => {

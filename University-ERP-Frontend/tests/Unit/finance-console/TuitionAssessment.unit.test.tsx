@@ -1,12 +1,25 @@
-// Test Type: Unit Testing
-//
-// Portal: finance-console
-// Feature: TuitionAssessment
-//
-// Source References:
-// University-ERP-Frontend/apps/finance-console/src/features/TuitionAssessment/TuitionAssessment.page.tsx
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { TuitionAssessmentPage } from '../../../apps/finance-console/src/features/TuitionAssessment/TuitionAssessment.page';
 
-describe('TuitionAssessment - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover TuitionAssessment's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({ user: { id: 'fin-1', roles: ['Finance'] } })
+}));
+
+describe("TuitionAssessment - Unit Testing", () => {
+  let queryClient: QueryClient;
+  beforeEach(() => {
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    vi.clearAllMocks();
+  });
+
+  it("renders tuition assessment page heading", async () => {
+    render(<QueryClientProvider client={queryClient}><MemoryRouter><TuitionAssessmentPage /></MemoryRouter></QueryClientProvider>);
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    });
+  });
 });

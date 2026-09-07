@@ -1,15 +1,29 @@
-// Test Type: Unit Testing
-//
-// Portal: student-portal
-// Feature: Dashboard
-//
-// Source References:
-// University-ERP-Frontend/apps/student-portal/src/features/Dashboard/Dashboard.api.ts
-// University-ERP-Frontend/apps/student-portal/src/features/Dashboard/Dashboard.hooks.ts
-// University-ERP-Frontend/apps/student-portal/src/features/Dashboard/Dashboard.page.tsx
-// University-ERP-Frontend/apps/student-portal/src/features/Dashboard/Dashboard.types.ts
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { DashboardPage } from '../../../apps/student-portal/src/features/Dashboard/Dashboard.page';
 
-describe('Dashboard - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover Dashboard's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({
+    identity: { id: 'STU-101', name: 'John Student' },
+    user: { id: 'STU-101', name: 'John Student' },
+    isAuthenticated: true,
+  })
+}));
+
+describe("Dashboard - Unit Testing", () => {
+  let queryClient: QueryClient;
+  beforeEach(() => {
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    vi.clearAllMocks();
+  });
+
+  it("renders Dashboard page heading", async () => {
+    render(<QueryClientProvider client={queryClient}><MemoryRouter><DashboardPage /></MemoryRouter></QueryClientProvider>);
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    });
+  });
 });

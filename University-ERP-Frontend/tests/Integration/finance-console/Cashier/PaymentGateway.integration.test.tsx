@@ -10,6 +10,7 @@ vi.mock('@university-erp/api-clients', () => ({
     financeBillingApi: {
         getPendingCashToken: vi.fn(),
         completeCashTransaction: vi.fn(),
+        payApplicationFee: vi.fn(),
     }
 }));
 
@@ -19,6 +20,7 @@ describe('Finance Console - Cashier Payment Gateway Integration', () => {
     beforeEach(() => {
         queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
         vi.clearAllMocks();
+        window.alert = vi.fn();
     });
 
     it('IT-FIN-005 & IT-FIN-006: Should search token, display details, and settle transaction safely', async () => {
@@ -27,6 +29,7 @@ describe('Finance Console - Cashier Payment Gateway Integration', () => {
         
         (financeBillingApi.getPendingCashToken as any).mockResolvedValue(mockTransaction);
         (financeBillingApi.completeCashTransaction as any).mockResolvedValue(true);
+        (financeBillingApi.payApplicationFee as any).mockResolvedValue(true);
 
         render(<QueryClientProvider client={queryClient}><PaymentGatewayPage /></QueryClientProvider>);
 

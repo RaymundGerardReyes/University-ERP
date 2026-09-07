@@ -44,7 +44,7 @@ describe('Examination - Unit Testing', () => {
 
     it('should successfully assign a physical venue/hall to a specific exam schedule', async () => {
         renderComponent();
-        await waitFor(() => expect(screen.getByText('Main Hall')).toBeDefined());
+        await waitFor(() => expect(screen.getByText(/Main Hall/)).toBeDefined());
     });
 
     it('should strictly validate that the assigned venue capacity exceeds the number of scheduled applicants', async () => {

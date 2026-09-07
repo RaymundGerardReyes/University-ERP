@@ -1,13 +1,12 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { ApplicationWizardPage } from '../../../../apps/applicant-portal/src/features/ApplicationWizard/ApplicationWizard.page';
 import { fetchProgramCatalog, submitNewApplication } from '../../../../apps/applicant-portal/src/features/ApplicationWizard/ApplicationWizard.api';
 import { useAuth } from '@university-erp/auth-sdk';
 
-vi.mock('./ApplicationWizard.api', () => ({
+vi.mock('../../../../apps/applicant-portal/src/features/ApplicationWizard/ApplicationWizard.api', () => ({
     fetchProgramCatalog: vi.fn(),
     submitNewApplication: vi.fn(),
 }));
@@ -37,7 +36,6 @@ describe('Applicant Portal - Application Wizard Multi-Step Integration', () => {
     );
 
     it('IT-APP-001: Should select program, advance step, enter academic credentials, and submit application', async () => {
-        const user = userEvent.setup();
         const mockPrograms = [
             { id: 'BSCS', degree: 'B.S.', major: 'Computer Science' }
         ];
@@ -57,10 +55,10 @@ describe('Applicant Portal - Application Wizard Multi-Step Integration', () => {
 
         // Select program
         const select = screen.getByRole('combobox');
-        await user.selectOptions(select, 'BSCS');
+        fireEvent.change(select, { target: { value: 'BSCS' } });
         expect(nextBtn.disabled).toBe(false);
 
-        await user.click(nextBtn);
+        fireEvent.click(nextBtn);
 
         // 2. Verify Step 2 mounts
         await waitFor(() => {
@@ -73,11 +71,11 @@ describe('Applicant Portal - Application Wizard Multi-Step Integration', () => {
         // Fill academic history
         const schoolInput = screen.getByPlaceholderText(/High School or College Name/i);
         const gpaInput = screen.getByPlaceholderText(/e\.g\. 3\.8/i);
-        await user.type(schoolInput, 'Lincoln High School');
-        await user.type(gpaInput, '3.85');
+        fireEvent.change(schoolInput, { target: { value: 'Lincoln High School' } });
+        fireEvent.change(gpaInput, { target: { value: '3.85' } });
 
         expect(submitBtn.disabled).toBe(false);
-        await user.click(submitBtn);
+        fireEvent.click(submitBtn);
 
         // 3. Verify Step 3 (Success confirmation)
         await waitFor(() => {

@@ -114,10 +114,11 @@ describe('Registrar Portal - Master Student List', () => {
 
         it('TC08: Formats the status badge as SUCCESS for Active students', async () => {
             mockGetMasterStudents.mockResolvedValue({ data: mockStudents, total: 2 });
-            renderComponent();
+            const { container } = renderComponent();
             await waitFor(() => {
-                const badge = screen.getByText('Active');
-                expect(badge.className).toContain('badge-success');
+                const badge = container.querySelector('.badge-success');
+                expect(badge?.textContent).toBe('Active');
+                expect(badge?.className).toContain('badge-success');
             });
         });
 

@@ -7,7 +7,7 @@ import { EnrollmentActivationPage } from '../../../../apps/registrar-portal/src/
 import { fetchAdmissionsQueue } from '../../../../apps/registrar-portal/src/features/AdmissionsDivision/Admissions.api';
 import { AdmissionWorkflow } from '@university-erp/workflow-sdk';
 
-vi.mock('../AdmissionsDivision/Admissions.api', () => ({
+vi.mock('../../../../apps/registrar-portal/src/features/AdmissionsDivision/Admissions.api', () => ({
     fetchAdmissionsQueue: vi.fn(),
 }));
 

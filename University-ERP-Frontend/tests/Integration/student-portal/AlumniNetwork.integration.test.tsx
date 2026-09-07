@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
@@ -33,12 +33,23 @@ describe('AlumniNetwork Integration', () => {
     );
 
   it('displays alumni network page structure correctly', async () => {
+    (alumniApi.getAlumniStatus as any).mockResolvedValue({
+      graduationYear: '2026',
+      chapter: 'Regional Chapter',
+      alumniStatus: 'Active Member',
+      benefitsActive: true
+    });
     renderComponent();
-    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    });
   });
 
   it('handles fallback state when alumni data fails or is unavailable', async () => {
+    (alumniApi.getAlumniStatus as any).mockRejectedValue(new Error('Failed'));
     renderComponent();
-    expect(document.body).toBeInTheDocument();
+    await waitFor(() => {
+      expect(document.body).toBeInTheDocument();
+    });
   });
 });

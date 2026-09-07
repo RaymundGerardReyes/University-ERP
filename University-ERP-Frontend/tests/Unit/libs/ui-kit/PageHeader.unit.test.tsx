@@ -1,12 +1,12 @@
-// Test Type: Unit Testing
-//
-// Library: ui-kit
-// Module: PageHeader
-//
-// Source References:
-// University-ERP-Frontend/libs/ui-kit/src/components/PageHeader.tsx
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import { PageHeader } from '../../../../libs/ui-kit/src/components/PageHeader';
 
-describe('PageHeader - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover PageHeader's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+describe("PageHeader - Unit Testing", () => {
+  it("renders page header title and subtitle", () => {
+    render(<PageHeader title="Faculty Portal" subtitle="Manage courses and students" />);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Faculty Portal');
+    expect(screen.getByText('Manage courses and students')).toBeInTheDocument();
+  });
 });

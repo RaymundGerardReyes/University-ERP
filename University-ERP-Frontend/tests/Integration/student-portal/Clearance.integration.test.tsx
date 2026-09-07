@@ -1,5 +1,4 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
@@ -35,11 +34,23 @@ describe('Clearance Integration', () => {
     );
 
   it('renders clearance dashboard header and status overview', async () => {
+    (registrarApi.getStudentClearance as any).mockResolvedValue({
+      status: 'Cleared_For_Graduation',
+      academicMet: true,
+      financialMet: true,
+    });
     renderComponent();
-    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    });
   });
 
   it('handles clearance requests successfully', async () => {
+    (registrarApi.getStudentClearance as any).mockResolvedValue({
+      status: 'Pending_Clearance',
+      academicMet: true,
+      financialMet: false,
+    });
     renderComponent();
     expect(document.body).toBeInTheDocument();
   });

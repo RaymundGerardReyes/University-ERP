@@ -5,7 +5,7 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 
-import { AdmissionsWorkspacePage } from '../../../apps/admissions-portal/src/features/AdmissionsProcessing/AdmissionsWorkspace.page';
+import { AdmissionsWorkspacePage } from '../../../apps/admin-portal/src/features/AdmissionsProcessing/AdmissionsWorkspace.page';
 import { admissionsApi } from '@university-erp/api-clients';
 
 // Mock Authentication SDK
@@ -48,11 +48,13 @@ describe('AdmissionsProcessing - Unit Testing', () => {
         expect(screen.getByText('Admissions Processing Workspace')).toBeDefined();
     });
 
-    it('should default to the "Secretary Intake" tab if the user has a generic Admissions role', () => {
+    it('should default to the "Secretary Intake" tab if the user has a generic Admissions role', async () => {
         mockUseAuth.mockReturnValue({ user: { roles: ['GenericAdmissions'] } });
-        vi.mocked(admissionsApi.getPendingApplications).mockResolvedValue([]);
+        vi.mocked(admissionsApi.getPendingApplications).mockResolvedValue([{ id: 'APP-01', applicantName: 'Test', applicationFeeStatus: 'Paid', status: 'Pending' }]);
         renderComponent();
-        expect(screen.getByText('Applicant Intake Queue')).toBeDefined();
+        await waitFor(() => {
+            expect(screen.getByText('Applicant Intake Queue')).toBeDefined();
+        });
     });
 
     it('should display a loading overlay while submitting a batch status update across any view', () => {
@@ -65,11 +67,13 @@ describe('AdmissionsProcessing - Unit Testing', () => {
     });
 
     // --- Secretary Intake View ---
-    it('should correctly render the SecretaryIntakeView component when selected', () => {
+    it('should correctly render the SecretaryIntakeView component when selected', async () => {
         mockUseAuth.mockReturnValue({ user: { roles: ['Secretary'] } });
         vi.mocked(admissionsApi.getPendingApplications).mockResolvedValue([{ id: 'APP-01', applicantName: 'Test', applicationFeeStatus: 'Paid', status: 'Pending' }]);
         renderComponent();
-        expect(screen.getByText('Applicant Intake Queue')).toBeDefined();
+        await waitFor(() => {
+            expect(screen.getByText('Applicant Intake Queue')).toBeDefined();
+        });
     });
 
     it('should display an empty state in SecretaryIntakeView when there are no new applicants', async () => {
@@ -168,7 +172,7 @@ describe('AdmissionsProcessing - Unit Testing', () => {
     // --- Registrar Enrollment View ---
     it('should correctly render the RegistrarEnrollmentView component when selected', async () => {
         mockUseAuth.mockReturnValue({ user: { roles: ['Registrar'] } });
-        vi.mocked(admissionsApi.getPendingApplications).mockResolvedValue([]);
+        vi.mocked(admissionsApi.getPendingApplications).mockResolvedValue([{ id: 'APP-04', applicantName: 'Bob', status: 'Endorsed_For_Enrollment' }]);
         renderComponent();
         await waitFor(() => {
             expect(screen.getByText('University Registry')).toBeDefined();

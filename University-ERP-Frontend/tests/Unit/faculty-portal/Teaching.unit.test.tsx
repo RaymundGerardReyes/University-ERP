@@ -1,17 +1,35 @@
-// Test Type: Unit Testing
-//
-// Portal: faculty-portal
-// Feature: Teaching
-//
-// Source References:
-// University-ERP-Frontend/apps/faculty-portal/src/features/Teaching/SectionRoster.page.tsx
-// University-ERP-Frontend/apps/faculty-portal/src/features/Teaching/Teaching.api.ts
-// University-ERP-Frontend/apps/faculty-portal/src/features/Teaching/Teaching.hooks.ts
-// University-ERP-Frontend/apps/faculty-portal/src/features/Teaching/Teaching.page.tsx
-// University-ERP-Frontend/apps/faculty-portal/src/features/Teaching/Teaching.types.ts
-// University-ERP-Frontend/apps/faculty-portal/src/features/Teaching/TeachingDashboard.page.tsx
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { TeachingPage } from '../../../apps/faculty-portal/src/features/Teaching/Teaching.page';
 
-describe('Teaching - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover Teaching's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({ identity: { id: 'FAC-01' }, user: { id: 'FAC-01' } })
+}));
+
+describe("Teaching - Unit Testing", () => {
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    vi.clearAllMocks();
+  });
+
+  const renderComponent = () =>
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <TeachingPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+  it("renders assigned courses and teaching load heading", async () => {
+    renderComponent();
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    });
+  });
 });

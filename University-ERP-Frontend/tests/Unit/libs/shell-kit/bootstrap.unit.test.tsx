@@ -1,12 +1,8 @@
-// Test Type: Unit Testing
-//
-// Library: shell-kit
-// Module: bootstrap
-//
-// Source References:
-// University-ERP-Frontend/libs/shell-kit/bootstrap.tsx
-import { describe, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
+import { bootstrapPortal } from '../../../../libs/shell-kit/bootstrap';
 
-describe('bootstrap - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover bootstrap's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+describe("bootstrap - Unit Testing", () => {
+  it("defines bootstrapPortal function", () => {
+    expect(typeof bootstrapPortal).toBe('function');
+  });
 });

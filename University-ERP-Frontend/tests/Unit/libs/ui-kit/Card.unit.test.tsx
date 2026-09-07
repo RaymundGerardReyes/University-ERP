@@ -1,12 +1,12 @@
-// Test Type: Unit Testing
-//
-// Library: ui-kit
-// Module: Card
-//
-// Source References:
-// University-ERP-Frontend/libs/ui-kit/src/components/Card.tsx
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import { Card } from '../../../../libs/ui-kit/src/components/Card';
 
-describe('Card - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover Card's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+describe("Card - Unit Testing", () => {
+  it("renders card container with children", () => {
+    render(<Card><h2>Card Title</h2><p>Card Content</p></Card>);
+    expect(screen.getByText('Card Title')).toBeInTheDocument();
+    expect(screen.getByText('Card Content')).toBeInTheDocument();
+  });
 });

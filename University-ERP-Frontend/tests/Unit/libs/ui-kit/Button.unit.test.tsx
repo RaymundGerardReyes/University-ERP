@@ -1,12 +1,15 @@
-// Test Type: Unit Testing
-//
-// Library: ui-kit
-// Module: Button
-//
-// Source References:
-// University-ERP-Frontend/libs/ui-kit/src/components/Button.tsx
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { vi, describe, it, expect } from 'vitest';
+import { Button } from '../../../../libs/ui-kit/src/components/Button';
 
-describe('Button - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover Button's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+describe("Button - Unit Testing", () => {
+  it("renders button label and handles click events", () => {
+    const handleClick = vi.fn();
+    render(<Button variant="primary" onClick={handleClick}>Submit</Button>);
+    const btn = screen.getByRole('button', { name: /submit/i });
+    expect(btn).toBeInTheDocument();
+    fireEvent.click(btn);
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
 });

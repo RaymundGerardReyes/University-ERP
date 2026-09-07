@@ -1,12 +1,27 @@
-// Test Type: Unit Testing
-//
-// Library: workflow-sdk
-// Module: EnrollmentWorkflow
-//
-// Source References:
-// University-ERP-Frontend/libs/workflow-sdk/src/EnrollmentWorkflow.ts
-import { describe, it } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+import * as Module from '../../../../libs/workflow-sdk/src/EnrollmentWorkflow';
 
-describe('EnrollmentWorkflow - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover EnrollmentWorkflow's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+vi.mock('@university-erp/api-clients', () => ({
+  admissionsApi: {
+    recommendApplication: vi.fn().mockResolvedValue({ success: true }),
+    endorseApplication: vi.fn().mockResolvedValue({ success: true }),
+    activateEnrollment: vi.fn().mockResolvedValue({ success: true })
+  },
+  financeBillingApi: {
+    postPayment: vi.fn().mockResolvedValue({ success: true })
+  }
+}));
+
+vi.mock('@university-erp/core-logger', () => ({
+  createLogger: () => ({
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn()
+  })
+}));
+
+describe("EnrollmentWorkflow - Unit Testing", () => {
+  it("exports EnrollmentWorkflow class or workflow definition", () => {
+    expect(Module).toBeDefined();
+  });
 });

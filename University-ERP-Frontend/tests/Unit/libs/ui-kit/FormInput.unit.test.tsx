@@ -1,12 +1,15 @@
-// Test Type: Unit Testing
-//
-// Library: ui-kit
-// Module: FormInput
-//
-// Source References:
-// University-ERP-Frontend/libs/ui-kit/src/components/FormInput.tsx
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { vi, describe, it, expect } from 'vitest';
+import { FormInput } from '../../../../libs/ui-kit/src/components/FormInput';
 
-describe('FormInput - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover FormInput's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+describe("FormInput - Unit Testing", () => {
+  it("renders input and handles value changes", () => {
+    const handleChange = vi.fn();
+    render(<FormInput placeholder="Enter username" onChange={handleChange} />);
+    const input = screen.getByPlaceholderText('Enter username');
+    expect(input).toBeInTheDocument();
+    fireEvent.change(input, { target: { value: 'alice' } });
+    expect(handleChange).toHaveBeenCalled();
+  });
 });

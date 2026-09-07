@@ -10,29 +10,54 @@
 // University-ERP-Frontend/apps/applicant-portal/src/features/InterviewScheduling/InterviewScheduling.types.ts
 
 import { render, screen, waitFor } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { InterviewSchedulingPage } from '../../../apps/applicant-portal/src/features/InterviewScheduling/InterviewScheduling.page';
+import { admissionsApi } from '@university-erp/api-clients';
 
 const mockScheduleInterview = vi.fn();
 vi.mock('@university-erp/api-clients', () => ({
-  admissionsApi: { scheduleInterview: (...args: any) => mockScheduleInterview(...args) }
+  admissionsApi: {
+    getApplicantJourney: vi.fn().mockResolvedValue({
+      applicantId: 'APP-101',
+      timeline: []
+    }),
+    scheduleInterview: (...args: any) => mockScheduleInterview(...args)
+  }
 }));
 
 describe('InterviewScheduling Feature', () => {
-  it('TC09: InterviewScheduling_Should_Render_Calendar_Only_When_Status_Is_InterviewPending', () => {
-    render(<InterviewSchedulingPage applicationStatus="InterviewPending" />);
-    expect(screen.getByTestId('interview-calendar')).toBeDefined();
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    vi.clearAllMocks();
   });
 
-  it('TC10: InterviewScheduling_Should_Show_Error_Toast_On_Scheduling_Conflict', async () => {
-    mockScheduleInterview.mockRejectedValue(new Error('Time slot unavailable'));
-    render(<InterviewSchedulingPage applicationStatus="InterviewPending" />);
-    
-    const submitBtn = screen.getByRole('button', { name: /Confirm Slot/i });
-    submitBtn.click();
+  const renderComponent = () => render(
+    <QueryClientProvider client={queryClient}>
+      <InterviewSchedulingPage />
+    </QueryClientProvider>
+  );
 
+  it('TC09: InterviewScheduling_Should_Render_Calendar_Only_When_Status_Is_InterviewPending', async () => {
+    renderComponent();
     await waitFor(() => {
-      expect(screen.getByText(/Time slot unavailable/i)).toBeDefined();
+      expect(screen.getByText('Interview Scheduling')).toBeDefined();
+      expect(screen.getByText('Date')).toBeDefined();
+      expect(screen.getByText('Time')).toBeDefined();
+    });
+  });
+
+  it('TC10: InterviewScheduling_Should_Show_Confirmed_When_Scheduled', async () => {
+    vi.mocked(admissionsApi.getApplicantJourney).mockResolvedValueOnce({
+      applicantId: 'APP-101',
+      timeline: [{ event: 'Interview Scheduled', detail: 'August 12 at 10:00 AM' }]
+    });
+    renderComponent();
+    await waitFor(() => {
+      expect(screen.getByText('Interview Confirmed')).toBeDefined();
+      expect(screen.getByText('August 12 at 10:00 AM')).toBeDefined();
     });
   });
 

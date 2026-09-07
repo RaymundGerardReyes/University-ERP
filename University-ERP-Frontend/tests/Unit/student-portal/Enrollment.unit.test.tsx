@@ -1,15 +1,29 @@
-// Test Type: Unit Testing
-//
-// Portal: student-portal
-// Feature: Enrollment
-//
-// Source References:
-// University-ERP-Frontend/apps/student-portal/src/features/Enrollment/Enrollment.api.ts
-// University-ERP-Frontend/apps/student-portal/src/features/Enrollment/Enrollment.hooks.ts
-// University-ERP-Frontend/apps/student-portal/src/features/Enrollment/Enrollment.page.tsx
-// University-ERP-Frontend/apps/student-portal/src/features/Enrollment/Enrollment.types.ts
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { EnrollmentPage } from '../../../apps/student-portal/src/features/Enrollment/Enrollment.page';
 
-describe('Enrollment - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover Enrollment's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({
+    identity: { id: 'STU-101', name: 'John Student' },
+    user: { id: 'STU-101', name: 'John Student' },
+    isAuthenticated: true,
+  })
+}));
+
+describe("Enrollment - Unit Testing", () => {
+  let queryClient: QueryClient;
+  beforeEach(() => {
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    vi.clearAllMocks();
+  });
+
+  it("renders Enrollment page heading", async () => {
+    render(<QueryClientProvider client={queryClient}><MemoryRouter><EnrollmentPage /></MemoryRouter></QueryClientProvider>);
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    });
+  });
 });

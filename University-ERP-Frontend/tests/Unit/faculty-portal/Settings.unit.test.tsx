@@ -1,15 +1,35 @@
-// Test Type: Unit Testing
-//
-// Portal: faculty-portal
-// Feature: Settings
-//
-// Source References:
-// University-ERP-Frontend/apps/faculty-portal/src/features/Settings/Settings.api.ts
-// University-ERP-Frontend/apps/faculty-portal/src/features/Settings/Settings.hooks.ts
-// University-ERP-Frontend/apps/faculty-portal/src/features/Settings/Settings.page.tsx
-// University-ERP-Frontend/apps/faculty-portal/src/features/Settings/Settings.types.ts
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { SettingsPage } from '../../../apps/faculty-portal/src/features/Settings/Settings.page';
 
-describe('Settings - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover Settings's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({ identity: { id: 'FAC-01' }, user: { id: 'FAC-01' } })
+}));
+
+describe("Settings - Unit Testing", () => {
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    vi.clearAllMocks();
+  });
+
+  const renderComponent = () =>
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <SettingsPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+  it("renders faculty preferences and settings heading", async () => {
+    renderComponent();
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    });
+  });
 });

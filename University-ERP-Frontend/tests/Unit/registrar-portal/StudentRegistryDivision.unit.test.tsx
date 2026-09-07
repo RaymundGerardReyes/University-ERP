@@ -1,18 +1,25 @@
-// Test Type: Unit Testing
-//
-// Portal: registrar-portal
-// Feature: StudentRegistryDivision
-//
-// Source References:
-// University-ERP-Frontend/apps/registrar-portal/src/features/StudentRegistryDivision/LeaveOfAbsence.page.tsx
-// University-ERP-Frontend/apps/registrar-portal/src/features/StudentRegistryDivision/MasterStudentList.page.tsx
-// University-ERP-Frontend/apps/registrar-portal/src/features/StudentRegistryDivision/Registry.api.ts
-// University-ERP-Frontend/apps/registrar-portal/src/features/StudentRegistryDivision/Registry.hooks.ts
-// University-ERP-Frontend/apps/registrar-portal/src/features/StudentRegistryDivision/Registry.types.ts
-// University-ERP-Frontend/apps/registrar-portal/src/features/StudentRegistryDivision/StudentNumberAssignment.page.tsx
-// University-ERP-Frontend/apps/registrar-portal/src/features/StudentRegistryDivision/StudentProfile.page.tsx
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { MasterStudentListPage } from '../../../apps/registrar-portal/src/features/StudentRegistryDivision/MasterStudentList.page';
 
-describe('StudentRegistryDivision - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover StudentRegistryDivision's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({ user: { id: 'reg-1', roles: ['Registrar'] } })
+}));
+
+describe("StudentRegistryDivision - Unit Testing", () => {
+  let queryClient: QueryClient;
+  beforeEach(() => {
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    vi.clearAllMocks();
+  });
+
+  it("renders student registry master list heading", async () => {
+    render(<QueryClientProvider client={queryClient}><MemoryRouter><MasterStudentListPage /></MemoryRouter></QueryClientProvider>);
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    });
+  });
 });

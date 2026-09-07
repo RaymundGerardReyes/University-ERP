@@ -1,12 +1,12 @@
-// Test Type: Unit Testing
-//
-// Library: shell-kit
-// Module: authConfig
-//
-// Source References:
-// University-ERP-Frontend/libs/shell-kit/authConfig.ts
-import { describe, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
+import { createAuthConfig } from '../../../../libs/shell-kit/authConfig';
 
-describe('authConfig - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover authConfig's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+describe("authConfig - Unit Testing", () => {
+  it("creates valid auth configuration object", () => {
+    expect(createAuthConfig).toBeDefined();
+    const config = createAuthConfig('https://auth.university.edu', 'client-123');
+    expect(config.authority).toBe('https://auth.university.edu');
+    expect(config.client_id).toBe('client-123');
+    expect(config.response_type).toBe('code');
+  });
 });

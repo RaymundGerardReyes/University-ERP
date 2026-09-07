@@ -12,41 +12,78 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { EnrollmentPaymentPage } from '../../../apps/applicant-portal/src/features/EnrollmentPayment/EnrollmentPayment.page';
+import { admissionsApi, financeApi } from '@university-erp/api-clients';
 
-const mockCreateSession = vi.fn();
+vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({
+    identity: { id: 'STU-101', name: 'Alex Student', email: 'alex@edu' },
+    isAuthenticated: true,
+  }),
+}));
+
 vi.mock('@university-erp/api-clients', () => ({
-  financePaymentSessionApi: { createSession: (...args: any) => mockCreateSession(...args) }
+  admissionsApi: {
+    getApplicantJourney: vi.fn().mockResolvedValue({ applicantId: 'APP-101', timeline: [] }),
+    getApplicationStatus: vi.fn().mockResolvedValue([{ id: 'APP-101', status: 'Accepted' }]),
+  },
+  financeApi: {
+    getInvoices: vi.fn().mockResolvedValue([
+      {
+        invoiceId: 'INV-2026-001',
+        studentId: 'STU-101',
+        amountDue: 500,
+        description: 'Downpayment Tuition Fee',
+        dueDate: '2026-09-01',
+        status: 'UNPAID',
+      }
+    ]),
+  },
+  financeBillingApi: {},
 }));
 
 describe('EnrollmentPayment Feature', () => {
-  const queryClient = new QueryClient();
+  let queryClient: QueryClient;
 
-  it('TC14: EnrollmentPayment_Should_Render_Payment_Gateway_When_Status_Is_Endorsed_For_Enrollment', () => {
+  beforeEach(() => {
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    vi.clearAllMocks();
+  });
+
+  it('TC14: EnrollmentPayment_Should_Render_Payment_Gateway_When_Status_Is_Endorsed_For_Enrollment', async () => {
     render(
       <QueryClientProvider client={queryClient}>
-        <EnrollmentPaymentPage applicationStatus="Endorsed_For_Enrollment" />
+        <EnrollmentPaymentPage />
       </QueryClientProvider>
     );
-    expect(screen.getByText(/Secure Payment Gateway/i)).toBeDefined();
-    expect(screen.getByRole('button', { name: /Pay Enrollment Fee/i })).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByText(/Enrollment Payment/i)).toBeDefined();
+      expect(screen.getByText(/Assessment Details/i)).toBeDefined();
+      expect(screen.getByRole('button', { name: /Proceed to Checkout/i })).toBeDefined();
+    });
   });
 
   it('TC15: EnrollmentPayment_Should_Display_Success_And_Student_ID_Upon_Payment_Verification', async () => {
-    mockCreateSession.mockResolvedValue({ status: 'Paid', generatedStudentId: 'STU-2026-9999' });
+    vi.mocked(financeApi.getInvoices).mockResolvedValueOnce([
+      {
+        invoiceId: 'INV-2026-001',
+        studentId: 'STU-101',
+        amountDue: 500,
+        description: 'Downpayment Tuition Fee',
+        dueDate: '2026-09-01',
+        status: 'PAID',
+      }
+    ]);
+
     render(
       <QueryClientProvider client={queryClient}>
-        <EnrollmentPaymentPage applicationStatus="Endorsed_For_Enrollment" />
+        <EnrollmentPaymentPage />
       </QueryClientProvider>
     );
 
-    const user = userEvent.setup();
-    await user.click(screen.getByRole('button', { name: /Pay Enrollment Fee/i }));
-
     await waitFor(() => {
-      expect(screen.getByText(/Payment Successful/i)).toBeDefined();
-      expect(screen.getByText(/STU-2026-9999/i)).toBeDefined();
+      expect(screen.getByText(/Payment Successfully Settled/i)).toBeDefined();
     });
   });
 

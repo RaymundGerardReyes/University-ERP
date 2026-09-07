@@ -1,13 +1,25 @@
-// Test Type: Unit Testing
-//
-// Portal: finance-console
-// Feature: Cashier
-//
-// Source References:
-// University-ERP-Frontend/apps/finance-console/src/features/Cashier/ClearanceApproval.page.tsx
-// University-ERP-Frontend/apps/finance-console/src/features/Cashier/PaymentGateway.page.tsx
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { PaymentGatewayPage } from '../../../apps/finance-console/src/features/Cashier/PaymentGateway.page';
 
-describe('Cashier - Unit Testing', () => {
-  it.todo("Unit-test scenarios should cover Cashier's hooks, pure rendering states, and prop-driven behavior in isolation, with the API layer mocked.");
+vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({ user: { id: 'fin-1', roles: ['Cashier'] } })
+}));
+
+describe("Cashier - Unit Testing", () => {
+  let queryClient: QueryClient;
+  beforeEach(() => {
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    vi.clearAllMocks();
+  });
+
+  it("renders cashier payment gateway page heading", async () => {
+    render(<QueryClientProvider client={queryClient}><MemoryRouter><PaymentGatewayPage /></MemoryRouter></QueryClientProvider>);
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    });
+  });
 });
