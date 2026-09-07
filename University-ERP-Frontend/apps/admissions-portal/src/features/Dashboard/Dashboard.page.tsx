@@ -9,7 +9,7 @@ export const DashboardPage: React.FC = () => {
     const { identity } = useAuth();
     const navigate = useNavigate();
 
-    const { data: applications = [], isLoading } = useQuery({
+    const { data: applications = [], isLoading, isError } = useQuery({
         queryKey: ['pendingApplications'],
         queryFn: () => admissionsApi.getPendingApplications()
     });
@@ -22,6 +22,15 @@ export const DashboardPage: React.FC = () => {
         const acceptanceRate = total > 0 ? (accepted / total * 100).toFixed(1) : '0.0';
         return { total, underReview, missingDocs, acceptanceRate };
     }, [applications]);
+
+    if (isError) {
+        return (
+            <div className="stub-page fade-in">
+                <div className="stub-title">System Error</div>
+                <div className="stub-subtitle">Failed to load admissions dashboard.</div>
+            </div>
+        );
+    }
 
     const recentSubmissions = applications.slice(0, 5);
 
