@@ -3,8 +3,15 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@university-erp/auth-sdk';
 import { portalRegistry } from './portalRegistry';
 
-export const AuthGuard: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
-  const { user, isAuthenticated } = useAuth();
+export interface AuthGuardProps {
+  children?: React.ReactNode;
+  allowedRoles?: string[];
+}
+
+export const AuthGuard: React.FC<AuthGuardProps> = ({ children, allowedRoles }) => {
+  const auth = useAuth() as any;
+  const user = auth?.user || auth?.identity;
+  const isAuthenticated = auth?.isAuthenticated;
   const location = useLocation();
 
   if (!isAuthenticated) {
@@ -29,17 +36,22 @@ export const AuthGuard: React.FC<{ children?: React.ReactNode }> = ({ children }
   else if (currentOrigin === portalRegistry.registrar.url || hostname.startsWith('registrar')) expectedRole = 'Registrar';
   else if (currentOrigin === portalRegistry.applicant.url || hostname.startsWith('applicant')) expectedRole = 'Applicant';
 
-  if (expectedRole && user?.roles) {
+  const userRoles: string[] = user?.roles || (user?.role ? [user.role] : []);
+  const requiredRoles = allowedRoles && allowedRoles.length > 0
+    ? allowedRoles
+    : (expectedRole ? [expectedRole] : []);
+
+  if (requiredRoles.length > 0) {
       // Allow access if they have the exact role, or if they are System Admin (except for Applicant portal)
-      const hasDirectAccess = user.roles.includes(expectedRole);
-      const isAdminOverride = user.roles.includes('Admin') && expectedRole !== 'Applicant';
+      const hasDirectAccess = requiredRoles.some(r => userRoles.includes(r));
+      const isAdminOverride = userRoles.includes('Admin') && !requiredRoles.includes('Applicant');
 
       if (!hasDirectAccess && !isAdminOverride) {
           return (
              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#0f172a', color: 'white', fontFamily: 'system-ui, sans-serif' }}>
                  <h1 style={{ fontSize: '3rem', margin: '0 0 1rem 0' }}>403 Forbidden</h1>
                  <p style={{ fontSize: '1.25rem', color: '#94a3b8', marginBottom: '2rem' }}>
-                    Your current role ({user.roles.join(', ')}) does not have permission to access the {expectedRole} Portal.
+                    Your current role ({userRoles.join(', ')}) does not have permission to access this resource.
                  </p>
                  <button 
                      onClick={() => {
