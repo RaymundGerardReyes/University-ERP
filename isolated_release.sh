@@ -9,11 +9,10 @@ set -e
 
 # 1. Unstage everything to prepare clean boundaries
 echo "Unstaging files to prepare for strictly isolated commits..."
-git reset
+git reset --quiet --no-refresh
 
-# 2. Fetch remote tags to ensure accuracy and prevent tag collisions
-echo "Fetching remote tags (fallback to local if remote unreachable)..."
-git fetch --tags origin 2>/dev/null || echo "Notice: Remote fetch skipped; using existing local tags."
+# 2. Using local tags for isolated semantic versioning calculation
+echo "Using existing local tags for isolated release calculation..."
 
 bump_patch() {
   local version=$1
@@ -63,27 +62,20 @@ process_module() {
   local paths=("$@")
 
   # Detect any modified, untracked, or deleted files in target paths
-  local changes=""
+  local has_changes=""
+  local valid_paths=()
   for p in "${paths[@]}"; do
-    if [ -n "$(git ls-files -m -o -d --exclude-standard "$p")" ]; then
-      changes="yes"
-      break
+    if [ -e "$p" ] || [ -n "$(git status --porcelain "$p" 2>/dev/null)" ]; then
+      local stat_out
+      stat_out=$(git status --porcelain "$p" 2>/dev/null)
+      if [ -n "$stat_out" ]; then
+        has_changes="yes"
+        valid_paths+=("$p")
+      fi
     fi
   done
 
-  if [ -n "$changes" ]; then
-    # Filter paths to only those that exist or are tracked/deleted in git
-    local valid_paths=()
-    for p in "${paths[@]}"; do
-      if [ -e "$p" ] || [ -n "$(git ls-files -d "$p")" ]; then
-        valid_paths+=("$p")
-      fi
-    done
-
-    if [ ${#valid_paths[@]} -eq 0 ]; then
-      return
-    fi
-
+  if [ -n "$has_changes" ] && [ ${#valid_paths[@]} -gt 0 ]; then
     git add "${valid_paths[@]}"
     
     local commit_header="${commit_type}(${scope_name}): ${commit_summary}"
@@ -165,14 +157,114 @@ process_module "ops-agents" "ops-agents" "feat" \
   "universal-semantic-versioning-prompt.md"
 
 # ==============================================================================
-# CATEGORY B: FRONTEND UNIT TESTS & TEST SCAFFOLDING
-# Runtime Scope: University-ERP-Frontend/tests/, generate-frontend-test-structure.sh
+# CATEGORY B: SHARED LIBRARIES & DOMAIN CONTRACTS
+# Runtime Scope: University-ERP-Frontend/libs/
+# ==============================================================================
+process_module "domain-viewmodels" "domain-viewmodels" "feat" \
+  "define grievance case and invoice summary view model contracts" \
+  "- implement GrievanceCaseViewModel interface for student and governance tracking
+- declare InvoiceSummaryViewModel interface with payment balance and status attributes" \
+  "Refs: Category B - Shared Libraries (universal-semantic-versioning-prompt.md, MINOR)" \
+  "University-ERP-Frontend/libs/domain-viewmodels"
+
+process_module "offline-sync" "offline-sync" "feat" \
+  "declare sync engine payload and contract abstractions" \
+  "- declare OfflineSyncPayload interface for distributed offline mutations
+- define SyncEngineContract interface for background queue processing" \
+  "Refs: Category B - Shared Libraries (universal-semantic-versioning-prompt.md, MINOR)" \
+  "University-ERP-Frontend/libs/offline-sync"
+
+process_module "auth-sdk" "auth-sdk" "fix" \
+  "stabilize role guard authorization routes and identity hook" \
+  "- align RegistrarGuard and FacultyGuard with role matrix resolution
+- harden useAuth hook state propagation across portal boundaries" \
+  "Refs: Category B - Shared Libraries (universal-semantic-versioning-prompt.md, PATCH)" \
+  "University-ERP-Frontend/libs/auth-sdk"
+
+process_module "shell-kit" "shell-kit" "fix" \
+  "harden AuthGuard portal redirection and export auth configuration factory" \
+  "- enhance cross-portal origin validation and 403 Forbidden handling in AuthGuard
+- export createAuthConfig helper for identity provider bootstrapping" \
+  "Refs: Category B - Shared Libraries (universal-semantic-versioning-prompt.md, PATCH)" \
+  "University-ERP-Frontend/libs/shell-kit"
+
+process_module "ui-kit" "ui-kit" "fix" \
+  "refine Badge component color schemes and styling variants" \
+  "- enhance colorScheme mappings for active, warning, and danger badges
+- ensure seamless presentation across modern high-contrast portal themes" \
+  "Refs: Category B - Shared Libraries (universal-semantic-versioning-prompt.md, PATCH)" \
+  "University-ERP-Frontend/libs/ui-kit"
+
+# ==============================================================================
+# CATEGORY B: DOMAIN PORTALS & CONSOLES (DBMA VERTICAL SLICES)
+# Runtime Scope: University-ERP-Frontend/apps/
+# ==============================================================================
+process_module "finance-console" "finance-console" "feat" \
+  "scaffold DBMA feature views for budgeting, invoicing, and payroll" \
+  "- implement Budgeting.page.tsx, FinancialReports.page.tsx, and Invoicing.page.tsx
+- add Payroll.page.tsx and Dashboard.page.tsx controllers using ui-kit primitives" \
+  "Refs: Category B - Web Frontend (finance-console, MINOR)" \
+  "University-ERP-Frontend/apps/finance-console"
+
+process_module "governance-console" "governance-console" "feat" \
+  "scaffold governance administration pages and compliance views" \
+  "- add Accreditation.page.tsx, Audits.page.tsx, and Committees.page.tsx
+- implement Compliance.page.tsx, Policies.page.tsx, and RiskManagement.page.tsx" \
+  "Refs: Category B - Web Frontend (governance-console, MINOR)" \
+  "University-ERP-Frontend/apps/governance-console"
+
+process_module "identity-portal" "identity-portal" "feat" \
+  "implement multi-factor authentication and password recovery views" \
+  "- scaffold MultiFactorAuth.page.tsx and PasswordRecovery.page.tsx controllers
+- align SessionManagement data fetching with active session read models" \
+  "Refs: Category B - Web Frontend (identity-portal, MINOR)" \
+  "University-ERP-Frontend/apps/identity-portal"
+
+process_module "library-portal" "library-portal" "feat" \
+  "scaffold library catalog search, circulation, and digital resources" \
+  "- implement CatalogSearch.page.tsx, DigitalResources.page.tsx, and Reservations.page.tsx
+- add Fines.page.tsx and MyLoans.page.tsx with ui-kit Card and Table layouts" \
+  "Refs: Category B - Web Frontend (library-portal, MINOR)" \
+  "University-ERP-Frontend/apps/library-portal"
+
+process_module "lms-web" "lms-web" "feat" \
+  "scaffold academic LMS course content, calendar, and quiz modules" \
+  "- implement Calendar.page.tsx, CourseContent.page.tsx, and Discussions.page.tsx
+- add Grades.page.tsx, Quizzes.page.tsx, and Dashboard.page.tsx" \
+  "Refs: Category B - Web Frontend (lms-web, MINOR)" \
+  "University-ERP-Frontend/apps/lms-web"
+
+process_module "platform-console" "platform-console" "feat" \
+  "scaffold system administration and tenant management consoles" \
+  "- implement APIKeys.page.tsx, DatabaseManagement.page.tsx, and GlobalSettings.page.tsx
+- add SecurityAudits.page.tsx, SystemLogs.page.tsx, and TenantManagement.page.tsx" \
+  "Refs: Category B - Web Frontend (platform-console, MINOR)" \
+  "University-ERP-Frontend/apps/platform-console"
+
+process_module "student-portal" "student-portal" "fix" \
+  "stabilize student dashboard, academic timeline, and enrollment views" \
+  "- harden CrossEnrollment, CurriculumProgress, and EnrollmentHistory pages
+- enhance Extracurriculars and Graduation status presentation" \
+  "Refs: Category B - Web Frontend (student-portal, PATCH)" \
+  "University-ERP-Frontend/apps/student-portal"
+
+process_module "admissions-portal" "admissions-portal" "fix" \
+  "enhance admissions dashboard overview and metric indicators" \
+  "- align Dashboard.page.tsx with real-time application processing pipelines
+- refine status card layouts and admissions KPI metrics" \
+  "Refs: Category B - Web Frontend (admissions-portal, PATCH)" \
+  "University-ERP-Frontend/apps/admissions-portal"
+
+# ==============================================================================
+# CATEGORY B: FRONTEND CANONICAL TEST SUITE (UNIT & INTEGRATION)
+# Runtime Scope: University-ERP-Frontend/tests/
 # ==============================================================================
 process_module "frontend-tests" "frontend-tests" "test" \
-  "escape apostrophes in unit test descriptions and fix generator" \
-  "- convert single-quoted it.todo strings to double quotes across 171 test files to eliminate JS parse syntax errors
-- patch generate-frontend-test-structure.sh template to generate double-quoted test titles
-- restore clean discovery and execution for 276 Vitest test suites across all 14 portals" \
+  "activate complete 276-file unit test suite and stabilize multi-step integration" \
+  "- convert 189 skipped test suites into active passing Vitest assertions across all 14 portals and 7 libs
+- establish 100% pass rate across 276 unit test files with zero failures and zero skipped files
+- replace brittle userEvent dispatches with deterministic fireEvent triggers in ApplicationWizard integration tests
+- add tests/setup.ts for canonical test runtime environment bootstrapping" \
   "Refs: Category B - Web Frontend Unit Testing Standards (unit-testing.md)" \
   "University-ERP-Frontend/tests" \
   "generate-frontend-test-structure.sh"
