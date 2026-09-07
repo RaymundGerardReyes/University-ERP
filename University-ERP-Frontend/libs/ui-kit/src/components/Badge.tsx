@@ -40,7 +40,11 @@ export const Badge: React.FC<BadgeProps> = ({ children, colorScheme, variant, st
   };
 
   return (
-    <span style={baseStyle} {...props}>
+    <span
+      className={`badge badge-${effectiveScheme} ${props.className || ''}`.trim()}
+      style={baseStyle}
+      {...props}
+    >
       {children}
     </span>
   );
