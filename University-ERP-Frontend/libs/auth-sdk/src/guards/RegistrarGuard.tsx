@@ -20,7 +20,9 @@ interface RegistrarGuardProps {
 }
 
 export const RegistrarGuard: React.FC<RegistrarGuardProps> = ({ allowedRoles }) => {
-    const { user, isAuthenticated } = useAuth();
+    const auth = useAuth() as any;
+    const user = auth?.user || auth?.identity;
+    const isAuthenticated = auth?.isAuthenticated;
 
     if (!isAuthenticated) {
         // Let AuthGuard handle the redirect gracefully
