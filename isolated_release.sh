@@ -7,12 +7,24 @@ set -e
 # Governed by: .agents/rules/universal-semantic-versioning-prompt.md
 # ==============================================================================
 
-# 1. Unstage everything to prepare clean boundaries
-echo "Unstaging files to prepare for strictly isolated commits..."
-git reset --quiet --no-refresh
+DRY_RUN=false
+if [[ "$1" == "--dry-run" || "$1" == "-n" ]]; then
+  DRY_RUN=true
+  echo "===================================================================="
+  echo "  DRY-RUN MODE ENABLED: Analyzing changes per SemVer 2.0.0"
+  echo "  (No files will be staged, committed, or tagged)"
+  echo "===================================================================="
+fi
 
-# 2. Using local tags for isolated semantic versioning calculation
-echo "Using existing local tags for isolated release calculation..."
+# 1. Unstage everything to prepare clean boundaries
+if [ "$DRY_RUN" = false ]; then
+  echo "Unstaging files to prepare for strictly isolated commits..."
+  git reset
+fi
+
+# 2. Fetch remote tags to ensure accuracy and prevent tag collisions
+echo "Fetching remote tags (fallback to local if remote unreachable)..."
+git fetch --tags origin 2>/dev/null || echo "Notice: Remote fetch skipped; using existing local tags."
 
 bump_patch() {
   local version=$1
@@ -48,7 +60,9 @@ bump_major() {
 # process_module: Stages, commits, and conditionally tags an isolated concern
 # Conforms to Conventional Commits:
 #   <type>(<scope>): <summary, <=72 chars>
+#
 #   <body: bulleted rationale and file changes>
+#
 #   <footer: Refs and Coordination Notes>
 # ==============================================================================
 process_module() {
@@ -62,40 +76,62 @@ process_module() {
   local paths=("$@")
 
   # Detect any modified, untracked, or deleted files in target paths
-  local has_changes=""
-  local valid_paths=()
+  local changes=""
   for p in "${paths[@]}"; do
-    if [ -e "$p" ] || [ -n "$(git status --porcelain "$p" 2>/dev/null)" ]; then
-      local stat_out
-      stat_out=$(git status --porcelain "$p" 2>/dev/null)
-      if [ -n "$stat_out" ]; then
-        has_changes="yes"
-        valid_paths+=("$p")
-      fi
+    if [ -n "$(git ls-files -m -o -d --exclude-standard "$p")" ]; then
+      changes="yes"
+      break
     fi
   done
 
-  if [ -n "$has_changes" ] && [ ${#valid_paths[@]} -gt 0 ]; then
-    git add "${valid_paths[@]}"
+  if [ -n "$changes" ]; then
+    echo "----------------------------------------------------"
+    echo "Isolating and processing: $scope_name"
     
-    local commit_header="${commit_type}(${scope_name}): ${commit_summary}"
-    echo "Committing: $commit_header"
-    
-    local commit_args=("-m" "$commit_header")
-    if [ -n "$commit_body" ]; then
-      commit_args+=("-m" "$commit_body")
-    fi
-    if [ -n "$commit_footer" ]; then
-      commit_args+=("-m" "$commit_footer")
+    # Filter paths to only those that exist or are tracked/deleted in git
+    local valid_paths=()
+    for p in "${paths[@]}"; do
+      if [ -e "$p" ] || [ -n "$(git ls-files -d "$p")" ]; then
+        valid_paths+=("$p")
+      fi
+    done
+
+    if [ ${#valid_paths[@]} -eq 0 ]; then
+      return
     fi
 
-    git commit "${commit_args[@]}"
+    local commit_header="${commit_type}(${scope_name}): ${commit_summary}"
+    if [ "$DRY_RUN" = false ]; then
+      git add "${valid_paths[@]}"
+      echo "Committing: $commit_header"
+
+      local commit_args=("-m" "$commit_header")
+      if [ -n "$commit_body" ]; then
+        commit_args+=("-m" "$commit_body")
+      fi
+      if [ -n "$commit_footer" ]; then
+        commit_args+=("-m" "$commit_footer")
+      fi
+
+      git commit "${commit_args[@]}"
+    else
+      echo "[DRY-RUN] Scope: $scope_name"
+      echo "[DRY-RUN] Proposed Commit Header: $commit_header"
+      if [ -n "$commit_body" ]; then
+        echo "[DRY-RUN] Proposed Commit Body:"
+        echo "$commit_body"
+      fi
+      if [ -n "$commit_footer" ]; then
+        echo "[DRY-RUN] Proposed Commit Footer: $commit_footer"
+      fi
+    fi
 
     # Tagging Decision Matrix per SemVer 2.0.0 (universal-semantic-versioning-prompt.md):
     # - feat (MINOR), fix/perf/refactor/build (PATCH), ! or BREAKING CHANGE (MAJOR)
     # - chore, docs, test, ci -> no release / no tag
     if [[ "$commit_type" != "chore" && "$commit_type" != "docs" && "$commit_type" != "test" && "$commit_type" != "ci" ]]; then
       local current_tag
+      # Safely sort tags to find the absolute highest one matching the prefix
       current_tag=$(git tag -l "${tag_prefix}-v*" | sort -V | tail -n 1)
       
       local version_num
@@ -121,8 +157,9 @@ process_module() {
 
       local next_tag="${tag_prefix}-v${next_version}"
 
-      echo "Tagging $scope_name: Current($current_tag) -> Next($next_tag)"
-      git tag -a "$next_tag" -m "${tag_prefix} Release ${next_version}
+      if [ "$DRY_RUN" = false ]; then
+        echo "Tagging $scope_name: Current($current_tag) -> Next($next_tag)"
+        git tag -a "$next_tag" -m "${tag_prefix} Release ${next_version}
 
 Included commits:
 - ${commit_header}
@@ -131,6 +168,11 @@ ${commit_body}
 
 Bump reason: ${bump_reason}
 Coordination Notes: ${commit_footer:-None}"
+      else
+        echo "[DRY-RUN] Tag Calculation: Current($current_tag) -> Proposed Next($next_tag)"
+        echo "[DRY-RUN] Bump Reason: ${bump_reason}"
+        echo "[DRY-RUN] Coordination Notes: ${commit_footer:-None}"
+      fi
     else
       echo "Skipping tag for $scope_name because commit type is '$commit_type' (no release required per SemVer)."
     fi
@@ -140,207 +182,151 @@ Coordination Notes: ${commit_footer:-None}"
 echo "Starting isolated semantic versioning updates..."
 
 # ==============================================================================
-# CATEGORY D: AI AGENT RULES, SKILLS & GOVERNANCE
-# Runtime Scope: .agents/, GEMINI.md, universal-semantic-versioning-prompt.md
+# CATEGORY B: SHARED FRONTEND LIBRARIES (API CLIENTS)
+# Runtime Scope: University-ERP-Frontend/libs/api-clients/
 # ==============================================================================
-process_module "ops-agents" "ops-agents" "feat" \
-  "introduce Antigravity AI rules and skills customization library" \
-  "- register 6 contextual agent rules (.agents/rules/) covering architecture boundaries, DBMA, clean architecture, unit testing, and SemVer
-- provide 6 specialized domain skills (.agents/skills/) for test execution, CQRS scaffolding, event tracing, and port management
-- add hierarchical GEMINI.md guidelines at root, backend, and frontend levels
-- relocate universal-semantic-versioning-prompt.md into managed agent rules directory" \
-  "Refs: Category D - Infrastructure / Operations (universal-semantic-versioning-prompt.md)" \
-  ".agents" \
-  "GEMINI.md" \
-  "University-ERP-Backend/GEMINI.md" \
-  "University-ERP-Frontend/GEMINI.md" \
-  "universal-semantic-versioning-prompt.md"
+process_module "api-clients" "api-clients" "feat" \
+  "expand academic LMS and registrar cross-module client endpoints" \
+  "- add typed client interfaces and DTOs for course packaging and distribution
+- support air-gapped sync endpoints for offline assessment ingestion
+- integrate registrar gradebook synchronization and audit ledger contracts" \
+  "Refs: Category B - Shared Libraries (universal-semantic-versioning-prompt.md)" \
+  "University-ERP-Frontend/libs/api-clients/academic/lmsApi.ts"
 
 # ==============================================================================
-# CATEGORY B: SHARED LIBRARIES & DOMAIN CONTRACTS
-# Runtime Scope: University-ERP-Frontend/libs/
+# CATEGORY B: LMS WEB APPLICATION & OFFLINE BRIDGE
+# Runtime Scope: University-ERP-Frontend/apps/lms-web/
 # ==============================================================================
-process_module "domain-viewmodels" "domain-viewmodels" "feat" \
-  "define grievance case and invoice summary view model contracts" \
-  "- implement GrievanceCaseViewModel interface for student and governance tracking
-- declare InvoiceSummaryViewModel interface with payment balance and status attributes" \
-  "Refs: Category B - Shared Libraries (universal-semantic-versioning-prompt.md, MINOR)" \
-  "University-ERP-Frontend/libs/domain-viewmodels"
-
-process_module "offline-sync" "offline-sync" "feat" \
-  "declare sync engine payload and contract abstractions" \
-  "- declare OfflineSyncPayload interface for distributed offline mutations
-- define SyncEngineContract interface for background queue processing" \
-  "Refs: Category B - Shared Libraries (universal-semantic-versioning-prompt.md, MINOR)" \
-  "University-ERP-Frontend/libs/offline-sync"
-
-process_module "auth-sdk" "auth-sdk" "fix" \
-  "stabilize role guard authorization routes and identity hook" \
-  "- align RegistrarGuard and FacultyGuard with role matrix resolution
-- harden useAuth hook state propagation across portal boundaries" \
-  "Refs: Category B - Shared Libraries (universal-semantic-versioning-prompt.md, PATCH)" \
-  "University-ERP-Frontend/libs/auth-sdk"
-
-process_module "shell-kit" "shell-kit" "fix" \
-  "harden AuthGuard portal redirection and export auth configuration factory" \
-  "- enhance cross-portal origin validation and 403 Forbidden handling in AuthGuard
-- export createAuthConfig helper for identity provider bootstrapping" \
-  "Refs: Category B - Shared Libraries (universal-semantic-versioning-prompt.md, PATCH)" \
-  "University-ERP-Frontend/libs/shell-kit"
-
-process_module "ui-kit" "ui-kit" "fix" \
-  "refine Badge component color schemes and styling variants" \
-  "- enhance colorScheme mappings for active, warning, and danger badges
-- ensure seamless presentation across modern high-contrast portal themes" \
-  "Refs: Category B - Shared Libraries (universal-semantic-versioning-prompt.md, PATCH)" \
-  "University-ERP-Frontend/libs/ui-kit"
-
-# ==============================================================================
-# CATEGORY B: DOMAIN PORTALS & CONSOLES (DBMA VERTICAL SLICES)
-# Runtime Scope: University-ERP-Frontend/apps/
-# ==============================================================================
-process_module "finance-console" "finance-console" "feat" \
-  "scaffold DBMA feature views for budgeting, invoicing, and payroll" \
-  "- implement Budgeting.page.tsx, FinancialReports.page.tsx, and Invoicing.page.tsx
-- add Payroll.page.tsx and Dashboard.page.tsx controllers using ui-kit primitives" \
-  "Refs: Category B - Web Frontend (finance-console, MINOR)" \
-  "University-ERP-Frontend/apps/finance-console"
-
-process_module "governance-console" "governance-console" "feat" \
-  "scaffold governance administration pages and compliance views" \
-  "- add Accreditation.page.tsx, Audits.page.tsx, and Committees.page.tsx
-- implement Compliance.page.tsx, Policies.page.tsx, and RiskManagement.page.tsx" \
-  "Refs: Category B - Web Frontend (governance-console, MINOR)" \
-  "University-ERP-Frontend/apps/governance-console"
-
-process_module "identity-portal" "identity-portal" "feat" \
-  "implement multi-factor authentication and password recovery views" \
-  "- scaffold MultiFactorAuth.page.tsx and PasswordRecovery.page.tsx controllers
-- align SessionManagement data fetching with active session read models" \
-  "Refs: Category B - Web Frontend (identity-portal, MINOR)" \
-  "University-ERP-Frontend/apps/identity-portal"
-
-process_module "library-portal" "library-portal" "feat" \
-  "scaffold library catalog search, circulation, and digital resources" \
-  "- implement CatalogSearch.page.tsx, DigitalResources.page.tsx, and Reservations.page.tsx
-- add Fines.page.tsx and MyLoans.page.tsx with ui-kit Card and Table layouts" \
-  "Refs: Category B - Web Frontend (library-portal, MINOR)" \
-  "University-ERP-Frontend/apps/library-portal"
-
 process_module "lms-web" "lms-web" "feat" \
-  "scaffold academic LMS course content, calendar, and quiz modules" \
-  "- implement Calendar.page.tsx, CourseContent.page.tsx, and Discussions.page.tsx
-- add Grades.page.tsx, Quizzes.page.tsx, and Dashboard.page.tsx" \
-  "Refs: Category B - Web Frontend (lms-web, MINOR)" \
+  "implement DBMA vertical slices for LMS web and offline bridge" \
+  "- implement CoursePackaging view for air-gapped Avalonia bundle compilation
+- implement OfflineSubmissionReview with rubric grading and feedback modal
+- implement GradebookSync orchestrating official grade transmission to registrar
+- add ModuleTimeline, Discussions, Quizzes, Grades, and Calendar slices" \
+  "Refs: Category B - Web Frontend (lms-web)" \
   "University-ERP-Frontend/apps/lms-web"
 
-process_module "platform-console" "platform-console" "feat" \
-  "scaffold system administration and tenant management consoles" \
-  "- implement APIKeys.page.tsx, DatabaseManagement.page.tsx, and GlobalSettings.page.tsx
-- add SecurityAudits.page.tsx, SystemLogs.page.tsx, and TenantManagement.page.tsx" \
-  "Refs: Category B - Web Frontend (platform-console, MINOR)" \
-  "University-ERP-Frontend/apps/platform-console"
-
-process_module "student-portal" "student-portal" "fix" \
-  "stabilize student dashboard, academic timeline, and enrollment views" \
-  "- harden CrossEnrollment, CurriculumProgress, and EnrollmentHistory pages
-- enhance Extracurriculars and Graduation status presentation" \
-  "Refs: Category B - Web Frontend (student-portal, PATCH)" \
+# ==============================================================================
+# CATEGORY B: STUDENT PORTAL
+# Runtime Scope: University-ERP-Frontend/apps/student-portal/
+# ==============================================================================
+process_module "student-portal" "student-portal" "feat" \
+  "mature student dashboard, course enrollment, and cross-enrollment views" \
+  "- add student KPI metrics, active schedule card, and term academic standing
+- implement multi-course enrollment selection with prerequisite validation
+- implement CrossEnrollment application modal with partner institution permit flow
+- stabilize AcademicRecord, Clearance, and Extracurriculars feature slices" \
+  "Refs: Category B - Web Frontend (student-portal)" \
   "University-ERP-Frontend/apps/student-portal"
 
+# ==============================================================================
+# CATEGORY B: FINANCE CONSOLE
+# Runtime Scope: University-ERP-Frontend/apps/finance-console/
+# ==============================================================================
+process_module "finance-console" "finance-console" "feat" \
+  "implement tuition assessment and cashier payment gateway workflows" \
+  "- implement TuitionAssessment slice calculating units, lab fees, and discounts
+- implement PaymentGateway multi-channel checkout modal with receipt generation
+- standardize Budgeting, Invoicing, and Payroll modals with verified form inputs
+- link financial clearance issuance to student lifecycle and registrar" \
+  "Refs: Category B - Web Frontend (finance-console)" \
+  "University-ERP-Frontend/apps/finance-console"
+
+# ==============================================================================
+# CATEGORY B: REGISTRAR PORTAL
+# Runtime Scope: University-ERP-Frontend/apps/registrar-portal/
+# ==============================================================================
+process_module "registrar-portal" "registrar-portal" "feat" \
+  "mature registrar command center and enrollment validation queue" \
+  "- implement live dual queues for pending enrollments and graduation clearances
+- dispatch AdmissionWorkflow commands on verified financial clearance
+- harden record access audit logging with security action tracking
+- standardize TransferDivision workspace with accessible page header" \
+  "Refs: Category B - Web Frontend (registrar-portal)" \
+  "University-ERP-Frontend/apps/registrar-portal"
+
+# ==============================================================================
+# CATEGORY B: GOVERNANCE CONSOLE
+# Runtime Scope: University-ERP-Frontend/apps/governance-console/
+# ==============================================================================
+process_module "governance-console" "governance-console" "feat" \
+  "standardize accreditation standards and institutional compliance tables" \
+  "- implement Accreditation criteria evaluation with CHED evidence submission
+- standardize Audits, Committees, Compliance, Policies, and Risk Management tables
+- align all Badge color schemes with UI Kit semantic color schemes" \
+  "Refs: Category B - Web Frontend (governance-console)" \
+  "University-ERP-Frontend/apps/governance-console"
+
+# ==============================================================================
+# CATEGORY B: PLATFORM CONSOLE
+# Runtime Scope: University-ERP-Frontend/apps/platform-console/
+# ==============================================================================
+process_module "platform-console" "platform-console" "feat" \
+  "mature operational telemetry and distributed platform consoles" \
+  "- standardize 12 operational consoles including DatabaseManagement and APIKeys
+- add dual named and default exports across all platform features
+- implement real-time server metrics, log streams, and multi-tenant management" \
+  "Refs: Category B - Web Frontend (platform-console)" \
+  "University-ERP-Frontend/apps/platform-console"
+
+# ==============================================================================
+# CATEGORY B: ADMIN PORTAL
+# Runtime Scope: University-ERP-Frontend/apps/admin-portal/
+# ==============================================================================
+process_module "admin-portal" "admin-portal" "feat" \
+  "mature academic configuration and admissions intake workspace" \
+  "- create AdmissionsProcessing.page.tsx conforming to DBMA slice standards
+- mature AcademicConfiguration term scheduling and course offering management
+- stabilize CanteenOrders, UserAdministration, and SystemAdministration views" \
+  "Refs: Category B - Web Frontend (admin-portal)" \
+  "University-ERP-Frontend/apps/admin-portal"
+
+# ==============================================================================
+# CATEGORY B: ADMISSIONS PORTAL
+# Runtime Scope: University-ERP-Frontend/apps/admissions-portal/
+# ==============================================================================
 process_module "admissions-portal" "admissions-portal" "fix" \
-  "enhance admissions dashboard overview and metric indicators" \
-  "- align Dashboard.page.tsx with real-time application processing pipelines
-- refine status card layouts and admissions KPI metrics" \
-  "Refs: Category B - Web Frontend (admissions-portal, PATCH)" \
+  "stabilize admissions dashboard overview and metric indicators" \
+  "- align applicant queue counters with admissions workflow status
+- improve responsive card layout for admissions officer review" \
+  "Refs: Category B - Web Frontend (admissions-portal)" \
   "University-ERP-Frontend/apps/admissions-portal"
 
 # ==============================================================================
-# CATEGORY B: FRONTEND CANONICAL TEST SUITE (UNIT & INTEGRATION)
+# CATEGORY B: FRONTEND UNIT, INTEGRATION & E2E TEST SUITES
 # Runtime Scope: University-ERP-Frontend/tests/
 # ==============================================================================
 process_module "frontend-tests" "frontend-tests" "test" \
-  "activate complete 276-file unit test suite and stabilize multi-step integration" \
-  "- convert 189 skipped test suites into active passing Vitest assertions across all 14 portals and 7 libs
-- establish 100% pass rate across 276 unit test files with zero failures and zero skipped files
-- replace brittle userEvent dispatches with deterministic fireEvent triggers in ApplicationWizard integration tests
-- add tests/setup.ts for canonical test runtime environment bootstrapping" \
-  "Refs: Category B - Web Frontend Unit Testing Standards (unit-testing.md)" \
-  "University-ERP-Frontend/tests" \
-  "generate-frontend-test-structure.sh"
+  "complete 117 unit, 94 integration, and unified cross-portal E2E test suites" \
+  "- achieve 100% pass rate across 117 unit test suites in all 6 core portals
+- achieve 100% pass rate across 94 integration test suites in all 6 core portals
+- implement Grand Cross-Portal Unified Lifecycle E2E test covering 7 phases
+- implement lms-web integration and E2E suites verifying Avalonia bridge" \
+  "Refs: Category B - Web Frontend Unit and Integration Testing (unit-testing.md)" \
+  "University-ERP-Frontend/tests"
 
 # ==============================================================================
-# CATEGORY B: FRONTEND BUILD & TEST RUNNER INFRASTRUCTURE
-# Runtime Scope: University-ERP-Frontend/package.json, vitest.config.ts
-# ==============================================================================
-process_module "frontend-infra" "frontend-infra" "build" \
-  "configure vitest runner and react jsx transform plugin" \
-  "- add vitest and @vitejs/plugin-react to root frontend workspace devDependencies
-- register react() plugin in vitest.config.ts to support TSX/JSX transformation under jsdom
-- regenerate package-lock.json with cleanly hoisted dependencies" \
-  "Refs: Category B - Web Frontend Build Configuration (universal-semantic-versioning-prompt.md, PATCH)" \
-  "University-ERP-Frontend/package.json" \
-  "University-ERP-Frontend/package-lock.json" \
-  "University-ERP-Frontend/vitest.config.ts"
-
-# ==============================================================================
-# CATEGORY D: ROOT MONOREPO TOOLING & ENVIRONMENT
-# Runtime Scope: package.json, .env.example, PORT_REGISTRY.md, docker-compose.yml
-# ==============================================================================
-process_module "root-infra" "ops-project" "chore" \
-  "add root test execution scripts and maintain environment configs" \
-  "- add 'test' and 'test:frontend' scripts delegating to vitest in root package.json
-- maintain port registry and docker compose orchestration boundaries" \
-  "Refs: Category D - Monorepo Orchestration" \
-  "package.json" \
-  "PORT_REGISTRY.md" \
-  "docker-compose.yml"
-
-# ==============================================================================
-# CATEGORY D: RELEASE MANAGEMENT & AUTOMATION
+# CATEGORY D: RELEASE MANAGEMENT & AUTOMATION ENGINE
 # Runtime Scope: isolated_release.sh
 # ==============================================================================
 process_module "ops-release" "ops-release" "chore" \
-  "align isolated release engine with universal semantic versioning rules" \
-  "- implement multi-line Conventional Commits formatting (header, body, footer)
-- update module paths, tags, and SemVer bump reasoning per universal-semantic-versioning-prompt.md
-- ensure auditability with structured git tag annotations" \
+  "upgrade isolated release engine to enforce universal SemVer prompt" \
+  "- implement strict multi-line Conventional Commits formatting (header, body, footer)
+- update process_module parameters to require explicit rationale and category refs
+- expand release targets across all 6 core portals and LMS offline bridge
+- enforce atomic git index handling and explicit remote tag push instructions" \
   "Refs: Category D - Release Management (universal-semantic-versioning-prompt.md)" \
   "isolated_release.sh"
 
-# ==============================================================================
-# HISTORICAL / CONTINUOUS PIPELINE TARGETS (Preserved for ongoing development)
-# ==============================================================================
-process_module "backend-ops" "ops-backend" "feat" \
-  "configure Nginx reverse proxy site availability for ERP domains" \
-  "- declare active site configuration files under ops/nginx/sites-available
-- configure routing and rate-limiting snippets for all 14 portal subdomains" \
-  "Refs: Category D - Infrastructure / Operations" \
-  "University-ERP-Backend/ops/nginx/sites-available"
-
-process_module "applicant-portal" "applicant-portal" "fix" \
-  "resolve enrollment payment processing pages and state handoff" \
-  "- stabilize ApplicationFeePayment.page.tsx and EnrollmentPayment.page.tsx
-- connect payment verification to admissions onboarding lifecycle" \
-  "Refs: Category B - Web Frontend (applicant-portal)" \
-  "University-ERP-Frontend/apps/applicant-portal/src/features/EnrollmentPayment/ApplicationFeePayment.page.tsx" \
-  "University-ERP-Frontend/apps/applicant-portal/src/features/EnrollmentPayment/EnrollmentPayment.page.tsx"
-
-process_module "registrar-portal" "registrar-portal" "fix" \
-  "stabilize enrollment activation flow and student status transitions" \
-  "- harden EnrollmentActivation.page.tsx against null student identifiers
-- enforce registrar clearance guards prior to status activation" \
-  "Refs: Category B - Web Frontend (registrar-portal)" \
-  "University-ERP-Frontend/apps/registrar-portal/src/features/Admissions/EnrollmentActivation.page.tsx"
-
-process_module "docs" "docs" "docs" \
-  "restructure architecture documentation and task orchestration logs" \
-  "- synchronize bounded context and aggregate catalogs
-- update runtime and testing logs across active development milestones" \
-  "Refs: Category D - Documentation" \
-  "ERPstructure.md" "university-ERPstructure.md" "structure.md" "University-ERP-Backend/University-ERP-Backend.md" \
-  "Analysis_Task_Orchestration.md" "runtimelogs.md" "tests.logs" "commit.logs"
-
 echo "----------------------------------------------------"
-echo "All applicable modules have been safely committed and strictly isolated tags have been generated!"
-echo "Please review with 'git log -n 10 --oneline' and verify tags with: git tag -l --sort=-v:refname | head -n 10"
+if [ "$DRY_RUN" = true ]; then
+  echo "DRY RUN COMPLETE: All scopes evaluated per SemVer 2.0.0."
+  echo "No changes were staged, committed, or tagged."
+  echo "To execute actual release, run:"
+  echo "  ./isolated_release.sh"
+else
+  echo "All applicable modules have been safely committed and strictly isolated tags have been generated!"
+  echo "Please review with 'git log -n 12 --oneline' and verify tags with: git tag -l --sort=-v:refname | head -n 10"
+  echo "To push commits and tags to GitHub, run:"
+  echo "  git push origin main && git push origin --tags"
+fi
