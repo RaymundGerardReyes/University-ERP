@@ -9,6 +9,7 @@ export const DashboardPage: React.FC = () => {
     const { identity } = useAuth();
     const navigate = useNavigate();
 
+    const { data: applications = [], isLoading } = useQuery({
     const { data: applications = [], isLoading, isError } = useQuery({
         queryKey: ['pendingApplications'],
         queryFn: () => admissionsApi.getPendingApplications()
