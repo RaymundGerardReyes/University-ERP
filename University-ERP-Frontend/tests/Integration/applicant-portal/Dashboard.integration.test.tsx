@@ -5,6 +5,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { DashboardPage } from '../../../apps/applicant-portal/src/features/Dashboard/Dashboard.page';
 
 vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({ user: { id: 'applicant-123', name: 'Alex Doe' } }),
   useAuth: () => ({
     identity: { id: 'applicant-123', name: 'Alex Doe' },
     user: { id: 'applicant-123', name: 'Alex Doe' }
@@ -42,6 +43,7 @@ describe('Applicant Dashboard Integration', () => {
 
   it('renders applicant dashboard page correctly', async () => {
     renderComponent();
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
     });

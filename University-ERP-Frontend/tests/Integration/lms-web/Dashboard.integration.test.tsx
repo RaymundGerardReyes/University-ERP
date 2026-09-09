@@ -1,15 +1,49 @@
-// Test Type: Integration Testing
-//
-// Portal: lms-web
-// Feature: Dashboard
-//
-// Source References:
-// University-ERP-Frontend/apps/lms-web/src/features/Dashboard/Dashboard.api.ts
-// University-ERP-Frontend/apps/lms-web/src/features/Dashboard/Dashboard.hooks.ts
-// University-ERP-Frontend/apps/lms-web/src/features/Dashboard/Dashboard.page.tsx
-// University-ERP-Frontend/apps/lms-web/src/features/Dashboard/Dashboard.types.ts
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import '@testing-library/jest-dom';
+import { DashboardPage } from '../../../apps/lms-web/src/features/Dashboard/Dashboard.page';
 
-describe('Dashboard - Integration Testing', () => {
-  it.todo('Integration scenarios should verify Dashboard wired to its real api client/query layer: loading, success, error, and empty-data states.');
+vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({ user: { id: 'STU-101' }, isAuthenticated: true })
+}));
+
+vi.mock('@university-erp/api-clients', () => ({
+  lmsApi: {
+    getDashboardOverview: vi.fn().mockResolvedValue({
+      totalCourses: 4,
+      pendingSubmissions: 2,
+      activeQuizzes: 1,
+      syncedPackages: 3
+    })
+  }
+}));
+
+describe("Dashboard - Integration Testing", () => {
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    vi.clearAllMocks();
+  });
+
+  it("renders dashboard metrics and quick navigation controls", async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <DashboardPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent("LMS Learning Portal Dashboard");
+
+    await waitFor(() => {
+      expect(screen.getByText("Enrolled Courses")).toBeInTheDocument();
+      expect(screen.getByText("Pending Submissions")).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /package offline courses/i })).toBeInTheDocument();
+    });
+  });
 });

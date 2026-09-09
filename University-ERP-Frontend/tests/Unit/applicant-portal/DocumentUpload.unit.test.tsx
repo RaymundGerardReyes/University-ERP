@@ -9,6 +9,9 @@
 // University-ERP-Frontend/apps/applicant-portal/src/features/DocumentUpload/DocumentUpload.page.tsx
 // University-ERP-Frontend/apps/applicant-portal/src/features/DocumentUpload/DocumentUpload.types.ts
 
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
@@ -17,6 +20,7 @@ import { admissionsApi } from '@university-erp/api-clients';
 
 const mockUploadDocument = vi.fn();
 vi.mock('@university-erp/api-clients', () => ({
+  admissionsApi: { uploadDocument: (...args: any) => mockUploadDocument(...args) }
   admissionsApi: {
     getApplicantJourney: vi.fn().mockResolvedValue({
       applicantId: 'APP-101',
@@ -29,19 +33,36 @@ vi.mock('@university-erp/api-clients', () => ({
 }));
 
 describe('DocumentUpload Feature', () => {
+  it('TC07: DocumentUpload_Should_Display_Error_If_File_Exceeds_Size_Limit', async () => {
+    render(<DocumentUploadPage />);
+    const uploader = screen.getByTestId('document-dropzone');
+    
+    const largeFile = new File(['x'.repeat(10 * 1024 * 1024)], 'large.pdf', { type: 'application/pdf' });
+    await userEvent.upload(uploader, largeFile);
   let queryClient: QueryClient;
 
+    expect(screen.getByText(/File exceeds maximum size/i)).toBeDefined();
+    expect(mockUploadDocument).not.toHaveBeenCalled();
   beforeEach(() => {
     queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     vi.clearAllMocks();
   });
 
+  it('TC08: DocumentUpload_Should_Call_UploadAPI_And_Update_Status_To_Uploaded', async () => {
+    mockUploadDocument.mockResolvedValue(true);
+    render(<DocumentUploadPage />);
+    
+    const uploader = screen.getByTestId('document-dropzone');
+    const validFile = new File(['content'], 'transcript.pdf', { type: 'application/pdf' });
+    await userEvent.upload(uploader, validFile);
   const renderComponent = () => render(
     <QueryClientProvider client={queryClient}>
       <DocumentUploadPage />
     </QueryClientProvider>
   );
 
+    const uploadBtn = screen.getByRole('button', { name: /Upload/i });
+    fireEvent.click(uploadBtn);
   it('TC07: DocumentUpload_Should_Render_Document_List_And_Upload_Action', async () => {
     renderComponent();
     await waitFor(() => {
@@ -60,6 +81,8 @@ describe('DocumentUpload Feature', () => {
     });
     renderComponent();
     await waitFor(() => {
+      expect(mockUploadDocument).toHaveBeenCalled();
+      expect(screen.getByText(/Uploaded Successfully/i)).toBeDefined();
       expect(screen.getByText('Official ID')).toBeDefined();
       expect(screen.getByText('Uploaded')).toBeDefined();
     });

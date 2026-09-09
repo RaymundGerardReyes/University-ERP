@@ -1,15 +1,33 @@
-// Test Type: Integration Testing
-//
-// Portal: finance-console
-// Feature: Payroll
-//
-// Source References:
-// University-ERP-Frontend/apps/finance-console/src/features/Payroll/Payroll.api.ts
-// University-ERP-Frontend/apps/finance-console/src/features/Payroll/Payroll.hooks.ts
-// University-ERP-Frontend/apps/finance-console/src/features/Payroll/Payroll.page.tsx
-// University-ERP-Frontend/apps/finance-console/src/features/Payroll/Payroll.types.ts
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import '@testing-library/jest-dom';
+import { PayrollPage } from '../../../apps/finance-console/src/features/Payroll/Payroll.page';
 
-describe('Payroll - Integration Testing', () => {
-  it.todo('Integration scenarios should verify Payroll wired to its real api client/query layer: loading, success, error, and empty-data states.');
+vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({ user: { id: 'fin-admin', roles: ['ROLE_FINANCE_ADMIN'] }, isAuthenticated: true })
+}));
+
+describe("Payroll - Integration Testing", () => {
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    vi.clearAllMocks();
+  });
+
+  it("renders payroll management page header and payslip trigger", async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <PayrollPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    expect(screen.getByText("Generate New Payslip")).toBeInTheDocument();
+  });
 });

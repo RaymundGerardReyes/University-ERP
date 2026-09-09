@@ -16,6 +16,7 @@ import { OffersPage } from '../../../apps/applicant-portal/src/features/Offers/O
 describe('Offers Feature', () => {
   it('TC13: Offers_Should_Render_Accept_Offer_Button_When_Status_Is_Accepted', () => {
     render(<OffersPage status="Accepted" />);
+    expect(screen.getByRole('button', { name: /Accept Admission Offer/i })).toBeDefined();
     expect(screen.getByRole('button', { name: /Accept Offer/i })).toBeDefined();
   });
 

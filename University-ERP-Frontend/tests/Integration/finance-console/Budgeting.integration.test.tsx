@@ -1,15 +1,33 @@
-// Test Type: Integration Testing
-//
-// Portal: finance-console
-// Feature: Budgeting
-//
-// Source References:
-// University-ERP-Frontend/apps/finance-console/src/features/Budgeting/Budgeting.api.ts
-// University-ERP-Frontend/apps/finance-console/src/features/Budgeting/Budgeting.hooks.ts
-// University-ERP-Frontend/apps/finance-console/src/features/Budgeting/Budgeting.page.tsx
-// University-ERP-Frontend/apps/finance-console/src/features/Budgeting/Budgeting.types.ts
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import '@testing-library/jest-dom';
+import { BudgetingPage } from '../../../apps/finance-console/src/features/Budgeting/Budgeting.page';
 
-describe('Budgeting - Integration Testing', () => {
-  it.todo('Integration scenarios should verify Budgeting wired to its real api client/query layer: loading, success, error, and empty-data states.');
+vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({ user: { id: 'fin-admin', roles: ['ROLE_FINANCE_ADMIN'] }, isAuthenticated: true })
+}));
+
+describe("Budgeting - Integration Testing", () => {
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    vi.clearAllMocks();
+  });
+
+  it("renders Budgeting page header and allocation trigger", async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <BudgetingPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    expect(screen.getByText("Add Department Allocation")).toBeInTheDocument();
+  });
 });

@@ -39,8 +39,11 @@ describe('ApplicationWizard Feature', () => {
     </QueryClientProvider>
   );
 
+  it('TC03: ApplicationWizard_Should_Render_Step1_PersonalInformation_By_Default', () => {
   it('TC03: ApplicationWizard_Should_Render_Step1_PersonalInformation_By_Default', async () => {
     renderComponent();
+    expect(screen.getByText(/Personal Information/i)).toBeDefined();
+    expect(screen.getByPlaceholderText(/First Name/i)).toBeDefined();
     await waitFor(() => {
       expect(screen.getByText(/Step 1: Program Selection/i)).toBeDefined();
       expect(screen.getByText(/Select Intended Program/i)).toBeDefined();
@@ -48,7 +51,13 @@ describe('ApplicationWizard Feature', () => {
   });
 
   it('TC04: ApplicationWizard_Should_Prevent_Next_Step_If_Required_Fields_Empty', async () => {
+    const user = userEvent.setup();
     renderComponent();
+    
+    const nextBtn = screen.getByRole('button', { name: /Next/i });
+    await user.click(nextBtn);
+    
+    expect(screen.getByText(/First Name is required/i)).toBeDefined();
     await waitFor(() => {
       const nextBtn = screen.getByRole('button', { name: /Next Step/i });
       expect(nextBtn).toBeDisabled();
@@ -61,10 +70,16 @@ describe('ApplicationWizard Feature', () => {
     mockSubmitApplication.mockResolvedValue('APP-12345');
     renderComponent();
 
+    await user.type(screen.getByPlaceholderText(/First Name/i), 'Jane');
+    await user.type(screen.getByPlaceholderText(/Last Name/i), 'Doe');
+    
+    const submitBtn = screen.getByRole('button', { name: /Submit/i });
+    await user.click(submitBtn);
     await waitFor(() => {
       expect(screen.getByRole('combobox')).toBeDefined();
     });
 
+    expect(screen.getByRole('button', { name: /Submitting/i })).toBeDefined();
     await user.selectOptions(screen.getByRole('combobox'), 'prog-1');
     const nextBtn = screen.getByRole('button', { name: /Next Step/i });
     expect(nextBtn).not.toBeDisabled();
@@ -80,6 +95,8 @@ describe('ApplicationWizard Feature', () => {
 
     await waitFor(() => {
       expect(mockSubmitApplication).toHaveBeenCalledWith(expect.objectContaining({
+        firstName: 'Jane',
+        lastName: 'Doe'
         programId: 'prog-1'
       }));
     });

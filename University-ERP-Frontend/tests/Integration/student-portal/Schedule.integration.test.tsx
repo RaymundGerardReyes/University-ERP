@@ -1,15 +1,33 @@
-// Test Type: Integration Testing
-//
-// Portal: student-portal
-// Feature: Schedule
-//
-// Source References:
-// University-ERP-Frontend/apps/student-portal/src/features/Schedule/Schedule.api.ts
-// University-ERP-Frontend/apps/student-portal/src/features/Schedule/Schedule.hooks.ts
-// University-ERP-Frontend/apps/student-portal/src/features/Schedule/Schedule.page.tsx
-// University-ERP-Frontend/apps/student-portal/src/features/Schedule/Schedule.types.ts
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import '@testing-library/jest-dom';
+import { SchedulePage } from '../../../apps/student-portal/src/features/Schedule/Schedule.page';
 
-describe('Schedule - Integration Testing', () => {
-  it.todo('Integration scenarios should verify Schedule wired to its real api client/query layer: loading, success, error, and empty-data states.');
+vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({ identity: { id: 'test-student', name: 'John Doe' }, isAuthenticated: true })
+}));
+
+describe("Schedule - Integration Testing", () => {
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    vi.clearAllMocks();
+  });
+
+  it("renders Schedule workspace heading", async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <SchedulePage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    expect(screen.getByText("Schedule Workspace")).toBeInTheDocument();
+  });
 });

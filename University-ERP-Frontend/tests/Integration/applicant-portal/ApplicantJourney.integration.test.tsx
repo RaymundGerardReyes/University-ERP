@@ -120,6 +120,7 @@ describe('Applicant Portal - Core Scenarios', () => {
             <QueryClientProvider client={queryClient}>
                 <MemoryRouter initialEntries={['/dashboard']}>
                     <Routes>
+                        <Route element={<AuthGuard />}>
                         <Route element={<AuthGuard allowedRoles={['Applicant']} />}>
                             <Route path="/dashboard" element={<h1>Applicant Dashboard</h1>} />
                         </Route>

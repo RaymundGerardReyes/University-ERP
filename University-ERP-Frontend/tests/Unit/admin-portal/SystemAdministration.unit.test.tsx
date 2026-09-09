@@ -111,6 +111,19 @@ describe('SystemAdministration - Unit Testing', () => {
     });
 
     // --- TDD Placeholders for Missing UI Elements ---
+    it('should successfully execute a "Send Test Email" command to verify the SMTP connection', async () => {
+        renderComponent();
+        // This will fail until you build the SMTP form in SystemAdministration.page.tsx
+        const smtpTestBtn = screen.queryByRole('button', { name: /Send Test Email/i });
+        expect(smtpTestBtn).not.toBeNull();
+    });
+
+    it('should display the current active ERP license key and validity period', async () => {
+        renderComponent();
+        // This will fail until you build the License UI
+        const licenseKeyLabel = screen.queryByText(/Active ERP License/i);
+        expect(licenseKeyLabel).not.toBeNull();
+    });
     it.todo("should successfully execute a 'Send Test Email' command to verify the SMTP connection");
     it.todo("should display the current active ERP license key and validity period");
 });

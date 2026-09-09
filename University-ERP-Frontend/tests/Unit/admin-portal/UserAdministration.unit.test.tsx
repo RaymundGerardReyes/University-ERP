@@ -132,6 +132,19 @@ describe('UserAdministration - Unit Testing', () => {
     });
 
     // --- TDD Placeholders for Missing UI Elements ---
+    it('should correctly enforce complex password rules if manually setting an initial password', async () => {
+        renderComponent();
+        // This will fail until the "Create New User" modal is added to the component
+        const createUserBtn = screen.queryByRole('button', { name: /Create New User/i });
+        expect(createUserBtn).not.toBeNull();
+    });
+
+    it('should allow a SuperAdmin to securely initiate an "Impersonate User" session', async () => {
+        renderComponent();
+        // This will fail until the "Impersonate" functionality is added
+        const impersonateBtn = screen.queryByRole('button', { name: /Impersonate/i });
+        expect(impersonateBtn).not.toBeNull();
+    });
     it.todo("should correctly enforce complex password rules if manually setting an initial password");
     it.todo("should allow a SuperAdmin to securely initiate an 'Impersonate User' session");
 });

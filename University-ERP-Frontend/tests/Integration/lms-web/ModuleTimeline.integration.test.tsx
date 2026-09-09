@@ -1,12 +1,46 @@
-// Test Type: Integration Testing
-//
-// Portal: lms-web
-// Feature: ModuleTimeline
-//
-// Source References:
-// University-ERP-Frontend/apps/lms-web/src/features/ModuleTimeline/ModuleTimeline.page.tsx
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import '@testing-library/jest-dom';
+import { ModuleTimelinePage } from '../../../apps/lms-web/src/features/ModuleTimeline/ModuleTimeline.page';
 
-describe('ModuleTimeline - Integration Testing', () => {
-  it.todo('Integration scenarios should verify ModuleTimeline wired to its real api client/query layer: loading, success, error, and empty-data states.');
+vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({ user: { id: 'STU-101' }, isAuthenticated: true })
+}));
+
+vi.mock('@university-erp/api-clients', () => ({
+  lmsApi: {
+    getTimeline: vi.fn().mockResolvedValue([
+      { id: 'MOD-1', title: 'Week 1: Fundamentals of Logic', status: 'Completed', type: 'Lesson' },
+      { id: 'MOD-2', title: 'Week 2: Control Structures', status: 'Active', type: 'Lesson' }
+    ])
+  }
+}));
+
+describe("ModuleTimeline - Integration Testing", () => {
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    vi.clearAllMocks();
+  });
+
+  it("renders course header and module timeline cards with offline download action", async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <ModuleTimelinePage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/CS-101: Introduction to Computer Science/i);
+    expect(screen.getByRole('button', { name: /download offline package/i })).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Fundamentals of Logic/i)).toBeInTheDocument();
+    });
+  });
 });

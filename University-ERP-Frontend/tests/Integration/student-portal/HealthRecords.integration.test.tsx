@@ -1,15 +1,42 @@
-// Test Type: Integration Testing
-//
-// Portal: student-portal
-// Feature: HealthRecords
-//
-// Source References:
-// University-ERP-Frontend/apps/student-portal/src/features/HealthRecords/HealthRecords.api.ts
-// University-ERP-Frontend/apps/student-portal/src/features/HealthRecords/HealthRecords.hooks.ts
-// University-ERP-Frontend/apps/student-portal/src/features/HealthRecords/HealthRecords.page.tsx
-// University-ERP-Frontend/apps/student-portal/src/features/HealthRecords/HealthRecords.types.ts
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import '@testing-library/jest-dom';
+import { HealthRecordsPage } from '../../../apps/student-portal/src/features/HealthRecords/HealthRecords.page';
 
-describe('HealthRecords - Integration Testing', () => {
-  it.todo('Integration scenarios should verify HealthRecords wired to its real api client/query layer: loading, success, error, and empty-data states.');
+vi.mock('@university-erp/api-clients', () => ({
+  healthCenterApi: {
+    getAppointments: vi.fn().mockResolvedValue([
+      { id: '1', appointmentType: 'General Checkup', date: '2026-02-01', provider: 'Dr. House', doctorName: 'Dr. House', specialty: 'General Medicine', status: 'Completed', time: '09:00 AM' }
+    ])
+  }
+}));
+
+vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({ user: { id: 'STU-101' }, identity: { id: 'STU-101' }, isAuthenticated: true })
+}));
+
+describe("HealthRecords - Integration Testing", () => {
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    vi.clearAllMocks();
+  });
+
+  it("renders health records page heading", async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <HealthRecordsPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    });
+  });
 });

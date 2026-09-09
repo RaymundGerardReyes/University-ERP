@@ -20,6 +20,7 @@ vi.mock('@university-erp/api-clients', () => ({
 }));
 
 vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({ user: { id: 'test-applicant' } }),
   useAuth: () => ({
     identity: { id: 'test-applicant' },
     user: { id: 'test-applicant' }
@@ -45,6 +46,7 @@ describe('ApplicationTimeline Integration', () => {
 
   it('renders timeline page header and structure correctly', async () => {
     renderComponent();
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
     });

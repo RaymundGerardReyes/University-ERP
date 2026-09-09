@@ -95,6 +95,26 @@ describe('WorkflowManagement - Unit Testing', () => {
     });
 
     // --- TDD Placeholders for Missing UI Elements ---
+    it('should allow dropping a new action node onto the workflow canvas', async () => {
+        renderComponent();
+        // This will fail until the Drag-and-Drop Canvas is built
+        const canvasElement = screen.queryByTestId('workflow-canvas-dropzone');
+        expect(canvasElement).not.toBeNull();
+    });
+
+    it('should allow configuring a Schedule-based trigger (e.g., Every Friday at 5 PM)', async () => {
+        renderComponent();
+        // This will fail until trigger configuration forms are added
+        const cronInput = screen.queryByRole('textbox', { name: /CRON Schedule/i });
+        expect(cronInput).not.toBeNull();
+    });
+
+    it('should maintain a historical read-only log of all previous workflow versions', async () => {
+        renderComponent();
+        // This will fail until Versioning UI is added
+        const versionHistoryTab = screen.queryByRole('button', { name: /Version History/i });
+        expect(versionHistoryTab).not.toBeNull();
+    });
     it.todo("should allow dropping a new action node onto the workflow canvas");
     it.todo("should allow configuring a Schedule-based trigger (e.g., Every Friday at 5 PM)");
     it.todo("should maintain a historical read-only log of all previous workflow versions");

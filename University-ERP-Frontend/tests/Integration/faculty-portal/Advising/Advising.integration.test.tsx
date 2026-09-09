@@ -8,6 +8,7 @@ import { AdvisingPage } from '../../../../apps/faculty-portal/src/features/Advis
 import { fetchFacultyAdvisees } from '../../../../apps/faculty-portal/src/features/Advising/Advising.api';
 import { useAuth } from '@university-erp/auth-sdk';
 
+vi.mock('./Advising.api', () => ({
 vi.mock('../../../../apps/faculty-portal/src/features/Advising/Advising.api', () => ({
     fetchFacultyAdvisees: vi.fn(),
 }));

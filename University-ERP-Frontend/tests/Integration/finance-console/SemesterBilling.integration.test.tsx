@@ -1,15 +1,32 @@
-// Test Type: Integration Testing
-//
-// Portal: finance-console
-// Feature: SemesterBilling
-//
-// Source References:
-// University-ERP-Frontend/apps/finance-console/src/features/SemesterBilling/SemesterBilling.api.ts
-// University-ERP-Frontend/apps/finance-console/src/features/SemesterBilling/SemesterBilling.hooks.ts
-// University-ERP-Frontend/apps/finance-console/src/features/SemesterBilling/SemesterBilling.page.tsx
-// University-ERP-Frontend/apps/finance-console/src/features/SemesterBilling/SemesterBilling.types.ts
-import { describe, it } from 'vitest';
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import '@testing-library/jest-dom';
+import { SemesterBillingPage } from '../../../apps/finance-console/src/features/SemesterBilling/SemesterBilling.page';
 
-describe('SemesterBilling - Integration Testing', () => {
-  it.todo('Integration scenarios should verify SemesterBilling wired to its real api client/query layer: loading, success, error, and empty-data states.');
+vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({ user: { id: 'fin-assessor', roles: ['ROLE_FINANCE_ASSESSOR'] }, isAuthenticated: true })
+}));
+
+describe("SemesterBilling - Integration Testing", () => {
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    vi.clearAllMocks();
+  });
+
+  it("renders semester billing assessment page header", async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <SemesterBillingPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+  });
 });

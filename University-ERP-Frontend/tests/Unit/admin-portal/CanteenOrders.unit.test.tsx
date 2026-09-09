@@ -105,6 +105,7 @@ describe('CanteenOrders - Unit Testing', () => {
             
             // Check recent order feed
             expect(screen.getByText('Alice Smith')).toBeDefined();
+            expect(screen.getByText('ORD-101')).toBeDefined();
             expect(screen.getByText(/ORD-101/)).toBeDefined();
             expect(screen.getByText('Pending')).toBeDefined();
         });

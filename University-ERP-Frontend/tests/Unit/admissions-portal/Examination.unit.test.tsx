@@ -44,6 +44,7 @@ describe('Examination - Unit Testing', () => {
 
     it('should successfully assign a physical venue/hall to a specific exam schedule', async () => {
         renderComponent();
+        await waitFor(() => expect(screen.getByText('Main Hall')).toBeDefined());
         await waitFor(() => expect(screen.getByText(/Main Hall/)).toBeDefined());
     });
 

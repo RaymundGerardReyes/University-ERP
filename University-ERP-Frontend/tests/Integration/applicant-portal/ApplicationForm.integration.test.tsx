@@ -25,6 +25,7 @@ vi.mock('../../../apps/applicant-portal/src/features/ApplicationWizard/Applicati
 }));
 
 vi.mock('@university-erp/auth-sdk', () => ({
+  useAuth: () => ({ user: { id: 'test-applicant' } }),
   useAuth: () => ({
     identity: { id: 'test-applicant', name: 'Jane Doe' },
     user: { id: 'test-applicant', name: 'Jane Doe' }
@@ -52,6 +53,7 @@ describe('ApplicationForm Integration', () => {
 
   it('renders application form / wizard step accurately', async () => {
     renderComponent();
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
     });
@@ -61,6 +63,8 @@ describe('ApplicationForm Integration', () => {
     const user = userEvent.setup();
     renderComponent();
 
+    const buttons = screen.getAllByRole('button');
+    expect(buttons.length).toBeGreaterThan(0);
     await waitFor(() => {
       const buttons = screen.getAllByRole('button');
       expect(buttons.length).toBeGreaterThan(0);
