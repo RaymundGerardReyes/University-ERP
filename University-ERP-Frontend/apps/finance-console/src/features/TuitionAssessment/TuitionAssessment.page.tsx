@@ -1,44 +1,80 @@
 import React from 'react';
-import { Card, Table, Badge, Button } from '@university-erp/ui-kit';
-import { FinanceWorkflow } from '@university-erp/workflow-sdk';
+import { Badge, Button, Card, PageHeader, Table } from '@university-erp/ui-kit';
+import { useAssessmentCandidates, usePerformAssessment } from './TuitionAssessment.hooks';
 
 export const TuitionAssessmentPage: React.FC = () => {
-    const handleAssessment = async (studentId: string) => {
-        await FinanceWorkflow.process(studentId, 'AssessTuition');
-        alert('Tuition assessment completed. Modules verified.');
-    };
+  const { data: candidates, isLoading } = useAssessmentCandidates();
+  const assessMutation = usePerformAssessment();
 
-    return (
-        <div className="fade-in" style={{ padding: '1rem' }}>
-            <h1 style={{ fontSize: '2rem', fontWeight: 700, margin: '0 0 0.5rem 0', color: 'var(--text-primary)' }}>Tuition Assessment</h1>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Evaluate enrolled units and calculate total tuition liabilities for the semester.</p>
-            
-            <Card style={{ background: 'var(--surface-overlay)', backdropFilter: 'blur(10px)', border: '1px solid var(--border-light)' }}>
-                <Table>
-                    <thead>
-                        <tr>
-                            <th>Student ID</th>
-                            <th>Program</th>
-                            <th>Enrolled Units</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td style={{ fontFamily: 'monospace' }}>STU-2026-8812</td>
-                            <td>BS Computer Science</td>
-                            <td>18</td>
-                            <td><Badge variant="warning">Pending Assessment</Badge></td>
-                            <td>
-                                <Button size="small" variant="primary" onClick={() => handleAssessment('STU-2026-8812')}>
-                                    Assess Tuition
-                                </Button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </Table>
-            </Card>
-        </div>
-    );
+  const handleAssess = async (studentId: string) => {
+    await assessMutation.mutateAsync({ studentId, termId: 'TERM-FALL-2026' });
+    alert(`Tuition assessment completed for ${studentId}.`);
+  };
+
+  const students = candidates?.length ? candidates : [
+    { studentId: 'STU-2026-8812', studentName: 'Michael Corleone', program: 'BS Computer Science', enrolledUnits: 18, ratePerUnit: 120, miscellaneousFees: 350, scholarshipDeduction: 500, assessedTotal: 2010, status: 'Pending' },
+    { studentId: 'STU-2026-9041', studentName: 'Elena Rostova', program: 'BS Information Systems', enrolledUnits: 15, ratePerUnit: 120, miscellaneousFees: 350, scholarshipDeduction: 0, assessedTotal: 2150, status: 'Pending' },
+    { studentId: 'STU-2026-7732', studentName: 'David Chen', program: 'BS Data Science', enrolledUnits: 21, ratePerUnit: 120, miscellaneousFees: 400, scholarshipDeduction: 1000, assessedTotal: 1920, status: 'Assessed' }
+  ];
+
+  return (
+    <div className="fade-in">
+      <PageHeader
+        title="Tuition Assessment"
+        subtitle="Evaluate enrolled units, apply scholarship deductions, and calculate tuition liabilities."
+      />
+
+      <Card>
+        <Table>
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Student Name</th>
+              <th>Program</th>
+              <th>Units</th>
+              <th>Rate / Unit</th>
+              <th>Misc Fees</th>
+              <th>Scholarship</th>
+              <th>Assessed Total</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {students.map((s: any) => (
+              <tr key={s.studentId}>
+                <td style={{ fontFamily: 'monospace', fontWeight: 600 }}>{s.studentId}</td>
+                <td>{s.studentName}</td>
+                <td>{s.program}</td>
+                <td>{s.enrolledUnits}</td>
+                <td>${s.ratePerUnit}</td>
+                <td>${s.miscellaneousFees}</td>
+                <td style={{ color: s.scholarshipDeduction > 0 ? 'var(--success-text)' : 'inherit' }}>
+                  -${s.scholarshipDeduction}
+                </td>
+                <td style={{ fontWeight: 700, color: 'var(--brand-primary)' }}>
+                  ${s.assessedTotal.toFixed(2)}
+                </td>
+                <td>
+                  <Badge colorScheme={s.status === 'Assessed' ? 'success' : 'warning'}>
+                    {s.status}
+                  </Badge>
+                </td>
+                <td>
+                  <Button
+                    size="small"
+                    variant="primary"
+                    disabled={s.status === 'Assessed' || assessMutation.isPending}
+                    onClick={() => handleAssess(s.studentId)}
+                  >
+                    {s.status === 'Assessed' ? 'Assessed' : 'Assess Tuition'}
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </Card>
+    </div>
+  );
 };
