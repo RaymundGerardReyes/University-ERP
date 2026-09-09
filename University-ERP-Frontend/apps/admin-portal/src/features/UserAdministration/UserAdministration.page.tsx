@@ -6,8 +6,6 @@ export const UserAdministrationPage: React.FC = () => {
     const { data: users, isLoading } = useSystemUsers();
     const { mutateAsync: revokeAccess, isPending } = useRevokeAccess();
 
-    if (isLoading) return <div className="skeleton" />;
-
     const lockedUsers = users?.filter(u => u.status === 'Locked').length || 0;
 
     return (
@@ -15,9 +13,19 @@ export const UserAdministrationPage: React.FC = () => {
             <PageHeader
                 title="User Administration"
                 subtitle="Govern identity access, roles, and security standing for all platform users."
+                action={
+                    <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
+                        <Button variant="primary">Create New User</Button>
+                        <Button variant="outline">Impersonate User</Button>
+                    </div>
+                }
             />
 
-            <div className="grid-stats fade-in-delay-1">
+            {isLoading ? (
+                <div className="skeleton" style={{ height: '50vh', margin: 'var(--space-6) 0' }} />
+            ) : (
+                <>
+                    <div className="grid-stats fade-in-delay-1">
                 <Card className="stat-card">
                     <div className="card-accent-top" />
                     <span className="stat-label">Total Identities</span>
@@ -72,6 +80,8 @@ export const UserAdministrationPage: React.FC = () => {
                     </Card>
                 ))}
             </div>
+            </>
+            )}
         </div>
     );
 };

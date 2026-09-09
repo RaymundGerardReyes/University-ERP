@@ -32,7 +32,7 @@ export const CanteenOrdersPage: React.FC = () => {
                 <Card className="stat-card">
                     <div className="card-accent-top" style={{ background: 'var(--success-text)' }} />
                     <span className="stat-label">Gross Value (Today)</span>
-                    <span className="stat-value" style={{ color: 'var(--success-text)' }}>${data.revenueToday.toFixed(2)}</span>
+                    <span className="stat-value" style={{ color: 'var(--success-text)' }}>{`$${data.revenueToday.toFixed(2)}`}</span>
                     <span className="stat-trend">Point-of-sale total</span>
                 </Card>
             </div>
@@ -48,7 +48,7 @@ export const CanteenOrdersPage: React.FC = () => {
                         <div key={order.id} className="data-row" style={{ borderBottom: idx === data.recentOrders.length - 1 ? 'none' : '1px solid var(--border-subtle)' }}>
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <span className="data-value" style={{ textAlign: 'left', color: 'var(--text-bright)' }}>{order.student}</span>
-                                <span className="data-label">{order.plan} &bull; {order.id}</span>
+                                <span className="data-label">{order.plan} &bull; <span>{order.id}</span></span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
                                 <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontFamily: "'JetBrains Mono', monospace" }}>{order.time}</span>
