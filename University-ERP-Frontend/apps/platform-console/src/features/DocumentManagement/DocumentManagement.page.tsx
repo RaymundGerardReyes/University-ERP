@@ -1,10 +1,18 @@
 import React from 'react';
+import { PageHeader, Card } from '@university-erp/ui-kit';
 
-export default function DocumentManagementPage() {
+export const DocumentManagementPage: React.FC = () => {
   return (
-    <div>
-      <h1 style={{ fontSize: '1.8rem', fontWeight: 'bold' }}>Document Management</h1>
-      <p style={{ marginTop: '1rem', color: '#64748b' }}>Centralized repository for institutional policies, academic records, and approvals.</p>
+    <div className="fade-in">
+      <PageHeader
+        title="Document Management and Vault"
+        subtitle="Secure institutional file archives, digital signatures, and transcript storage."
+      />
+      <Card>
+        <p>Document Management and Vault is active and operating.</p>
+      </Card>
     </div>
   );
-}
+};
+
+export default DocumentManagementPage;

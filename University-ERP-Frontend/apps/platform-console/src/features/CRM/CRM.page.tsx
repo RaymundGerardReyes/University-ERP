@@ -1,10 +1,18 @@
 import React from 'react';
+import { PageHeader, Card } from '@university-erp/ui-kit';
 
-export default function CRMPage() {
+export const CRMPage: React.FC = () => {
   return (
-    <div>
-      <h1 style={{ fontSize: '1.8rem', fontWeight: 'bold' }}>Institutional CRM</h1>
-      <p style={{ marginTop: '1rem', color: '#64748b' }}>Manage prospect pipelines, alumni relations, and partner engagement.</p>
+    <div className="fade-in">
+      <PageHeader
+        title="Constituent Relationship Management"
+        subtitle="Manage donor relations, prospective students, and partner networks."
+      />
+      <Card>
+        <p>Constituent Relationship Management is active and operating.</p>
+      </Card>
     </div>
   );
-}
+};
+
+export default CRMPage;

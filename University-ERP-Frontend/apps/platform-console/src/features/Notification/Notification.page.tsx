@@ -1,10 +1,18 @@
 import React from 'react';
+import { PageHeader, Card } from '@university-erp/ui-kit';
 
-export default function NotificationPage() {
+export const NotificationPage: React.FC = () => {
   return (
-    <div>
-      <h1 style={{ fontSize: '1.8rem', fontWeight: 'bold' }}>Notification Engine</h1>
-      <p style={{ marginTop: '1rem', color: '#64748b' }}>Configure email, SMS, and push notification templates and tracking.</p>
+    <div className="fade-in">
+      <PageHeader
+        title="Notification Delivery Service"
+        subtitle="Configure multi-channel push, SMS, and email alert delivery queues."
+      />
+      <Card>
+        <p>Notification Delivery Service is active and operating.</p>
+      </Card>
     </div>
   );
-}
+};
+
+export default NotificationPage;

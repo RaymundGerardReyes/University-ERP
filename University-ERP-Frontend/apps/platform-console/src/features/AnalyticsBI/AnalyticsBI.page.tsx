@@ -1,10 +1,18 @@
 import React from 'react';
+import { PageHeader, Card } from '@university-erp/ui-kit';
 
-export default function AnalyticsBIPage() {
+export const AnalyticsBIPage: React.FC = () => {
   return (
-    <div>
-      <h1 style={{ fontSize: '1.8rem', fontWeight: 'bold' }}>Analytics & BI</h1>
-      <p style={{ marginTop: '1rem', color: '#64748b' }}>Executive dashboards, predictive models, and data warehouse integration.</p>
+    <div className="fade-in">
+      <PageHeader
+        title="Analytics and Business Intelligence"
+        subtitle="Executive dashboards, predictive models, and data warehouse integration."
+      />
+      <Card>
+        <p>Analytics and Business Intelligence is active and operating.</p>
+      </Card>
     </div>
   );
-}
+};
+
+export default AnalyticsBIPage;
