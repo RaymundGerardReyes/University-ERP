@@ -22,9 +22,11 @@ if [ "$DRY_RUN" = false ]; then
   git reset
 fi
 
-# 2. Fetch remote tags to ensure accuracy and prevent tag collisions
-echo "Fetching remote tags (fallback to local if remote unreachable)..."
-git fetch --tags origin 2>/dev/null || echo "Notice: Remote fetch skipped; using existing local tags."
+# 2. Fetch remote tags to ensure accuracy and prevent tag collisions (skipped in dry-run)
+if [ "$DRY_RUN" = false ]; then
+  echo "Checking remote tags (fallback to local if unreachable)..."
+  GIT_SSH_COMMAND="ssh -o BatchMode=yes -o ConnectTimeout=2" git fetch --tags origin 2>/dev/null || echo "Notice: Remote fetch skipped; using existing local tags."
+fi
 
 bump_patch() {
   local version=$1
