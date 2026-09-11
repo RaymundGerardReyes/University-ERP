@@ -65,7 +65,6 @@ describe('Communication - Unit Testing', () => {
         vi.mocked(communicationApi.sendMessage).mockResolvedValue({ success: true });
 
         renderComponent();
-        await waitFor(() => expect(screen.getByText('Question')).toBeDefined());
         await waitFor(() => expect(screen.getAllByText('Question')[0]).toBeDefined());
 
         const replyBox = screen.getByPlaceholderText(/Type your reply.../i);

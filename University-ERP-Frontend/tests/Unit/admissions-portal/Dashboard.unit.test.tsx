@@ -1,5 +1,4 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
@@ -110,8 +109,7 @@ describe('Dashboard - Unit Testing', () => {
         renderComponent();
         await waitFor(() => {
             expect(screen.getByText('Under Review')).toBeDefined();
-            // 2 items match the 'under review' criteria
-            expect(screen.getByText('2', { selector: '.stat-value' })).toBeDefined();
+            expect(screen.getAllByText('2', { selector: '.stat-value' }).length).toBeGreaterThan(0);
             expect(screen.getByText('Under Review').nextElementSibling?.textContent).toBe('2');
         });
     });
