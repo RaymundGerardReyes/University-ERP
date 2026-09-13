@@ -25,6 +25,7 @@ public static class StudentInformationModuleRegistration
 
         // 2. Register Repositories
         services.AddScoped<IStudentRepository, StudentRepository>();
+        services.AddScoped<IStudentAcademicRecordRepository, StudentAcademicRecordRepository>();
 
         // 3. Register MediatR (Points to the Application Assembly)
         services.AddMediatR(cfg => 

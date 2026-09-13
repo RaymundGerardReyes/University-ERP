@@ -4,6 +4,7 @@ using Curriculum.Application.Abstractions;
 using Curriculum.Domain.Aggregates;
 using Curriculum.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,6 +32,13 @@ public sealed class CourseDefinitionRepository : ICourseDefinitionRepository
             .FirstOrDefaultAsync(c => c.Id.ToString() == id, cancellationToken);
     }
 
+    public async Task<CourseDefinition?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Courses
+            .Include(c => c.Prerequisites)
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+    }
+
     public async Task<IReadOnlyList<CourseDefinition>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _dbContext.Courses
@@ -46,7 +54,6 @@ public sealed class CourseDefinitionRepository : ICourseDefinitionRepository
 
     public async Task UpdateAsync(CourseDefinition course, CancellationToken cancellationToken = default)
     {
-        _dbContext.Courses.Update(course);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

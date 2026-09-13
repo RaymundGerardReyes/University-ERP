@@ -36,9 +36,6 @@ namespace Academic.Presentation.Endpoints
         [HttpGet("records/official-grades")]
         public IActionResult GetOfficialGrades() => Ok(new List<object>());
 
-        [HttpGet("curriculum/catalog")]
-        public IActionResult GetSubjectCatalog() => Ok(new List<object>());
-
         [HttpGet("graduation/candidates")]
         public IActionResult GetGraduationCandidates() => Ok(new List<object>());
 

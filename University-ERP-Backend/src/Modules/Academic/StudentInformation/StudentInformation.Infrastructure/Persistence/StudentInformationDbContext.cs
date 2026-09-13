@@ -11,6 +11,7 @@ public sealed class StudentInformationDbContext : DbContext
 
     public DbSet<Student> Students => Set<Student>();
     public DbSet<FacultyAdvisee> FacultyAdvisees => Set<FacultyAdvisee>();
+    public DbSet<StudentAcademicRecord> AcademicRecords => Set<StudentAcademicRecord>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -19,6 +20,19 @@ public sealed class StudentInformationDbContext : DbContext
         {
             entity.ToTable("FacultyAdvisees", "advising");
             entity.HasKey(e => e.Id);
+        });
+
+        modelBuilder.Entity<StudentAcademicRecord>(entity =>
+        {
+            entity.ToTable("StudentAcademicRecords", "academic");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.StudentId).IsRequired();
+            entity.OwnsMany(e => e.CourseRecords, cr =>
+            {
+                cr.ToTable("CourseGradeRecords", "academic");
+                cr.WithOwner().HasForeignKey("StudentAcademicRecordId");
+                cr.HasKey(c => c.Id);
+            });
         });
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(StudentInformationDbContext).Assembly);
