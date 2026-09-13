@@ -101,6 +101,7 @@ services:
       PaymentGateway__SuccessUrl: ${PaymentGateway__SuccessUrl:-${PAYMENT_GATEWAY_SUCCESS_URL:-}}
       PaymentGateway__CancelUrl: ${PaymentGateway__CancelUrl:-${PAYMENT_GATEWAY_CANCEL_URL:-}}
       PaymentGateway__BaseUrl: ${PaymentGateway__BaseUrl:-${PAYMENT_GATEWAY_BASE_URL:-}}
+      PaymentGateway__CheckoutBaseUrl: ${PaymentGateway__CheckoutBaseUrl:-${PAYMENT_GATEWAY_CHECKOUT_BASE_URL:-}}
       PaymentGateway__SourceAccountId: ${PaymentGateway__SourceAccountId:-${PAYMENT_GATEWAY_SOURCE_ACCOUNT_ID:-}}
     expose:
       - "${INTERNAL_API_PORT:-5191}"
@@ -141,6 +142,7 @@ services:
       PaymentGateway__SuccessUrl: ${PaymentGateway__SuccessUrl:-${PAYMENT_GATEWAY_SUCCESS_URL:-}}
       PaymentGateway__CancelUrl: ${PaymentGateway__CancelUrl:-${PAYMENT_GATEWAY_CANCEL_URL:-}}
       PaymentGateway__BaseUrl: ${PaymentGateway__BaseUrl:-${PAYMENT_GATEWAY_BASE_URL:-}}
+      PaymentGateway__CheckoutBaseUrl: ${PaymentGateway__CheckoutBaseUrl:-${PAYMENT_GATEWAY_CHECKOUT_BASE_URL:-}}
       PaymentGateway__SourceAccountId: ${PaymentGateway__SourceAccountId:-${PAYMENT_GATEWAY_SOURCE_ACCOUNT_ID:-}}
     deploy:
       resources:
