@@ -96,12 +96,12 @@ services:
       JWT_ISSUER: ${JWT_ISSUER}
       JWT_AUDIENCE: ${JWT_AUDIENCE}
       PaymentGateway__SecretKey: ${PaymentGateway__SecretKey:-${PAYMENT_GATEWAY_SECRET_KEY:-sk_test_mocked}}
-      PaymentGateway__WebhookSecret: ${PaymentGateway__WebhookSecret:-whsec_mocked}
-      PaymentGateway__WebhookUrl: ${PaymentGateway__WebhookUrl:-}
-      PaymentGateway__SuccessUrl: ${PaymentGateway__SuccessUrl:-}
-      PaymentGateway__CancelUrl: ${PaymentGateway__CancelUrl:-}
-      PaymentGateway__BaseUrl: ${PaymentGateway__BaseUrl:-}
-      PaymentGateway__SourceAccountId: ${PaymentGateway__SourceAccountId:-}
+      PaymentGateway__WebhookSecret: ${PaymentGateway__WebhookSecret:-${PAYMENT_GATEWAY_WEBHOOK_SECRET:-whsec_mocked}}
+      PaymentGateway__WebhookUrl: ${PaymentGateway__WebhookUrl:-${PAYMENT_GATEWAY_WEBHOOK_URL:-}}
+      PaymentGateway__SuccessUrl: ${PaymentGateway__SuccessUrl:-${PAYMENT_GATEWAY_SUCCESS_URL:-}}
+      PaymentGateway__CancelUrl: ${PaymentGateway__CancelUrl:-${PAYMENT_GATEWAY_CANCEL_URL:-}}
+      PaymentGateway__BaseUrl: ${PaymentGateway__BaseUrl:-${PAYMENT_GATEWAY_BASE_URL:-}}
+      PaymentGateway__SourceAccountId: ${PaymentGateway__SourceAccountId:-${PAYMENT_GATEWAY_SOURCE_ACCOUNT_ID:-}}
     expose:
       - "${INTERNAL_API_PORT:-5191}"
     deploy:
@@ -136,11 +136,12 @@ services:
       JWT_ISSUER: ${JWT_ISSUER}
       JWT_AUDIENCE: ${JWT_AUDIENCE}
       PaymentGateway__SecretKey: ${PaymentGateway__SecretKey:-${PAYMENT_GATEWAY_SECRET_KEY:-sk_test_mocked}}
-      PaymentGateway__WebhookSecret: ${PaymentGateway__WebhookSecret:-whsec_mocked}
-      PaymentGateway__WebhookUrl: ${PaymentGateway__WebhookUrl:-}
-      PaymentGateway__SuccessUrl: ${PaymentGateway__SuccessUrl:-}
-      PaymentGateway__CancelUrl: ${PaymentGateway__CancelUrl:-}
-      PaymentGateway__BaseUrl: ${PaymentGateway__BaseUrl:-}
+      PaymentGateway__WebhookSecret: ${PaymentGateway__WebhookSecret:-${PAYMENT_GATEWAY_WEBHOOK_SECRET:-whsec_mocked}}
+      PaymentGateway__WebhookUrl: ${PaymentGateway__WebhookUrl:-${PAYMENT_GATEWAY_WEBHOOK_URL:-}}
+      PaymentGateway__SuccessUrl: ${PaymentGateway__SuccessUrl:-${PAYMENT_GATEWAY_SUCCESS_URL:-}}
+      PaymentGateway__CancelUrl: ${PaymentGateway__CancelUrl:-${PAYMENT_GATEWAY_CANCEL_URL:-}}
+      PaymentGateway__BaseUrl: ${PaymentGateway__BaseUrl:-${PAYMENT_GATEWAY_BASE_URL:-}}
+      PaymentGateway__SourceAccountId: ${PaymentGateway__SourceAccountId:-${PAYMENT_GATEWAY_SOURCE_ACCOUNT_ID:-}}
     deploy:
       resources:
         limits:

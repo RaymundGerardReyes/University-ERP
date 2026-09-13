@@ -20,6 +20,7 @@ COPY apps/platform-console/package.json ./apps/platform-console/
 COPY apps/registrar-portal/package.json ./apps/registrar-portal/
 COPY apps/security-portal/package.json ./apps/security-portal/
 COPY apps/student-portal/package.json ./apps/student-portal/
+COPY apps/payment-gateway/package.json ./apps/payment-gateway/
 COPY libs/api-clients/package.json ./libs/api-clients/
 COPY libs/auth-sdk/package.json ./libs/auth-sdk/
 COPY libs/core-logger/package.json ./libs/core-logger/
@@ -82,7 +83,8 @@ RUN mkdir -p /app/dist-temp \
     && npm run build --workspace=apps/platform-console && mv /app/apps/platform-console/dist /app/dist-temp/platform-console \
     && npm run build --workspace=apps/registrar-portal && mv /app/apps/registrar-portal/dist /app/dist-temp/registrar-portal \
     && npm run build --workspace=apps/security-portal && mv /app/apps/security-portal/dist /app/dist-temp/security-portal \
-    && npm run build --workspace=apps/student-portal && mv /app/apps/student-portal/dist /app/dist-temp/student-portal
+    && npm run build --workspace=apps/student-portal && mv /app/apps/student-portal/dist /app/dist-temp/student-portal \
+    && npm run build --workspace=apps/payment-gateway && mv /app/apps/payment-gateway/dist /app/dist-temp/payment-gateway
 
 # -----------------------------------------------------------------------------
 # Stage 2: Immutable Delivery Container
