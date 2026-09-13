@@ -58,7 +58,8 @@ namespace UniversityErp.Tests.Integration.Admissions
             
             Assert.NotNull(result);
             var savedApp = await _appRepo.GetByIdAsync(result);
-            Assert.Equal("Submitted", savedApp.Status);
+            Assert.NotNull(savedApp);
+            Assert.Equal("Submitted", savedApp!.Status);
         }
 
         [Fact]
@@ -68,7 +69,8 @@ namespace UniversityErp.Tests.Integration.Admissions
             var appId = await handler.Handle(new SubmitApplicationCommand("APP-002", "BSCS", "Jane", "Smith", "2001-01-01", "Domestic"), CancellationToken.None);
             
             var savedApp = await _appRepo.GetByIdAsync(appId);
-            Assert.Contains(savedApp.Documents, d => d.Name == "Birth Certificate (PSA)");
+            Assert.NotNull(savedApp);
+            Assert.Contains(savedApp!.Documents, d => d.Name == "Birth Certificate (PSA)");
         }
 
         [Fact]
@@ -78,7 +80,8 @@ namespace UniversityErp.Tests.Integration.Admissions
             var appId = await handler.Handle(new SubmitApplicationCommand("APP-003", "BSCS", "Tom", "Brown", "2000-05-05", "Domestic"), CancellationToken.None);
             
             var savedApp = await _appRepo.GetByIdAsync(appId);
-            Assert.Contains(savedApp.TimelineEvents, t => t.Title == "Application Submitted" && t.Status == "Completed");
+            Assert.NotNull(savedApp);
+            Assert.Contains(savedApp!.TimelineEvents, t => t.Title == "Application Submitted" && t.Status == "Completed");
         }
 
         // --- Scenarios 4-6: Document Upload ---
