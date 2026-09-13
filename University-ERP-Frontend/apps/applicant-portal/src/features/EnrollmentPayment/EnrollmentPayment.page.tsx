@@ -33,6 +33,18 @@ const isEnrollmentDownpaymentInvoice = (inv: ClientInvoiceDto, identityId: strin
     return isOwner && isDownpayment;
 };
 
+export const resolveCheckoutRedirectUrl = (url?: string): string | null => {
+    if (!url) return null;
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+        return url;
+    }
+    const gatewayBase = (import.meta as any).env?.VITE_PAYMENT_GATEWAY_URL;
+    if (gatewayBase && (gatewayBase.startsWith('http://') || gatewayBase.startsWith('https://'))) {
+        return `${gatewayBase.replace(/\/+$/, '')}/${url.replace(/^\/+/, '')}`;
+    }
+    return null;
+};
+
 export const EnrollmentPaymentPage: React.FC = () => {
     const queryClient = useQueryClient();
     const { identity, user } = useAuth();
@@ -81,8 +93,16 @@ export const EnrollmentPaymentPage: React.FC = () => {
             queryClient.invalidateQueries({ queryKey: ['finance'] });
             queryClient.invalidateQueries({ queryKey: ['admissions'] });
             queryClient.invalidateQueries({ queryKey: ['academic'] });
-            if (data.checkoutUrl) window.location.href = data.checkoutUrl;
-            else setActionError("Failed to retrieve checkout URL from the payment gateway.");
+            if (data.checkoutUrl) {
+                const targetUrl = resolveCheckoutRedirectUrl(data.checkoutUrl);
+                if (targetUrl) {
+                    window.location.href = targetUrl;
+                } else {
+                    setActionError("Received an invalid checkout URL from payment gateway.");
+                }
+            } else {
+                setActionError("Failed to retrieve checkout URL from the payment gateway.");
+            }
         },
         onError: (error: unknown) => {
             let msg = "Failed to establish secure payment session.";

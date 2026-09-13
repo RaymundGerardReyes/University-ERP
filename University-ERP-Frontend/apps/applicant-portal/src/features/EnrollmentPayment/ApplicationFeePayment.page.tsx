@@ -4,6 +4,7 @@ import { useAuth } from '@university-erp/auth-sdk';
 import { Badge, Button, Card, PageHeader } from '@university-erp/ui-kit';
 import axios from 'axios';
 import React, { useState } from 'react';
+import { resolveCheckoutRedirectUrl } from './EnrollmentPayment.page';
 
 export const ApplicationFeePaymentPage: React.FC = () => {
     const queryClient = useQueryClient();
@@ -35,7 +36,12 @@ export const ApplicationFeePaymentPage: React.FC = () => {
             queryClient.invalidateQueries({ queryKey: ['academic'] });
             queryClient.invalidateQueries({ queryKey: ['finance'] });
             if (data.checkoutUrl) {
-                window.location.href = data.checkoutUrl;
+                const targetUrl = resolveCheckoutRedirectUrl(data.checkoutUrl);
+                if (targetUrl) {
+                    window.location.href = targetUrl;
+                } else {
+                    setActionError("Received an invalid checkout URL from payment gateway.");
+                }
             } else {
                 setActionError("Gateway configuration error: No checkout URL returned.");
             }
