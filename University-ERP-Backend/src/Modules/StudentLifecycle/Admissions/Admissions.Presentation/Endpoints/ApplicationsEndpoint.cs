@@ -10,6 +10,8 @@ using Admissions.Application.Features.ScheduleInterview; // NEW
 using System.Threading;
 using System.Threading.Tasks;
 
+using Admissions.Application.Features.PayApplicationFee;
+
 [ApiController]
 [Route("api/v1/admissions/applications")]
 public sealed class ApplicationsEndpoint : ControllerBase
@@ -60,7 +62,31 @@ public sealed class ApplicationsEndpoint : ControllerBase
         return Ok();
     }
 
+    [HttpPost("{id}/pay-fee")]
+    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> PayApplicationFee([FromRoute] string id, [FromBody] PayFeeDto request, CancellationToken cancellationToken)
+    {
+        var txnId = string.IsNullOrWhiteSpace(request?.TransactionId) 
+            ? $"TXN-ONL-{System.DateTime.UtcNow.Ticks}" 
+            : request.TransactionId;
+
+        var command = new PayApplicationFeeCommand(id, txnId);
+        var result = await _sender.Send(command, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            if (result.Error.Code == "Admissions.NotFound")
+                return NotFound(new { code = result.Error.Code, message = result.Error.Description });
+                
+            return BadRequest(new { code = result.Error.Code, message = result.Error.Description });
+        }
+
+        return Ok(true);
+    }
 }
 
 public sealed record UploadDocumentDto(string DocumentName, string FilePath);
 public sealed record ScheduleInterviewDto(string Date, string Time);
+public sealed record PayFeeDto(string? TransactionId);

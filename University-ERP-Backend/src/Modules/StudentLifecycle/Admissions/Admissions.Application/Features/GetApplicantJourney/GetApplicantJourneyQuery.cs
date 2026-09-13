@@ -35,7 +35,8 @@ public sealed record JourneyStateDto(
     List<JourneyMilestoneDto> Milestones,
     List<ProgramOfferingDto> Programs,
     List<ApplicantDocumentDto> Documents,
-    List<TimelineEventDto> Timeline
+    List<TimelineEventDto> Timeline,
+    string ApplicationId = ""
 );
 
 public sealed record GetApplicantJourneyQuery(string StudentId) : IRequest<JourneyStateDto?>;
@@ -54,7 +55,19 @@ public sealed class GetApplicantJourneyQueryHandler : IRequestHandler<GetApplica
     public async Task<JourneyStateDto?> Handle(GetApplicantJourneyQuery request, CancellationToken cancellationToken)
     {
         var applications = await _repository.GetByApplicantIdAsync(request.StudentId, cancellationToken);
-        var latestApp = applications.OrderByDescending(a => a.SubmittedDate).FirstOrDefault();
+        if (applications.Count == 0)
+        {
+            var appById = await _repository.GetByIdAsync(request.StudentId, cancellationToken);
+            if (appById != null)
+            {
+                applications = new List<Admissions.Domain.Aggregates.AdmissionApplication> { appById };
+            }
+        }
+
+        var latestApp = applications
+            .OrderByDescending(a => a.SubmittedDate)
+            .ThenByDescending(a => a.Id)
+            .FirstOrDefault();
 
         var programs = await _programRepository.GetAllAsync(cancellationToken);
         var programDtos = programs.Select(p => new ProgramOfferingDto(
@@ -119,7 +132,8 @@ public sealed class GetApplicantJourneyQueryHandler : IRequestHandler<GetApplica
             milestones,
             programDtos,
             documents,
-            timeline
+            timeline,
+            latestApp.Id
         );
     }
 }

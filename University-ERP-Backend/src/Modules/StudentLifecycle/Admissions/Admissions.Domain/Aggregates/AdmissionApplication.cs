@@ -82,7 +82,7 @@ public sealed class AdmissionApplication : AggregateRoot<string>
 
     public Result<bool> VerifyDocuments()
     {
-        if (Status != "Submitted") return Result<bool>.Failure(new Error("Admissions.InvalidState", "Application is not in Submitted state."));
+        if (Status != "Submitted" && Status != "Under Review") return Result<bool>.Failure(new Error("Admissions.InvalidState", "Application is not in Submitted or Under Review state."));
         Status = "InterviewPending";
         AddTimelineEvent("Document Verification Complete", "Documents have been verified by Admissions.", "Completed", DateTime.UtcNow);
         return Result<bool>.Success(true);
@@ -105,7 +105,7 @@ public sealed class AdmissionApplication : AggregateRoot<string>
 
     public Result<bool> CompleteInterview(string remarks)
     {
-        if (Status != "InterviewPending") return Result<bool>.Failure(new Error("Admissions.InvalidState", "Application is not in InterviewPending state."));
+        if (Status != "InterviewPending" && Status != "InterviewScheduled") return Result<bool>.Failure(new Error("Admissions.InvalidState", "Application is not ready for interview completion."));
         Status = "UnderAcademicEvaluation";
         FacultyRemarks = remarks;
         AddTimelineEvent("Interview Completed", "Interview passed. Pending academic evaluation.", "Completed", DateTime.UtcNow);
@@ -114,7 +114,7 @@ public sealed class AdmissionApplication : AggregateRoot<string>
 
     public Result<bool> Recommend(string remarks)
     {
-        if (Status != "UnderAcademicEvaluation") return Result<bool>.Failure(new Error("Admissions.InvalidState", "Application must be under academic evaluation."));
+        if (Status != "UnderAcademicEvaluation" && Status != "Accepted") return Result<bool>.Failure(new Error("Admissions.InvalidState", "Application must be under academic evaluation."));
         Status = "Recommended";
         FacultyRemarks = remarks;
         AddTimelineEvent("Chairperson Recommendation", "Program Chairperson has recommended admission.", "Completed", DateTime.UtcNow);

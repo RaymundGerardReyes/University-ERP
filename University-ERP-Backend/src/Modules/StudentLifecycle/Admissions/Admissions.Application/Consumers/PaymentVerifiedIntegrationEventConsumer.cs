@@ -19,10 +19,29 @@ public sealed class PaymentVerifiedIntegrationEventConsumer : INotificationHandl
 
     public async Task Handle(PaymentVerifiedIntegrationEvent notification, CancellationToken cancellationToken)
     {
-        var applications = await _repository.GetByApplicantIdAsync(notification.ApplicantId.ToString(), cancellationToken);
-        var application = applications.FirstOrDefault(a => a.ApplicationFeeStatus != "Paid");
+        Admissions.Domain.Aggregates.AdmissionApplication? application = null;
 
-        if (application != null)
+        // 1. Primary lookup: Try InvoiceId (which maps to ApplicationId in payment sessions)
+        if (!string.IsNullOrWhiteSpace(notification.InvoiceId))
+        {
+            application = await _repository.GetByIdAsync(notification.InvoiceId, cancellationToken);
+        }
+
+        // 2. Secondary lookup: Try ApplicantId
+        if (application == null && !string.IsNullOrWhiteSpace(notification.ApplicantId))
+        {
+            var applications = await _repository.GetByApplicantIdAsync(notification.ApplicantId, cancellationToken);
+            application = applications.FirstOrDefault(a => a.ApplicationFeeStatus != "Paid") 
+                          ?? applications.FirstOrDefault();
+        }
+
+        // 3. Fallback lookup: Try ApplicantId as ApplicationId
+        if (application == null && !string.IsNullOrWhiteSpace(notification.ApplicantId))
+        {
+            application = await _repository.GetByIdAsync(notification.ApplicantId, cancellationToken);
+        }
+
+        if (application != null && application.ApplicationFeeStatus != "Paid")
         {
             var result = application.MarkFeeAsPaid(notification.PaymentReference);
             if (result.IsSuccess)

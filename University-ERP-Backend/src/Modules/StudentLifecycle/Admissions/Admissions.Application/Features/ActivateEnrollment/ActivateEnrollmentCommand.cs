@@ -13,10 +13,12 @@ public sealed record ActivateEnrollmentCommand(string ApplicationId) : IRequest<
 public sealed class ActivateEnrollmentCommandHandler : IRequestHandler<ActivateEnrollmentCommand, Result<string>>
 {
     private readonly IAdmissionApplicationRepository _repository;
+    private readonly IPublisher? _publisher;
 
-    public ActivateEnrollmentCommandHandler(IAdmissionApplicationRepository repository)
+    public ActivateEnrollmentCommandHandler(IAdmissionApplicationRepository repository, IPublisher? publisher = null)
     {
         _repository = repository;
+        _publisher = publisher;
     }
 
     public async Task<Result<string>> Handle(ActivateEnrollmentCommand request, CancellationToken cancellationToken)
@@ -33,6 +35,16 @@ public sealed class ActivateEnrollmentCommandHandler : IRequestHandler<ActivateE
             return Result<string>.Failure(result.Error);
 
         await _repository.SaveChangesAsync(cancellationToken);
+
+        if (_publisher != null)
+        {
+            foreach (var domainEvent in application.GetDomainEvents())
+            {
+                await _publisher.Publish(domainEvent, cancellationToken);
+            }
+            application.ClearDomainEvents();
+        }
+
         return Result<string>.Success(newStudentId);
     }
 }

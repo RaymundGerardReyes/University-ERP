@@ -16,10 +16,12 @@ public sealed record ApproveApplicationCommand(
 public sealed class ApproveApplicationCommandHandler : IRequestHandler<ApproveApplicationCommand, Result<bool>>
 {
     private readonly IAdmissionApplicationRepository _repository;
+    private readonly IPublisher? _publisher;
 
-    public ApproveApplicationCommandHandler(IAdmissionApplicationRepository repository)
+    public ApproveApplicationCommandHandler(IAdmissionApplicationRepository repository, IPublisher? publisher = null)
     {
         _repository = repository;
+        _publisher = publisher;
     }
 
     public async Task<Result<bool>> Handle(ApproveApplicationCommand request, CancellationToken cancellationToken)
@@ -48,6 +50,18 @@ public sealed class ApproveApplicationCommandHandler : IRequestHandler<ApproveAp
 
         // Persist the state change
         await _repository.SaveChangesAsync(cancellationToken);
+
+        if (request.Action == "Approve" && _publisher != null)
+        {
+            var integrationEvent = new Contracts.IntegrationEvents.StudentLifecycle.ApplicantAcceptedIntegrationEvent(
+                Guid.NewGuid(),
+                DateTime.UtcNow,
+                application.ApplicantId ?? application.Id,
+                application.ProgramId ?? "General",
+                "AY 2026-2027"
+            );
+            await _publisher.Publish(integrationEvent, cancellationToken);
+        }
         
         return Result<bool>.Success(true);
     }

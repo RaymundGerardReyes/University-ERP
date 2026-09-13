@@ -21,6 +21,11 @@ public sealed class UploadDocumentCommandHandler : IRequestHandler<UploadDocumen
     public async Task<bool> Handle(UploadDocumentCommand request, CancellationToken cancellationToken)
     {
         var application = await _repository.GetByIdAsync(request.ApplicationId, cancellationToken);
+        if (application is null)
+        {
+            var apps = await _repository.GetByApplicantIdAsync(request.ApplicationId, cancellationToken);
+            application = apps.OrderByDescending(a => a.SubmittedDate).ThenByDescending(a => a.Id).FirstOrDefault();
+        }
         
         if (application is null)
         {
