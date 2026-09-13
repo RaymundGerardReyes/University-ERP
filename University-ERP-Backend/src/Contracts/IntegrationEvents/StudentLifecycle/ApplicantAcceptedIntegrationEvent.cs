@@ -10,7 +10,7 @@ using SharedKernel.Domain.Primitives;
 public sealed record ApplicantAcceptedIntegrationEvent(
     Guid EventId,
     DateTime OccurredOnUtc,
-    Guid ApplicantId,
+    string ApplicantId,
     string TargetProgramCode,
     string AcademicYear
 ) : IDomainEvent;

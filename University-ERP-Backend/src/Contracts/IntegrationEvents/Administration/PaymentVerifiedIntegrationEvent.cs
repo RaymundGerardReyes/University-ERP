@@ -10,7 +10,7 @@ using SharedKernel.Domain.Primitives;
 public record PaymentVerifiedIntegrationEvent(
     Guid EventId,
     DateTime OccurredOnUtc,
-    Guid ApplicantId,
+    string ApplicantId,
     string InvoiceId,
     decimal AmountPaid,
     string Currency,
