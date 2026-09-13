@@ -56,4 +56,21 @@ describe("DocumentSubmission - Unit Testing", () => {
       expect(screen.getByText('Official Transcript')).toBeInTheDocument();
     });
   });
+
+  it("renders uploaded file name when filePath is present", async () => {
+    (admissionsApi.getApplicantJourney as any).mockResolvedValueOnce({
+      id: 'app-1',
+      applicantId: 'app-1',
+      documents: [
+        { id: 'doc-1', name: 'Birth Certificate (PSA)', status: 'Uploaded', filePath: 'my_psa_cert.pdf' }
+      ],
+      timeline: []
+    });
+
+    renderComponent();
+    await waitFor(() => {
+      expect(screen.getByText('my_psa_cert.pdf')).toBeInTheDocument();
+      expect(screen.getByText('Uploaded')).toBeInTheDocument();
+    });
+  });
 });

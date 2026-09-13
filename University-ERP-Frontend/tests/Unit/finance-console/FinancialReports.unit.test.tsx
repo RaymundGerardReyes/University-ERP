@@ -22,4 +22,48 @@ describe("FinancialReports - Unit Testing", () => {
       expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
     });
   });
+
+  it("calls /finance/reports/statements when getBankStatements is invoked", async () => {
+    const { apiClient } = await import('@university-erp/api-clients');
+    const { financialReportsApi } = await import('../../../apps/finance-console/src/features/FinancialReports/FinancialReports.api');
+    
+    vi.spyOn(apiClient, 'get').mockResolvedValueOnce({
+      data: {
+        accountNumber: "4859220013371001",
+        statements: [{ id: "TX-01", amount: 5000 }]
+      }
+    } as any);
+
+    const result = await financialReportsApi.getBankStatements();
+
+    expect(apiClient.get).toHaveBeenCalledWith('/finance/reports/statements');
+    expect(result.accountNumber).toBe("4859220013371001");
+    expect(result.statements).toHaveLength(1);
+  });
+
+  it("calls /finance/reports when getAllReports is invoked", async () => {
+    const { apiClient } = await import('@university-erp/api-clients');
+    const { financialReportsApi } = await import('../../../apps/finance-console/src/features/FinancialReports/FinancialReports.api');
+
+    vi.spyOn(apiClient, 'get').mockResolvedValueOnce({
+      data: [
+        {
+          reportId: "REP-01",
+          reportName: "Q3 Realization",
+          period: "2026-Q3",
+          generatedDate: "2026-09-01",
+          totalRevenue: 250000,
+          totalExpenditure: 150000,
+          netMargin: 100000,
+          status: "Audited"
+        }
+      ]
+    } as any);
+
+    const reports = await financialReportsApi.getAllReports();
+
+    expect(apiClient.get).toHaveBeenCalledWith('/finance/reports');
+    expect(reports).toHaveLength(1);
+    expect(reports[0].reportId).toBe("REP-01");
+  });
 });
