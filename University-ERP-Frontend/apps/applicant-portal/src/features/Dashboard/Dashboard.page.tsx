@@ -1,6 +1,7 @@
 import React from 'react';
 import { Badge, Card, PageHeader, Table } from '@university-erp/ui-kit';
 import { useApplicantDashboard } from './Dashboard.hooks';
+import type { ApplicantDocumentDto, TimelineEventDto } from './Dashboard.types';
 
 export const DashboardPage: React.FC = () => {
     // 1. Fetch dynamic data from the backend
@@ -47,7 +48,7 @@ export const DashboardPage: React.FC = () => {
                 <Card>
                     <h3 style={{ marginBottom: 'var(--space-4)' }}>Required Documents</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-                        {journey.documents.map((doc: any) => (
+                        {journey.documents.map((doc: ApplicantDocumentDto) => (
                             <div key={doc.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>{doc.name}</span>
                                 <Badge colorScheme={
@@ -81,7 +82,7 @@ export const DashboardPage: React.FC = () => {
                                 </td>
                             </tr>
                         ) : (
-                            journey.timeline.map((event: any, idx: number) => (
+                            journey.timeline.map((event: TimelineEventDto, idx: number) => (
                                 <tr key={idx}>
                                     <td style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{event.date}</td>
                                     <td style={{ fontWeight: 'bold' }}>{event.event}</td>

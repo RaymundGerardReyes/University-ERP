@@ -1,42 +1,24 @@
-import { useEffect, useState } from 'react';
-import { admissionsApi, JourneyStateDto } from '@university-erp/api-clients';
+import { useQuery } from '@tanstack/react-query';
+import { admissionsApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
 
 // Re-export DTO types for consumers of this hook
-export type { JourneyStateDto, JourneyMilestoneDto, ProgramOfferingDto, ApplicantDocumentDto } from '@university-erp/api-clients';
+export type {
+  JourneyStateDto,
+  JourneyMilestoneDto,
+  ProgramOfferingDto,
+  ApplicantDocumentDto,
+} from '@university-erp/api-clients';
 
-export const useApplicantJourney = () => {
-  const [data, setData] = useState<JourneyStateDto | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export const useApplicantJourney = (explicitStudentId?: string) => {
   const { user, identity } = useAuth();
+  const studentId = explicitStudentId || user?.id || identity?.id;
 
-  useEffect(() => {
-    let isMounted = true;
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ['applicantJourney', studentId],
+    queryFn: () => admissionsApi.getApplicantJourney(studentId!),
+    enabled: Boolean(studentId),
+  });
 
-    const fetchJourney = async () => {
-      setIsLoading(true);
-      try {
-        const studentId = user?.id || identity?.id || '322e4090-9e05-438b-95d8-28088085abc4';
-        const result = await admissionsApi.getApplicantJourney(studentId);
-
-        if (isMounted) {
-          setData(result);
-        }
-      } catch (error) {
-        console.error("Failed to load applicant journey", error);
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    fetchJourney();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [user?.id]);
-
-  return { data, isLoading, refetch: () => setData(null) };
+  return { data, isLoading, isError, refetch };
 };

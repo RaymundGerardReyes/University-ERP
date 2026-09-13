@@ -1,8 +1,18 @@
-export interface DocumentSubmissionPageProps { }
+import { ApplicantDocumentDto, JourneyStateDto } from '@university-erp/api-clients';
 
-export interface RequiredDocument {
-    id: string;
-    name: string;
-    status: 'Pending' | 'Uploaded' | 'Rejected';
-    description: string;
+export type ApplicantDocumentItem = ApplicantDocumentDto;
+
+export interface UploadDocumentPayload {
+  applicationId: string;
+  documentName: string;
+  filePath: string;
 }
+
+export interface DocumentPreviewState {
+  isOpen: boolean;
+  name: string;
+  url: string;
+  mimeType: string;
+}
+
+export type { JourneyStateDto };

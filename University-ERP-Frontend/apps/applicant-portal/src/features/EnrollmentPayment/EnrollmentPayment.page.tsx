@@ -1,63 +1,86 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { admissionsApi, financeApi, financeBillingApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
 import { Badge, Button, Card, PageHeader } from '@university-erp/ui-kit';
 import axios from 'axios';
 import React, { useState } from 'react';
 
-// Legacy mapping based on the actual Finance API return shape
+// Flexible mapping based on the actual Finance API return shape
 interface ClientInvoiceDto {
-    invoiceId: string;
-    studentId: string;
-    amountDue: number;
-    description: string;
-    dueDate: string;
-    status: 'UNPAID' | 'PARTIAL' | 'PAID' | 'CANCELLED';
+    id?: string;
+    invoiceId?: string;
+    studentId?: string;
+    applicantId?: string;
+    amount?: number;
+    amountDue?: number;
+    totalAmount?: number;
+    paidAmount?: number;
+    description?: string;
+    dueDate?: string;
+    issuedOnUtc?: string;
+    status?: string;
 }
 
+const getInvoiceId = (inv: ClientInvoiceDto) => inv.id || inv.invoiceId || '';
+const getInvoiceAmount = (inv: ClientInvoiceDto) => inv.amount ?? inv.amountDue ?? inv.totalAmount ?? 0;
+const isInvoicePaid = (inv: ClientInvoiceDto) => (inv.status || '').toUpperCase() === 'PAID';
+
 const isEnrollmentDownpaymentInvoice = (inv: ClientInvoiceDto, identityId: string) => {
-    return inv.studentId === identityId && Boolean(inv.description?.includes('Downpayment'));
+    const ownerId = inv.studentId || inv.applicantId;
+    const isOwner = !ownerId || ownerId === identityId;
+    const desc = (inv.description || '').toLowerCase();
+    const isDownpayment = desc.includes('downpayment') || desc.includes('enrollment') || desc.includes('admission') || desc.includes('tuition');
+    return isOwner && isDownpayment;
 };
 
 export const EnrollmentPaymentPage: React.FC = () => {
-    const { identity } = useAuth();
+    const queryClient = useQueryClient();
+    const { identity, user } = useAuth();
+    const effectiveId = identity?.id || user?.id || 'usr-default';
     const [paymentMethod, setPaymentMethod] = useState<'online' | 'cash'>('online');
     const [generatedToken, setGeneratedToken] = useState<string | null>(null);
     const [actionError, setActionError] = useState<string | null>(null);
 
     const { data: journey, isLoading: isJourneyLoading } = useQuery({
-        queryKey: ['admissions', 'journey', identity?.id],
-        queryFn: () => admissionsApi.getApplicantJourney(identity!.id),
-        enabled: !!identity?.id
+        queryKey: ['admissions', 'journey', effectiveId],
+        queryFn: () => admissionsApi.getApplicantJourney(effectiveId),
+        enabled: !!effectiveId
     });
 
     const { data: appStatuses, isLoading: isStatusLoading } = useQuery({
-        queryKey: ['academic', 'admissionStatus', identity?.id],
-        queryFn: () => admissionsApi.getApplicationStatus(identity!.id),
-        enabled: !!identity?.id
+        queryKey: ['academic', 'admissionStatus', effectiveId],
+        queryFn: () => admissionsApi.getApplicationStatus(effectiveId),
+        enabled: !!effectiveId
     });
 
     const { data: invoices, isLoading: isInvoiceLoading, isError: isInvoiceError } = useQuery({
-        queryKey: ['finance', 'invoices', identity?.id],
+        queryKey: ['finance', 'invoices', effectiveId],
         queryFn: async () => await financeApi.getInvoices() as ClientInvoiceDto[],
-        enabled: !!identity?.id
+        enabled: !!effectiveId
     });
 
     // Authoritative Application and Invoice isolation
-    const activeApp = appStatuses?.find(app => app.id === journey?.applicantId);
-    const enrollmentInvoice = invoices?.find(inv => isEnrollmentDownpaymentInvoice(inv, identity!.id));
+    const activeApp = appStatuses?.find(app => app.id === journey?.applicantId || app.id === effectiveId);
+    const enrollmentInvoice = invoices?.find(inv => isEnrollmentDownpaymentInvoice(inv, effectiveId));
+
+    const invoiceId = enrollmentInvoice ? getInvoiceId(enrollmentInvoice) : '';
+    const invoiceAmount = enrollmentInvoice ? getInvoiceAmount(enrollmentInvoice) : 0;
+    const invoicePaid = enrollmentInvoice ? isInvoicePaid(enrollmentInvoice) : false;
 
     const onlinePaymentMutation = useMutation({
         mutationFn: async () => {
             if (!enrollmentInvoice) throw new Error("No active invoice found.");
             return await financeApi.createPaymentSession({
-                invoiceId: enrollmentInvoice.invoiceId,
-                applicantId: identity!.id,
-                amount: enrollmentInvoice.amountDue,
-                purpose: enrollmentInvoice.description
+                invoiceId,
+                applicantId: effectiveId,
+                amount: invoiceAmount,
+                purpose: enrollmentInvoice.description || 'Enrollment Downpayment'
             });
         },
         onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['finance'] });
+            queryClient.invalidateQueries({ queryKey: ['admissions'] });
+            queryClient.invalidateQueries({ queryKey: ['academic'] });
             if (data.checkoutUrl) window.location.href = data.checkoutUrl;
             else setActionError("Failed to retrieve checkout URL from the payment gateway.");
         },
@@ -72,9 +95,15 @@ export const EnrollmentPaymentPage: React.FC = () => {
     const generateTokenMutation = useMutation({
         mutationFn: async () => {
             if (!enrollmentInvoice) throw new Error("No active invoice found.");
-            return await financeBillingApi.generateCashToken(enrollmentInvoice.invoiceId, enrollmentInvoice.amountDue);
+            return await financeBillingApi.generateCashToken(invoiceId, invoiceAmount);
         },
-        onSuccess: (token) => { setGeneratedToken(token); setActionError(null); },
+        onSuccess: (token) => {
+            queryClient.invalidateQueries({ queryKey: ['finance'] });
+            queryClient.invalidateQueries({ queryKey: ['admissions'] });
+            queryClient.invalidateQueries({ queryKey: ['academic'] });
+            setGeneratedToken(token); 
+            setActionError(null); 
+        },
         onError: (error: unknown) => {
             let msg = "Failed to generate official cash token.";
             if (axios.isAxiosError(error)) msg = error.response?.data?.message || error.message;
@@ -111,8 +140,8 @@ export const EnrollmentPaymentPage: React.FC = () => {
         );
     }
 
-    // STATE B: Payment Settled (Awaiting downstream Registrar action; no false clearance claims)
-    if (enrollmentInvoice?.status === 'PAID') {
+    // STATE B: Payment Settled (Awaiting downstream Registrar action)
+    if (invoicePaid) {
         return (
             <div className="fade-in">
                 <PageHeader title="Enrollment Payment" subtitle="Clear your financial requirements to finalize your registration." />
@@ -143,6 +172,9 @@ export const EnrollmentPaymentPage: React.FC = () => {
 
     // STATE D: Payable Invoice Available (UNPAID or PARTIAL)
     const isProcessing = onlinePaymentMutation.isPending || generateTokenMutation.isPending;
+    const formattedDueDate = enrollmentInvoice.dueDate || enrollmentInvoice.issuedOnUtc 
+        ? new Date(enrollmentInvoice.dueDate || enrollmentInvoice.issuedOnUtc!).toLocaleDateString()
+        : 'Upon Enrollment';
 
     return (
         <div className="fade-in">
@@ -161,23 +193,23 @@ export const EnrollmentPaymentPage: React.FC = () => {
                         <h3 style={{ marginBottom: 'var(--space-4)' }}>Assessment Details</h3>
                         <div className="data-row">
                             <span className="data-label">Invoice Reference</span>
-                            <span className="data-value" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{enrollmentInvoice.invoiceId}</span>
+                            <span className="data-value" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{invoiceId}</span>
                         </div>
                         <div className="data-row">
                             <span className="data-label">Description</span>
-                            <span className="data-value">{enrollmentInvoice.description}</span>
+                            <span className="data-value">{enrollmentInvoice.description || 'Enrollment Assessment Downpayment'}</span>
                         </div>
                         <div className="data-row">
                             <span className="data-label">Due Date</span>
                             <span className="data-value" style={{ color: 'var(--warning-text)' }}>
-                                {new Date(enrollmentInvoice.dueDate).toLocaleDateString()}
+                                {formattedDueDate}
                             </span>
                         </div>
                         <div style={{ marginTop: 'var(--space-6)', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--border-color)' }}>
                             <div className="data-row" style={{ borderBottom: 'none' }}>
                                 <span className="data-label" style={{ fontSize: '1.1rem', fontWeight: 700 }}>Total Due</span>
                                 <span className="data-value" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-bright)' }}>
-                                    ${enrollmentInvoice.amountDue.toFixed(2)}
+                                    ${invoiceAmount.toFixed(2)}
                                 </span>
                             </div>
                         </div>

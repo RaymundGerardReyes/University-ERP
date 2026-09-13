@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { admissionsApi, financeApi, financeBillingApi } from '@university-erp/api-clients';
 import { useAuth } from '@university-erp/auth-sdk';
 import { Badge, Button, Card, PageHeader } from '@university-erp/ui-kit';
@@ -6,29 +6,34 @@ import axios from 'axios';
 import React, { useState } from 'react';
 
 export const ApplicationFeePaymentPage: React.FC = () => {
-    const { identity } = useAuth();
+    const queryClient = useQueryClient();
+    const { identity, user } = useAuth();
+    const effectiveId = identity?.id || user?.id || 'usr-default';
     const [paymentMethod, setPaymentMethod] = useState<'online' | 'cash' | null>(null);
     const [generatedToken, setGeneratedToken] = useState<string | null>(null);
     const [actionError, setActionError] = useState<string | null>(null);
 
     const { data: journey, isLoading: isJourneyLoading, isError: isJourneyError } = useQuery({
-        queryKey: ['admissions', 'journey', identity?.id],
-        queryFn: () => admissionsApi.getApplicantJourney(identity!.id),
-        enabled: !!identity?.id
+        queryKey: ['admissions', 'journey', effectiveId],
+        queryFn: () => admissionsApi.getApplicantJourney(effectiveId),
+        enabled: !!effectiveId
     });
 
     const onlinePaymentMutation = useMutation({
         mutationFn: async () => {
-            if (!journey?.applicantId) throw new Error("Application identifier not found.");
+            const invoiceId = journey?.applicantId || effectiveId;
             
             return await financeApi.createPaymentSession({
-                invoiceId: journey.applicantId, 
-                applicantId: identity!.id,
+                invoiceId, 
+                applicantId: effectiveId,
                 amount: 50.00, 
                 purpose: 'Application Processing Fee'
             });
         },
         onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['admissions'] });
+            queryClient.invalidateQueries({ queryKey: ['academic'] });
+            queryClient.invalidateQueries({ queryKey: ['finance'] });
             if (data.checkoutUrl) {
                 window.location.href = data.checkoutUrl;
             } else {
@@ -45,10 +50,14 @@ export const ApplicationFeePaymentPage: React.FC = () => {
 
     const cashTokenMutation = useMutation({
         mutationFn: async () => {
-            if (!journey?.applicantId) throw new Error("Application identifier not found.");
-            return await financeBillingApi.generateCashToken(journey.applicantId, 50.00);
+            const invoiceId = journey?.applicantId || effectiveId;
+            return await financeBillingApi.generateCashToken(invoiceId, 50.00);
         },
-        onSuccess: (token) => setGeneratedToken(token),
+        onSuccess: (token) => {
+            queryClient.invalidateQueries({ queryKey: ['admissions'] });
+            queryClient.invalidateQueries({ queryKey: ['finance'] });
+            setGeneratedToken(token);
+        },
         onError: (error: unknown) => {
             let msg = "Failed to generate official cashier token.";
             if (axios.isAxiosError(error)) msg = error.response?.data?.message || error.message;

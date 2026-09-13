@@ -1,15 +1,22 @@
 export interface EnrollmentPaymentDto {
     paymentId: string;
     assessmentId: string;
+    applicantId?: string;
     amount: number;
-    method: 'CREDIT_CARD' | 'BANK_TRANSFER' | 'E_WALLET';
-    status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+    method?: 'CREDIT_CARD' | 'BANK_TRANSFER' | 'E_WALLET' | 'ONLINE_GATEWAY' | string;
+    paymentMethod?: string;
+    status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED' | 'PAYMENT_PENDING' | 'PAYMENT_VERIFIED';
     transactionReference?: string;
-    createdAt: string;
+    referenceNumber?: string;
+    createdAt?: string;
+    paidAt?: string;
 }
 
 export interface InitiatePaymentRequest {
     assessmentId: string;
+    applicantId?: string;
     amount: number;
-    method: 'CREDIT_CARD' | 'BANK_TRANSFER' | 'E_WALLET';
+    method?: 'CREDIT_CARD' | 'BANK_TRANSFER' | 'E_WALLET' | 'ONLINE_GATEWAY' | string;
+    paymentMethod?: 'CREDIT_CARD' | 'BANK_TRANSFER' | 'E_WALLET' | 'ONLINE_GATEWAY' | string;
 }
+

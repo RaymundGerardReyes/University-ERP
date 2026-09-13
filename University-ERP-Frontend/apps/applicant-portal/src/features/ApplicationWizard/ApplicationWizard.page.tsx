@@ -1,33 +1,46 @@
-import { Button, Card, PageHeader } from '@university-erp/ui-kit';
-import React, { useState } from 'react';
+import { Button, Card, PageHeader, EmptyState } from '@university-erp/ui-kit';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '@university-erp/auth-sdk';
 import { useProgramCatalog, useSubmitApplication } from './ApplicationWizard.hooks';
 import { ApplicationFormData } from './ApplicationWizard.types';
 
 export const ApplicationWizardPage: React.FC = () => {
-  const { identity } = useAuth();
-  const { data: programs, isLoading } = useProgramCatalog();
+  const [searchParams] = useSearchParams();
+  const initialProgramId = searchParams.get('programId') || searchParams.get('program') || '';
+  const { user, identity } = useAuth();
+  const applicantId = user?.id || identity?.id;
+  const { data: programs = [], isLoading } = useProgramCatalog();
   const { mutateAsync: submitApp, isPending } = useSubmitApplication();
 
   const [formData, setFormData] = useState<ApplicationFormData>({
-    programId: '',
+    programId: initialProgramId,
     previousSchool: '',
     gpa: ''
   });
 
+  useEffect(() => {
+    const urlProg = searchParams.get('programId') || searchParams.get('program');
+    if (urlProg && !formData.programId) {
+      setFormData(prev => ({ ...prev, programId: urlProg }));
+    }
+  }, [searchParams, formData.programId]);
+
   const [step, setStep] = useState(1);
 
   const handleSubmit = async () => {
+    if (!applicantId) return;
     try {
-      const nameParts = (identity?.name || 'Jane Doe').trim().split(' ');
-      const firstName = nameParts[0] || 'Jane';
-      const lastName = nameParts.slice(1).join(' ') || 'Applicant';
+      const fullName = (user?.name || identity?.name || 'Applicant').trim();
+      const nameParts = fullName.split(' ');
+      const firstName = nameParts[0] || 'Applicant';
+      const lastName = nameParts.slice(1).join(' ') || 'Candidate';
 
       const payload = {
-        applicantId: identity?.id || '322e4090-9e05-438b-95d8-28088085abc4',
+        applicantId,
         programId: formData.programId,
-        firstName: firstName,
-        lastName: lastName,
+        firstName,
+        lastName,
         dateOfBirth: '2000-01-01',
         nationality: 'Domestic'
       };
@@ -35,17 +48,39 @@ export const ApplicationWizardPage: React.FC = () => {
       await submitApp(payload);
       setStep(3); // Success Step
     } catch (error) {
-      console.error(error);
+      console.error('Application submission failed:', error);
     }
   };
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', padding: 'var(--space-2) var(--space-3)', background: 'var(--bg-elevated)',
-    border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)',
-    color: 'var(--text-primary)', fontFamily: 'inherit', marginTop: 'var(--space-1)'
+    width: '100%',
+    padding: 'var(--space-2) var(--space-3)',
+    background: 'var(--bg-elevated)',
+    border: '1px solid var(--border-subtle)',
+    borderRadius: 'var(--radius-sm)',
+    color: 'var(--text-primary)',
+    fontFamily: 'inherit',
+    marginTop: 'var(--space-1)'
   };
 
   if (isLoading) return <div className="skeleton" style={{ height: '60vh' }} />;
+
+  if (!applicantId) {
+    return (
+      <div className="fade-in">
+        <PageHeader
+          title="Application Wizard"
+          subtitle="Begin your journey. Select your program and submit your academic history."
+        />
+        <Card style={{ maxWidth: '700px', margin: '0 auto' }}>
+          <EmptyState
+            title="Authentication Required"
+            description="Please log in to start or submit a university application."
+          />
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="fade-in">
@@ -61,28 +96,30 @@ export const ApplicationWizardPage: React.FC = () => {
           {/* Step 1: Program Selection */}
           {step === 1 && (
             <div className="fade-in">
-              <h2 style={{ fontSize: '1.25rem', color: 'var(--text-bright)', marginBottom: 'var(--space-6)' }}>Step 1: Program Selection</h2>
+              <h2 style={{ fontSize: '1.25rem', color: 'var(--text-bright)', marginBottom: 'var(--space-6)' }}>
+                Step 1: Program Selection
+              </h2>
 
               <div className="data-row" style={{ borderBottom: 'none', flexDirection: 'column', alignItems: 'flex-start', gap: 'var(--space-2)' }}>
                 <label className="data-label">Select Intended Program</label>
-                <select style={inputStyle} value={formData.programId} onChange={e => setFormData({ ...formData, programId: e.target.value })}>
+                <select
+                  style={inputStyle}
+                  value={formData.programId}
+                  onChange={e => setFormData({ ...formData, programId: e.target.value })}
+                >
                   <option value="">-- Choose a Program --</option>
-                  {programs && programs.length > 0 ? (
-                    programs.map((p: any) => (
-                      <option key={p.id} value={p.id}>{p.degree} {p.major || p.name}</option>
-                    ))
-                  ) : (
-                    <>
-                      <option value="BSCS">B.S. Computer Science</option>
-                      <option value="BSCE">B.S. Civil Engineering</option>
-                      <option value="BBA">B.S. Business Administration</option>
-                    </>
-                  )}
+                  {programs.map((p: any) => (
+                    <option key={p.id} value={p.id}>
+                      {p.degree} {p.major || p.name} ({p.college})
+                    </option>
+                  ))}
                 </select>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'var(--space-8)' }}>
-                <Button variant="primary" disabled={!formData.programId} onClick={() => setStep(2)}>Next Step</Button>
+                <Button variant="primary" disabled={!formData.programId} onClick={() => setStep(2)}>
+                  Next Step
+                </Button>
               </div>
             </div>
           )}
@@ -90,23 +127,43 @@ export const ApplicationWizardPage: React.FC = () => {
           {/* Step 2: Academic History */}
           {step === 2 && (
             <div className="fade-in">
-              <h2 style={{ fontSize: '1.25rem', color: 'var(--text-bright)', marginBottom: 'var(--space-6)' }}>Step 2: Academic History</h2>
+              <h2 style={{ fontSize: '1.25rem', color: 'var(--text-bright)', marginBottom: 'var(--space-6)' }}>
+                Step 2: Academic History
+              </h2>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
                 <div className="data-row" style={{ borderBottom: 'none', flexDirection: 'column', alignItems: 'flex-start', padding: 0 }}>
                   <label className="data-label">Previous Institution</label>
-                  <input style={inputStyle} type="text" placeholder="High School or College Name" value={formData.previousSchool} onChange={e => setFormData({ ...formData, previousSchool: e.target.value })} />
+                  <input
+                    style={inputStyle}
+                    type="text"
+                    placeholder="High School or College Name"
+                    value={formData.previousSchool}
+                    onChange={e => setFormData({ ...formData, previousSchool: e.target.value })}
+                  />
                 </div>
 
                 <div className="data-row" style={{ borderBottom: 'none', flexDirection: 'column', alignItems: 'flex-start', padding: 0 }}>
                   <label className="data-label">Cumulative GPA</label>
-                  <input style={inputStyle} type="text" placeholder="e.g. 3.8" value={formData.gpa} onChange={e => setFormData({ ...formData, gpa: e.target.value })} />
+                  <input
+                    style={inputStyle}
+                    type="text"
+                    placeholder="e.g. 3.8"
+                    value={formData.gpa}
+                    onChange={e => setFormData({ ...formData, gpa: e.target.value })}
+                  />
                 </div>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'var(--space-8)' }}>
-                <Button variant="secondary" onClick={() => setStep(1)}>Back</Button>
-                <Button variant="primary" disabled={isPending || !formData.previousSchool} onClick={handleSubmit}>
+                <Button variant="secondary" onClick={() => setStep(1)}>
+                  Back
+                </Button>
+                <Button
+                  variant="primary"
+                  disabled={isPending || !formData.previousSchool}
+                  onClick={handleSubmit}
+                >
                   {isPending ? 'Submitting...' : 'Submit Application'}
                 </Button>
               </div>
@@ -117,8 +174,12 @@ export const ApplicationWizardPage: React.FC = () => {
           {step === 3 && (
             <div className="fade-in" style={{ textAlign: 'center', padding: 'var(--space-6) 0' }}>
               <div style={{ fontSize: '3rem', marginBottom: 'var(--space-4)' }}>🎉</div>
-              <h2 style={{ fontSize: '1.5rem', color: 'var(--success-text)', marginBottom: 'var(--space-2)' }}>Application Submitted!</h2>
-              <p className="data-label">Your application has been routed to the Admissions Office. Check your Admission Status tab for updates.</p>
+              <h2 style={{ fontSize: '1.5rem', color: 'var(--success-text)', marginBottom: 'var(--space-2)' }}>
+                Application Submitted!
+              </h2>
+              <p className="data-label">
+                Your application has been routed to the Admissions Office. Track your progress in the Timeline and Document tabs.
+              </p>
             </div>
           )}
         </Card>
