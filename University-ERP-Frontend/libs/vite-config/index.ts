@@ -76,7 +76,7 @@ export function createPortalConfig(options: PortalConfig): UserConfig {
       strictPort: true,
       proxy: {
         '/api': {
-          target: options.apiTarget ?? process.env.VITE_API_BASE_URL,
+          target: options.apiTarget ?? process.env.VITE_API_BASE_URL ?? 'http://localhost:5191',
           changeOrigin: true,
         },
       },

@@ -9,6 +9,7 @@ export default defineConfig({
     environment: 'jsdom',
     passWithNoTests: true,
     setupFiles: ['./tests/setup.ts'],
+    fileParallelism: false,
   },
   resolve: {
     alias: {
