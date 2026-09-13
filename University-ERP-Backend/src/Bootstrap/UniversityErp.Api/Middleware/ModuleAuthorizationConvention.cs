@@ -12,7 +12,15 @@ public class ModuleAuthorizationConvention : IControllerModelConvention
         // Determine Policy based on Bounded Context / Module Namespace
         if (ns.Contains(".Finance"))
         {
-            controller.Filters.Add(new AuthorizeFilter("Portal.Finance.Access"));
+            if (controller.ControllerType.Name == "PaymentSessionEndpoint" ||
+                controller.ControllerType.Name == "EnrollmentFinanceEndpoint")
+            {
+                controller.Filters.Add(new AuthorizeFilter("Portal.Payment.Access"));
+            }
+            else
+            {
+                controller.Filters.Add(new AuthorizeFilter("Portal.Finance.Access"));
+            }
         }
         else if (ns.Contains(".Admissions"))
         {

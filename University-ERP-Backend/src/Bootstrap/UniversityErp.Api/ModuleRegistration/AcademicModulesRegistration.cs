@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 // Import Application layers
 using AcademicScheduling.Application;
+using Curriculum.Infrastructure;
 using Examination.Application;
 using LearningManagement.Application;
 using Registrar.Application;
@@ -39,6 +40,10 @@ public static class AcademicModulesRegistration
         // 5. Registrar
         services.AddRegistrarApplicationModule();
         services.AddRegistrarModule(configuration);
+
+        // 6. Curriculum (NEW — normalized academic program + curriculum plan)
+        services.AddCurriculumApplicationModule();
+        services.AddCurriculumModule(configuration);
 
         return services;
     }

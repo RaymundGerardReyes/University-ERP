@@ -86,7 +86,8 @@ try
         .AddApplicationPart(typeof(MultiCampus.Presentation.Endpoints.ConfigureCampusEndpoint).Assembly)
         .AddApplicationPart(typeof(CRM.Presentation.Endpoints.RegisterProspectEndpoint).Assembly)
         .AddApplicationPart(typeof(Communication.Presentation.Endpoints.SendMessageEndpoint).Assembly)
-        .AddApplicationPart(typeof(Notification.Presentation.Endpoints.SendNotificationEndpoint).Assembly);
+        .AddApplicationPart(typeof(Notification.Presentation.Endpoints.SendNotificationEndpoint).Assembly)
+        .AddApplicationPart(typeof(Curriculum.Presentation.Endpoints.CurriculumEndpoint).Assembly);
 
     builder.Services.AddOpenApi();
 
@@ -151,6 +152,7 @@ try
         options.AddPolicy("Portal.Applicant.Access", policy => policy.RequireRole("Applicant"));
         options.AddPolicy("Portal.Admission.Access", policy => policy.RequireRole("Admissions", "Admin"));
         options.AddPolicy("Portal.Finance.Access", policy => policy.RequireRole("Finance", "Admin"));
+        options.AddPolicy("Portal.Payment.Access", policy => policy.RequireRole("Finance", "Admin", "Applicant", "Student"));
         options.AddPolicy("Portal.Student.Access", policy => policy.RequireRole("Student"));
         options.AddPolicy("Portal.Faculty.Access", policy => policy.RequireRole("Faculty"));
         options.AddPolicy("Portal.Registrar.Access", policy => policy.RequireRole("Registrar"));
@@ -215,3 +217,5 @@ finally
 }
 
 public record ClientLogDto(string Level, string Prefix, string Message);
+
+public partial class Program { }

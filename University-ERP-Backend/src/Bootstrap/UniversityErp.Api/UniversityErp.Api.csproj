@@ -30,6 +30,9 @@
     <ProjectReference Include="..\..\Modules\Academic\Examination\Examination.Presentation\Examination.Presentation.csproj" />
     <ProjectReference Include="..\..\Modules\Academic\AcademicScheduling\AcademicScheduling.Infrastructure\AcademicScheduling.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\Academic\AcademicScheduling\AcademicScheduling.Presentation\AcademicScheduling.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Academic\Curriculum\Curriculum.Infrastructure\Curriculum.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Academic\Curriculum\Curriculum.Presentation\Curriculum.Presentation.csproj" />
+
 
     <!-- Platform Cluster -->
     <ProjectReference Include="..\..\Modules\Platform\IdentityAccess\IdentityAccess.Infrastructure\IdentityAccess.Infrastructure.csproj" />

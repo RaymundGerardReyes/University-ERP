@@ -268,4 +268,7 @@
       <Project Path="University-ERP-Frontend/clients/lms-offline-avalonia/LmsOffline.Tests/LmsOffline.Tests.csproj" />
     </Folder>
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="University-ERP-Backend/tests/EndToEndTests/UniversityErp.EndToEndTests.csproj" />
+  </Folder>
 </Solution>
