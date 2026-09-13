@@ -1,96 +1,199 @@
-import React from 'react';
-import { Badge, Button, Card, PageHeader, Table } from '@university-erp/ui-kit';
+import React, { useState } from 'react';
+import { Badge, Button, Card, EmptyState, PageHeader } from '@university-erp/ui-kit';
 import { useAuth } from '@university-erp/auth-sdk';
-import { useCurriculumProgress } from './CurriculumProgress.hooks';
+import { useCurriculumProgress, useStudentProgramCurriculum } from './CurriculumProgress.hooks';
+import type { CurriculumYearDto } from '@university-erp/api-clients';
+
+const SEMESTER_LABEL: Record<string, string> = {
+  First: '1st Semester',
+  Second: '2nd Semester',
+  Summer: 'Summer Term',
+};
 
 export const CurriculumProgressPage: React.FC = () => {
   const { identity } = useAuth();
-  const studentId = identity?.id || 'STU-2026-001';
-  const { data: progress, isLoading, isError } = useCurriculumProgress(studentId);
+  const studentId = identity?.id || '';
+  const programCode = identity?.programCode || null;
 
-  const data = progress || {
-    studentId,
-    programId: 'BS-CS-2026',
-    totalCreditsRequired: 128,
-    creditsCompleted: 96,
-    creditsInProgress: 16,
-    gpa: 3.82,
-    completedSubjects: ['CS101', 'CS102', 'MATH201', 'PHYS101', 'ENG101', 'CS201', 'CS202', 'MATH202'],
-    requiredCourses: ['CS301 (Algorithms)', 'CS302 (Database Systems)', 'CS303 (Operating Systems)', 'CS401 (Capstone I)'],
-    remainingCourses: ['CS303 (Operating Systems)', 'CS401 (Capstone I)', 'CS402 (Capstone II)', 'GEN-ED4 (Ethics)'],
-    currentlyRegisteredCourses: ['CS301', 'CS302', 'MATH301', 'STAT201'],
-    graduationEligibilityStatus: 'PENDING_REVIEW' as const
-  };
+  const { data: progress, isLoading: progressLoading } = useCurriculumProgress(studentId);
+  const { data: curriculum, isLoading: curriculumLoading } = useStudentProgramCurriculum(programCode);
 
-  const percentComplete = Math.round((data.creditsCompleted / data.totalCreditsRequired) * 100);
+  const [expandedYear, setExpandedYear] = useState<number>(1);
+
+  const completedSet = new Set(progress?.completedSubjects ?? []);
+  const registeredSet = new Set(progress?.currentlyRegisteredCourses ?? []);
+
+  const isLoading = progressLoading || curriculumLoading;
+
+  const totalCreditsRequired = progress?.totalCreditsRequired ?? curriculum?.totalUnits ?? 0;
+  const creditsCompleted = progress?.creditsCompleted ?? 0;
+  const creditsInProgress = progress?.creditsInProgress ?? 0;
+  const percentComplete = totalCreditsRequired > 0
+    ? Math.round((creditsCompleted / totalCreditsRequired) * 100)
+    : 0;
 
   return (
     <div className="fade-in">
       <PageHeader
-        title="CurriculumProgress Workspace"
-        subtitle="Degree audit, program curriculum roadmap, and graduation eligibility checklist."
+        title="Curriculum Progress"
+        subtitle="Your degree roadmap, subject completion tracker, and graduation eligibility status."
       />
 
       {isLoading ? (
         <div className="skeleton" style={{ height: '400px' }} data-testid="loading-skeleton" />
       ) : (
         <>
-          {/* Progress Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
+          {/* ─── Summary Cards ─────────────────────────────────────────────── */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: 'var(--space-4)',
+            marginBottom: 'var(--space-6)'
+          }}>
+            <Card>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Program</span>
+              <h2 style={{ margin: 'var(--space-2) 0 0 0', fontSize: '1.1rem', color: 'var(--brand-primary)' }}>
+                {curriculum?.programCode ?? programCode ?? '—'}
+              </h2>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                {curriculum?.programName}
+              </span>
+            </Card>
+
             <Card>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Degree Completion</span>
               <h2 style={{ margin: 'var(--space-2) 0 0 0', color: 'var(--brand-primary)' }}>
-                {percentComplete}% ({data.creditsCompleted} / {data.totalCreditsRequired} Units)
+                {percentComplete}%
               </h2>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                {creditsCompleted} / {totalCreditsRequired} units
+              </span>
             </Card>
+
             <Card>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Current GPA</span>
               <h2 style={{ margin: 'var(--space-2) 0 0 0', color: 'var(--success-text)' }}>
-                {data.gpa.toFixed(2)}
+                {(progress?.gpa ?? 0).toFixed(2)}
               </h2>
             </Card>
+
             <Card>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>In Progress Units</span>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>In Progress</span>
               <h2 style={{ margin: 'var(--space-2) 0 0 0', color: 'var(--text-primary)' }}>
-                {data.creditsInProgress} Units
+                {creditsInProgress} units
               </h2>
             </Card>
+
             <Card>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Graduation Eligibility</span>
               <div style={{ marginTop: 'var(--space-2)' }}>
-                <Badge colorScheme={data.graduationEligibilityStatus === 'ELIGIBLE' ? 'success' : 'warning'}>
-                  {data.graduationEligibilityStatus.replace(/_/g, ' ')}
+                <Badge colorScheme={
+                  progress?.graduationEligibilityStatus === 'ELIGIBLE' ? 'success' : 'warning'
+                }>
+                  {(progress?.graduationEligibilityStatus ?? 'PENDING_REVIEW').replace(/_/g, ' ')}
                 </Badge>
               </div>
             </Card>
           </div>
 
-          {/* Degree Audit Breakdown */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-6)' }}>
-            <Card>
-              <h3 style={{ marginBottom: 'var(--space-4)' }}>Remaining Program Courses</h3>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                {data.remainingCourses.map((c, idx) => (
-                  <li key={idx} style={{ padding: 'var(--space-3) 0', borderBottom: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontWeight: 600 }}>{c}</span>
-                    <Badge colorScheme="warning">Pending</Badge>
-                  </li>
-                ))}
-              </ul>
-            </Card>
+          {/* ─── Curriculum Roadmap ────────────────────────────────────────── */}
+          {!curriculum ? (
+            <EmptyState
+              title="Curriculum Not Available"
+              description="Your enrolled program's curriculum has not been configured yet. Please contact the Registrar's Office."
+            />
+          ) : (
+            <>
+              <div style={{ marginBottom: 'var(--space-4)' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: 'var(--space-2)' }}>
+                  Curriculum Roadmap — {curriculum.programName}
+                </h3>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  AY {curriculum.academicYear} &bull; v{curriculum.version} &bull; {curriculum.totalUnits} total units
+                </span>
+              </div>
 
-            <Card>
-              <h3 style={{ marginBottom: 'var(--space-4)' }}>Currently Registered (Fall 2026)</h3>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                {data.currentlyRegisteredCourses.map((c, idx) => (
-                  <li key={idx} style={{ padding: 'var(--space-3) 0', borderBottom: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontWeight: 600 }}>{c}</span>
-                    <Badge colorScheme="info">Enrolled</Badge>
-                  </li>
+              {/* Year tabs */}
+              <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-5)', flexWrap: 'wrap' }}>
+                {curriculum.years.map((y) => (
+                  <Button
+                    key={y.yearLevel}
+                    variant={expandedYear === y.yearLevel ? 'primary' : 'outline'}
+                    onClick={() => setExpandedYear(y.yearLevel)}
+                  >
+                    Year {y.yearLevel}
+                  </Button>
                 ))}
-              </ul>
-            </Card>
-          </div>
+              </div>
+
+              {curriculum.years
+                .filter((y: CurriculumYearDto) => y.yearLevel === expandedYear)
+                .map((year: CurriculumYearDto) => (
+                  <div key={year.yearLevel}>
+                    {year.semesters.map((sem) => (
+                      <div key={sem.semester} style={{ marginBottom: 'var(--space-5)' }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: 'var(--space-2) 0',
+                          borderBottom: '2px solid var(--brand-primary)',
+                          marginBottom: 'var(--space-3)',
+                        }}>
+                          <h4 style={{ fontSize: '0.95rem', fontWeight: 600 }}>
+                            {SEMESTER_LABEL[sem.semester] ?? sem.semester}
+                          </h4>
+                          <Badge colorScheme="info">{sem.totalUnits} units</Badge>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                          {sem.subjects.map((subj) => {
+                            const isDone = completedSet.has(subj.code);
+                            const isCurrently = registeredSet.has(subj.code);
+                            let statusColor: 'success' | 'info' | 'warning' | 'default' = 'default';
+                            let statusLabel = 'Not Taken';
+                            if (isDone) { statusColor = 'success'; statusLabel = 'Completed'; }
+                            else if (isCurrently) { statusColor = 'info'; statusLabel = 'In Progress'; }
+
+                            return (
+                              <div
+                                key={subj.subjectId}
+                                style={{
+                                  display: 'grid',
+                                  gridTemplateColumns: '90px 1fr 60px 100px 160px',
+                                  gap: 'var(--space-3)',
+                                  alignItems: 'center',
+                                  padding: 'var(--space-3)',
+                                  borderRadius: 'var(--radius-md)',
+                                  background: isDone
+                                    ? 'var(--success-bg, rgba(16,185,129,0.06))'
+                                    : isCurrently
+                                    ? 'var(--info-bg, rgba(59,130,246,0.06))'
+                                    : 'var(--bg-card)',
+                                  border: '1px solid var(--border-subtle)',
+                                }}
+                              >
+                                <span style={{ fontWeight: 700, color: 'var(--brand-primary)', fontSize: '0.88rem' }}>
+                                  {subj.code}
+                                </span>
+                                <span style={{ fontSize: '0.88rem' }}>{subj.title}</span>
+                                <span style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                                  {subj.units} u
+                                </span>
+                                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                                  {subj.prerequisiteCodes.length > 0 ? `Req: ${subj.prerequisiteCodes.join(', ')}` : ''}
+                                </span>
+                                <Badge colorScheme={statusColor}>{statusLabel}</Badge>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+            </>
+          )}
         </>
       )}
     </div>
