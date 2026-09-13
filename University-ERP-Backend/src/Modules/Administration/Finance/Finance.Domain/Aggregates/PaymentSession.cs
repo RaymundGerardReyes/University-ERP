@@ -89,6 +89,26 @@ public sealed class PaymentSession : AggregateRoot<Guid>
         return Result<bool>.Success(true);
     }
 
+    public Result<bool> MarkFailed(string reason)
+    {
+        if (Status == "Paid" || Status == "Completed")
+            return Result<bool>.Failure(new Error("PaymentSession.AlreadyPaid", "Cannot fail an already paid session."));
+
+        Status = "Failed";
+        BankReference = reason;
+        return Result<bool>.Success(true);
+    }
+
+    public Result<bool> Cancel(string reason)
+    {
+        if (Status == "Paid" || Status == "Completed")
+            return Result<bool>.Failure(new Error("PaymentSession.AlreadyPaid", "Cannot cancel an already paid session."));
+
+        Status = "Cancelled";
+        BankReference = reason;
+        return Result<bool>.Success(true);
+    }
+
     // Retaining legacy Complete method temporarily for backwards compatibility with existing handlers if needed
     public Result<bool> Complete()
     {

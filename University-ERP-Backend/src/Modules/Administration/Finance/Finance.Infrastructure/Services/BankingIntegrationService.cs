@@ -76,8 +76,8 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
             {
                 reference = sessionId,
                 currency = currency ?? "PHP",
-                successUrl = "https://erp.university.edu/finance/success",
-                cancelUrl = "https://erp.university.edu/finance/cancel",
+                successUrl = !string.IsNullOrWhiteSpace(_options.SuccessUrl) ? _options.SuccessUrl : "https://erp.university.edu/finance/success",
+                cancelUrl = !string.IsNullOrWhiteSpace(_options.CancelUrl) ? _options.CancelUrl : "https://erp.university.edu/finance/cancel",
                 lineItems = new[]
                 {
                     new { name = "University Fee", quantity = 1, unitAmount = amount }
@@ -103,6 +103,7 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
                 
                 if (!string.IsNullOrEmpty(checkoutUrl))
                 {
+                    checkoutUrl = QualifyCheckoutUrl(checkoutUrl);
                     return Result<string>.Success(checkoutUrl);
                 }
             }
@@ -132,6 +133,41 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
         var hashBytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes($"BANK_PREFIX_{clientKey}"));
         
         return new System.Guid(hashBytes.Take(16).ToArray()).ToString();
+    }
+
+    private string QualifyCheckoutUrl(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            return url;
+        }
+
+        // If already an absolute URI with http/https scheme, preserve it
+        if (System.Uri.TryCreate(url, System.UriKind.Absolute, out var parsedAbsoluteUri) &&
+            (parsedAbsoluteUri.Scheme == System.Uri.UriSchemeHttp || parsedAbsoluteUri.Scheme == System.Uri.UriSchemeHttps))
+        {
+            return url;
+        }
+
+        // Determine base URI: prefer CheckoutBaseUrl, fallback to BaseUrl or HttpClient.BaseAddress
+        var baseCandidate = !string.IsNullOrWhiteSpace(_options.CheckoutBaseUrl)
+            ? _options.CheckoutBaseUrl
+            : (!string.IsNullOrWhiteSpace(_options.BaseUrl) ? _options.BaseUrl : _httpClient.BaseAddress?.ToString());
+
+        if (string.IsNullOrWhiteSpace(baseCandidate))
+        {
+            return url;
+        }
+
+        var cleanBase = baseCandidate.TrimEnd('/') + "/";
+        var cleanRelative = url.TrimStart('/');
+
+        if (System.Uri.TryCreate(new System.Uri(cleanBase), cleanRelative, out var fullUri))
+        {
+            return fullUri.ToString();
+        }
+
+        return url;
     }
     
     public Task<Result<string>> CreateCheckoutSessionAsync(string transactionId, decimal amount, string gatewayName, CancellationToken cancellationToken)

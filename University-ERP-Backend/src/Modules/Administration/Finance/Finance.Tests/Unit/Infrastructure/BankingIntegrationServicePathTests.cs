@@ -641,5 +641,145 @@ public class BankingIntegrationServicePathTests
         result.IsFailure.Should().BeTrue();
         result.Error.Code.Should().Be("Finance.BankingConnectionError");
     }
+
+    // ==========================================
+    // 7. CreateCheckoutSessionAsync Path Tests
+    // ==========================================
+
+    [Fact]
+    public async Task CreateCheckoutSession_WhenGatewayReturnsRelativeUrl_QualifiesWithBaseUrl()
+    {
+        // Arrange (BC-01)
+        var service = CreateService(req =>
+        {
+            req.RequestUri!.PathAndQuery.Should().Contain("/api/v1/gateway/checkout/sessions");
+            var response = new
+            {
+                data = new
+                {
+                    paymentIntentId = "pi_sess_001",
+                    provider = "novabank",
+                    checkoutType = "hosted",
+                    checkoutUrl = "/checkout/cs_e3483d1c26e9499e900229d5771a823f",
+                    expiresAt = DateTime.UtcNow.AddMinutes(30),
+                    transactionReference = "REF-001"
+                }
+            };
+            return Task.FromResult(JsonResponse(response, HttpStatusCode.Created));
+        });
+
+        // Act
+        var result = await service.CreateCheckoutSessionAsync("cs_e3483d1c26e9499e900229d5771a823f", 500m, "PHP", null, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().Be("http://localhost:8080/checkout/cs_e3483d1c26e9499e900229d5771a823f");
+    }
+
+    [Fact]
+    public async Task CreateCheckoutSession_WhenGatewayReturnsRelativeUrlAndCheckoutBaseUrlSet_QualifiesWithCheckoutBaseUrl()
+    {
+        // Arrange (BC-02)
+        var mockHandler = new MockHttpMessageHandler(req =>
+        {
+            var response = new
+            {
+                data = new
+                {
+                    paymentIntentId = "pi_sess_002",
+                    provider = "novabank",
+                    checkoutType = "hosted",
+                    checkoutUrl = "/checkout/cs_test_session_456",
+                    expiresAt = DateTime.UtcNow.AddMinutes(30),
+                    transactionReference = "REF-002"
+                }
+            };
+            return Task.FromResult(JsonResponse(response, HttpStatusCode.Created));
+        });
+
+        var httpClient = new HttpClient(mockHandler) { BaseAddress = new Uri("http://localhost:8080") };
+        var customOptions = Options.Create(new PaymentGatewayOptions
+        {
+            SecretKey = "sk_test_key",
+            SourceAccountId = "1234567890",
+            BaseUrl = "http://localhost:8080",
+            CheckoutBaseUrl = "http://localhost:3000"
+        });
+
+        var service = new BankingIntegrationService(httpClient, customOptions);
+
+        // Act
+        var result = await service.CreateCheckoutSessionAsync("cs_test_session_456", 750m, "PHP", null, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().Be("http://localhost:3000/checkout/cs_test_session_456");
+    }
+
+    [Fact]
+    public async Task CreateCheckoutSession_WhenGatewayReturnsAbsoluteUrl_PreservesOriginalUrl()
+    {
+        // Arrange (BC-03)
+        var service = CreateService(req =>
+        {
+            var response = new
+            {
+                data = new
+                {
+                    paymentIntentId = "pi_sess_003",
+                    provider = "novabank",
+                    checkoutType = "hosted",
+                    checkoutUrl = "https://bank.developerph.dev/checkout/cs_live_999",
+                    expiresAt = DateTime.UtcNow.AddMinutes(30),
+                    transactionReference = "REF-003"
+                }
+            };
+            return Task.FromResult(JsonResponse(response, HttpStatusCode.OK));
+        });
+
+        // Act
+        var result = await service.CreateCheckoutSessionAsync("cs_live_999", 1200m, "PHP", null, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().Be("https://bank.developerph.dev/checkout/cs_live_999");
+    }
+
+    [Fact]
+    public async Task CreateCheckoutSession_WhenGatewayReturns500_ReturnsUnavailableError()
+    {
+        // Arrange (BC-04)
+        var service = CreateService(_ =>
+        {
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.InternalServerError)
+            {
+                Content = new StringContent("Bank Gateway Down", Encoding.UTF8, "text/plain")
+            });
+        });
+
+        // Act
+        var result = await service.CreateCheckoutSessionAsync("cs_err_500", 500m, "PHP", null, CancellationToken.None);
+
+        // Assert
+        result.IsFailure.Should().BeTrue();
+        result.Error.Code.Should().Be("PaymentGateway.Unavailable");
+        result.Error.Description.Should().Contain("500");
+    }
+
+    [Fact]
+    public async Task CreateCheckoutSession_WhenNetworkTimesOut_ReturnsNetworkError()
+    {
+        // Arrange (BC-05)
+        var service = CreateService(_ => throw new HttpRequestException("Connection timed out"));
+
+        // Act
+        var result = await service.CreateCheckoutSessionAsync("cs_err_timeout", 500m, "PHP", null, CancellationToken.None);
+
+        // Assert
+        result.IsFailure.Should().BeTrue();
+        result.Error.Code.Should().Be("PaymentGateway.NetworkError");
+        result.Error.Description.Should().Contain("502");
+    }
 }
+
 

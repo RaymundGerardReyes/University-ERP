@@ -1,6 +1,8 @@
 namespace Finance.Presentation.Endpoints;
 
 using Finance.Application.Abstractions;
+using MediatR;
+using Contracts.IntegrationEvents.Administration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -15,15 +17,21 @@ public sealed class CashierQueueEndpoint : ControllerBase
     private readonly ICashTransactionRepository _cashTransactionRepository;
     private readonly IPaymentSessionRepository _paymentSessionRepository;
     private readonly IPaymentGatewayService _paymentGatewayService;
+    private readonly IStudentBillingRepository? _studentBillingRepository;
+    private readonly IPublisher? _publisher;
 
     public CashierQueueEndpoint(
         ICashTransactionRepository cashTransactionRepository,
         IPaymentSessionRepository paymentSessionRepository,
-        IPaymentGatewayService paymentGatewayService)
+        IPaymentGatewayService paymentGatewayService,
+        IStudentBillingRepository? studentBillingRepository = null,
+        IPublisher? publisher = null)
     {
         _cashTransactionRepository = cashTransactionRepository;
         _paymentSessionRepository = paymentSessionRepository;
         _paymentGatewayService = paymentGatewayService;
+        _studentBillingRepository = studentBillingRepository;
+        _publisher = publisher;
     }
 
     [HttpGet("queue")]
@@ -56,7 +64,14 @@ public sealed class CashierQueueEndpoint : ControllerBase
 
         foreach (var s in sessions)
         {
-            var status = (s.Status == "Paid" || s.Status == "Completed") ? "COMPLETED" : "PENDING";
+            string status;
+            if (s.Status == "Paid" || s.Status == "Completed")
+                status = "COMPLETED";
+            else if (s.Status == "Failed" || s.Status == "Cancelled" || s.Status == "Expired")
+                status = "CANCELLED";
+            else
+                status = "PENDING";
+
             list.Add(new CashierTransactionItemDto(
                 TransactionToken: s.SessionId,
                 ReferenceId: s.ApplicantId,
@@ -98,6 +113,21 @@ public sealed class CashierQueueEndpoint : ControllerBase
 
                 cashTxn.Complete();
                 await _cashTransactionRepository.SaveChangesAsync(cancellationToken);
+
+                if (_publisher != null)
+                {
+                    await _publisher.Publish(new PaymentVerifiedIntegrationEvent(
+                        Guid.NewGuid(),
+                        DateTime.UtcNow,
+                        cashTxn.ReferenceId,
+                        cashTxn.ReferenceId,
+                        cashTxn.Amount,
+                        "PHP",
+                        depositResult.Value ?? cashTxn.TransactionToken,
+                        DateTime.UtcNow
+                    ), cancellationToken);
+                }
+
                 return Ok(new { success = true, transactionId = depositResult.Value, status = "COMPLETED" });
             }
 
@@ -112,6 +142,50 @@ public sealed class CashierQueueEndpoint : ControllerBase
 
                 session.Reconcile("CASHIER-MAIN", request.Remarks ?? "Paid at cashier terminal");
                 await _paymentSessionRepository.SaveChangesAsync(cancellationToken);
+
+                // Update associated StudentBilling if one exists
+                if (_studentBillingRepository != null)
+                {
+                    Guid applicantGuid = Guid.TryParse(session.ApplicantId, out var parsedGuid)
+                        ? parsedGuid
+                        : Guid.Empty;
+
+                    Domain.Aggregates.StudentBilling? billing = null;
+                    if (applicantGuid != Guid.Empty)
+                    {
+                        billing = await _studentBillingRepository.GetByStudentIdAsync(applicantGuid, cancellationToken);
+                    }
+
+                    if (billing == null && !string.IsNullOrWhiteSpace(session.InvoiceId))
+                    {
+                        var rawInvoiceId = session.InvoiceId.Replace("INV-", "");
+                        if (Guid.TryParse(rawInvoiceId, out var invoiceGuid))
+                        {
+                            billing = await _studentBillingRepository.GetByIdAsync(invoiceGuid, cancellationToken);
+                        }
+                    }
+
+                    if (billing != null)
+                    {
+                        billing.RecordPayment(session.Amount);
+                        await _studentBillingRepository.UpdateAsync(billing, cancellationToken);
+                    }
+                }
+
+                if (_publisher != null)
+                {
+                    await _publisher.Publish(new PaymentVerifiedIntegrationEvent(
+                        Guid.NewGuid(),
+                        DateTime.UtcNow,
+                        session.ApplicantId,
+                        session.InvoiceId,
+                        session.Amount,
+                        session.Currency,
+                        depositResult.Value ?? session.SessionId,
+                        DateTime.UtcNow
+                    ), cancellationToken);
+                }
+
                 return Ok(new { success = true, transactionId = depositResult.Value, status = "COMPLETED" });
             }
         }

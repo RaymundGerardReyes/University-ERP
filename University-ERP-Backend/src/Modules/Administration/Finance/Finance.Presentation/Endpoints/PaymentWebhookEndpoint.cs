@@ -61,24 +61,41 @@ public sealed class PaymentWebhookEndpoint : ControllerBase
             if (root.TryGetProperty("eventType", out var etProp)) eventType = etProp.GetString() ?? string.Empty;
             else if (root.TryGetProperty("data", out var data) && data.TryGetProperty("attributes", out var attr) && attr.TryGetProperty("type", out var typeProp)) eventType = typeProp.GetString() ?? string.Empty;
             
-            // Supported success events
-            if (eventType == "PAYMENT_COMPLETED" || eventType == "payment_intent.succeeded" || eventType == "checkout_session.payment.paid" || eventType == "TRANSFER_COMPLETED")
+            string? referenceNumber = ExtractReferenceNumber(root);
+            if (!string.IsNullOrEmpty(referenceNumber))
             {
-                string? referenceNumber = ExtractReferenceNumber(root);
+                bool isSuccess = eventType == "PAYMENT_COMPLETED" || 
+                                 eventType == "payment_intent.succeeded" || 
+                                 eventType == "checkout_session.payment.paid" || 
+                                 eventType == "payment.completed" ||
+                                 eventType == "TRANSFER_COMPLETED";
+
+                bool isFailed = eventType == "PAYMENT_FAILED" ||
+                                eventType == "payment_intent.payment_failed" ||
+                                eventType == "checkout_session.expired" ||
+                                eventType == "payment.failed";
+
+                string bankStatus = isSuccess ? "SUCCESS" : (isFailed ? "FAILED" : "PENDING");
                 
-                if (!string.IsNullOrEmpty(referenceNumber))
+                decimal amount = 0m;
+                if (root.TryGetProperty("amount", out var amtProp)) 
                 {
-                    // The reference_number maps to our SessionId
-                    var completeCommand = new CompletePaymentSessionCommand(referenceNumber);
-                    var completeResult = await _sender.Send(completeCommand, cancellationToken);
-                    
-                    if (completeResult.IsFailure)
-                    {
-                        if (completeResult.Error.Code == "PaymentSession.AlreadyPaid")
-                            return Ok(new { received = true, status = "already_processed" });
-                            
-                        return BadRequest(new { error = completeResult.Error.Description });
-                    }
+                    amount = amtProp.GetDecimal();
+                }
+                else if (root.TryGetProperty("data", out var d) && d.TryGetProperty("attributes", out var a) && a.TryGetProperty("amount", out var attrAmt))
+                {
+                    amount = attrAmt.GetDecimal();
+                }
+
+                var command = new ProcessBankingCallbackCommand(referenceNumber, referenceNumber, bankStatus, amount);
+                var result = await _sender.Send(command, cancellationToken);
+                
+                if (result.IsFailure)
+                {
+                    if (result.Error.Code == "PaymentSession.AlreadyPaid")
+                        return Ok(new { received = true, status = "already_processed" });
+                        
+                    return BadRequest(new { error = result.Error.Description });
                 }
             }
             
