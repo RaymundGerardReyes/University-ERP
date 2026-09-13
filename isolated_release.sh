@@ -184,53 +184,157 @@ Coordination Notes: ${commit_footer:-None}"
 echo "Starting isolated semantic versioning updates..."
 
 # ==============================================================================
+# CATEGORY A: BACKEND / CONTRACTS
+# Runtime Scope: University-ERP-Backend/src/Contracts/
+# ==============================================================================
+process_module "contracts" "backend-contracts" "feat" \
+  "generalize applicant identifier to string across integration events" \
+  "- update PaymentVerifiedIntegrationEvent to use string ApplicantId
+- update ApplicantAcceptedIntegrationEvent to use string ApplicantId
+- support flexible applicant identifier formats across admissions and finance" \
+  "Refs: Category A - Backend / Contracts (universal-semantic-versioning-prompt.md)" \
+  "University-ERP-Backend/src/Contracts"
+
+# ==============================================================================
+# CATEGORY A: BACKEND / ACADEMIC DOMAIN
+# Runtime Scope: University-ERP-Backend/src/Modules/Academic/
+# ==============================================================================
+process_module "academic" "backend-academic" "feat" \
+  "implement degree programs, curriculum plans, and student consumers" \
+  "- implement AcademicCurriculum and AcademicProgram domain aggregates in Curriculum
+- add GetAllProgramsQuery and GetCurriculumByProgramQuery with MediatR handlers
+- expose /curriculum/programs and /curriculum/programs/{programCode} minimal API endpoints
+- implement StudentEnrolledIntegrationEventConsumer in StudentInformation module
+- configure StudentAcademicRecordRepository and EF persistence mapping" \
+  "Refs: Category A - Backend / Academic Domain (universal-semantic-versioning-prompt.md)" \
+  "University-ERP-Backend/src/Modules/Academic"
+
+# ==============================================================================
+# CATEGORY A: BACKEND / ADMINISTRATION DOMAIN
+# Runtime Scope: University-ERP-Backend/src/Modules/Administration/
+# ==============================================================================
+process_module "administration" "backend-administration" "feat" \
+  "integrate Java Banking API for dynamic QR, OTC cash, and payroll" \
+  "- integrate Java Banking API gateway for cashier dynamic QR generation and POS checkout
+- implement cashier over-the-counter (OTC) cash token verification and completion
+- implement DisbursePayrollCommand executing direct employee bank account transfers
+- expose GetBankStatementsQuery and live statement streaming proxy endpoint
+- add 10+ minimal API endpoints across CashierQueue, Payroll, FinancialReports, and Billing
+- implement integration event consumers for ApplicantAccepted and PaymentVerified
+- add 27-branch Basis Path test suite covering all BankingIntegrationService HTTP paths" \
+  "Refs: Category A - Backend / Administration Domain (universal-semantic-versioning-prompt.md)" \
+  "University-ERP-Backend/src/Modules/Administration"
+
+# ==============================================================================
+# CATEGORY A: BACKEND / PLATFORM DOMAIN
+# Runtime Scope: University-ERP-Backend/src/Modules/Platform/
+# ==============================================================================
+process_module "platform" "backend-platform" "fix" \
+  "enable anonymous access for registration and update test runner" \
+  "- add [AllowAnonymous] to RegisterUserEndpoint resolving 401 Unauthorized errors
+- upgrade IdentityAccess.Tests project target framework to net10.0" \
+  "Refs: Category A - Backend / Platform Domain (universal-semantic-versioning-prompt.md)" \
+  "University-ERP-Backend/src/Modules/Platform"
+
+# ==============================================================================
+# CATEGORY A: BACKEND / STUDENT LIFECYCLE DOMAIN
+# Runtime Scope: University-ERP-Backend/src/Modules/StudentLifecycle/
+# ==============================================================================
+process_module "student-lifecycle" "backend-studentlifecycle" "feat" \
+  "implement application fee payment endpoint and expand lifecycle states" \
+  "- implement POST /api/v1/admissions/applications/{id}/pay-fee endpoint
+- add PayApplicationFeeCommand with transaction logging and status progression
+- expand AdmissionApplication aggregate status transitions for review and interview states
+- implement PaymentVerifiedIntegrationEventConsumer for automated fee reconciliation" \
+  "Refs: Category A - Backend / Student Lifecycle Domain (universal-semantic-versioning-prompt.md)" \
+  "University-ERP-Backend/src/Modules/StudentLifecycle"
+
+# ==============================================================================
+# CATEGORY A: BACKEND / BOOTSTRAP HOST & MIGRATOR
+# Runtime Scope: University-ERP-Backend/src/Bootstrap/, UniversityErp.slnx
+# ==============================================================================
+process_module "bootstrap" "backend-bootstrap" "feat" \
+  "seed 34-program curriculum and configure API host services" \
+  "- seed complete degree programs and prerequisite chains across 34 programs in Migrator
+- register Curriculum module minimal API endpoints in AcademicModulesRegistration
+- configure PaymentGateway base URL options in appsettings.json
+- link UniversityErp.EndToEndTests into solution UniversityErp.slnx" \
+  "Refs: Category A - Backend / Bootstrap Host (universal-semantic-versioning-prompt.md)" \
+  "University-ERP-Backend/src/Bootstrap" "UniversityErp.slnx"
+
+# ==============================================================================
+# CATEGORY A: BACKEND / END-TO-END INTEGRATION TEST SUITES
+# Runtime Scope: University-ERP-Backend/tests/
+# ==============================================================================
+process_module "backend-tests" "backend-tests" "test" \
+  "implement multi-module admission-to-enrollment end-to-end tests" \
+  "- add 41 multi-module integration tests in UniversityErp.EndToEndTests
+- verify admissions qualification, payment verification, and registrar handoff sagas" \
+  "Refs: Category A - Backend Testing (universal-semantic-versioning-prompt.md)" \
+  "University-ERP-Backend/tests"
+
+# ==============================================================================
 # CATEGORY B: SHARED FRONTEND LIBRARIES (API CLIENTS)
 # Runtime Scope: University-ERP-Frontend/libs/api-clients/
 # ==============================================================================
 process_module "api-clients" "api-clients" "feat" \
-  "expand academic LMS and registrar cross-module client endpoints" \
-  "- add typed client interfaces and DTOs for course packaging and distribution
-- support air-gapped sync endpoints for offline assessment ingestion
-- integrate registrar gradebook synchronization and audit ledger contracts" \
+  "standardize apiClient instance and expand curriculum and cashier APIs" \
+  "- migrate all API client methods to centralized apiClient Axios instance with auth
+- add registrarCurriculumApi methods for program offerings and subject catalog
+- add financeBillingApi methods for OTC cash tokens and fee checkout
+- expand admissionsApi with scheduleInterview and journey applicationId mapping" \
   "Refs: Category B - Shared Libraries (universal-semantic-versioning-prompt.md)" \
-  "University-ERP-Frontend/libs/api-clients/academic/lmsApi.ts"
+  "University-ERP-Frontend/libs/api-clients"
 
 # ==============================================================================
-# CATEGORY B: LMS WEB APPLICATION & OFFLINE BRIDGE
-# Runtime Scope: University-ERP-Frontend/apps/lms-web/
+# CATEGORY B: APPLICANT PORTAL
+# Runtime Scope: University-ERP-Frontend/apps/applicant-portal/
 # ==============================================================================
-process_module "lms-web" "lms-web" "feat" \
-  "implement DBMA vertical slices for LMS web and offline bridge" \
-  "- implement CoursePackaging view for air-gapped Avalonia bundle compilation
-- implement OfflineSubmissionReview with rubric grading and feedback modal
-- implement GradebookSync orchestrating official grade transmission to registrar
-- add ModuleTimeline, Discussions, Quizzes, Grades, and Calendar slices" \
-  "Refs: Category B - Web Frontend (lms-web)" \
-  "University-ERP-Frontend/apps/lms-web"
+process_module "applicant-portal" "applicant-portal" "feat" \
+  "implement program explorer, interview booking, and payment flow" \
+  "- implement interactive ProgramExplorer displaying degree curricula and units
+- implement formal admission offer acceptance and decline workflow in Offers
+- implement InterviewScheduling with date/time slot selection and confirmation
+- implement EnrollmentPayment with online gateway redirection and OTC cash token support
+- enhance ApplicationWizard, DocumentSubmission, and DocumentUpload workflows" \
+  "Refs: Category B - Web Frontend (applicant-portal)" \
+  "University-ERP-Frontend/apps/applicant-portal"
 
 # ==============================================================================
-# CATEGORY B: STUDENT PORTAL
-# Runtime Scope: University-ERP-Frontend/apps/student-portal/
+# CATEGORY B: ADMISSIONS PORTAL
+# Runtime Scope: University-ERP-Frontend/apps/admissions-portal/
 # ==============================================================================
-process_module "student-portal" "student-portal" "feat" \
-  "mature student dashboard, course enrollment, and cross-enrollment views" \
-  "- add student KPI metrics, active schedule card, and term academic standing
-- implement multi-course enrollment selection with prerequisite validation
-- implement CrossEnrollment application modal with partner institution permit flow
-- stabilize AcademicRecord, Clearance, and Extracurriculars feature slices" \
-  "Refs: Category B - Web Frontend (student-portal)" \
-  "University-ERP-Frontend/apps/student-portal"
+process_module "admissions-portal" "admissions-portal" "feat" \
+  "implement applications management, stage queue, and document review" \
+  "- implement Applications page with multi-criteria status and stage filtering
+- implement AdmissionQueue with Secretary, Chairperson, and Registrar queue tabs
+- implement ApplicationVerification with split-pane document viewer and preview modal" \
+  "Refs: Category B - Web Frontend (admissions-portal)" \
+  "University-ERP-Frontend/apps/admissions-portal"
+
+# ==============================================================================
+# CATEGORY B: FACULTY PORTAL
+# Runtime Scope: University-ERP-Frontend/apps/faculty-portal/
+# ==============================================================================
+process_module "faculty-portal" "faculty-portal" "feat" \
+  "connect curriculum matching and document verification to live APIs" \
+  "- connect ChairpersonWorkspace CurriculumMatching to live subject catalog API
+- connect SecretaryWorkspace DocumentVerification to live admissions queue
+- add DocumentPreviewModal with dynamic document URL resolution" \
+  "Refs: Category B - Web Frontend (faculty-portal)" \
+  "University-ERP-Frontend/apps/faculty-portal"
 
 # ==============================================================================
 # CATEGORY B: FINANCE CONSOLE
 # Runtime Scope: University-ERP-Frontend/apps/finance-console/
 # ==============================================================================
 process_module "finance-console" "finance-console" "feat" \
-  "implement tuition assessment and cashier payment gateway workflows" \
-  "- implement TuitionAssessment slice calculating units, lab fees, and discounts
-- implement PaymentGateway multi-channel checkout modal with receipt generation
-- standardize Budgeting, Invoicing, and Payroll modals with verified form inputs
-- link financial clearance issuance to student lifecycle and registrar" \
+  "implement cashier workspace, dynamic QR, and payroll disbursement" \
+  "- implement complete Cashier workspace with dynamic QR modal and OTC cash clearance
+- implement PayrollProcessing with batch disbursement via Java Banking API
+- connect FinancialReports to live bank statement streaming endpoint
+- implement StudentBilling Statement of Account and Scholarship Grants management
+- wire AppShell navigation and routing for all new financial features" \
   "Refs: Category B - Web Frontend (finance-console)" \
   "University-ERP-Frontend/apps/finance-console"
 
@@ -239,84 +343,78 @@ process_module "finance-console" "finance-console" "feat" \
 # Runtime Scope: University-ERP-Frontend/apps/registrar-portal/
 # ==============================================================================
 process_module "registrar-portal" "registrar-portal" "feat" \
-  "mature registrar command center and enrollment validation queue" \
-  "- implement live dual queues for pending enrollments and graduation clearances
-- dispatch AdmissionWorkflow commands on verified financial clearance
-- harden record access audit logging with security action tracking
-- standardize TransferDivision workspace with accessible page header" \
+  "implement curriculum division workspace and expand admissions queue" \
+  "- implement CurriculumDivision workspace for curriculum and prerequisite management
+- connect live subject catalog and prerequisite dependency chains in CurriculumDivision
+- expand AdmissionsQueue with stage-aware actions and enrollment activation" \
   "Refs: Category B - Web Frontend (registrar-portal)" \
   "University-ERP-Frontend/apps/registrar-portal"
 
 # ==============================================================================
-# CATEGORY B: GOVERNANCE CONSOLE
-# Runtime Scope: University-ERP-Frontend/apps/governance-console/
+# CATEGORY B: STUDENT PORTAL
+# Runtime Scope: University-ERP-Frontend/apps/student-portal/
 # ==============================================================================
-process_module "governance-console" "governance-console" "feat" \
-  "standardize accreditation standards and institutional compliance tables" \
-  "- implement Accreditation criteria evaluation with CHED evidence submission
-- standardize Audits, Committees, Compliance, Policies, and Risk Management tables
-- align all Badge color schemes with UI Kit semantic color schemes" \
-  "Refs: Category B - Web Frontend (governance-console)" \
-  "University-ERP-Frontend/apps/governance-console"
+process_module "student-portal" "student-portal" "feat" \
+  "implement curriculum progression view and live statement integration" \
+  "- implement interactive CurriculumProgress view with year tabs and prerequisite tags
+- connect Financials invoice and payment schedule to live student statement endpoint" \
+  "Refs: Category B - Web Frontend (student-portal)" \
+  "University-ERP-Frontend/apps/student-portal"
 
 # ==============================================================================
-# CATEGORY B: PLATFORM CONSOLE
-# Runtime Scope: University-ERP-Frontend/apps/platform-console/
+# CATEGORY B: FRONTEND BUILD & TEST INFRASTRUCTURE
+# Runtime Scope: University-ERP-Frontend/libs/vite-config/, vitest.config.ts
 # ==============================================================================
-process_module "platform-console" "platform-console" "feat" \
-  "mature operational telemetry and distributed platform consoles" \
-  "- standardize 12 operational consoles including DatabaseManagement and APIKeys
-- add dual named and default exports across all platform features
-- implement real-time server metrics, log streams, and multi-tenant management" \
-  "Refs: Category B - Web Frontend (platform-console)" \
-  "University-ERP-Frontend/apps/platform-console"
+process_module "frontend-infra" "frontend-infra" "build" \
+  "configure Vite dev proxy fallback and disable Vitest file parallelism" \
+  "- configure default http://localhost:5191 API target fallback in shared Vite proxy
+- set fileParallelism: false in root vitest.config.ts to stabilize test suite execution" \
+  "Refs: Category B - Web Frontend Build Infrastructure (universal-semantic-versioning-prompt.md)" \
+  "University-ERP-Frontend/libs/vite-config" "University-ERP-Frontend/vitest.config.ts"
 
 # ==============================================================================
-# CATEGORY B: ADMIN PORTAL
-# Runtime Scope: University-ERP-Frontend/apps/admin-portal/
-# ==============================================================================
-process_module "admin-portal" "admin-portal" "feat" \
-  "mature academic configuration and admissions intake workspace" \
-  "- create AdmissionsProcessing.page.tsx conforming to DBMA slice standards
-- mature AcademicConfiguration term scheduling and course offering management
-- stabilize CanteenOrders, UserAdministration, and SystemAdministration views" \
-  "Refs: Category B - Web Frontend (admin-portal)" \
-  "University-ERP-Frontend/apps/admin-portal"
-
-# ==============================================================================
-# CATEGORY B: ADMISSIONS PORTAL
-# Runtime Scope: University-ERP-Frontend/apps/admissions-portal/
-# ==============================================================================
-process_module "admissions-portal" "admissions-portal" "fix" \
-  "stabilize admissions dashboard overview and metric indicators" \
-  "- align applicant queue counters with admissions workflow status
-- improve responsive card layout for admissions officer review" \
-  "Refs: Category B - Web Frontend (admissions-portal)" \
-  "University-ERP-Frontend/apps/admissions-portal"
-
-# ==============================================================================
-# CATEGORY B: FRONTEND UNIT, INTEGRATION & E2E TEST SUITES
+# CATEGORY B: FRONTEND UNIT & INTEGRATION TEST SUITES
 # Runtime Scope: University-ERP-Frontend/tests/
 # ==============================================================================
 process_module "frontend-tests" "frontend-tests" "test" \
-  "complete 117 unit, 94 integration, and unified cross-portal E2E test suites" \
-  "- achieve 100% pass rate across 117 unit test suites in all 6 core portals
-- achieve 100% pass rate across 94 integration test suites in all 6 core portals
-- implement Grand Cross-Portal Unified Lifecycle E2E test covering 7 phases
-- implement lms-web integration and E2E suites verifying Avalonia bridge" \
-  "Refs: Category B - Web Frontend Unit and Integration Testing (unit-testing.md)" \
+  "stabilize 17 unit test suites across applicant, finance, and registrar" \
+  "- add and stabilize unit test suites for ClearanceApproval, Scholarships, and SOA
+- stabilize Cashier, FinancialReports, Payroll, and CurriculumDivision test suites
+- update applicant-portal test suites with apiClient and payment flow mocks" \
+  "Refs: Category B - Web Frontend Unit Testing (unit-testing.md)" \
   "University-ERP-Frontend/tests"
+
+# ==============================================================================
+# CATEGORY D: INFRASTRUCTURE & CONTAINER ORCHESTRATION
+# Runtime Scope: docker-compose.yml, University-ERP-Frontend/Dockerfile.build-all
+# ==============================================================================
+process_module "docker" "ops-docker" "build" \
+  "include payment-gateway in build container and harmonize compose env" \
+  "- add apps/payment-gateway build step and package.json copy to Dockerfile.build-all
+- harmonize PaymentGateway environment variable fallbacks in docker-compose.yml" \
+  "Refs: Category D - Infrastructure / Docker (universal-semantic-versioning-prompt.md)" \
+  "docker-compose.yml" "University-ERP-Frontend/Dockerfile.build-all"
+
+# ==============================================================================
+# CATEGORY D: ARCHITECTURE & MONOREPO DOCUMENTATION
+# Runtime Scope: university-ERPstructure.md, University-ERP-Frontend/university-ERPstructure.md
+# ==============================================================================
+process_module "docs" "ops-docs" "docs" \
+  "update monorepo architecture, vertical slices, and module registry maps" \
+  "- document newly implemented vertical slices across all 14 portals
+- update backend modular monolith domain boundaries and endpoint registries" \
+  "Refs: Category D - Documentation (universal-semantic-versioning-prompt.md)" \
+  "university-ERPstructure.md" "University-ERP-Frontend/university-ERPstructure.md"
 
 # ==============================================================================
 # CATEGORY D: RELEASE MANAGEMENT & AUTOMATION ENGINE
 # Runtime Scope: isolated_release.sh
 # ==============================================================================
 process_module "ops-release" "ops-release" "chore" \
-  "upgrade isolated release engine to enforce universal SemVer prompt" \
-  "- implement strict multi-line Conventional Commits formatting (header, body, footer)
-- update process_module parameters to require explicit rationale and category refs
-- expand release targets across all 6 core portals and LMS offline bridge
-- enforce atomic git index handling and explicit remote tag push instructions" \
+  "expand isolated release engine across backend, frontend, and ops scopes" \
+  "- add module processing entries for contracts, academic, administration, platform, lifecycle, and bootstrap
+- add entries for applicant-portal, faculty-portal, frontend-infra, and docker
+- update commit summaries, bodies, and SemVer 2.0.0 bump references" \
   "Refs: Category D - Release Management (universal-semantic-versioning-prompt.md)" \
   "isolated_release.sh"
 
@@ -328,7 +426,7 @@ if [ "$DRY_RUN" = true ]; then
   echo "  ./isolated_release.sh"
 else
   echo "All applicable modules have been safely committed and strictly isolated tags have been generated!"
-  echo "Please review with 'git log -n 12 --oneline' and verify tags with: git tag -l --sort=-v:refname | head -n 10"
+  echo "Please review with 'git log -n 25 --oneline' and verify tags with: git tag -l --sort=-v:refname | head -n 20"
   echo "To push commits and tags to GitHub, run:"
   echo "  git push origin main && git push origin --tags"
 fi
