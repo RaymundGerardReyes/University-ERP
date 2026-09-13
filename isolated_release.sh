@@ -213,14 +213,13 @@ process_module "academic" "backend-academic" "feat" \
 # CATEGORY A: BACKEND / ADMINISTRATION DOMAIN
 # Runtime Scope: University-ERP-Backend/src/Modules/Administration/
 # ==============================================================================
-process_module "administration" "backend-administration" "feat" \
-  "integrate Java Banking API for dynamic QR, OTC cash, and payroll" \
-  "- integrate Java Banking API gateway for cashier dynamic QR generation and POS checkout
-- implement cashier over-the-counter (OTC) cash token verification and completion
-- implement DisbursePayrollCommand executing direct employee bank account transfers
-- expose GetBankStatementsQuery and live statement streaming proxy endpoint
-- add 10+ minimal API endpoints across CashierQueue, Payroll, FinancialReports, and Billing
-- implement integration event consumers for ApplicantAccepted and PaymentVerified
+process_module "administration" "backend-administration" "fix" \
+  "harden payment reconciliation and gateway URLs" \
+  "- resolve hardcoded success and cancel URLs in BankingIntegrationService to use options
+- add CheckoutBaseUrl option and add MarkFailed and Cancel states to PaymentSession
+- update ProcessBankingCallbackCommandHandler to record payments on student billing invoices
+- route payment gateway webhooks directly to banking callback command handler
+- update CashierQueueEndpoint to update student billing and emit PaymentVerifiedIntegrationEvent
 - add 27-branch Basis Path test suite covering all BankingIntegrationService HTTP paths" \
   "Refs: Category A - Backend / Administration Domain (universal-semantic-versioning-prompt.md)" \
   "University-ERP-Backend/src/Modules/Administration"
@@ -253,12 +252,11 @@ process_module "student-lifecycle" "backend-studentlifecycle" "feat" \
 # CATEGORY A: BACKEND / BOOTSTRAP HOST & MIGRATOR
 # Runtime Scope: University-ERP-Backend/src/Bootstrap/, UniversityErp.slnx
 # ==============================================================================
-process_module "bootstrap" "backend-bootstrap" "feat" \
-  "seed 34-program curriculum and configure API host services" \
-  "- seed complete degree programs and prerequisite chains across 34 programs in Migrator
-- register Curriculum module minimal API endpoints in AcademicModulesRegistration
-- configure PaymentGateway base URL options in appsettings.json
-- link UniversityErp.EndToEndTests into solution UniversityErp.slnx" \
+process_module "bootstrap" "backend-bootstrap" "fix" \
+  "fix tuple seeding and add payment checkout options" \
+  "- resolve duplicate BSME tuple row and stale curriculum blocks in Migrator SQL seed
+- eliminate duplicate AddWithValue parameter definitions across program offerings and curricula
+- configure PaymentGateway:CheckoutBaseUrl options in API host appsettings" \
   "Refs: Category A - Backend / Bootstrap Host (universal-semantic-versioning-prompt.md)" \
   "University-ERP-Backend/src/Bootstrap" "UniversityErp.slnx"
 
@@ -290,13 +288,11 @@ process_module "api-clients" "api-clients" "feat" \
 # CATEGORY B: APPLICANT PORTAL
 # Runtime Scope: University-ERP-Frontend/apps/applicant-portal/
 # ==============================================================================
-process_module "applicant-portal" "applicant-portal" "feat" \
-  "implement program explorer, interview booking, and payment flow" \
-  "- implement interactive ProgramExplorer displaying degree curricula and units
-- implement formal admission offer acceptance and decline workflow in Offers
-- implement InterviewScheduling with date/time slot selection and confirmation
-- implement EnrollmentPayment with online gateway redirection and OTC cash token support
-- enhance ApplicationWizard, DocumentSubmission, and DocumentUpload workflows" \
+process_module "applicant-portal" "applicant-portal" "fix" \
+  "resolve payment gateway redirects with fallback" \
+  "- implement resolveCheckoutRedirectUrl to safely handle absolute banking gateway URLs
+- support VITE_PAYMENT_GATEWAY_URL fallback resolution for relative checkout session endpoints
+- update ApplicationFeePayment and EnrollmentPayment pages with redirect validation" \
   "Refs: Category B - Web Frontend (applicant-portal)" \
   "University-ERP-Frontend/apps/applicant-portal"
 
@@ -329,12 +325,12 @@ process_module "faculty-portal" "faculty-portal" "feat" \
 # Runtime Scope: University-ERP-Frontend/apps/finance-console/
 # ==============================================================================
 process_module "finance-console" "finance-console" "feat" \
-  "implement cashier workspace, dynamic QR, and payroll disbursement" \
-  "- implement complete Cashier workspace with dynamic QR modal and OTC cash clearance
-- implement PayrollProcessing with batch disbursement via Java Banking API
-- connect FinancialReports to live bank statement streaming endpoint
-- implement StudentBilling Statement of Account and Scholarship Grants management
-- wire AppShell navigation and routing for all new financial features" \
+  "add payment monitor and align cashier slice" \
+  "- upgrade PaymentGateway page to full transaction monitor with KPI cards
+- add status filter tabs (ALL, PENDING, SUCCESS, FAILED) and status badges
+- add GatewayStatusFilter and PaymentSessionRecord to PaymentGateway.types
+- establish canonical Cashier.page.tsx DBMA slice with PaymentGateway alias
+- align routes in Routing.tsx mapping /cashier/payments and /cashier/monitor" \
   "Refs: Category B - Web Frontend (finance-console)" \
   "University-ERP-Frontend/apps/finance-console"
 
@@ -354,10 +350,11 @@ process_module "registrar-portal" "registrar-portal" "feat" \
 # CATEGORY B: STUDENT PORTAL
 # Runtime Scope: University-ERP-Frontend/apps/student-portal/
 # ==============================================================================
-process_module "student-portal" "student-portal" "feat" \
-  "implement curriculum progression view and live statement integration" \
-  "- implement interactive CurriculumProgress view with year tabs and prerequisite tags
-- connect Financials invoice and payment schedule to live student statement endpoint" \
+process_module "student-portal" "student-portal" "fix" \
+  "resolve payment gateway redirect URLs in financials" \
+  "- implement resolveCheckoutRedirectUrl supporting absolute external bank URLs
+- add VITE_PAYMENT_GATEWAY_URL fallback resolution for relative checkout redirects
+- validate checkout session responses with user-friendly error notifications" \
   "Refs: Category B - Web Frontend (student-portal)" \
   "University-ERP-Frontend/apps/student-portal"
 
@@ -389,9 +386,9 @@ process_module "frontend-tests" "frontend-tests" "test" \
 # Runtime Scope: docker-compose.yml, University-ERP-Frontend/Dockerfile.build-all
 # ==============================================================================
 process_module "docker" "ops-docker" "build" \
-  "include payment-gateway in build container and harmonize compose env" \
-  "- add apps/payment-gateway build step and package.json copy to Dockerfile.build-all
-- harmonize PaymentGateway environment variable fallbacks in docker-compose.yml" \
+  "add payment gateway checkout base URL to compose" \
+  "- configure PaymentGateway__CheckoutBaseUrl environment mapping in api and worker
+- harmonize payment gateway options across container orchestration boundaries" \
   "Refs: Category D - Infrastructure / Docker (universal-semantic-versioning-prompt.md)" \
   "docker-compose.yml" "University-ERP-Frontend/Dockerfile.build-all"
 
@@ -400,9 +397,9 @@ process_module "docker" "ops-docker" "build" \
 # Runtime Scope: university-ERPstructure.md, University-ERP-Frontend/university-ERPstructure.md
 # ==============================================================================
 process_module "docs" "ops-docs" "docs" \
-  "update monorepo architecture, vertical slices, and module registry maps" \
-  "- document newly implemented vertical slices across all 14 portals
-- update backend modular monolith domain boundaries and endpoint registries" \
+  "update frontend structure and feature boundary catalog" \
+  "- document feature directories for finance-console and cashier DBMA slices
+- update component registry and structure documentation" \
   "Refs: Category D - Documentation (universal-semantic-versioning-prompt.md)" \
   "university-ERPstructure.md" "University-ERP-Frontend/university-ERPstructure.md"
 
@@ -411,10 +408,10 @@ process_module "docs" "ops-docs" "docs" \
 # Runtime Scope: isolated_release.sh
 # ==============================================================================
 process_module "ops-release" "ops-release" "chore" \
-  "expand isolated release engine across backend, frontend, and ops scopes" \
-  "- add module processing entries for contracts, academic, administration, platform, lifecycle, and bootstrap
-- add entries for applicant-portal, faculty-portal, frontend-infra, and docker
-- update commit summaries, bodies, and SemVer 2.0.0 bump references" \
+  "align release metadata and SemVer classifications" \
+  "- update commit summaries and bodies across modified scopes
+- align release metadata with universal semantic versioning prompt guidelines
+- ensure tag calculations and commit types strictly reflect working tree diffs" \
   "Refs: Category D - Release Management (universal-semantic-versioning-prompt.md)" \
   "isolated_release.sh"
 
