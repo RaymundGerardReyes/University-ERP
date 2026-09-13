@@ -21,7 +21,7 @@ export const PrerequisitesPage: React.FC = () => {
         c.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const selectedCourse = displayCourses.find((c: any) => c.courseId === selectedCourseId);
+    const selectedCourse = displayCourses.find((c: any) => (c.courseId || c.id) === selectedCourseId);
 
     const handleToggleEnforcement = (ruleId: string, currentStatus: boolean) => {
         if (!selectedCourseId) return;
@@ -49,27 +49,31 @@ export const PrerequisitesPage: React.FC = () => {
                         />
                     </div>
                     <div style={{ overflowY: 'auto', flex: 1 }}>
-                        {filteredCourses.map((course: any) => (
-                            <div 
-                                key={course.courseId}
-                                onClick={() => setSelectedCourseId(course.courseId)}
-                                style={{
-                                    padding: 'var(--space-4)',
-                                    borderBottom: '1px solid var(--border-subtle, var(--border-color))',
-                                    cursor: 'pointer',
-                                    background: selectedCourseId === course.courseId ? 'var(--bg-active, var(--bg-hover))' : 'transparent',
-                                    borderLeft: selectedCourseId === course.courseId ? '4px solid var(--brand-primary)' : '4px solid transparent'
-                                }}
-                            >
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                                    <strong style={{ color: 'var(--text-bright, var(--text-primary))' }}>{course.code}</strong>
-                                    {course.prerequisites.length > 0 && (
-                                        <Badge colorScheme="info">{course.prerequisites.length} Rules</Badge>
-                                    )}
+                        {filteredCourses.map((course: any) => {
+                            const cId = course.courseId || course.id;
+                            const prereqCount = course.prerequisites?.length || 0;
+                            return (
+                                <div 
+                                    key={cId || course.code}
+                                    onClick={() => setSelectedCourseId(cId)}
+                                    style={{
+                                        padding: 'var(--space-4)',
+                                        borderBottom: '1px solid var(--border-subtle, var(--border-color))',
+                                        cursor: 'pointer',
+                                        background: selectedCourseId === cId ? 'var(--bg-active, var(--bg-hover))' : 'transparent',
+                                        borderLeft: selectedCourseId === cId ? '4px solid var(--brand-primary)' : '4px solid transparent'
+                                    }}
+                                >
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                        <strong style={{ color: 'var(--text-bright, var(--text-primary))' }}>{course.code}</strong>
+                                        {prereqCount > 0 && (
+                                            <Badge colorScheme="info">{prereqCount} Rules</Badge>
+                                        )}
+                                    </div>
+                                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{course.title}</div>
                                 </div>
-                                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{course.title}</div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </Card>
 
@@ -88,36 +92,40 @@ export const PrerequisitesPage: React.FC = () => {
                                     <Button variant="primary" size="small">+ Add Rule</Button>
                                 </div>
 
-                                {selectedCourse.prerequisites.length === 0 ? (
+                                {(!selectedCourse.prerequisites || selectedCourse.prerequisites.length === 0) ? (
                                     <div style={{ padding: 'var(--space-6)', textAlign: 'center', border: '1px dashed var(--border-color)', borderRadius: 'var(--radius-md)' }}>
                                         <p style={{ color: 'var(--text-muted)' }}>This course has no prerequisites.</p>
                                     </div>
                                 ) : (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-                                        {selectedCourse.prerequisites.map((rule: any) => (
-                                            <div key={rule.ruleId} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', padding: 'var(--space-4)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderLeft: `4px solid ${rule.isEnforced ? 'var(--danger-text, #ef4444)' : 'var(--warning-text, #f59e0b)'}` }}>
-                                                <div>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-2)' }}>
-                                                        <strong style={{ fontSize: '1.1rem', fontFamily: 'monospace', color: 'var(--text-bright, var(--text-primary))' }}>{rule.requiredCourseId}</strong>
-                                                        <Badge colorScheme={rule.isEnforced ? 'danger' : 'warning'}>
-                                                            {rule.isEnforced ? 'Strict Enforcement' : 'Advisory Only'}
-                                                        </Badge>
+                                        {selectedCourse.prerequisites.map((rule: any) => {
+                                            const rId = rule.ruleId || rule.id;
+                                            const reqCode = rule.requiredCourseCode || rule.requiredCourseId;
+                                            return (
+                                                <div key={rId || reqCode} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', padding: 'var(--space-4)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderLeft: `4px solid ${rule.isEnforced ? 'var(--danger-text, #ef4444)' : 'var(--warning-text, #f59e0b)'}` }}>
+                                                    <div>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-2)' }}>
+                                                            <strong style={{ fontSize: '1.1rem', fontFamily: 'monospace', color: 'var(--text-bright, var(--text-primary))' }}>{reqCode}</strong>
+                                                            <Badge colorScheme={rule.isEnforced ? 'danger' : 'warning'}>
+                                                                {rule.isEnforced ? 'Strict Enforcement' : 'Advisory Only'}
+                                                            </Badge>
+                                                        </div>
+                                                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                                                            Minimum Grade Required: <strong style={{ color: 'var(--text-primary)' }}>{rule.minimumGrade}</strong>
+                                                        </div>
                                                     </div>
-                                                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                                                        Minimum Grade Required: <strong style={{ color: 'var(--text-primary)' }}>{rule.minimumGrade}</strong>
+                                                    <div>
+                                                        <Button 
+                                                            variant={rule.isEnforced ? 'outline' : 'secondary'} 
+                                                            size="small"
+                                                            onClick={() => handleToggleEnforcement(rId, rule.isEnforced)}
+                                                        >
+                                                            {rule.isEnforced ? 'Make Advisory' : 'Enforce Strictly'}
+                                                        </Button>
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <Button 
-                                                        variant={rule.isEnforced ? 'outline' : 'secondary'} 
-                                                        size="small"
-                                                        onClick={() => handleToggleEnforcement(rule.ruleId, rule.isEnforced)}
-                                                    >
-                                                        {rule.isEnforced ? 'Make Advisory' : 'Enforce Strictly'}
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </div>

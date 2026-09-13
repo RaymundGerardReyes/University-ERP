@@ -23,6 +23,7 @@ import { StudentNumberAssignmentPage } from '../features/StudentRegistryDivision
 import { OfficialGradesPage } from '../features/AcademicRecordsDivision/OfficialGrades.page';
 import { AcademicStandingPage } from '../features/AcademicRecordsDivision/AcademicStanding.page';
 import { AcademicRecordInitializationPage } from '../features/AcademicRecordsDivision/AcademicRecordInitialization.page';
+import { CurriculumDivisionPage } from '../features/CurriculumDivision/CurriculumDivision.page';
 import { SubjectCatalogPage } from '../features/CurriculumDivision/SubjectCatalog.page';
 import { CourseOfferingsPage } from '../features/CurriculumDivision/CourseOfferings.page';
 import { PrerequisitesPage } from '../features/CurriculumDivision/Prerequisites.page';
@@ -92,6 +93,7 @@ export const Routing: React.FC = () => {
 
                     {/* 5. Curriculum Division */}
                     <Route element={<RegistrarGuard allowedRoles={['ROLE_CURRICULUM_OFFICER']} />}>
+                        <Route path="/curriculum" element={<CurriculumDivisionPage />} />
                         <Route path="/curriculum/catalog" element={<SubjectCatalogPage />} />
                         <Route path="/curriculum/offerings" element={<CourseOfferingsPage />} />
                         <Route path="/curriculum/prerequisites" element={<PrerequisitesPage />} />

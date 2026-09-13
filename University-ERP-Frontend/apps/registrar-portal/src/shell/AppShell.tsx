@@ -32,6 +32,7 @@ export const AppShell = () => {
     { label: 'Official Grades', path: '/records/grades', section: 'Enrollment & Records' },
     { label: 'Academic Standing', path: '/records/standing', section: 'Enrollment & Records' },
 
+    { label: 'Curriculum Plans', path: '/curriculum', section: 'Curriculum' },
     { label: 'Subject Catalog', path: '/curriculum/catalog', section: 'Curriculum' },
     { label: 'Course Offerings', path: '/curriculum/offerings', section: 'Curriculum' },
 

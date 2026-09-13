@@ -13,6 +13,8 @@ export const SubjectCatalogPage: React.FC = () => {
 
     const displayCatalog = catalog || [];
     
+    const departments = ['All Departments', ...Array.from(new Set(displayCatalog.map((item: any) => item.department).filter(Boolean)))];
+
     const filteredCatalog = displayCatalog.filter((item: any) => {
         const matchesSearch = item.code.toLowerCase().includes(searchTerm.toLowerCase()) || item.title.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesDept = departmentFilter === 'All Departments' || item.department === departmentFilter;
@@ -20,7 +22,7 @@ export const SubjectCatalogPage: React.FC = () => {
     });
 
     const totalSubjects = displayCatalog.length;
-    const activeSubjects = displayCatalog.filter((item: any) => item.status === 'Active').length;
+    const activeSubjects = displayCatalog.filter((item: any) => item.status === 'Active' || item.status === 'Core').length;
 
     return (
         <div className="fade-in">
@@ -58,10 +60,9 @@ export const SubjectCatalogPage: React.FC = () => {
                         onChange={(e) => setDepartmentFilter(e.target.value)}
                         style={{ padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-surface)', color: 'var(--text-primary)' }}
                     >
-                        <option>All Departments</option>
-                        <option>Computer Science</option>
-                        <option>Mathematics</option>
-                        <option>Engineering</option>
+                        {departments.map((dept: any) => (
+                            <option key={dept} value={dept}>{dept}</option>
+                        ))}
                     </select>
                 </div>
             </div>
