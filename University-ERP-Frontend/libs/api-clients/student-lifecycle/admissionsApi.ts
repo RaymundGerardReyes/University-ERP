@@ -1,7 +1,7 @@
 import { ApplicationStatusViewModel } from '@university-erp/domain-viewmodels';
-import axios from 'axios';
+import { apiClient } from '../apiClient';
 
-const BASE_URL = '/api/v1/admissions';
+const BASE_URL = '/admissions';
 
 // Exact mappings to C# DTOs
 export interface ApplicantDocumentDto {
@@ -47,6 +47,7 @@ export interface JourneyStateDto {
   programs: ProgramOfferingDto[];
   documents: ApplicantDocumentDto[];
   timeline: TimelineEventDto[];
+  applicationId?: string;
 }
 
 export interface PendingApplicationDto {
@@ -65,77 +66,77 @@ export interface PendingApplicationDto {
 
 export const admissionsApi = {
   getApplicationsByStage: async (stage: 'SecretaryQueue' | 'ChairpersonQueue' | 'RegistrarQueue') => {
-    const response = await axios.get(`${BASE_URL}/queue`, { params: { stage } });
+    const response = await apiClient.get(`${BASE_URL}/queue`, { params: { stage } });
     return response.data;
   },
 
   getPendingApplications: async (department?: string): Promise<PendingApplicationDto[]> => {
-    const response = await axios.get<PendingApplicationDto[]>(`${BASE_URL}/faculty/pending`, { params: { department } });
+    const response = await apiClient.get<PendingApplicationDto[]>(`${BASE_URL}/faculty/pending`, { params: { department } });
     return response.data;
   },
 
   recommendApplication: async (applicationId: string, remarks: string) => {
-    const response = await axios.post(`${BASE_URL}/faculty/${applicationId}/approve`, { action: 'Recommend', notes: remarks });
+    const response = await apiClient.post(`${BASE_URL}/faculty/${applicationId}/approve`, { action: 'Recommend', notes: remarks });
     return response.data;
   },
 
   endorseApplication: async (applicationId: string) => {
-    const response = await axios.post(`${BASE_URL}/faculty/${applicationId}/approve`, { action: 'Endorse' });
+    const response = await apiClient.post(`${BASE_URL}/faculty/${applicationId}/approve`, { action: 'Endorse' });
     return response.data;
   },
 
   activateEnrollment: async (applicationId: string) => {
-    const response = await axios.post(`${BASE_URL}/faculty/${applicationId}/approve`, { action: 'Activate' });
+    const response = await apiClient.post(`${BASE_URL}/faculty/${applicationId}/approve`, { action: 'Activate' });
     return response.data;
   },
 
   verifyDocumentsAndForward: async (applicationId: string) => {
-    const response = await axios.post(`${BASE_URL}/${applicationId}/verify-and-forward`);
+    const response = await apiClient.post(`${BASE_URL}/${applicationId}/verify-and-forward`);
     return response.data;
   },
 
   submitAcademicEvaluation: async (applicationId: string, decision: 'Accept' | 'Reject' | 'Waitlist', notes: string) => {
-    const response = await axios.post(`${BASE_URL}/${applicationId}/evaluate`, { decision, notes });
+    const response = await apiClient.post(`${BASE_URL}/${applicationId}/evaluate`, { decision, notes });
     return response.data;
   },
 
   generateStudentIdentityAndEnroll: async (applicationId: string) => {
-    const response = await axios.post(`${BASE_URL}/${applicationId}/enroll`);
+    const response = await apiClient.post(`${BASE_URL}/${applicationId}/enroll`);
     return response.data;
   },
 
   getApplicationStatus: async (studentId: string): Promise<ApplicationStatusViewModel[]> => {
-    const response = await axios.get<ApplicationStatusViewModel[]>(`${BASE_URL}/status/${studentId}`);
+    const response = await apiClient.get<ApplicationStatusViewModel[]>(`${BASE_URL}/status/${studentId}`);
     return response.data;
   },
 
   getApplicantJourney: async (studentId: string): Promise<JourneyStateDto> => {
-    const response = await axios.get<JourneyStateDto>(`${BASE_URL}/applications/journey/${studentId}`);
+    const response = await apiClient.get<JourneyStateDto>(`${BASE_URL}/applications/journey/${studentId}`);
     return response.data;
   },
 
   submitApplication: async (data: any): Promise<string> => {
-    const response = await axios.post(`${BASE_URL}/applications`, data);
+    const response = await apiClient.post(`${BASE_URL}/applications`, data);
     return response.data;
   },
 
   uploadDocument: async (applicationId: string, data: { documentName: string, filePath: string }): Promise<boolean> => {
-    const response = await axios.post(`${BASE_URL}/applications/${applicationId}/documents`, data);
+    const response = await apiClient.post(`${BASE_URL}/applications/${applicationId}/documents`, data);
     return response.data;
   },
 
   getProgramCatalog: async (): Promise<ProgramOfferingDto[]> => {
-    const response = await axios.get<ProgramOfferingDto[]>(`${BASE_URL}/programs`);
+    const response = await apiClient.get<ProgramOfferingDto[]>(`${BASE_URL}/programs`);
     return response.data;
   },
 
   checkEligibility: async (data: any): Promise<any> => {
-    const response = await axios.post(`${BASE_URL}/eligibility`, data);
+    const response = await apiClient.post(`${BASE_URL}/eligibility`, data);
     return response.data;
   },
 
   // --- NEW METHOD ---
   scheduleInterview: async (applicationId: string, payload: { date: string, time: string }): Promise<void> => {
-    await axios.post(`${BASE_URL}/applications/${applicationId}/schedule-interview`, payload);
+    await apiClient.post(`${BASE_URL}/applications/${applicationId}/schedule-interview`, payload);
   }
 };
