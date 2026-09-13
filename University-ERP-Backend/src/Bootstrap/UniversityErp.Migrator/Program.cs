@@ -624,7 +624,6 @@ static async Task SeedProgramOfferingsAsync(IServiceProvider services, ILogger l
             ('BSECE',   'College of Engineering',              'B.S.', 'Electronics Engineering',                             '4 Years', 'Fall / Spring', '₱47,000 / sem', '["Engineering", "Electronics", "Telecom", "Circuits"]'::jsonb),
             ('BSCpE',   'College of Computer Studies',         'B.S.', 'Computer Engineering',                                '4 Years', 'Fall / Spring', '₱46,000 / sem', '["Engineering", "Hardware", "Embedded", "Computing"]'::jsonb),
             ('BSCE',    'College of Engineering',              'B.S.', 'Civil Engineering',                                   '4 Years', 'Fall / Spring', '₱46,000 / sem', '["Engineering", "Structures", "Surveying", "Construction"]'::jsonb),
-            ('BSME',    'College of Engineering',              'B.S.', 'Mechanical Engineering',                              '4 Years', 'Fall / Spring', '₱46,000 / sem', '["Engineering", "Thermodynamics", "Machinery", "Thermal"]'::jsonb)
             ('BSME',    'College of Engineering',              'B.S.', 'Mechanical Engineering',                              '4 Years', 'Fall / Spring', '₱46,000 / sem', '["Engineering", "Thermodynamics", "Machinery", "Thermal"]'::jsonb),
             ('BSPHYS',  'College of Science',                  'B.S.', 'Physics',                                             '4 Years', 'Fall / Spring', '₱42,000 / sem', '["Science", "Physics", "Thermodynamics", "Quantum"]'::jsonb),
             ('BSAPHY',  'College of Science',                  'B.S.', 'Applied Physics',                                     '4 Years', 'Fall / Spring', '₱43,000 / sem', '["Science", "AppliedPhysics", "Instrumentation", "Electronics"]'::jsonb),
@@ -2129,30 +2128,6 @@ static async Task SeedCurriculumDataAsync(IServiceProvider services, ILogger log
     var programSql = """
         INSERT INTO curriculum."AcademicPrograms" ("Id", "Code", "Name", "College", "TotalUnits", "YearsToComplete", "IsActive")
         VALUES
-            (@BsaId,    'BSA',     'Bachelor of Science in Accountancy',                             'College of Business and Accountancy', 173, 4, TRUE),
-            (@BscsId,   'BSCS',    'Bachelor of Science in Computer Science',                        'College of Computer Studies',         145, 4, TRUE),
-            (@BsitId,   'BSIT',    'Bachelor of Science in Information Technology',                   'College of Computer Studies',         143, 4, TRUE),
-            (@BsmaId,   'BSMA',    'Bachelor of Science in Management Accounting',                    'College of Business and Accountancy', 167, 4, TRUE),
-            (@BsbafmId, 'BSBA-FM', 'Bachelor of Science in Business Administration (Financial Mgt)', 'College of Business and Accountancy', 148, 4, TRUE),
-            (@BsbammId, 'BSBA-MM', 'Bachelor of Science in Business Administration (Marketing Mgt)',   'College of Business and Accountancy', 148, 4, TRUE),
-            (@BsbaomId, 'BSBA-OM', 'Bachelor of Science in Business Administration (Operations Mgt)',  'College of Business and Accountancy', 148, 4, TRUE),
-            (@BsaisId,  'BSAIS',   'Bachelor of Science in Accounting Information Systems',           'College of Business and Accountancy', 156, 4, TRUE),
-            (@BsnId,    'BSN',     'Bachelor of Science in Nursing',                                  'College of Nursing and Allied Health',168, 4, TRUE),
-            (@BsmlsId,  'BSMLS',   'Bachelor of Science in Medical Laboratory Science',               'College of Allied Health Sciences',   162, 4, TRUE),
-            (@BsrtId,   'BSRT',    'Bachelor of Science in Radiologic Technology',                    'College of Allied Health Sciences',   158, 4, TRUE),
-            (@BsbioId,  'BSBIO',   'Bachelor of Science in Biology',                                  'College of Science',                  146, 4, TRUE),
-            (@BsmbId,   'BSMB',    'Bachelor of Science in Marine Biology',                           'College of Science',                  148, 4, TRUE),
-            (@BsdsaId,  'BSDSA',   'Bachelor of Science in Data Science and Analytics',               'College of Computer Studies',         156, 4, TRUE),
-            (@BsgeId,   'BSGE',    'Bachelor of Science in Geodetic Engineering',                    'College of Engineering',              162, 4, TRUE),
-            (@BsmathId, 'BSMATH',  'Bachelor of Science in Mathematics',                             'College of Science',                  144, 4, TRUE),
-            (@BsstatId, 'BSSTAT',  'Bachelor of Science in Statistics',                              'College of Science',                  146, 4, TRUE),
-            (@BsmId,    'BSM',     'Bachelor of Science in Midwifery',                               'College of Nursing and Allied Health',152, 4, TRUE),
-            (@BsagriId, 'BSAGRI',  'Bachelor of Science in Agriculture',                             'College of Agriculture',              154, 4, TRUE),
-            (@BsarchId, 'BSARCH',  'Bachelor of Science in Architecture',                            'College of Architecture',             172, 5, TRUE),
-            (@BseceId,  'BSECE',   'Bachelor of Science in Electronics Engineering',                'College of Engineering',              168, 4, TRUE),
-            (@BscpeId,  'BSCpE',   'Bachelor of Science in Computer Engineering',                  'College of Computer Studies',         145, 4, TRUE),
-            (@BsceId,   'BSCE',    'Bachelor of Science in Civil Engineering',                     'College of Engineering',              155, 4, TRUE),
-            (@BsmeId,   'BSME',    'Bachelor of Science in Mechanical Engineering',                'College of Engineering',              182, 4, TRUE)
             (@BsaId,      'BSA',      'Bachelor of Science in Accountancy',                             'College of Business and Accountancy', 173, 4, TRUE),
             (@BscsId,     'BSCS',     'Bachelor of Science in Computer Science',                        'College of Computer Studies',         145, 4, TRUE),
             (@BsitId,     'BSIT',     'Bachelor of Science in Information Technology',                   'College of Computer Studies',         143, 4, TRUE),
@@ -2190,30 +2165,6 @@ static async Task SeedCurriculumDataAsync(IServiceProvider services, ILogger log
         ON CONFLICT ("Code") DO NOTHING;
         """;
     await using var pgmCmd = new NpgsqlCommand(programSql, conn);
-    pgmCmd.Parameters.AddWithValue("BsaId",    pgmBSA);
-    pgmCmd.Parameters.AddWithValue("BscsId",   pgmBSCS);
-    pgmCmd.Parameters.AddWithValue("BsitId",   pgmBSIT);
-    pgmCmd.Parameters.AddWithValue("BsmaId",   pgmBSMA);
-    pgmCmd.Parameters.AddWithValue("BsbafmId", pgmBSBAFM);
-    pgmCmd.Parameters.AddWithValue("BsbammId", pgmBSBAMM);
-    pgmCmd.Parameters.AddWithValue("BsbaomId", pgmBSBAOM);
-    pgmCmd.Parameters.AddWithValue("BsaisId",  pgmBSAIS);
-    pgmCmd.Parameters.AddWithValue("BsnId",    pgmBSN);
-    pgmCmd.Parameters.AddWithValue("BsmlsId",  pgmBSMLS);
-    pgmCmd.Parameters.AddWithValue("BsrtId",   pgmBSRT);
-    pgmCmd.Parameters.AddWithValue("BsbioId",  pgmBSBIO);
-    pgmCmd.Parameters.AddWithValue("BsmbId",   pgmBSMB);
-    pgmCmd.Parameters.AddWithValue("BsdsaId",  pgmBSDSA);
-    pgmCmd.Parameters.AddWithValue("BsgeId",   pgmBSGE);
-    pgmCmd.Parameters.AddWithValue("BsmathId", pgmBSMATH);
-    pgmCmd.Parameters.AddWithValue("BsstatId", pgmBSSTAT);
-    pgmCmd.Parameters.AddWithValue("BsmId",    pgmBSM);
-    pgmCmd.Parameters.AddWithValue("BsagriId", pgmBSAGRI);
-    pgmCmd.Parameters.AddWithValue("BsarchId", pgmBSARCH);
-    pgmCmd.Parameters.AddWithValue("BseceId",  pgmBSECE);
-    pgmCmd.Parameters.AddWithValue("BscpeId",  pgmBSCpE);
-    pgmCmd.Parameters.AddWithValue("BsceId",   pgmBSCE);
-    pgmCmd.Parameters.AddWithValue("BsmeId",   pgmBSME);
     pgmCmd.Parameters.AddWithValue("BsaId",      pgmBSA);
     pgmCmd.Parameters.AddWithValue("BscsId",     pgmBSCS);
     pgmCmd.Parameters.AddWithValue("BsitId",     pgmBSIT);
@@ -2254,30 +2205,6 @@ static async Task SeedCurriculumDataAsync(IServiceProvider services, ILogger log
     var curriculaSql = """
         INSERT INTO curriculum."AcademicCurricula" ("Id", "ProgramId", "ProgramCode", "AcademicYear", "Version", "Status", "TotalUnits")
         VALUES
-            (@CurBsaId,    @BsaId,    'BSA',     '2025-2026', '1.0', 'Active', 173),
-            (@CurBscsId,   @BscsId,   'BSCS',    '2025-2026', '1.0', 'Active', 145),
-            (@CurBsitId,   @BsitId,   'BSIT',    '2025-2026', '1.0', 'Active', 143),
-            (@CurBsmaId,   @BsmaId,   'BSMA',    '2025-2026', '1.0', 'Active', 167),
-            (@CurBsbafmId, @BsbafmId, 'BSBA-FM', '2025-2026', '1.0', 'Active', 148),
-            (@CurBsbammId, @BsbammId, 'BSBA-MM', '2025-2026', '1.0', 'Active', 148),
-            (@CurBsbaomId, @BsbaomId, 'BSBA-OM', '2025-2026', '1.0', 'Active', 148),
-            (@CurBsaisId,  @BsaisId,  'BSAIS',   '2025-2026', '1.0', 'Active', 156),
-            (@CurBsnId,    @BsnId,    'BSN',     '2025-2026', '1.0', 'Active', 168),
-            (@CurBsmlsId,  @BsmlsId,  'BSMLS',   '2025-2026', '1.0', 'Active', 162),
-            (@CurBsrtId,   @BsrtId,   'BSRT',    '2025-2026', '1.0', 'Active', 158),
-            (@CurBsbioId,  @BsbioId,  'BSBIO',   '2025-2026', '1.0', 'Active', 146),
-            (@CurBsmbId,   @BsmbId,   'BSMB',    '2025-2026', '1.0', 'Active', 148),
-            (@CurBsdsaId,  @BsdsaId,  'BSDSA',   '2025-2026', '1.0', 'Active', 156),
-            (@CurBsgeId,   @BsgeId,   'BSGE',    '2025-2026', '1.0', 'Active', 162),
-            (@CurBsmathId, @BsmathId, 'BSMATH',  '2025-2026', '1.0', 'Active', 144),
-            (@CurBsstatId, @BsstatId, 'BSSTAT',  '2025-2026', '1.0', 'Active', 146),
-            (@CurBsmId,    @BsmId,    'BSM',     '2025-2026', '1.0', 'Active', 152),
-            (@CurBsagriId, @BsagriId, 'BSAGRI',  '2025-2026', '1.0', 'Active', 154),
-            (@CurBsarchId, @BsarchId, 'BSARCH',  '2025-2026', '1.0', 'Active', 172),
-            (@CurBseceId,  @BseceId,  'BSECE',   '2025-2026', '1.0', 'Active', 168),
-            (@CurBscpeId,  @BscpeId,  'BSCpE',   '2025-2026', '1.0', 'Active', 145),
-            (@CurBsceId,   @BsceId,   'BSCE',    '2025-2026', '1.0', 'Active', 155),
-            (@CurBsmeId,   @BsmeId,   'BSME',    '2025-2026', '1.0', 'Active', 182)
             (@CurBsaId,      @BsaId,      'BSA',      '2025-2026', '1.0', 'Active', 173),
             (@CurBscsId,     @BscsId,     'BSCS',     '2025-2026', '1.0', 'Active', 145),
             (@CurBsitId,     @BsitId,     'BSIT',     '2025-2026', '1.0', 'Active', 143),
@@ -2315,54 +2242,6 @@ static async Task SeedCurriculumDataAsync(IServiceProvider services, ILogger log
         ON CONFLICT ("Id") DO NOTHING;
         """;
     await using var curCmd = new NpgsqlCommand(curriculaSql, conn);
-    curCmd.Parameters.AddWithValue("CurBsaId",    curBSA);
-    curCmd.Parameters.AddWithValue("CurBscsId",   curBSCS);
-    curCmd.Parameters.AddWithValue("CurBsitId",   curBSIT);
-    curCmd.Parameters.AddWithValue("CurBsmaId",   curBSMA);
-    curCmd.Parameters.AddWithValue("CurBsbafmId", curBSBAFM);
-    curCmd.Parameters.AddWithValue("CurBsbammId", curBSBAMM);
-    curCmd.Parameters.AddWithValue("CurBsbaomId", curBSBAOM);
-    curCmd.Parameters.AddWithValue("CurBsaisId",  curBSAIS);
-    curCmd.Parameters.AddWithValue("CurBsnId",    curBSN);
-    curCmd.Parameters.AddWithValue("CurBsmlsId",  curBSMLS);
-    curCmd.Parameters.AddWithValue("CurBsrtId",   curBSRT);
-    curCmd.Parameters.AddWithValue("CurBsbioId",  curBSBIO);
-    curCmd.Parameters.AddWithValue("CurBsmbId",   curBSMB);
-    curCmd.Parameters.AddWithValue("CurBsdsaId",  curBSDSA);
-    curCmd.Parameters.AddWithValue("CurBsgeId",   curBSGE);
-    curCmd.Parameters.AddWithValue("CurBsmathId", curBSMATH);
-    curCmd.Parameters.AddWithValue("CurBsstatId", curBSSTAT);
-    curCmd.Parameters.AddWithValue("CurBsmId",    curBSM);
-    curCmd.Parameters.AddWithValue("CurBsagriId", curBSAGRI);
-    curCmd.Parameters.AddWithValue("CurBsarchId", curBSARCH);
-    curCmd.Parameters.AddWithValue("CurBseceId",  curBSECE);
-    curCmd.Parameters.AddWithValue("CurBscpeId",  curBSCpE);
-    curCmd.Parameters.AddWithValue("CurBsceId",   curBSCE);
-    curCmd.Parameters.AddWithValue("CurBsmeId",   curBSME);
-    curCmd.Parameters.AddWithValue("BsaId",    pgmBSA);
-    curCmd.Parameters.AddWithValue("BscsId",   pgmBSCS);
-    curCmd.Parameters.AddWithValue("BsitId",   pgmBSIT);
-    curCmd.Parameters.AddWithValue("BsmaId",   pgmBSMA);
-    curCmd.Parameters.AddWithValue("BsbafmId", pgmBSBAFM);
-    curCmd.Parameters.AddWithValue("BsbammId", pgmBSBAMM);
-    curCmd.Parameters.AddWithValue("BsbaomId", pgmBSBAOM);
-    curCmd.Parameters.AddWithValue("BsaisId",  pgmBSAIS);
-    curCmd.Parameters.AddWithValue("BsnId",    pgmBSN);
-    curCmd.Parameters.AddWithValue("BsmlsId",  pgmBSMLS);
-    curCmd.Parameters.AddWithValue("BsrtId",   pgmBSRT);
-    curCmd.Parameters.AddWithValue("BsbioId",  pgmBSBIO);
-    curCmd.Parameters.AddWithValue("BsmbId",   pgmBSMB);
-    curCmd.Parameters.AddWithValue("BsdsaId",  pgmBSDSA);
-    curCmd.Parameters.AddWithValue("BsgeId",   pgmBSGE);
-    curCmd.Parameters.AddWithValue("BsmathId", pgmBSMATH);
-    curCmd.Parameters.AddWithValue("BsstatId", pgmBSSTAT);
-    curCmd.Parameters.AddWithValue("BsmId",    pgmBSM);
-    curCmd.Parameters.AddWithValue("BsagriId", pgmBSAGRI);
-    curCmd.Parameters.AddWithValue("BsarchId", pgmBSARCH);
-    curCmd.Parameters.AddWithValue("BseceId",  pgmBSECE);
-    curCmd.Parameters.AddWithValue("BscpeId",  pgmBSCpE);
-    curCmd.Parameters.AddWithValue("BsceId",   pgmBSCE);
-    curCmd.Parameters.AddWithValue("BsmeId",   pgmBSME);
     curCmd.Parameters.AddWithValue("CurBsaId",      curBSA);
     curCmd.Parameters.AddWithValue("CurBscsId",     curBSCS);
     curCmd.Parameters.AddWithValue("CurBsitId",     curBSIT);
