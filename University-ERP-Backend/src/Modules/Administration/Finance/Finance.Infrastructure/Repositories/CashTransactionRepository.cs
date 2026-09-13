@@ -27,6 +27,13 @@ public sealed class CashTransactionRepository : ICashTransactionRepository
             .FirstOrDefaultAsync(t => t.TransactionToken == token, cancellationToken);
     }
 
+    public async Task<System.Collections.Generic.List<CashTransaction>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.CashTransactions
+            .OrderByDescending(t => t.CreatedOnUtc)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         await _dbContext.SaveChangesAsync(cancellationToken);

@@ -52,7 +52,7 @@ public sealed class PaymentSession : AggregateRoot<Guid>
         if (Status == "Paid" || Status == "Completed")
             return Result<bool>.Failure(new Error("PaymentSession.AlreadyPaid", "Session is already paid."));
             
-        if (DateTime.UtcNow > ExpiresAtUtc)
+        if (Status == "Expired" || DateTime.UtcNow > ExpiresAtUtc)
         {
             Status = "Expired";
             return Result<bool>.Failure(new Error("PaymentSession.Expired", "This payment session has expired."));

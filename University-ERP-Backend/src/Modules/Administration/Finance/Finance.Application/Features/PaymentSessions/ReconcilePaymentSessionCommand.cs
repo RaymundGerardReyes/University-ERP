@@ -57,12 +57,12 @@ public sealed class ReconcilePaymentSessionCommandHandler : IRequestHandler<Reco
         string manualReference = $"MANUAL-REC-{request.CashierId}-{DateTime.UtcNow.Ticks}";
 
         // 6. Publish integration event to advance student admissions/fees workflow if applicable
-        if (Guid.TryParse(session.ApplicantId, out Guid applicantGuid))
+        if (!string.IsNullOrWhiteSpace(session.ApplicantId))
         {
             var integrationEvent = new PaymentVerifiedIntegrationEvent(
                 Guid.NewGuid(),
                 DateTime.UtcNow,
-                applicantGuid,
+                session.ApplicantId,
                 session.InvoiceId,
                 session.Amount,
                 session.Currency,

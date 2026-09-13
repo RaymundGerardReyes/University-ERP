@@ -119,4 +119,11 @@ public sealed class StudentBilling : AggregateRoot<Guid>
         Status = "Cleared";
         return Result<bool>.Success(true);
     }
+
+    public Result<bool> ClearForEnrollment()
+    {
+        Status = "Cleared";
+        return Result<bool>.Success(true);
+    }
 }
+

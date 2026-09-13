@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 
 [ApiController]
 [Route("api/v1/finance/webhooks")]
+[Microsoft.AspNetCore.Authorization.AllowAnonymous]
 public sealed class PaymentWebhookEndpoint : ControllerBase
 {
     private readonly ISender _sender;
@@ -27,7 +28,7 @@ public sealed class PaymentWebhookEndpoint : ControllerBase
         _options = options.Value;
     }
 
-    [HttpPost("banking")]
+    [HttpPost("gateway")]
     public async Task<IActionResult> Webhook(CancellationToken cancellationToken)
     {
         using var reader = new StreamReader(Request.Body);

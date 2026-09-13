@@ -55,7 +55,7 @@ public sealed class CompletePaymentSessionCommandHandler : IRequestHandler<Compl
         await _publisher.Publish(new PaymentVerifiedIntegrationEvent(
             Guid.NewGuid(),
             DateTime.UtcNow,
-            Guid.Parse(session.ApplicantId),
+            session.ApplicantId,
             session.InvoiceId,
             session.Amount,
             session.Currency,

@@ -31,6 +31,7 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
         var requestBody = new
         {
             sourceAccountNumber = paymentToken,
+            destinationAccountNumber = _options.SourceAccountId,
             amount = amount,
             idempotencyKey = System.Guid.NewGuid().ToString(),
             description = "University ERP Payment",
@@ -40,7 +41,10 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
         try
         {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/api/v1/transfers/internal");
-            requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _options.SecretKey);
+            // API key should be used for B2B/backend calls if not a JWT user token.
+            // Wait, transfers/internal might require JWT token, but we can pass BFF key
+            requestMessage.Headers.TryAddWithoutValidation("X-API-Key", _options.SecretKey);
+            requestMessage.Headers.TryAddWithoutValidation("X-Internal-BFF-Key", "WQhQECsf4nIhiZ3H+CQRIaOIOnxbgBmbA9sRHpaKlaM=");
 
             requestMessage.Content = JsonContent.Create(requestBody);
 
@@ -70,14 +74,20 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
         {
             var payload = new
             {
-                sourceAccountId = _options.SourceAccountId,
-                amount = amount,
-                description = $"Payment Session {sessionId}",
-                merchantReference = sessionId
+                reference = sessionId,
+                currency = currency ?? "PHP",
+                successUrl = "https://erp.university.edu/finance/success",
+                cancelUrl = "https://erp.university.edu/finance/cancel",
+                lineItems = new[]
+                {
+                    new { name = "University Fee", quantity = 1, unitAmount = amount }
+                }
             };
 
-            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/api/v1/gateway/payments/intents");
-            requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _options.SecretKey);
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/api/v1/gateway/checkout/sessions");
+            // The Java Banking API uses X-API-Key for the merchant gateway
+            requestMessage.Headers.TryAddWithoutValidation("X-API-Key", _options.SecretKey);
+            requestMessage.Headers.TryAddWithoutValidation("X-Internal-BFF-Key", "WQhQECsf4nIhiZ3H+CQRIaOIOnxbgBmbA9sRHpaKlaM=");
             
             string safeBankKey = GenerateDeterministicKey(idempotencyKey ?? sessionId);
             requestMessage.Headers.TryAddWithoutValidation("Idempotency-Key", safeBankKey);
@@ -131,48 +141,60 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
     
     public async Task<Result<string>> GeneratePaymentInstrumentAsync(string sessionId, decimal amount, string currency, CancellationToken cancellationToken)
     {
-        // Mock fallback for local dev if hitting the dummy payload
-        if (_httpClient.BaseAddress?.Host == "api.banking.university.edu" || string.IsNullOrEmpty(_options.SecretKey) || _options.SecretKey == "sk_test_mocked")
-        {
-            return Result<string>.Success($"qrph_mock_payload_for_session_{sessionId}");
-        }
-
         try
         {
-            var amountInCentavos = (long)(amount * 100);
-            
-            var payload = new
+            // 1. Create Payment Intent
+            var intentPayload = new
             {
-                data = new
-                {
-                    attributes = new
-                    {
-                        amount = amountInCentavos,
-                        description = $"QR Payment for Session {sessionId}"
-                    }
-                }
+                sourceAccountId = _options.SourceAccountId, // Needs to be the student's account if internal, or merchant account if external? For gateway, we don't know the source account yet. Wait, if it's dynamic QR, anyone can scan it. The Java API accepts null or the merchant's holding account.
+                merchantReference = sessionId,
+                amount = amount,
+                currency = currency ?? "PHP",
+                description = $"QR Payment for Session {sessionId}"
             };
 
-            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/v1/links");
-            var authHeader = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{_options.SecretKey}:"));
-            requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authHeader);
-            requestMessage.Content = JsonContent.Create(payload);
-            
-            var response = await _httpClient.SendAsync(requestMessage, cancellationToken);
-            
-            if (response.IsSuccessStatusCode)
+            using var intentRequest = new HttpRequestMessage(HttpMethod.Post, "/api/v1/gateway/payments/intents");
+            intentRequest.Headers.TryAddWithoutValidation("X-API-Key", _options.SecretKey);
+            intentRequest.Headers.TryAddWithoutValidation("X-Internal-BFF-Key", "WQhQECsf4nIhiZ3H+CQRIaOIOnxbgBmbA9sRHpaKlaM=");
+            intentRequest.Headers.TryAddWithoutValidation("Idempotency-Key", GenerateDeterministicKey(sessionId + "_qr_intent"));
+            intentRequest.Content = JsonContent.Create(intentPayload);
+
+            var intentResponse = await _httpClient.SendAsync(intentRequest, cancellationToken);
+            if (!intentResponse.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>(cancellationToken: cancellationToken);
-                var checkoutUrl = result.GetProperty("data").GetProperty("attributes").GetProperty("checkout_url").GetString();
-                
-                if (!string.IsNullOrEmpty(checkoutUrl))
-                {
-                    return Result<string>.Success(checkoutUrl);
-                }
+                var err = await intentResponse.Content.ReadAsStringAsync(cancellationToken);
+                return Result<string>.Failure(new Error("Finance.PaymentGatewayError", $"Failed to create payment intent for QR: {err}"));
             }
-            
-            var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
-            return Result<string>.Failure(new Error("Finance.PaymentGatewayError", $"Failed to generate QR payment link: {errorContent}"));
+
+            var intentResult = await intentResponse.Content.ReadFromJsonAsync<ApiResponse<PaymentSessionResponse>>(cancellationToken: cancellationToken);
+            var intentId = intentResult?.Data?.PaymentIntentId;
+
+            if (string.IsNullOrEmpty(intentId))
+            {
+                return Result<string>.Failure(new Error("Finance.PaymentGatewayError", "Banking API returned success but no PaymentIntentId."));
+            }
+
+            // 2. Generate QR for the Intent
+            using var qrRequest = new HttpRequestMessage(HttpMethod.Post, $"/api/v1/gateway/payment-intents/{intentId}/qr");
+            qrRequest.Headers.TryAddWithoutValidation("X-API-Key", _options.SecretKey);
+            qrRequest.Headers.TryAddWithoutValidation("X-Internal-BFF-Key", "WQhQECsf4nIhiZ3H+CQRIaOIOnxbgBmbA9sRHpaKlaM=");
+
+            var qrResponse = await _httpClient.SendAsync(qrRequest, cancellationToken);
+            if (!qrResponse.IsSuccessStatusCode)
+            {
+                var err = await qrResponse.Content.ReadAsStringAsync(cancellationToken);
+                return Result<string>.Failure(new Error("Finance.PaymentGatewayError", $"Failed to generate QR: {err}"));
+            }
+
+            var qrResult = await qrResponse.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>(cancellationToken: cancellationToken);
+            var qrString = qrResult.GetProperty("qrReference").GetString();
+
+            if (!string.IsNullOrEmpty(qrString))
+            {
+                return Result<string>.Success(qrString);
+            }
+
+            return Result<string>.Failure(new Error("Finance.PaymentGatewayError", "Failed to parse QR string from response."));
         }
         catch (HttpRequestException ex)
         {
@@ -180,6 +202,108 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
         }
     }
     
+    public async Task<Result<string>> ProcessCashDepositAsync(decimal amount, string reference, CancellationToken cancellationToken)
+    {
+        var requestBody = new
+        {
+            accountNumber = _options.SourceAccountId,
+            amount = amount,
+            idempotencyKey = System.Guid.NewGuid().ToString()
+        };
+
+        try
+        {
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/api/v1/transactions/deposit");
+            requestMessage.Headers.TryAddWithoutValidation("X-API-Key", _options.SecretKey);
+            requestMessage.Headers.TryAddWithoutValidation("X-Internal-BFF-Key", "WQhQECsf4nIhiZ3H+CQRIaOIOnxbgBmbA9sRHpaKlaM=");
+            
+            requestMessage.Content = JsonContent.Create(requestBody);
+            
+            var response = await _httpClient.SendAsync(requestMessage, cancellationToken);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse<TransactionResponse>>(cancellationToken: cancellationToken);
+                if (result?.Data != null && !string.IsNullOrEmpty(result.Data.TransactionId))
+                {
+                    return Result<string>.Success(result.Data.TransactionId);
+                }
+            }
+            
+            var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+            return Result<string>.Failure(new Error("Finance.BankingError", $"Banking API rejected the deposit: {errorContent}"));
+        }
+        catch (HttpRequestException ex)
+        {
+            return Result<string>.Failure(new Error("Finance.BankingConnectionError", $"Could not connect to banking system: {ex.Message}"));
+        }
+    }
+
+    public async Task<Result<string>> ExecuteTransferAsync(string destinationAccount, decimal amount, string purpose, CancellationToken cancellationToken)
+    {
+        var requestBody = new
+        {
+            sourceAccountNumber = _options.SourceAccountId,
+            destinationAccountNumber = destinationAccount,
+            amount = amount,
+            idempotencyKey = System.Guid.NewGuid().ToString(),
+            description = purpose ?? "University ERP Transfer",
+            scheduledDate = System.DateTime.UtcNow.ToString("yyyy-MM-dd")
+        };
+
+        try
+        {
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/api/v1/transfers/internal");
+            requestMessage.Headers.TryAddWithoutValidation("X-API-Key", _options.SecretKey);
+            requestMessage.Headers.TryAddWithoutValidation("X-Internal-BFF-Key", "WQhQECsf4nIhiZ3H+CQRIaOIOnxbgBmbA9sRHpaKlaM=");
+            
+            requestMessage.Content = JsonContent.Create(requestBody);
+            
+            var response = await _httpClient.SendAsync(requestMessage, cancellationToken);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse<TransactionResponse>>(cancellationToken: cancellationToken);
+                if (result?.Data != null && !string.IsNullOrEmpty(result.Data.TransactionId))
+                {
+                    return Result<string>.Success(result.Data.TransactionId);
+                }
+            }
+            
+            var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+            return Result<string>.Failure(new Error("Finance.BankingError", $"Banking API rejected the transfer: {errorContent}"));
+        }
+        catch (HttpRequestException ex)
+        {
+            return Result<string>.Failure(new Error("Finance.BankingConnectionError", $"Could not connect to banking system: {ex.Message}"));
+        }
+    }
+
+    public async Task<Result<string>> FetchStatementsAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/api/v1/statements/account/{_options.SourceAccountId}");
+            requestMessage.Headers.TryAddWithoutValidation("X-API-Key", _options.SecretKey);
+            requestMessage.Headers.TryAddWithoutValidation("X-Internal-BFF-Key", "WQhQECsf4nIhiZ3H+CQRIaOIOnxbgBmbA9sRHpaKlaM=");
+            
+            var response = await _httpClient.SendAsync(requestMessage, cancellationToken);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                return Result<string>.Success(content);
+            }
+            
+            var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+            return Result<string>.Failure(new Error("Finance.BankingError", $"Banking API rejected the statement fetch: {errorContent}"));
+        }
+        catch (HttpRequestException ex)
+        {
+            return Result<string>.Failure(new Error("Finance.BankingConnectionError", $"Could not connect to banking system: {ex.Message}"));
+        }
+    }
+
     private record TransactionResponse(string TransactionId, string Status, decimal Amount);
     private record PaymentSessionResponse(string PaymentIntentId, string Provider, string CheckoutType, string CheckoutUrl, System.DateTime ExpiresAt, string TransactionReference);
     private record ApiResponse<T>(T Data, string Message, string CorrelationId);

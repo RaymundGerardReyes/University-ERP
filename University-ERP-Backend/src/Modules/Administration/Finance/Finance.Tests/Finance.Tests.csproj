@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -18,5 +19,6 @@
     <ProjectReference Include="../Finance.Application/Finance.Application.csproj" />
     <ProjectReference Include="../Finance.Domain/Finance.Domain.csproj" />
     <ProjectReference Include="../Finance.Infrastructure/Finance.Infrastructure.csproj" />
+    <ProjectReference Include="../Finance.Presentation/Finance.Presentation.csproj" />
   </ItemGroup>
 </Project>

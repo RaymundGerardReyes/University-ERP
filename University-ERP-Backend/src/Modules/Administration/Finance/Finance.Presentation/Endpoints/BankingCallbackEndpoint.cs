@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 [ApiController]
 [Route("api/v1/finance/webhooks/banking")]
+[Microsoft.AspNetCore.Authorization.AllowAnonymous]
 public sealed class BankingCallbackEndpoint : ControllerBase
 {
     private readonly ISender _sender;

@@ -13,4 +13,10 @@ public interface IPaymentGatewayService
     Task<Result<string>> CreateCheckoutSessionAsync(string transactionId, decimal amount, string gatewayName, CancellationToken cancellationToken);
     
     Task<Result<string>> GeneratePaymentInstrumentAsync(string sessionId, decimal amount, string currency, CancellationToken cancellationToken);
+
+    Task<Result<string>> ProcessCashDepositAsync(decimal amount, string reference, CancellationToken cancellationToken);
+
+    Task<Result<string>> ExecuteTransferAsync(string destinationAccount, decimal amount, string purpose, CancellationToken cancellationToken);
+
+    Task<Result<string>> FetchStatementsAsync(CancellationToken cancellationToken);
 }
