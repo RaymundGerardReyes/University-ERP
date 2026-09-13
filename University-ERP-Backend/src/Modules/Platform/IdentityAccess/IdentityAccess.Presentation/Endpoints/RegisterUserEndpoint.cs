@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 [ApiController]
 [Route("api/v1/platform/identity")]
+[Microsoft.AspNetCore.Authorization.AllowAnonymous]
 public sealed class RegisterUserEndpoint : ControllerBase
 {
     private readonly ISender _sender;
