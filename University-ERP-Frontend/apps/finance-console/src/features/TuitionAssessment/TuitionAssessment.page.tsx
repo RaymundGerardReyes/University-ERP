@@ -1,6 +1,8 @@
 import React from 'react';
 import { Badge, Button, Card, PageHeader, Table } from '@university-erp/ui-kit';
 import { useAssessmentCandidates, usePerformAssessment } from './TuitionAssessment.hooks';
+import { AssessmentStudentDto } from './TuitionAssessment.types';
+import { toSafeArray } from '../../utils/arrayUtils';
 
 export const TuitionAssessmentPage: React.FC = () => {
   const { data: candidates, isLoading } = useAssessmentCandidates();
@@ -11,7 +13,8 @@ export const TuitionAssessmentPage: React.FC = () => {
     alert(`Tuition assessment completed for ${studentId}.`);
   };
 
-  const students = candidates?.length ? candidates : [
+  const safeCandidates = toSafeArray<AssessmentStudentDto>(candidates);
+  const students = safeCandidates.length > 0 ? safeCandidates : [
     { studentId: 'STU-2026-8812', studentName: 'Michael Corleone', program: 'BS Computer Science', enrolledUnits: 18, ratePerUnit: 120, miscellaneousFees: 350, scholarshipDeduction: 500, assessedTotal: 2010, status: 'Pending' },
     { studentId: 'STU-2026-9041', studentName: 'Elena Rostova', program: 'BS Information Systems', enrolledUnits: 15, ratePerUnit: 120, miscellaneousFees: 350, scholarshipDeduction: 0, assessedTotal: 2150, status: 'Pending' },
     { studentId: 'STU-2026-7732', studentName: 'David Chen', program: 'BS Data Science', enrolledUnits: 21, ratePerUnit: 120, miscellaneousFees: 400, scholarshipDeduction: 1000, assessedTotal: 1920, status: 'Assessed' }
@@ -53,7 +56,7 @@ export const TuitionAssessmentPage: React.FC = () => {
                   -${s.scholarshipDeduction}
                 </td>
                 <td style={{ fontWeight: 700, color: 'var(--brand-primary)' }}>
-                  ${s.assessedTotal.toFixed(2)}
+                  ${Number(s.assessedTotal ?? 0).toFixed(2)}
                 </td>
                 <td>
                   <Badge colorScheme={s.status === 'Assessed' ? 'success' : 'warning'}>

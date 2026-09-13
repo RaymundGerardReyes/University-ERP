@@ -1,4 +1,5 @@
 import { apiClient } from '@university-erp/api-clients';
+import { toSafeArray } from '../../utils/arrayUtils';
 
 export interface StudentBillingDto {
     id: string;
@@ -13,7 +14,7 @@ export interface StudentBillingDto {
 
 export const studentBillingApi = {
     getAllBillings: async (): Promise<StudentBillingDto[]> => {
-        const response = await apiClient.get<StudentBillingDto[]>('/api/v1/finance/billings');
-        return response.data;
+        const response = await apiClient.get<StudentBillingDto[]>('/finance/billings');
+        return toSafeArray<StudentBillingDto>(response.data);
     }
 };

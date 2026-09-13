@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Badge, Button, Card, FormInput, Modal, PageHeader, Table } from '@university-erp/ui-kit';
 import { useGeneratePayslip, usePayrollRecords } from './Payroll.hooks';
-import { GeneratePayslipPayload } from './Payroll.types';
+import { GeneratePayslipPayload, PayrollRecordDto } from './Payroll.types';
+import { toSafeArray } from '../../utils/arrayUtils';
 
 export const PayrollPage: React.FC = () => {
   const [currentPeriod] = useState('Aug 2026');
@@ -40,7 +41,8 @@ export const PayrollPage: React.FC = () => {
 
   const calculatedNet = Number(formData.basicSalary) + Number(formData.allowances) - Number(formData.deductions);
 
-  const displayRecords = records?.length ? records : [
+  const safeRecords = toSafeArray<PayrollRecordDto>(records);
+  const displayRecords = safeRecords.length > 0 ? safeRecords : [
     { payrollId: 'PAY-2026-101', employeeId: 'FAC-ENG-001', employeeName: 'Dr. Alan Turing', department: 'Computer Science', payPeriod: 'Aug 2026', basicSalary: 7500, allowances: 800, deductions: 1200, netPay: 7100, status: 'DISBURSED' },
     { payrollId: 'PAY-2026-102', employeeId: 'FAC-ENG-002', employeeName: 'Dr. Ada Lovelace', department: 'Computer Science', payPeriod: 'Aug 2026', basicSalary: 8200, allowances: 950, deductions: 1350, netPay: 7800, status: 'DISBURSED' },
     { payrollId: 'PAY-2026-103', employeeId: 'STAFF-ADM-044', employeeName: 'Sarah Jenkins', department: 'Registrar Office', payPeriod: 'Aug 2026', basicSalary: 4200, allowances: 300, deductions: 650, netPay: 3850, status: 'PROCESSED' }

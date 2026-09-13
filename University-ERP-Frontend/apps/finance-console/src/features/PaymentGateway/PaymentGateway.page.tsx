@@ -1,24 +1,22 @@
 import React, { useState } from 'react';
-import { Badge, Button, Card, PageHeader, Table } from '@university-erp/ui-kit';
+import { Badge, Button, Card, FormInput, PageHeader, Table } from '@university-erp/ui-kit';
 import { useAllPaymentSessions, useReconcilePayment } from './PaymentGateway.hooks';
+import { toSafeArray } from '../../utils/arrayUtils';
 
 export const PaymentGatewayPage: React.FC = () => {
     const { data: sessions, isLoading, isError } = useAllPaymentSessions();
     const reconcileMutation = useReconcilePayment();
     const [searchQuery, setSearchQuery] = useState('');
 
-    const sessionList = sessions || [
-      { sessionId: 'SESS-2026-001', applicantId: 'APP-2026-101', purpose: 'Tuition Fee Payment', amount: 1250, currency: 'USD', status: 'Active' },
-      { sessionId: 'SESS-2026-002', applicantId: 'APP-2026-102', purpose: 'Registration Fee', amount: 350, currency: 'USD', status: 'AwaitingPayment' }
-    ];
+    const sessionList = toSafeArray(sessions);
 
     const activeSessions = sessionList.filter((s: any) => 
         (s.status === 'Active' || s.status === 'AwaitingPayment' || s.status === 'PendingBankConfirmation') && 
-        (s.sessionId.toLowerCase().includes(searchQuery.toLowerCase()) || s.applicantId.toLowerCase().includes(searchQuery.toLowerCase()))
+        ((s.sessionId || '').toLowerCase().includes(searchQuery.toLowerCase()) || (s.applicantId || '').toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     const handleReconcile = (sessionId: string, amount: number) => {
-        if (window.confirm(`Confirm receipt of cash payment for $${amount.toFixed(2)}? This action will mark the student's tuition invoice as paid.`)) {
+        if (window.confirm(`Confirm receipt of cash payment for $${Number(amount ?? 0).toFixed(2)}? This action will mark the student's tuition invoice as paid.`)) {
             reconcileMutation.mutate({ 
                 sessionId, 
                 remarks: 'Over-the-counter cash payment received.' 
@@ -48,15 +46,10 @@ export const PaymentGatewayPage: React.FC = () => {
                             <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: 'var(--space-2)', color: 'var(--text-secondary)' }}>
                                 Search Active Sessions
                             </label>
-                            <input 
-                                type="text" 
+                            <FormInput 
                                 placeholder="Enter Session ID or Student ID..." 
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                style={{ 
-                                    width: '100%', padding: 'var(--space-2)', borderRadius: 'var(--radius-sm)', 
-                                    border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' 
-                                }}
                             />
                         </div>
                         <Badge colorScheme="warning" style={{ marginTop: '1.5rem' }}>
@@ -91,7 +84,7 @@ export const PaymentGatewayPage: React.FC = () => {
                                         <td style={{ fontWeight: 600 }}>{session.applicantId}</td>
                                         <td>{session.purpose || 'Tuition Fee Payment'}</td>
                                         <td style={{ color: 'var(--success-text)', fontWeight: 'bold' }}>
-                                            ${session.amount.toFixed(2)} {session.currency || 'USD'}
+                                            ${Number(session.amount ?? 0).toFixed(2)} {session.currency || 'USD'}
                                         </td>
                                         <td><Badge colorScheme="warning">Awaiting Funds</Badge></td>
                                         <td>

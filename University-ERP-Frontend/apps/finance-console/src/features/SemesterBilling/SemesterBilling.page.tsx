@@ -1,10 +1,13 @@
 import { Badge, Button, Card, PageHeader, Table } from '@university-erp/ui-kit';
 import React from 'react';
 import { useFinalizeAssessment, usePendingAssessments } from './SemesterBilling.hooks';
+import { SemesterAssessmentDto } from './SemesterBilling.types';
+import { toSafeArray } from '../../utils/arrayUtils';
 
 export const SemesterBillingPage: React.FC = () => {
     const currentTermId = "TERM-FALL-2026";
-    const { data: assessments, isLoading } = usePendingAssessments(currentTermId);
+    const { data: rawAssessments, isLoading } = usePendingAssessments(currentTermId);
+    const assessments: SemesterAssessmentDto[] = toSafeArray<SemesterAssessmentDto>(rawAssessments);
     const finalizeMutation = useFinalizeAssessment();
 
     return (
@@ -29,11 +32,11 @@ export const SemesterBillingPage: React.FC = () => {
                           </tr>
                       </thead>
                       <tbody>
-                          {assessments?.length ? assessments.map((assessment) => (
+                          {assessments.length > 0 ? assessments.map((assessment) => (
                               <tr key={assessment.assessmentId}>
-                                  <td><span style={{ fontFamily: 'monospace' }}>{assessment.assessmentId.substring(0, 8)}</span></td>
+                                  <td><span style={{ fontFamily: 'monospace' }}>{assessment.assessmentId?.substring(0, 8) ?? 'N/A'}</span></td>
                                   <td><strong>{assessment.studentId}</strong></td>
-                                  <td>${assessment.totalAssessed.toFixed(2)}</td>
+                                  <td>${(assessment.totalAssessed ?? 0).toFixed(2)}</td>
                                   <td>
                                       <Badge colorScheme={assessment.status === 'FINALIZED' ? 'success' : 'warning'}>
                                           {assessment.status}

@@ -1,4 +1,5 @@
 import { apiClient } from '@university-erp/api-clients';
+import { toSafeArray } from '../../utils/arrayUtils';
 
 export interface PaymentSessionRecord {
   sessionId: string;
@@ -14,7 +15,7 @@ export interface PaymentSessionRecord {
 
 export const paymentGatewayApi = {
   getAllSessions: async (): Promise<PaymentSessionRecord[]> => {
-    const response = await apiClient.get('/api/v1/finance/payment-sessions');
-    return response.data;
+    const response = await apiClient.get<PaymentSessionRecord[]>('/finance/payment-sessions');
+    return toSafeArray<PaymentSessionRecord>(response.data);
   }
 };

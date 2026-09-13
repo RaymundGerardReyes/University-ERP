@@ -1,5 +1,13 @@
 export type BudgetStatus = 'ON_TRACK' | 'NEAR_LIMIT' | 'OVER_BUDGET';
 
+export interface BudgetLineItem {
+  id: string;
+  category: string;
+  allocated: number;
+  spent: number;
+  remaining: number;
+}
+
 export interface DepartmentBudgetDto {
   budgetId: string;
   departmentCode: string;
@@ -9,6 +17,7 @@ export interface DepartmentBudgetDto {
   spentAmount: number;
   remainingAmount: number;
   status: BudgetStatus;
+  lineItems?: BudgetLineItem[];
 }
 
 export interface CreateBudgetPayload {

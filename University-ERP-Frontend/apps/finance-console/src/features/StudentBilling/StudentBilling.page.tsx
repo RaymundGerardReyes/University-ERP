@@ -1,9 +1,11 @@
 import React from 'react';
 import { Badge, Card, PageHeader, Table } from '@university-erp/ui-kit';
 import { useStudentBillings } from './StudentBilling.hooks';
+import { toSafeArray } from '../../utils/arrayUtils';
 
 export const StudentBillingPage: React.FC = () => {
-    const { data: billings, isLoading, isError } = useStudentBillings();
+    const { data: rawBillings, isLoading, isError } = useStudentBillings();
+    const billings = toSafeArray(rawBillings);
 
     return (
         <div className="fade-in">
@@ -34,7 +36,7 @@ export const StudentBillingPage: React.FC = () => {
                           </tr>
                       </thead>
                       <tbody>
-                          {!billings || billings.length === 0 ? (
+                          {billings.length === 0 ? (
                               <tr>
                                   <td colSpan={7} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
                                       No student billings found. Process an admission enrollment to auto-generate a bill.
@@ -44,18 +46,18 @@ export const StudentBillingPage: React.FC = () => {
                               billings.map(billing => (
                                   <tr key={billing.id}>
                                       <td style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
-                                          {billing.studentId.substring(0, 8)}...
+                                          {billing.studentId ? (billing.studentId.length > 8 ? billing.studentId.substring(0, 8) + '...' : billing.studentId) : 'N/A'}
                                       </td>
                                       <td style={{ fontWeight: 600 }}>{billing.description}</td>
-                                      <td>${billing.totalAmount.toFixed(2)}</td>
-                                      <td style={{ color: billing.paidAmount > 0 ? 'var(--success-text)' : 'inherit' }}>
-                                          ${billing.paidAmount.toFixed(2)}
+                                      <td>${Number(billing.totalAmount ?? 0).toFixed(2)}</td>
+                                      <td style={{ color: (billing.paidAmount ?? 0) > 0 ? 'var(--success-text)' : 'inherit' }}>
+                                          ${Number(billing.paidAmount ?? 0).toFixed(2)}
                                       </td>
                                       <td style={{ 
-                                          color: billing.outstandingBalance > 0 ? 'var(--warning-text)' : 'var(--success-text)', 
+                                          color: (billing.outstandingBalance ?? 0) > 0 ? 'var(--warning-text)' : 'var(--success-text)', 
                                           fontWeight: 'bold' 
                                       }}>
-                                          ${billing.outstandingBalance.toFixed(2)}
+                                          ${Number(billing.outstandingBalance ?? 0).toFixed(2)}
                                       </td>
                                       <td>
                                           <Badge colorScheme={

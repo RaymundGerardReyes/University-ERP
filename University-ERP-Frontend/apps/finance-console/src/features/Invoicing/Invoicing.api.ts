@@ -1,22 +1,23 @@
 import { apiClient, financeApi } from '@university-erp/api-clients';
 import { InvoiceDto, IssueInvoicePayload, IssueInvoiceResponse } from './Invoicing.types';
+import { toSafeArray } from '../../utils/arrayUtils';
 
 export const invoicingApi = {
   getAllInvoices: async (termId?: string): Promise<InvoiceDto[]> => {
     try {
-      const response = await apiClient.get<InvoiceDto[]>('/api/v1/finance/invoices', {
+      const response = await apiClient.get<InvoiceDto[]>('/finance/invoices', {
         params: termId ? { termId } : undefined
       });
-      return response.data;
+      return toSafeArray<InvoiceDto>(response.data);
     } catch {
-      // Fallback to legacy financeApi
-      return (await financeApi.getInvoices()) as InvoiceDto[];
+      const res = await financeApi.getInvoices();
+      return toSafeArray<InvoiceDto>(res);
     }
   },
 
   issueInvoice: async (payload: IssueInvoicePayload): Promise<IssueInvoiceResponse> => {
     try {
-      const response = await apiClient.post<IssueInvoiceResponse>('/api/v1/finance/invoices', payload);
+      const response = await apiClient.post<IssueInvoiceResponse>('/finance/invoices', payload);
       return response.data;
     } catch {
       return (await financeApi.issueInvoice({

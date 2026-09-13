@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Badge, Button, Card, FormInput, Modal, PageHeader, Table } from '@university-erp/ui-kit';
 import { useInvoices, useIssueInvoice } from './Invoicing.hooks';
-import { InvoiceStatus, IssueInvoicePayload } from './Invoicing.types';
+import { InvoiceDto, InvoiceStatus, IssueInvoicePayload } from './Invoicing.types';
+import { toSafeArray } from '../../utils/arrayUtils';
 
 export const InvoicingPage: React.FC = () => {
   const [selectedTerm, setSelectedTerm] = useState('ALL');
@@ -34,10 +35,13 @@ export const InvoicingPage: React.FC = () => {
     });
   };
 
-  const allItems = invoices || [];
+  const allItems: InvoiceDto[] = toSafeArray<InvoiceDto>(invoices);
   const filteredItems = allItems.filter((inv) => {
     const matchesStatus = statusFilter === 'ALL' || inv.status === statusFilter;
-    const matchesSearch = !searchTerm || inv.studentId.toLowerCase().includes(searchTerm.toLowerCase()) || inv.invoiceId.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      !searchTerm ||
+      (inv.studentId || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (inv.invoiceId || '').toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
 
