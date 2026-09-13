@@ -19,8 +19,8 @@ import { StudentBillingPage } from '../features/StudentBilling/StudentBilling.pa
 import { SemesterBillingPage } from '../features/SemesterBilling/SemesterBilling.page';
 
 // Cashier & Payments
-import { PaymentGatewayPage } from '../features/Cashier/PaymentGateway.page';
-import { PaymentGatewayPage as PaymentGatewayMonitorPage } from '../features/PaymentGateway/PaymentGateway.page';
+import { CashierPage } from '../features/Cashier/Cashier.page';
+import { PaymentGatewayPage } from '../features/PaymentGateway/PaymentGateway.page';
 import { ClearanceApprovalPage } from '../features/Cashier/ClearanceApproval.page';
 
 // Enrollment Finance Workspace
@@ -68,9 +68,9 @@ export const Routing: React.FC = () => {
 
           {/* Cashier & Payments Workspace */}
           <Route element={<FinanceGuard allowedRoles={['ROLE_FINANCE_ADMIN', 'ROLE_FINANCE_CASHIER']} />}>
-            <Route path="/cashier/payments" element={<PaymentGatewayPage />} />
-            <Route path="/cashier/monitor" element={<PaymentGatewayMonitorPage />} />
-            <Route path="/cashier/gateway" element={<PaymentGatewayMonitorPage />} />
+            <Route path="/cashier/payments" element={<CashierPage />} />
+            <Route path="/cashier/monitor" element={<PaymentGatewayPage />} />
+            <Route path="/cashier/gateway" element={<PaymentGatewayPage />} />
             <Route path="/cashier/clearance" element={<ClearanceApprovalPage />} />
           </Route>
 

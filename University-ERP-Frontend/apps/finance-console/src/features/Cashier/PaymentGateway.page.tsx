@@ -4,7 +4,7 @@ import { useCashierTransactions, useProcessCashPayment } from './Cashier.hooks';
 import { CashierTransactionDto } from './Cashier.types';
 import { toSafeArray } from '../../utils/arrayUtils';
 
-export const PaymentGatewayPage: React.FC = () => {
+export const CashierPage: React.FC = () => {
   // Fetching real data from the API hook
   const { data: rawTransactions, isLoading, isError } = useCashierTransactions();
   const processMutation = useProcessCashPayment();
@@ -314,4 +314,5 @@ export const PaymentGatewayPage: React.FC = () => {
   );
 };
 
-export default PaymentGatewayPage;
+export const PaymentGatewayPage = CashierPage;
+export default CashierPage;
