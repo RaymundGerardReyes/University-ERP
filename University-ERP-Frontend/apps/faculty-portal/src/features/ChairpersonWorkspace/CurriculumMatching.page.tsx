@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Badge, Button, Card, PageHeader, Table } from '@university-erp/ui-kit';
+import { registrarCurriculumApi, CourseDefinitionDto } from '@university-erp/api-clients';
 import { createLogger } from '@university-erp/core-logger';
 
 const logger = createLogger('faculty-portal', 'CurriculumMatching');
@@ -21,6 +22,12 @@ export const CurriculumMatchingPage: React.FC = () => {
   
   // Local state to hold the current mappings being edited
   const [mappings, setMappings] = useState<Record<string, string>>({});
+
+  // Fetch live subject catalog from curriculum API
+  const { data: subjectCatalog = [] } = useQuery({
+    queryKey: ['curriculum', 'catalog'],
+    queryFn: () => registrarCurriculumApi.getSubjectCatalog(),
+  });
 
   // Fetch applicants awaiting curriculum matching
   const { data: queue = [], isLoading } = useQuery({
@@ -165,9 +172,11 @@ export const CurriculumMatchingPage: React.FC = () => {
                             }}
                           >
                             <option value="">-- Select Internal Equivalent --</option>
-                            <option value="CS101">CS101 - Intro to Programming</option>
-                            <option value="MATH201">MATH201 - Calculus I</option>
-                            <option value="ENG101">ENG101 - Basic English</option>
+                            {subjectCatalog.map((course: CourseDefinitionDto) => (
+                              <option key={course.id || course.code} value={course.code}>
+                                {course.code} - {course.title} ({course.units}u)
+                              </option>
+                            ))}
                             <option value="NO_CREDIT">No Equivalent (Elective Only)</option>
                           </select>
                         </td>

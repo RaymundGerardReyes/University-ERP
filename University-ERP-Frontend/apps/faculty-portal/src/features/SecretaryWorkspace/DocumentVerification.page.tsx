@@ -12,35 +12,12 @@ export const DocumentVerificationPage: React.FC = () => {
     
     // 1. Workspace State
     const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
-    const [previewDoc, setPreviewDoc] = useState<{ name: string, url?: string } | null>(null);
+    const [previewDoc, setPreviewDoc] = useState<{ name: string; url?: string } | null>(null);
 
-    // 2. Fetch the Secretary's Intake Queue
-    const { data: queue = [], isLoading } = useQuery<PendingApplicationDto[]>({
+    // 2. Fetch the Secretary's Intake Queue from live backend
+    const { data: queue = [], isLoading, isError } = useQuery<PendingApplicationDto[]>({
         queryKey: ['admissions', 'secretaryQueue'],
         queryFn: () => admissionsApi.getApplicationsByStage('SecretaryQueue'),
-        // Fallback mock data for UI development
-        initialData: [
-            { 
-                id: 'APP-2026-901', 
-                applicantName: 'James Wilson', 
-                program: 'BS Architecture', 
-                status: 'Pending Verification',
-                documents: [
-                    { id: 'DOC-1', name: 'High School Transcript.pdf', status: 'Uploaded', filePath: '/mock/transcript.pdf' },
-                    { id: 'DOC-2', name: 'Birth Certificate.png', status: 'Uploaded', filePath: '/mock/birth_cert.png' }
-                ]
-            },
-            { 
-                id: 'APP-2026-902', 
-                applicantName: 'Maria Garcia', 
-                program: 'BS Computer Science', 
-                status: 'Pending Verification',
-                documents: [
-                    { id: 'DOC-3', name: 'High School Transcript.pdf', status: 'Uploaded', filePath: '/mock/transcript2.pdf' },
-                    { id: 'DOC-4', name: 'Recommendation Letter.pdf', status: 'Missing', filePath: null }
-                ]
-            }
-        ] as any
     });
 
     // 3. Workflow Mutation (Advances to Interview or Chairperson)
@@ -49,6 +26,7 @@ export const DocumentVerificationPage: React.FC = () => {
         onSuccess: (_, id) => {
             logger.info(`Successfully verified documents for ${id}`);
             queryClient.invalidateQueries({ queryKey: ['admissions', 'secretaryQueue'] });
+            queryClient.invalidateQueries({ queryKey: ['pendingApplications'] });
             setSelectedAppId(null); // Clear selection on success
         },
         onError: (err) => {
@@ -59,7 +37,25 @@ export const DocumentVerificationPage: React.FC = () => {
 
     const selectedApp = queue.find(app => app.id === selectedAppId);
 
+    const getPreviewUrl = (filePath?: string | null, name?: string) => {
+        const fileTarget = filePath || name;
+        if (!fileTarget) return undefined;
+        if (fileTarget.startsWith('http://') || fileTarget.startsWith('https://') || fileTarget.startsWith('/api/')) {
+            return fileTarget;
+        }
+        return `/api/v1/admissions/documents/${encodeURIComponent(fileTarget)}`;
+    };
+
     if (isLoading) return <div className="skeleton" style={{ height: '600px' }} />;
+
+    if (isError) {
+        return (
+            <div className="stub-page fade-in">
+                <div className="stub-title">Verification Service Unavailable</div>
+                <div className="stub-subtitle">Could not connect to admissions backend queue.</div>
+            </div>
+        );
+    }
 
     return (
         <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -153,7 +149,7 @@ export const DocumentVerificationPage: React.FC = () => {
                                             <Button 
                                                 variant="outline" 
                                                 size="small" 
-                                                onClick={() => setPreviewDoc({ name: doc.name, url: doc.filePath })}
+                                                onClick={() => setPreviewDoc({ name: doc.name, url: getPreviewUrl(doc.filePath, doc.name) })}
                                             >
                                                 Preview
                                             </Button>
