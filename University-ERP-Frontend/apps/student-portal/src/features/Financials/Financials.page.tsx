@@ -5,6 +5,18 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useCurrentTermInvoice, useCreatePaymentSession, usePaymentSessionStatus } from './Financials.hooks';
 import { financePaymentSessionApi } from '@university-erp/api-clients';
 
+const resolveCheckoutRedirectUrl = (url?: string): string | null => {
+    if (!url) return null;
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+        return url;
+    }
+    const gatewayBase = (import.meta as any).env?.VITE_PAYMENT_GATEWAY_URL;
+    if (gatewayBase && (gatewayBase.startsWith('http://') || gatewayBase.startsWith('https://'))) {
+        return `${gatewayBase.replace(/\/+$/, '')}/${url.replace(/^\/+/, '')}`;
+    }
+    return null;
+};
+
 export const FinancialsPage: React.FC = () => {
     const { identity } = useAuth();
     const queryClient = useQueryClient();
@@ -48,7 +60,12 @@ export const FinancialsPage: React.FC = () => {
         }, {
             onSuccess: (data) => {
                 if (data.checkoutUrl) {
-                    window.location.href = data.checkoutUrl;
+                    const targetUrl = resolveCheckoutRedirectUrl(data.checkoutUrl);
+                    if (targetUrl) {
+                        window.location.href = targetUrl;
+                    } else {
+                        alert("Received an invalid or malformed checkout URL from payment gateway.");
+                    }
                 } else {
                     alert("Failed to retrieve checkout URL from the payment gateway.");
                 }
@@ -135,4 +152,4 @@ export const FinancialsPage: React.FC = () => {
             </Card>
         </div>
     );
-};
+};
