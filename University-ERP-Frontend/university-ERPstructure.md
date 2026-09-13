@@ -1,1622 +1,2065 @@
-.
-|-- Dockerfile.applicant
-|-- Dockerfile.build-all
-|-- Dockerfile.portal
-|-- apps
-|   |-- admin-portal
-|   |   |-- dist
-|   |   |   |-- assets
-|   |   |   |   |-- index-CmnkJuXB.css
-|   |   |   |   `-- index-fa44ciig.js
-|   |   |   `-- index.html
-|   |   |-- index.html
-|   |   |-- package.json
-|   |   |-- public
-|   |   |-- src
-|   |   |   |-- config
-|   |   |   |   `-- env.ts
-|   |   |   |-- features
-|   |   |   |   |-- AcademicConfiguration
-|   |   |   |   |   |-- AcademicConfiguration.api.ts
-|   |   |   |   |   |-- AcademicConfiguration.hooks.ts
-|   |   |   |   |   |-- AcademicConfiguration.page.tsx
-|   |   |   |   |   |-- AcademicConfiguration.test.tsx
-|   |   |   |   |   `-- AcademicConfiguration.types.ts
-|   |   |   |   |-- AdmissionsProcessing
-|   |   |   |   |   |-- AdmissionsProcessing.hooks.ts
-|   |   |   |   |   |-- AdmissionsWorkspace.page.tsx
-|   |   |   |   |   `-- components
-|   |   |   |   |       |-- ChairpersonEvaluationView.tsx
-|   |   |   |   |       |-- DeanEndorsementView.tsx
-|   |   |   |   |       |-- RegistrarEnrollmentView.tsx
-|   |   |   |   |       `-- SecretaryIntakeView.tsx
-|   |   |   |   |-- AssetRegistry
-|   |   |   |   |   |-- AssetRegistry.api.ts
-|   |   |   |   |   |-- AssetRegistry.hooks.ts
-|   |   |   |   |   |-- AssetRegistry.page.tsx
-|   |   |   |   |   |-- AssetRegistry.test.tsx
-|   |   |   |   |   `-- AssetRegistry.types.ts
-|   |   |   |   |-- AuditCompliance
-|   |   |   |   |   |-- AuditCompliance.api.ts
-|   |   |   |   |   |-- AuditCompliance.hooks.ts
-|   |   |   |   |   |-- AuditCompliance.page.tsx
-|   |   |   |   |   |-- AuditCompliance.test.tsx
-|   |   |   |   |   `-- AuditCompliance.types.ts
-|   |   |   |   |-- CanteenOrders
-|   |   |   |   |   |-- CanteenOrders.api.ts
-|   |   |   |   |   |-- CanteenOrders.hooks.ts
-|   |   |   |   |   |-- CanteenOrders.page.tsx
-|   |   |   |   |   |-- CanteenOrders.test.tsx
-|   |   |   |   |   `-- CanteenOrders.types.ts
-|   |   |   |   |-- Dashboard
-|   |   |   |   |   |-- Dashboard.api.ts
-|   |   |   |   |   |-- Dashboard.hooks.ts
-|   |   |   |   |   |-- Dashboard.page.tsx
-|   |   |   |   |   |-- Dashboard.test.tsx
-|   |   |   |   |   `-- Dashboard.types.ts
-|   |   |   |   |-- EmployeeManagement
-|   |   |   |   |   |-- EmployeeManagement.api.ts
-|   |   |   |   |   |-- EmployeeManagement.hooks.ts
-|   |   |   |   |   |-- EmployeeManagement.page.tsx
-|   |   |   |   |   |-- EmployeeManagement.test.tsx
-|   |   |   |   |   `-- EmployeeManagement.types.ts
-|   |   |   |   |-- FacilityBooking
-|   |   |   |   |   |-- FacilityBooking.api.ts
-|   |   |   |   |   |-- FacilityBooking.hooks.ts
-|   |   |   |   |   |-- FacilityBooking.page.tsx
-|   |   |   |   |   |-- FacilityBooking.test.tsx
-|   |   |   |   |   `-- FacilityBooking.types.ts
-|   |   |   |   |-- FleetManagement
-|   |   |   |   |   |-- FleetManagement.api.ts
-|   |   |   |   |   |-- FleetManagement.hooks.ts
-|   |   |   |   |   |-- FleetManagement.page.tsx
-|   |   |   |   |   |-- FleetManagement.test.tsx
-|   |   |   |   |   `-- FleetManagement.types.ts
-|   |   |   |   |-- IdentitySecurity
-|   |   |   |   |   |-- IdentitySecurity.api.ts
-|   |   |   |   |   |-- IdentitySecurity.hooks.ts
-|   |   |   |   |   |-- IdentitySecurity.page.tsx
-|   |   |   |   |   |-- IdentitySecurity.test.tsx
-|   |   |   |   |   `-- IdentitySecurity.types.ts
-|   |   |   |   |-- IntegrationManagement
-|   |   |   |   |   |-- IntegrationManagement.api.ts
-|   |   |   |   |   |-- IntegrationManagement.hooks.ts
-|   |   |   |   |   |-- IntegrationManagement.page.tsx
-|   |   |   |   |   |-- IntegrationManagement.test.tsx
-|   |   |   |   |   `-- IntegrationManagement.types.ts
-|   |   |   |   |-- OrganizationManagement
-|   |   |   |   |   |-- OrganizationManagement.api.ts
-|   |   |   |   |   |-- OrganizationManagement.hooks.ts
-|   |   |   |   |   |-- OrganizationManagement.page.tsx
-|   |   |   |   |   |-- OrganizationManagement.test.tsx
-|   |   |   |   |   `-- OrganizationManagement.types.ts
-|   |   |   |   |-- PlatformMonitoring
-|   |   |   |   |   |-- PlatformMonitoring.api.ts
-|   |   |   |   |   |-- PlatformMonitoring.hooks.ts
-|   |   |   |   |   |-- PlatformMonitoring.page.tsx
-|   |   |   |   |   |-- PlatformMonitoring.test.tsx
-|   |   |   |   |   `-- PlatformMonitoring.types.ts
-|   |   |   |   |-- PurchaseOrders
-|   |   |   |   |   |-- PurchaseOrders.api.ts
-|   |   |   |   |   |-- PurchaseOrders.hooks.ts
-|   |   |   |   |   |-- PurchaseOrders.page.tsx
-|   |   |   |   |   |-- PurchaseOrders.test.tsx
-|   |   |   |   |   `-- PurchaseOrders.types.ts
-|   |   |   |   |-- RegistrarWorkspace
-|   |   |   |   |   |-- RegistrarWorkspace.page.tsx
-|   |   |   |   |   `-- components
-|   |   |   |   |       |-- GraduationClearanceView.tsx
-|   |   |   |   |       `-- TranscriptRequestsView.tsx
-|   |   |   |   |-- Reports
-|   |   |   |   |   |-- Reports.api.ts
-|   |   |   |   |   |-- Reports.hooks.ts
-|   |   |   |   |   |-- Reports.page.tsx
-|   |   |   |   |   |-- Reports.test.tsx
-|   |   |   |   |   `-- Reports.types.ts
-|   |   |   |   |-- RoleAdministration
-|   |   |   |   |   |-- RoleAdministration.api.ts
-|   |   |   |   |   |-- RoleAdministration.hooks.ts
-|   |   |   |   |   |-- RoleAdministration.page.tsx
-|   |   |   |   |   |-- RoleAdministration.test.tsx
-|   |   |   |   |   `-- RoleAdministration.types.ts
-|   |   |   |   |-- StockManagement
-|   |   |   |   |   |-- StockManagement.api.ts
-|   |   |   |   |   |-- StockManagement.hooks.ts
-|   |   |   |   |   |-- StockManagement.page.tsx
-|   |   |   |   |   |-- StockManagement.test.tsx
-|   |   |   |   |   `-- StockManagement.types.ts
-|   |   |   |   |-- SystemAdministration
-|   |   |   |   |   |-- SystemAdministration.api.ts
-|   |   |   |   |   |-- SystemAdministration.hooks.ts
-|   |   |   |   |   |-- SystemAdministration.page.tsx
-|   |   |   |   |   |-- SystemAdministration.test.tsx
-|   |   |   |   |   `-- SystemAdministration.types.ts
-|   |   |   |   |-- UserAdministration
-|   |   |   |   |   |-- UserAdministration.api.ts
-|   |   |   |   |   |-- UserAdministration.hooks.ts
-|   |   |   |   |   |-- UserAdministration.page.tsx
-|   |   |   |   |   |-- UserAdministration.test.tsx
-|   |   |   |   |   `-- UserAdministration.types.ts
-|   |   |   |   `-- WorkflowManagement
-|   |   |   |       |-- WorkflowManagement.api.ts
-|   |   |   |       |-- WorkflowManagement.hooks.ts
-|   |   |   |       |-- WorkflowManagement.page.tsx
-|   |   |   |       |-- WorkflowManagement.test.tsx
-|   |   |   |       `-- WorkflowManagement.types.ts
-|   |   |   |-- main.tsx
-|   |   |   |-- shell
-|   |   |   |   |-- AppShell.tsx
-|   |   |   |   `-- Routing.tsx
-|   |   |   |-- state
-|   |   |   `-- vite-env.d.ts
-|   |   |-- tsconfig.json
-|   |   |-- tsconfig.node.json
-|   |   `-- vite.config.ts
-|   |-- admissions-portal
-|   |   |-- dist
-|   |   |   |-- assets
-|   |   |   |   |-- index-CmnkJuXB.css
-|   |   |   |   `-- index-DimZ4ETb.js
-|   |   |   `-- index.html
-|   |   |-- index.html
-|   |   |-- package.json
-|   |   |-- src
-|   |   |   |-- App.tsx
-|   |   |   |-- features
-|   |   |   |   |-- AdmissionCases
-|   |   |   |   |   |-- AdmissionCases.api.ts
-|   |   |   |   |   |-- AdmissionCases.hooks.ts
-|   |   |   |   |   |-- AdmissionCases.page.tsx
-|   |   |   |   |   |-- AdmissionCases.page.tsx.bak
-|   |   |   |   |   |-- AdmissionCases.test.tsx
-|   |   |   |   |   `-- AdmissionCases.types.ts
-|   |   |   |   |-- AdmissionsDecision
-|   |   |   |   |   |-- AdmissionsDecision.api.ts
-|   |   |   |   |   |-- AdmissionsDecision.hooks.ts
-|   |   |   |   |   |-- AdmissionsDecision.page.tsx
-|   |   |   |   |   |-- AdmissionsDecision.test.tsx
-|   |   |   |   |   `-- AdmissionsDecision.types.ts
-|   |   |   |   |-- AdmissionsProcessing
-|   |   |   |   |   `-- components
-|   |   |   |   |       `-- SecretaryIntakeView.tsx
-|   |   |   |   |-- Applications
-|   |   |   |   |   |-- AdmissionCase.page.tsx
-|   |   |   |   |   `-- Applications.page.tsx
-|   |   |   |   |-- Communication
-|   |   |   |   |   `-- ApplicantCommunication.page.tsx
-|   |   |   |   |-- Dashboard
-|   |   |   |   |   `-- Dashboard.page.tsx
-|   |   |   |   |-- EnrollmentHandoff
-|   |   |   |   |   |-- EnrollmentHandoff.api.ts
-|   |   |   |   |   |-- EnrollmentHandoff.hooks.ts
-|   |   |   |   |   |-- EnrollmentHandoff.page.tsx
-|   |   |   |   |   |-- EnrollmentHandoff.test.tsx
-|   |   |   |   |   `-- EnrollmentHandoff.types.ts
-|   |   |   |   |-- Examination
-|   |   |   |   |   `-- EntranceExamination.page.tsx
-|   |   |   |   |-- Fees
-|   |   |   |   |   `-- AdmissionFees.page.tsx
-|   |   |   |   |-- Intake
-|   |   |   |   |   |-- ApplicationIntake.page.tsx
-|   |   |   |   |   `-- ApplicationIntake.page.tsx.bak
-|   |   |   |   |-- Interviews
-|   |   |   |   |   |-- Interviews.api.ts
-|   |   |   |   |   |-- Interviews.hooks.ts
-|   |   |   |   |   |-- Interviews.page.tsx
-|   |   |   |   |   |-- Interviews.test.tsx
-|   |   |   |   |   `-- Interviews.types.ts
-|   |   |   |   |-- Queue
-|   |   |   |   |   `-- AdmissionQueue.page.tsx
-|   |   |   |   |-- Reports
-|   |   |   |   |   `-- AdmissionsReports.page.tsx
-|   |   |   |   |-- RequirementManagement
-|   |   |   |   |   |-- RequirementManagement.api.ts
-|   |   |   |   |   |-- RequirementManagement.hooks.ts
-|   |   |   |   |   |-- RequirementManagement.page.tsx
-|   |   |   |   |   |-- RequirementManagement.test.tsx
-|   |   |   |   |   `-- RequirementManagement.types.ts
-|   |   |   |   |-- Review
-|   |   |   |   |   `-- ApplicationReview.page.tsx
-|   |   |   |   `-- Verification
-|   |   |   |       `-- ApplicationVerification.page.tsx
-|   |   |   |-- index.css
-|   |   |   |-- main.tsx
-|   |   |   `-- shell
-|   |   |       |-- AppShell.tsx
-|   |   |       `-- Routing.tsx
-|   |   |-- tsconfig.json
-|   |   |-- tsconfig.node.json
-|   |   `-- vite.config.ts
-|   |-- applicant-portal
-|   |   |-- dist
-|   |   |   |-- assets
-|   |   |   |   |-- index-7TJ7Ms84.js
-|   |   |   |   `-- index-CmnkJuXB.css
-|   |   |   `-- index.html
-|   |   |-- index.html
-|   |   |-- package.json
-|   |   |-- public
-|   |   |-- src
-|   |   |   |-- config
-|   |   |   |   `-- env.ts
-|   |   |   |-- features
-|   |   |   |   |-- AdmissionStatus
-|   |   |   |   |   |-- AdmissionStatus.api.ts
-|   |   |   |   |   |-- AdmissionStatus.hooks.ts
-|   |   |   |   |   |-- AdmissionStatus.page.tsx
-|   |   |   |   |   |-- AdmissionStatus.test.tsx
-|   |   |   |   |   `-- AdmissionStatus.types.ts
-|   |   |   |   |-- ApplicantJourney.hooks.ts
-|   |   |   |   |-- ApplicantJourney.test.tsx
-|   |   |   |   |-- ApplicationForm
-|   |   |   |   |   |-- ApplicationForm.api.ts
-|   |   |   |   |   |-- ApplicationForm.hooks.ts
-|   |   |   |   |   |-- ApplicationForm.page.tsx
-|   |   |   |   |   |-- ApplicationForm.test.tsx
-|   |   |   |   |   `-- ApplicationForm.types.ts
-|   |   |   |   |-- ApplicationStatus
-|   |   |   |   |   |-- ApplicationStatus.api.ts
-|   |   |   |   |   |-- ApplicationStatus.hooks.ts
-|   |   |   |   |   |-- ApplicationStatus.page.tsx
-|   |   |   |   |   |-- ApplicationStatus.test.tsx
-|   |   |   |   |   `-- ApplicationStatus.types.ts
-|   |   |   |   |-- ApplicationTimeline
-|   |   |   |   |   |-- ApplicationTimeline.api.ts
-|   |   |   |   |   |-- ApplicationTimeline.hooks.ts
-|   |   |   |   |   |-- ApplicationTimeline.page.tsx
-|   |   |   |   |   |-- ApplicationTimeline.test.tsx
-|   |   |   |   |   `-- ApplicationTimeline.types.ts
-|   |   |   |   |-- ApplicationWizard
-|   |   |   |   |   |-- ApplicationWizard.api.ts
-|   |   |   |   |   |-- ApplicationWizard.hooks.ts
-|   |   |   |   |   |-- ApplicationWizard.page.tsx
-|   |   |   |   |   |-- ApplicationWizard.test.tsx
-|   |   |   |   |   `-- ApplicationWizard.types.ts
-|   |   |   |   |-- Dashboard
-|   |   |   |   |   |-- Dashboard.api.ts
-|   |   |   |   |   |-- Dashboard.hooks.ts
-|   |   |   |   |   |-- Dashboard.page.tsx
-|   |   |   |   |   |-- Dashboard.test.tsx
-|   |   |   |   |   `-- Dashboard.types.ts
-|   |   |   |   |-- DocumentSubmission
-|   |   |   |   |   |-- DocumentSubmission.api.ts
-|   |   |   |   |   |-- DocumentSubmission.hooks.ts
-|   |   |   |   |   |-- DocumentSubmission.page.tsx
-|   |   |   |   |   |-- DocumentSubmission.test.tsx
-|   |   |   |   |   `-- DocumentSubmission.types.ts
-|   |   |   |   |-- DocumentUpload
-|   |   |   |   |   |-- DocumentUpload.api.ts
-|   |   |   |   |   |-- DocumentUpload.hooks.ts
-|   |   |   |   |   |-- DocumentUpload.page.tsx
-|   |   |   |   |   |-- DocumentUpload.test.tsx
-|   |   |   |   |   `-- DocumentUpload.types.ts
-|   |   |   |   |-- EligibilityChecker
-|   |   |   |   |   |-- EligibilityChecker.api.ts
-|   |   |   |   |   |-- EligibilityChecker.hooks.ts
-|   |   |   |   |   |-- EligibilityChecker.page.tsx
-|   |   |   |   |   |-- EligibilityChecker.test.tsx
-|   |   |   |   |   `-- EligibilityChecker.types.ts
-|   |   |   |   |-- EnrollmentPayment
-|   |   |   |   |   |-- ApplicationFeePayment.page.tsx
-|   |   |   |   |   |-- EnrollmentPayment.api.ts
-|   |   |   |   |   |-- EnrollmentPayment.hooks.ts
-|   |   |   |   |   |-- EnrollmentPayment.page.tsx
-|   |   |   |   |   |-- EnrollmentPayment.test.tsx
-|   |   |   |   |   `-- EnrollmentPayment.types.ts
-|   |   |   |   |-- InterviewScheduling
-|   |   |   |   |   |-- InterviewScheduling.api.ts
-|   |   |   |   |   |-- InterviewScheduling.hooks.ts
-|   |   |   |   |   |-- InterviewScheduling.page.tsx
-|   |   |   |   |   |-- InterviewScheduling.test.tsx
-|   |   |   |   |   `-- InterviewScheduling.types.ts
-|   |   |   |   |-- Offers
-|   |   |   |   |   |-- Offers.api.ts
-|   |   |   |   |   |-- Offers.hooks.ts
-|   |   |   |   |   |-- Offers.page.tsx
-|   |   |   |   |   |-- Offers.test.tsx
-|   |   |   |   |   `-- Offers.types.ts
-|   |   |   |   `-- ProgramExplorer
-|   |   |   |       |-- ProgramExplorer.api.ts
-|   |   |   |       |-- ProgramExplorer.hooks.ts
-|   |   |   |       |-- ProgramExplorer.page.tsx
-|   |   |   |       |-- ProgramExplorer.test.tsx
-|   |   |   |       `-- ProgramExplorer.types.ts
-|   |   |   |-- main.tsx
-|   |   |   |-- shell
-|   |   |   |   |-- AppShell.tsx
-|   |   |   |   |-- ErrorBoundary.tsx
-|   |   |   |   `-- Routing.tsx
-|   |   |   |-- state
-|   |   |   |-- theme.css
-|   |   |   `-- vite-env.d.ts
-|   |   |-- tsconfig.json
-|   |   |-- tsconfig.node.json
-|   |   `-- vite.config.ts
-|   |-- faculty-portal
-|   |   |-- dist
-|   |   |   |-- assets
-|   |   |   |   |-- index-Dgt8zfi3.js
-|   |   |   |   `-- index-cJBQpNUN.css
-|   |   |   `-- index.html
-|   |   |-- index.html
-|   |   |-- package.json
-|   |   |-- public
-|   |   |-- src
-|   |   |   |-- config
-|   |   |   |   `-- env.ts
-|   |   |   |-- features
-|   |   |   |   |-- Advising
-|   |   |   |   |   |-- Advising.api.ts
-|   |   |   |   |   |-- Advising.hooks.ts
-|   |   |   |   |   |-- Advising.page.tsx
-|   |   |   |   |   |-- Advising.test.tsx
-|   |   |   |   |   `-- Advising.types.ts
-|   |   |   |   |-- Analytics
-|   |   |   |   |   |-- Analytics.api.ts
-|   |   |   |   |   |-- Analytics.hooks.ts
-|   |   |   |   |   |-- Analytics.page.tsx
-|   |   |   |   |   |-- Analytics.test.tsx
-|   |   |   |   |   `-- Analytics.types.ts
-|   |   |   |   |-- Assessments
-|   |   |   |   |   |-- Assessments.api.ts
-|   |   |   |   |   |-- Assessments.hooks.ts
-|   |   |   |   |   |-- Assessments.page.tsx
-|   |   |   |   |   |-- Assessments.test.tsx
-|   |   |   |   |   `-- Assessments.types.ts
-|   |   |   |   |-- ChairpersonWorkspace
-|   |   |   |   |   |-- AcademicEvaluation.page.tsx
-|   |   |   |   |   |-- CurriculumMatching.page.tsx
-|   |   |   |   |   |-- EvaluationQueue.page.tsx
-|   |   |   |   |   `-- Recommendation.page.tsx
-|   |   |   |   |-- Communication
-|   |   |   |   |   |-- Communication.api.ts
-|   |   |   |   |   |-- Communication.hooks.ts
-|   |   |   |   |   |-- Communication.page.tsx
-|   |   |   |   |   |-- Communication.test.tsx
-|   |   |   |   |   `-- Communication.types.ts
-|   |   |   |   |-- Dashboard
-|   |   |   |   |   |-- Dashboard.api.ts
-|   |   |   |   |   |-- Dashboard.hooks.ts
-|   |   |   |   |   |-- Dashboard.page.tsx
-|   |   |   |   |   |-- Dashboard.test.tsx
-|   |   |   |   |   `-- Dashboard.types.ts
-|   |   |   |   |-- DeanWorkspace
-|   |   |   |   |   |-- CollegeApproval.page.tsx
-|   |   |   |   |   |-- Endorsement.page.tsx
-|   |   |   |   |   `-- RecommendationQueue.page.tsx
-|   |   |   |   |-- Documents
-|   |   |   |   |   |-- Documents.api.ts
-|   |   |   |   |   |-- Documents.hooks.ts
-|   |   |   |   |   |-- Documents.page.tsx
-|   |   |   |   |   |-- Documents.test.tsx
-|   |   |   |   |   `-- Documents.types.ts
-|   |   |   |   |-- FacultySecurity
-|   |   |   |   |   |-- ApplicantAccess.page.tsx
-|   |   |   |   |   |-- ConfidentialDocuments.page.tsx
-|   |   |   |   |   `-- RecommendationAudit.page.tsx
-|   |   |   |   |-- LMSManager
-|   |   |   |   |   |-- LMSManager.hooks.ts
-|   |   |   |   |   `-- LMSManager.page.tsx
-|   |   |   |   |-- Research
-|   |   |   |   |   |-- Research.api.ts
-|   |   |   |   |   |-- Research.hooks.ts
-|   |   |   |   |   |-- Research.page.tsx
-|   |   |   |   |   |-- Research.test.tsx
-|   |   |   |   |   `-- Research.types.ts
-|   |   |   |   |-- Schedule
-|   |   |   |   |   |-- Schedule.api.ts
-|   |   |   |   |   |-- Schedule.hooks.ts
-|   |   |   |   |   |-- Schedule.page.tsx
-|   |   |   |   |   |-- Schedule.test.tsx
-|   |   |   |   |   `-- Schedule.types.ts
-|   |   |   |   |-- SecretaryWorkspace
-|   |   |   |   |   |-- AdmissionQueue.page.tsx
-|   |   |   |   |   |-- DocumentVerification.page.tsx
-|   |   |   |   |   |-- InterviewScheduling.page.tsx
-|   |   |   |   |   `-- MissingRequirements.page.tsx
-|   |   |   |   |-- Settings
-|   |   |   |   |   |-- Settings.api.ts
-|   |   |   |   |   |-- Settings.hooks.ts
-|   |   |   |   |   |-- Settings.page.tsx
-|   |   |   |   |   |-- Settings.test.tsx
-|   |   |   |   |   `-- Settings.types.ts
-|   |   |   |   |-- Students
-|   |   |   |   |   |-- Students.api.ts
-|   |   |   |   |   |-- Students.hooks.ts
-|   |   |   |   |   |-- Students.page.tsx
-|   |   |   |   |   |-- Students.test.tsx
-|   |   |   |   |   |-- Students.types.ts
-|   |   |   |   |   `-- StudentsDashboard.page.tsx
-|   |   |   |   `-- Teaching
-|   |   |   |       |-- SectionRoster.page.tsx
-|   |   |   |       |-- SectionRoster.test.tsx
-|   |   |   |       |-- Teaching.api.ts
-|   |   |   |       |-- Teaching.hooks.ts
-|   |   |   |       |-- Teaching.page.tsx
-|   |   |   |       |-- Teaching.test.tsx
-|   |   |   |       |-- Teaching.types.ts
-|   |   |   |       `-- TeachingDashboard.page.tsx
-|   |   |   |-- main.tsx
-|   |   |   |-- shell
-|   |   |   |   |-- AppShell.tsx
-|   |   |   |   `-- Routing.tsx
-|   |   |   |-- state
-|   |   |   |-- theme.css
-|   |   |   `-- vite-env.d.ts
-|   |   |-- tsconfig.json
-|   |   |-- tsconfig.node.json
-|   |   `-- vite.config.ts
-|   |-- finance-console
-|   |   |-- dist
-|   |   |   |-- assets
-|   |   |   |   `-- index-D4VupJRD.js
-|   |   |   `-- index.html
-|   |   |-- index.html
-|   |   |-- package.json
-|   |   |-- public
-|   |   |-- src
-|   |   |   |-- config
-|   |   |   |   `-- env.ts
-|   |   |   |-- features
-|   |   |   |   |-- Budgeting
-|   |   |   |   |   |-- Budgeting.api.ts
-|   |   |   |   |   |-- Budgeting.hooks.ts
-|   |   |   |   |   |-- Budgeting.page.tsx
-|   |   |   |   |   |-- Budgeting.test.tsx
-|   |   |   |   |   `-- Budgeting.types.ts
-|   |   |   |   |-- Cashier
-|   |   |   |   |   |-- ClearanceApproval.page.tsx
-|   |   |   |   |   `-- PaymentGateway.page.tsx
-|   |   |   |   |-- Dashboard
-|   |   |   |   |   |-- Dashboard.api.ts
-|   |   |   |   |   |-- Dashboard.hooks.ts
-|   |   |   |   |   |-- Dashboard.page.tsx
-|   |   |   |   |   |-- Dashboard.test.tsx
-|   |   |   |   |   `-- Dashboard.types.ts
-|   |   |   |   |-- EnrollmentFinance
-|   |   |   |   |   |-- AdmissionAssessment
-|   |   |   |   |   |   |-- AdmissionAssessment.api.ts
-|   |   |   |   |   |   |-- AdmissionAssessment.hooks.ts
-|   |   |   |   |   |   |-- AdmissionAssessment.page.tsx
-|   |   |   |   |   |   |-- AdmissionAssessment.test.tsx
-|   |   |   |   |   |   `-- AdmissionAssessment.types.ts
-|   |   |   |   |   |-- Downpayment
-|   |   |   |   |   |   |-- Downpayment.api.ts
-|   |   |   |   |   |   |-- Downpayment.hooks.ts
-|   |   |   |   |   |   |-- Downpayment.page.tsx
-|   |   |   |   |   |   |-- Downpayment.test.tsx
-|   |   |   |   |   |   `-- Downpayment.types.ts
-|   |   |   |   |   `-- FinancialClearance
-|   |   |   |   |       |-- FinancialClearance.api.ts
-|   |   |   |   |       |-- FinancialClearance.hooks.ts
-|   |   |   |   |       |-- FinancialClearance.page.tsx
-|   |   |   |   |       |-- FinancialClearance.test.tsx
-|   |   |   |   |       `-- FinancialClearance.types.ts
-|   |   |   |   |-- FinanceConsole.test.tsx
-|   |   |   |   |-- FinancialReports
-|   |   |   |   |   |-- FinancialReports.api.ts
-|   |   |   |   |   |-- FinancialReports.hooks.ts
-|   |   |   |   |   |-- FinancialReports.page.tsx
-|   |   |   |   |   |-- FinancialReports.test.tsx
-|   |   |   |   |   `-- FinancialReports.types.ts
-|   |   |   |   |-- Invoicing
-|   |   |   |   |   |-- Invoicing.api.ts
-|   |   |   |   |   |-- Invoicing.hooks.ts
-|   |   |   |   |   |-- Invoicing.page.tsx
-|   |   |   |   |   |-- Invoicing.test.tsx
-|   |   |   |   |   `-- Invoicing.types.ts
-|   |   |   |   |-- PaymentGateway
-|   |   |   |   |   |-- PaymentGateway.api.ts
-|   |   |   |   |   |-- PaymentGateway.hooks.ts
-|   |   |   |   |   |-- PaymentGateway.page.tsx
-|   |   |   |   |   |-- PaymentGateway.test.tsx
-|   |   |   |   |   `-- PaymentGateway.types.ts
-|   |   |   |   |-- Payroll
-|   |   |   |   |   |-- Payroll.api.ts
-|   |   |   |   |   |-- Payroll.hooks.ts
-|   |   |   |   |   |-- Payroll.page.tsx
-|   |   |   |   |   |-- Payroll.test.tsx
-|   |   |   |   |   `-- Payroll.types.ts
-|   |   |   |   |-- PayrollProcessing
-|   |   |   |   |   |-- PayrollProcessing.hooks.ts
-|   |   |   |   |   `-- PayrollProcessing.page.tsx
-|   |   |   |   |-- SemesterBilling
-|   |   |   |   |   |-- SemesterBilling.api.ts
-|   |   |   |   |   |-- SemesterBilling.hooks.ts
-|   |   |   |   |   |-- SemesterBilling.page.tsx
-|   |   |   |   |   |-- SemesterBilling.test.tsx
-|   |   |   |   |   `-- SemesterBilling.types.ts
-|   |   |   |   |-- StudentBilling
-|   |   |   |   |   |-- ScholarshipGrants.page.tsx
-|   |   |   |   |   |-- StatementOfAccount.page.tsx
-|   |   |   |   |   |-- StudentBilling.api.ts
-|   |   |   |   |   |-- StudentBilling.hooks.ts
-|   |   |   |   |   |-- StudentBilling.page.tsx
-|   |   |   |   |   |-- StudentBilling.test.tsx
-|   |   |   |   |   `-- StudentBilling.types.ts
-|   |   |   |   `-- TuitionAssessment
-|   |   |   |       `-- TuitionAssessment.page.tsx
-|   |   |   |-- main.tsx
-|   |   |   |-- shell
-|   |   |   |   |-- AppShell.tsx
-|   |   |   |   `-- Routing.tsx
-|   |   |   |-- state
-|   |   |   `-- vite-env.d.ts
-|   |   |-- tsconfig.json
-|   |   |-- tsconfig.node.json
-|   |   `-- vite.config.ts
-|   |-- governance-console
-|   |   |-- dist
-|   |   |   |-- assets
-|   |   |   |   `-- index-MesTFSc4.js
-|   |   |   `-- index.html
-|   |   |-- index.html
-|   |   |-- package.json
-|   |   |-- public
-|   |   |-- src
-|   |   |   |-- config
-|   |   |   |   `-- env.ts
-|   |   |   |-- features
-|   |   |   |   |-- Accreditation
-|   |   |   |   |   |-- Accreditation.api.ts
-|   |   |   |   |   |-- Accreditation.hooks.ts
-|   |   |   |   |   |-- Accreditation.page.tsx
-|   |   |   |   |   |-- Accreditation.test.tsx
-|   |   |   |   |   `-- Accreditation.types.ts
-|   |   |   |   |-- Audits
-|   |   |   |   |   |-- Audits.api.ts
-|   |   |   |   |   |-- Audits.hooks.ts
-|   |   |   |   |   |-- Audits.page.tsx
-|   |   |   |   |   |-- Audits.test.tsx
-|   |   |   |   |   `-- Audits.types.ts
-|   |   |   |   |-- Committees
-|   |   |   |   |   |-- Committees.api.ts
-|   |   |   |   |   |-- Committees.hooks.ts
-|   |   |   |   |   |-- Committees.page.tsx
-|   |   |   |   |   |-- Committees.test.tsx
-|   |   |   |   |   `-- Committees.types.ts
-|   |   |   |   |-- Compliance
-|   |   |   |   |   |-- Compliance.api.ts
-|   |   |   |   |   |-- Compliance.hooks.ts
-|   |   |   |   |   |-- Compliance.page.tsx
-|   |   |   |   |   |-- Compliance.test.tsx
-|   |   |   |   |   `-- Compliance.types.ts
-|   |   |   |   |-- Events
-|   |   |   |   |   `-- Events.page.tsx
-|   |   |   |   |-- Grievances
-|   |   |   |   |   `-- Grievances.page.tsx
-|   |   |   |   |-- Helpdesk
-|   |   |   |   |   `-- Helpdesk.page.tsx
-|   |   |   |   |-- Policies
-|   |   |   |   |   |-- Policies.api.ts
-|   |   |   |   |   |-- Policies.hooks.ts
-|   |   |   |   |   |-- Policies.page.tsx
-|   |   |   |   |   |-- Policies.test.tsx
-|   |   |   |   |   `-- Policies.types.ts
-|   |   |   |   |-- QualityAccreditation
-|   |   |   |   |   `-- QualityAccreditation.page.tsx
-|   |   |   |   |-- RiskManagement
-|   |   |   |   |   |-- RiskManagement.api.ts
-|   |   |   |   |   |-- RiskManagement.hooks.ts
-|   |   |   |   |   |-- RiskManagement.page.tsx
-|   |   |   |   |   |-- RiskManagement.test.tsx
-|   |   |   |   |   `-- RiskManagement.types.ts
-|   |   |   |   `-- Visitors
-|   |   |   |       `-- Visitors.page.tsx
-|   |   |   |-- main.tsx
-|   |   |   |-- shell
-|   |   |   |   |-- AppShell.tsx
-|   |   |   |   `-- Routing.tsx
-|   |   |   |-- state
-|   |   |   `-- vite-env.d.ts
-|   |   |-- tsconfig.json
-|   |   |-- tsconfig.node.json
-|   |   `-- vite.config.ts
-|   |-- identity-portal
-|   |   |-- dist
-|   |   |   |-- assets
-|   |   |   |   `-- index-BapRoB-Z.js
-|   |   |   `-- index.html
-|   |   |-- index.html
-|   |   |-- package.json
-|   |   |-- public
-|   |   |-- src
-|   |   |   |-- config
-|   |   |   |   `-- env.ts
-|   |   |   |-- features
-|   |   |   |   |-- Email
-|   |   |   |   |   `-- EmailProvisioning.page.tsx
-|   |   |   |   |-- MFA
-|   |   |   |   |   |-- AccessRevocation.page.tsx
-|   |   |   |   |   `-- MFASetup.page.tsx
-|   |   |   |   |-- MfaVerification
-|   |   |   |   |   |-- MfaVerification.api.ts
-|   |   |   |   |   |-- MfaVerification.hooks.ts
-|   |   |   |   |   |-- MfaVerification.page.tsx
-|   |   |   |   |   |-- MfaVerification.test.tsx
-|   |   |   |   |   `-- MfaVerification.types.ts
-|   |   |   |   |-- MultiFactorAuth
-|   |   |   |   |   |-- MultiFactorAuth.api.ts
-|   |   |   |   |   |-- MultiFactorAuth.hooks.ts
-|   |   |   |   |   |-- MultiFactorAuth.page.tsx
-|   |   |   |   |   |-- MultiFactorAuth.test.tsx
-|   |   |   |   |   `-- MultiFactorAuth.types.ts
-|   |   |   |   |-- PasswordRecovery
-|   |   |   |   |   |-- PasswordRecovery.api.ts
-|   |   |   |   |   |-- PasswordRecovery.hooks.ts
-|   |   |   |   |   |-- PasswordRecovery.page.tsx
-|   |   |   |   |   |-- PasswordRecovery.test.tsx
-|   |   |   |   |   `-- PasswordRecovery.types.ts
-|   |   |   |   |-- PasswordReset
-|   |   |   |   |   |-- PasswordReset.api.ts
-|   |   |   |   |   |-- PasswordReset.hooks.ts
-|   |   |   |   |   |-- PasswordReset.page.tsx
-|   |   |   |   |   |-- PasswordReset.test.tsx
-|   |   |   |   |   `-- PasswordReset.types.ts
-|   |   |   |   |-- SecuritySettings
-|   |   |   |   |   |-- SecuritySettings.api.ts
-|   |   |   |   |   |-- SecuritySettings.hooks.ts
-|   |   |   |   |   |-- SecuritySettings.page.tsx
-|   |   |   |   |   |-- SecuritySettings.test.tsx
-|   |   |   |   |   `-- SecuritySettings.types.ts
-|   |   |   |   |-- SessionManagement
-|   |   |   |   |   |-- SessionManagement.api.ts
-|   |   |   |   |   |-- SessionManagement.hooks.ts
-|   |   |   |   |   |-- SessionManagement.page.tsx
-|   |   |   |   |   |-- SessionManagement.test.tsx
-|   |   |   |   |   `-- SessionManagement.types.ts
-|   |   |   |   |-- UniversityAccount
-|   |   |   |   |   |-- AccountProvisioning.page.tsx
-|   |   |   |   |   `-- DirectorySearch.page.tsx
-|   |   |   |   |-- UserLogin
-|   |   |   |   |   |-- UserLogin.api.ts
-|   |   |   |   |   |-- UserLogin.hooks.ts
-|   |   |   |   |   |-- UserLogin.page.tsx
-|   |   |   |   |   |-- UserLogin.test.tsx
-|   |   |   |   |   `-- UserLogin.types.ts
-|   |   |   |   `-- UserRegistration
-|   |   |   |       |-- UserRegistration.api.ts
-|   |   |   |       |-- UserRegistration.hooks.ts
-|   |   |   |       |-- UserRegistration.page.tsx
-|   |   |   |       |-- UserRegistration.test.tsx
-|   |   |   |       `-- UserRegistration.types.ts
-|   |   |   |-- main.tsx
-|   |   |   |-- shell
-|   |   |   |   |-- AppShell.tsx
-|   |   |   |   `-- Routing.tsx
-|   |   |   |-- state
-|   |   |   `-- vite-env.d.ts
-|   |   |-- tsconfig.json
-|   |   |-- tsconfig.node.json
-|   |   `-- vite.config.ts
-|   |-- library-portal
-|   |   |-- dist
-|   |   |   |-- assets
-|   |   |   |   `-- index-Cg4XXSgl.js
-|   |   |   `-- index.html
-|   |   |-- index.html
-|   |   |-- package.json
-|   |   |-- public
-|   |   |-- src
-|   |   |   |-- config
-|   |   |   |   `-- env.ts
-|   |   |   |-- features
-|   |   |   |   |-- CatalogSearch
-|   |   |   |   |   |-- CatalogSearch.api.ts
-|   |   |   |   |   |-- CatalogSearch.hooks.ts
-|   |   |   |   |   |-- CatalogSearch.page.tsx
-|   |   |   |   |   |-- CatalogSearch.test.tsx
-|   |   |   |   |   `-- CatalogSearch.types.ts
-|   |   |   |   |-- Circulation
-|   |   |   |   |   `-- Circulation.page.tsx
-|   |   |   |   |-- DigitalResources
-|   |   |   |   |   |-- DigitalResources.api.ts
-|   |   |   |   |   |-- DigitalResources.hooks.ts
-|   |   |   |   |   |-- DigitalResources.page.tsx
-|   |   |   |   |   |-- DigitalResources.test.tsx
-|   |   |   |   |   `-- DigitalResources.types.ts
-|   |   |   |   |-- Fines
-|   |   |   |   |   |-- Fines.api.ts
-|   |   |   |   |   |-- Fines.hooks.ts
-|   |   |   |   |   |-- Fines.page.tsx
-|   |   |   |   |   |-- Fines.test.tsx
-|   |   |   |   |   `-- Fines.types.ts
-|   |   |   |   |-- MyLoans
-|   |   |   |   |   |-- MyLoans.api.ts
-|   |   |   |   |   |-- MyLoans.hooks.ts
-|   |   |   |   |   |-- MyLoans.page.tsx
-|   |   |   |   |   |-- MyLoans.test.tsx
-|   |   |   |   |   `-- MyLoans.types.ts
-|   |   |   |   `-- Reservations
-|   |   |   |       |-- Reservations.api.ts
-|   |   |   |       |-- Reservations.hooks.ts
-|   |   |   |       |-- Reservations.page.tsx
-|   |   |   |       |-- Reservations.test.tsx
-|   |   |   |       `-- Reservations.types.ts
-|   |   |   |-- main.tsx
-|   |   |   |-- shell
-|   |   |   |   |-- AppShell.tsx
-|   |   |   |   `-- Routing.tsx
-|   |   |   |-- state
-|   |   |   `-- vite-env.d.ts
-|   |   |-- tsconfig.json
-|   |   |-- tsconfig.node.json
-|   |   `-- vite.config.ts
-|   |-- lms-web
-|   |   |-- dist
-|   |   |   |-- assets
-|   |   |   |   `-- index-B27XvGfG.js
-|   |   |   |-- index.html
-|   |   |   |-- manifest.webmanifest
-|   |   |   `-- service-worker.ts
-|   |   |-- index.html
-|   |   |-- package.json
-|   |   |-- public
-|   |   |   |-- manifest.webmanifest
-|   |   |   `-- service-worker.ts
-|   |   |-- src
-|   |   |   |-- config
-|   |   |   |   `-- env.ts
-|   |   |   |-- features
-|   |   |   |   |-- AssignmentDraftEditor
-|   |   |   |   |-- Assignments
-|   |   |   |   |   |-- Assignments.api.ts
-|   |   |   |   |   |-- Assignments.hooks.ts
-|   |   |   |   |   |-- Assignments.page.tsx
-|   |   |   |   |   |-- Assignments.test.tsx
-|   |   |   |   |   `-- Assignments.types.ts
-|   |   |   |   |-- Calendar
-|   |   |   |   |   |-- Calendar.api.ts
-|   |   |   |   |   |-- Calendar.hooks.ts
-|   |   |   |   |   |-- Calendar.page.tsx
-|   |   |   |   |   |-- Calendar.test.tsx
-|   |   |   |   |   `-- Calendar.types.ts
-|   |   |   |   |-- CourseAdministration
-|   |   |   |   |   `-- CoursePackaging.page.tsx
-|   |   |   |   |-- CourseContent
-|   |   |   |   |   |-- CourseContent.api.ts
-|   |   |   |   |   |-- CourseContent.hooks.ts
-|   |   |   |   |   |-- CourseContent.page.tsx
-|   |   |   |   |   |-- CourseContent.test.tsx
-|   |   |   |   |   `-- CourseContent.types.ts
-|   |   |   |   |-- Dashboard
-|   |   |   |   |   |-- Dashboard.api.ts
-|   |   |   |   |   |-- Dashboard.hooks.ts
-|   |   |   |   |   |-- Dashboard.page.tsx
-|   |   |   |   |   |-- Dashboard.test.tsx
-|   |   |   |   |   `-- Dashboard.types.ts
-|   |   |   |   |-- Discussions
-|   |   |   |   |   |-- Discussions.api.ts
-|   |   |   |   |   |-- Discussions.hooks.ts
-|   |   |   |   |   |-- Discussions.page.tsx
-|   |   |   |   |   |-- Discussions.test.tsx
-|   |   |   |   |   `-- Discussions.types.ts
-|   |   |   |   |-- GradebookOrchestration
-|   |   |   |   |   `-- GradebookSync.page.tsx
-|   |   |   |   |-- Grades
-|   |   |   |   |   |-- Grades.api.ts
-|   |   |   |   |   |-- Grades.hooks.ts
-|   |   |   |   |   |-- Grades.page.tsx
-|   |   |   |   |   |-- Grades.test.tsx
-|   |   |   |   |   `-- Grades.types.ts
-|   |   |   |   |-- ModuleTimeline
-|   |   |   |   |   `-- ModuleTimeline.page.tsx
-|   |   |   |   |-- OfflineSubmissionReview
-|   |   |   |   |   `-- SubmissionReview.page.tsx
-|   |   |   |   |-- QuizWindowGuard
-|   |   |   |   `-- Quizzes
-|   |   |   |       |-- Quizzes.api.ts
-|   |   |   |       |-- Quizzes.hooks.ts
-|   |   |   |       |-- Quizzes.page.tsx
-|   |   |   |       |-- Quizzes.test.tsx
-|   |   |   |       `-- Quizzes.types.ts
-|   |   |   |-- main.tsx
-|   |   |   |-- offline
-|   |   |   |   |-- indexedDbSchema.ts
-|   |   |   |   |-- serviceWorkerRegistration.ts
-|   |   |   |   `-- syncQueue.ts
-|   |   |   |-- shell
-|   |   |   |   |-- AppShell.tsx
-|   |   |   |   `-- Routing.tsx
-|   |   |   |-- state
-|   |   |   `-- vite-env.d.ts
-|   |   |-- tsconfig.json
-|   |   |-- tsconfig.node.json
-|   |   `-- vite.config.ts
-|   |-- payment-gateway
-|   |   |-- dist
-|   |   |   |-- assets
-|   |   |   |   |-- index-DnpdxvTm.js
-|   |   |   |   `-- index-cJBQpNUN.css
-|   |   |   `-- index.html
-|   |   |-- index.html
-|   |   |-- package.json
-|   |   |-- src
-|   |   |   |-- App.tsx
-|   |   |   `-- main.tsx
-|   |   |-- tsconfig.json
-|   |   |-- tsconfig.node.json
-|   |   `-- vite.config.ts
-|   |-- platform-console
-|   |   |-- dist
-|   |   |   |-- assets
-|   |   |   |   `-- index-CDXWAHcf.js
-|   |   |   `-- index.html
-|   |   |-- index.html
-|   |   |-- package.json
-|   |   |-- src
-|   |   |   |-- features
-|   |   |   |   |-- APIKeys
-|   |   |   |   |   |-- APIKeys.api.ts
-|   |   |   |   |   |-- APIKeys.hooks.ts
-|   |   |   |   |   |-- APIKeys.page.tsx
-|   |   |   |   |   |-- APIKeys.test.tsx
-|   |   |   |   |   `-- APIKeys.types.ts
-|   |   |   |   |-- AnalyticsBI
-|   |   |   |   |   `-- AnalyticsBI.page.tsx
-|   |   |   |   |-- CRM
-|   |   |   |   |   `-- CRM.page.tsx
-|   |   |   |   |-- Communication
-|   |   |   |   |   `-- Communication.page.tsx
-|   |   |   |   |-- DatabaseManagement
-|   |   |   |   |   |-- DatabaseManagement.api.ts
-|   |   |   |   |   |-- DatabaseManagement.hooks.ts
-|   |   |   |   |   |-- DatabaseManagement.page.tsx
-|   |   |   |   |   |-- DatabaseManagement.test.tsx
-|   |   |   |   |   `-- DatabaseManagement.types.ts
-|   |   |   |   |-- DocumentManagement
-|   |   |   |   |   `-- DocumentManagement.page.tsx
-|   |   |   |   |-- GlobalSettings
-|   |   |   |   |   |-- GlobalSettings.api.ts
-|   |   |   |   |   |-- GlobalSettings.hooks.ts
-|   |   |   |   |   |-- GlobalSettings.page.tsx
-|   |   |   |   |   |-- GlobalSettings.test.tsx
-|   |   |   |   |   `-- GlobalSettings.types.ts
-|   |   |   |   |-- MultiCampus
-|   |   |   |   |   `-- MultiCampus.page.tsx
-|   |   |   |   |-- Notification
-|   |   |   |   |   `-- Notification.page.tsx
-|   |   |   |   |-- SecurityAudits
-|   |   |   |   |   |-- SecurityAudits.api.ts
-|   |   |   |   |   |-- SecurityAudits.hooks.ts
-|   |   |   |   |   |-- SecurityAudits.page.tsx
-|   |   |   |   |   |-- SecurityAudits.test.tsx
-|   |   |   |   |   `-- SecurityAudits.types.ts
-|   |   |   |   |-- SystemLogs
-|   |   |   |   |   |-- SystemLogs.api.ts
-|   |   |   |   |   |-- SystemLogs.hooks.ts
-|   |   |   |   |   |-- SystemLogs.page.tsx
-|   |   |   |   |   |-- SystemLogs.test.tsx
-|   |   |   |   |   `-- SystemLogs.types.ts
-|   |   |   |   `-- TenantManagement
-|   |   |   |       |-- TenantManagement.api.ts
-|   |   |   |       |-- TenantManagement.hooks.ts
-|   |   |   |       |-- TenantManagement.page.tsx
-|   |   |   |       |-- TenantManagement.test.tsx
-|   |   |   |       `-- TenantManagement.types.ts
-|   |   |   |-- main.tsx
-|   |   |   |-- shell
-|   |   |   |   `-- Routing.tsx
-|   |   |   `-- vite-env.d.ts
-|   |   |-- tsconfig.json
-|   |   |-- tsconfig.node.json
-|   |   `-- vite.config.ts
-|   |-- registrar-portal
-|   |   |-- dist
-|   |   |   |-- assets
-|   |   |   |   |-- index-CmnkJuXB.css
-|   |   |   |   `-- index-qmryzBB_.js
-|   |   |   `-- index.html
-|   |   |-- index.html
-|   |   |-- package.json
-|   |   |-- src
-|   |   |   |-- App.tsx
-|   |   |   |-- features
-|   |   |   |   |-- AcademicComplianceDivision
-|   |   |   |   |   |-- CHEDCompliance.page.tsx
-|   |   |   |   |   |-- Compliance.api.ts
-|   |   |   |   |   |-- Compliance.hooks.ts
-|   |   |   |   |   |-- Compliance.types.ts
-|   |   |   |   |   `-- ResidencyRules.page.tsx
-|   |   |   |   |-- AcademicRecordsDivision
-|   |   |   |   |   |-- AcademicRecordInitialization.page.tsx
-|   |   |   |   |   |-- AcademicRecordInitialization.test.tsx
-|   |   |   |   |   |-- AcademicStanding.page.tsx
-|   |   |   |   |   |-- AcademicStanding.test.tsx
-|   |   |   |   |   |-- OfficialGrades.page.tsx
-|   |   |   |   |   |-- OfficialGrades.test.tsx
-|   |   |   |   |   |-- Records.api.ts
-|   |   |   |   |   |-- Records.hooks.ts
-|   |   |   |   |   `-- Records.types.ts
-|   |   |   |   |-- AcademicSchedulingDivision
-|   |   |   |   |   |-- AcademicSchedulingDivision.api.ts
-|   |   |   |   |   |-- AcademicSchedulingDivision.hooks.ts
-|   |   |   |   |   |-- AcademicSchedulingDivision.page.tsx
-|   |   |   |   |   |-- AcademicSchedulingDivision.test.tsx
-|   |   |   |   |   `-- AcademicSchedulingDivision.types.ts
-|   |   |   |   |-- Admissions
-|   |   |   |   |   `-- EnrollmentActivation.page.tsx
-|   |   |   |   |-- AdmissionsDivision
-|   |   |   |   |   |-- Admissions.api.ts
-|   |   |   |   |   |-- Admissions.hooks.ts
-|   |   |   |   |   |-- Admissions.types.ts
-|   |   |   |   |   |-- AdmissionsQueue.page.tsx
-|   |   |   |   |   `-- FacultyEndorsements.page.tsx
-|   |   |   |   |-- CertificationDivision
-|   |   |   |   |   |-- Certification.api.ts
-|   |   |   |   |   |-- Certification.hooks.ts
-|   |   |   |   |   |-- Certification.types.ts
-|   |   |   |   |   |-- DiplomaVerification.page.tsx
-|   |   |   |   |   `-- TranscriptRequests.page.tsx
-|   |   |   |   |-- ClearanceProcessing
-|   |   |   |   |   `-- PendingClearancesView.tsx
-|   |   |   |   |-- CrossEnrollmentDivision
-|   |   |   |   |   |-- CrossEnrollmentDivision.api.ts
-|   |   |   |   |   |-- CrossEnrollmentDivision.hooks.ts
-|   |   |   |   |   |-- CrossEnrollmentDivision.page.tsx
-|   |   |   |   |   |-- CrossEnrollmentDivision.test.tsx
-|   |   |   |   |   `-- CrossEnrollmentDivision.types.ts
-|   |   |   |   |-- CurriculumDivision
-|   |   |   |   |   |-- CourseOfferings.page.tsx
-|   |   |   |   |   |-- CourseOfferings.test.tsx
-|   |   |   |   |   |-- Curriculum.api.ts
-|   |   |   |   |   |-- Curriculum.hooks.ts
-|   |   |   |   |   |-- Curriculum.types.ts
-|   |   |   |   |   |-- Prerequisites.page.tsx
-|   |   |   |   |   |-- Prerequisites.test.tsx
-|   |   |   |   |   |-- SubjectCatalog.page.tsx
-|   |   |   |   |   `-- SubjectCatalog.test.tsx
-|   |   |   |   |-- EnrollmentDivision
-|   |   |   |   |   |-- AddDropOversight.page.tsx
-|   |   |   |   |   |-- AddDropOversight.test.tsx
-|   |   |   |   |   |-- Enrollment.api.ts
-|   |   |   |   |   |-- Enrollment.hooks.ts
-|   |   |   |   |   |-- Enrollment.types.ts
-|   |   |   |   |   |-- EnrollmentValidation.page.tsx
-|   |   |   |   |   |-- EnrollmentValidation.test.tsx
-|   |   |   |   |   |-- RegistrationExceptions.page.tsx
-|   |   |   |   |   |-- RegistrationExceptions.test.tsx
-|   |   |   |   |   |-- RegistrationRequests.page.tsx
-|   |   |   |   |   |-- RegistrationRequests.test.tsx
-|   |   |   |   |   |-- RegistrationWindows.page.tsx
-|   |   |   |   |   |-- RegistrationWindows.test.tsx
-|   |   |   |   |   |-- SubjectLoading.page.tsx
-|   |   |   |   |   |-- SubjectLoading.test.tsx
-|   |   |   |   |   |-- Waitlists.page.tsx
-|   |   |   |   |   `-- Waitlists.test.tsx
-|   |   |   |   |-- GraduationDivision
-|   |   |   |   |   |-- Graduation.api.ts
-|   |   |   |   |   |-- Graduation.hooks.ts
-|   |   |   |   |   |-- Graduation.types.ts
-|   |   |   |   |   |-- GraduationCandidates.page.tsx
-|   |   |   |   |   `-- LatinHonors.page.tsx
-|   |   |   |   |-- RegistrarDashboard
-|   |   |   |   |   |-- RegistrarDashboard.api.ts
-|   |   |   |   |   |-- RegistrarDashboard.hooks.ts
-|   |   |   |   |   |-- RegistrarDashboard.page.tsx
-|   |   |   |   |   |-- RegistrarDashboard.test.tsx
-|   |   |   |   |   `-- RegistrarDashboard.types.ts
-|   |   |   |   |-- RegistrarEnrollmentValidation.test.tsx
-|   |   |   |   |-- RegistrarIntegration.test.tsx
-|   |   |   |   |-- RegistrarSecurity
-|   |   |   |   |   |-- RecordAccessAudit.page.tsx
-|   |   |   |   |   |-- Security.api.ts
-|   |   |   |   |   |-- Security.hooks.ts
-|   |   |   |   |   |-- Security.types.ts
-|   |   |   |   |   `-- SensitiveVault.page.tsx
-|   |   |   |   |-- StudentRegistryDivision
-|   |   |   |   |   |-- LeaveOfAbsence.page.tsx
-|   |   |   |   |   |-- MasterStudentList.page.tsx
-|   |   |   |   |   |-- MasterStudentList.test.tsx
-|   |   |   |   |   |-- Registry.api.ts
-|   |   |   |   |   |-- Registry.hooks.ts
-|   |   |   |   |   |-- Registry.types.ts
-|   |   |   |   |   |-- StudentNumberAssignment.page.tsx
-|   |   |   |   |   `-- StudentProfile.page.tsx
-|   |   |   |   |-- StudentServicesDivision
-|   |   |   |   |   |-- DataCorrections.page.tsx
-|   |   |   |   |   |-- Services.api.ts
-|   |   |   |   |   |-- Services.hooks.ts
-|   |   |   |   |   |-- Services.types.ts
-|   |   |   |   |   `-- StudentInquiries.page.tsx
-|   |   |   |   `-- TransferDivision
-|   |   |   |       |-- TransferDivision.api.ts
-|   |   |   |       |-- TransferDivision.hooks.ts
-|   |   |   |       |-- TransferDivision.page.tsx
-|   |   |   |       |-- TransferDivision.test.tsx
-|   |   |   |       `-- TransferDivision.types.ts
-|   |   |   |-- main.tsx
-|   |   |   `-- shell
-|   |   |       |-- AppShell.tsx
-|   |   |       |-- GlobalSearchModal.tsx
-|   |   |       `-- Routing.tsx
-|   |   |-- tsconfig.json
-|   |   |-- tsconfig.node.json
-|   |   `-- vite.config.ts
-|   |-- security-portal
-|   |   |-- dist
-|   |   |   |-- assets
-|   |   |   |   |-- index-Dfxy4O-t.js
-|   |   |   |   `-- index-cJBQpNUN.css
-|   |   |   `-- index.html
-|   |   |-- index.html
-|   |   |-- package.json
-|   |   |-- src
-|   |   |   |-- App.tsx
-|   |   |   |-- main.tsx
-|   |   |   `-- shell
-|   |   |       |-- AppShell.tsx
-|   |   |       `-- Routing.tsx
-|   |   |-- tsconfig.json
-|   |   |-- tsconfig.node.json
-|   |   `-- vite.config.ts
-|   `-- student-portal
-|       |-- dist
-|       |   |-- assets
-|       |   |   |-- index-CT34Fv1n.js
-|       |   |   `-- index-cJBQpNUN.css
-|       |   `-- index.html
-|       |-- index.html
-|       |-- package.json
-|       |-- public
-|       |-- src
-|       |   |-- config
-|       |   |   `-- env.ts
-|       |   |-- features
-|       |   |   |-- AcademicRecord
-|       |   |   |   |-- AcademicRecord.api.ts
-|       |   |   |   |-- AcademicRecord.hooks.ts
-|       |   |   |   |-- AcademicRecord.page.tsx
-|       |   |   |   |-- AcademicRecord.test.tsx
-|       |   |   |   `-- AcademicRecord.types.ts
-|       |   |   |-- AlumniNetwork
-|       |   |   |   |-- AlumniNetwork.api.ts
-|       |   |   |   |-- AlumniNetwork.hooks.ts
-|       |   |   |   |-- AlumniNetwork.page.tsx
-|       |   |   |   |-- AlumniNetwork.test.tsx
-|       |   |   |   `-- AlumniNetwork.types.ts
-|       |   |   |-- CareerDashboard
-|       |   |   |   |-- CareerDashboard.api.ts
-|       |   |   |   |-- CareerDashboard.hooks.ts
-|       |   |   |   |-- CareerDashboard.page.tsx
-|       |   |   |   |-- CareerDashboard.test.tsx
-|       |   |   |   `-- CareerDashboard.types.ts
-|       |   |   |-- Clearance
-|       |   |   |   |-- Clearance.api.ts
-|       |   |   |   |-- Clearance.hooks.ts
-|       |   |   |   |-- Clearance.page.tsx
-|       |   |   |   |-- Clearance.test.tsx
-|       |   |   |   `-- Clearance.types.ts
-|       |   |   |-- CrossEnrollment
-|       |   |   |   |-- CrossEnrollment.api.ts
-|       |   |   |   |-- CrossEnrollment.hooks.ts
-|       |   |   |   |-- CrossEnrollment.page.tsx
-|       |   |   |   |-- CrossEnrollment.test.tsx
-|       |   |   |   `-- CrossEnrollment.types.ts
-|       |   |   |-- CurriculumProgress
-|       |   |   |   |-- CurriculumProgress.api.ts
-|       |   |   |   |-- CurriculumProgress.hooks.ts
-|       |   |   |   |-- CurriculumProgress.page.tsx
-|       |   |   |   |-- CurriculumProgress.test.tsx
-|       |   |   |   `-- CurriculumProgress.types.ts
-|       |   |   |-- Dashboard
-|       |   |   |   |-- Dashboard.api.ts
-|       |   |   |   |-- Dashboard.hooks.ts
-|       |   |   |   |-- Dashboard.page.tsx
-|       |   |   |   |-- Dashboard.test.tsx
-|       |   |   |   `-- Dashboard.types.ts
-|       |   |   |-- Enrollment
-|       |   |   |   |-- Enrollment.api.ts
-|       |   |   |   |-- Enrollment.hooks.ts
-|       |   |   |   |-- Enrollment.page.tsx
-|       |   |   |   |-- Enrollment.test.tsx
-|       |   |   |   `-- Enrollment.types.ts
-|       |   |   |-- EnrollmentHistory
-|       |   |   |   |-- EnrollmentHistory.api.ts
-|       |   |   |   |-- EnrollmentHistory.hooks.ts
-|       |   |   |   |-- EnrollmentHistory.page.tsx
-|       |   |   |   |-- EnrollmentHistory.test.tsx
-|       |   |   |   `-- EnrollmentHistory.types.ts
-|       |   |   |-- Extracurriculars
-|       |   |   |   |-- Extracurriculars.api.ts
-|       |   |   |   |-- Extracurriculars.hooks.ts
-|       |   |   |   |-- Extracurriculars.page.tsx
-|       |   |   |   |-- Extracurriculars.test.tsx
-|       |   |   |   `-- Extracurriculars.types.ts
-|       |   |   |-- Financials
-|       |   |   |   |-- Financials.api.ts
-|       |   |   |   |-- Financials.hooks.ts
-|       |   |   |   |-- Financials.page.tsx
-|       |   |   |   |-- Financials.test.tsx
-|       |   |   |   `-- Financials.types.ts
-|       |   |   |-- Graduation
-|       |   |   |   |-- Graduation.api.ts
-|       |   |   |   |-- Graduation.hooks.ts
-|       |   |   |   |-- Graduation.page.tsx
-|       |   |   |   |-- Graduation.test.tsx
-|       |   |   |   `-- Graduation.types.ts
-|       |   |   |-- GuidanceSessions
-|       |   |   |   |-- GuidanceSessions.api.ts
-|       |   |   |   |-- GuidanceSessions.hooks.ts
-|       |   |   |   |-- GuidanceSessions.page.tsx
-|       |   |   |   |-- GuidanceSessions.test.tsx
-|       |   |   |   `-- GuidanceSessions.types.ts
-|       |   |   |-- HealthRecords
-|       |   |   |   |-- HealthRecords.api.ts
-|       |   |   |   |-- HealthRecords.hooks.ts
-|       |   |   |   |-- HealthRecords.page.tsx
-|       |   |   |   |-- HealthRecords.test.tsx
-|       |   |   |   `-- HealthRecords.types.ts
-|       |   |   |-- HostelAllocation
-|       |   |   |   |-- HostelAllocation.api.ts
-|       |   |   |   |-- HostelAllocation.hooks.ts
-|       |   |   |   |-- HostelAllocation.page.tsx
-|       |   |   |   |-- HostelAllocation.test.tsx
-|       |   |   |   `-- HostelAllocation.types.ts
-|       |   |   |-- LearningManagement
-|       |   |   |   |-- LearningManagement.hooks.ts
-|       |   |   |   |-- LearningManagement.page.tsx
-|       |   |   |   `-- LearningManagement.styles.css
-|       |   |   |-- MyEnrollments
-|       |   |   |   |-- MyEnrollments.api.ts
-|       |   |   |   |-- MyEnrollments.hooks.ts
-|       |   |   |   |-- MyEnrollments.page.tsx
-|       |   |   |   |-- MyEnrollments.styles.css
-|       |   |   |   |-- MyEnrollments.test.tsx
-|       |   |   |   `-- MyEnrollments.types.ts
-|       |   |   |-- Registration
-|       |   |   |   |-- BrowseCourses.page.tsx
-|       |   |   |   |-- BrowseCourses.test.tsx
-|       |   |   |   |-- MyRegistration.page.tsx
-|       |   |   |   |-- MyRegistration.test.tsx
-|       |   |   |   |-- Registration.api.ts
-|       |   |   |   |-- Registration.hooks.ts
-|       |   |   |   |-- Registration.page.tsx
-|       |   |   |   |-- Registration.test.tsx
-|       |   |   |   |-- Registration.types.ts
-|       |   |   |   |-- Waitlist.page.tsx
-|       |   |   |   `-- Waitlist.test.tsx
-|       |   |   |-- Schedule
-|       |   |   |   |-- Schedule.api.ts
-|       |   |   |   |-- Schedule.hooks.ts
-|       |   |   |   |-- Schedule.page.tsx
-|       |   |   |   |-- Schedule.test.tsx
-|       |   |   |   `-- Schedule.types.ts
-|       |   |   |-- StudentProfile
-|       |   |   |   |-- StudentProfile.api.ts
-|       |   |   |   |-- StudentProfile.hooks.ts
-|       |   |   |   |-- StudentProfile.page.tsx
-|       |   |   |   |-- StudentProfile.test.tsx
-|       |   |   |   `-- StudentProfile.types.ts
-|       |   |   `-- Timetable
-|       |   |       |-- Timetable.api.ts
-|       |   |       |-- Timetable.hooks.ts
-|       |   |       |-- Timetable.page.tsx
-|       |   |       |-- Timetable.test.tsx
-|       |   |       `-- Timetable.types.ts
-|       |   |-- main.tsx
-|       |   |-- shell
-|       |   |   |-- AppShell.tsx
-|       |   |   |-- ErrorBoundary.tsx
-|       |   |   |-- NavigationLogger.tsx
-|       |   |   `-- Routing.tsx
-|       |   |-- state
-|       |   |-- theme.css
-|       |   `-- vite-env.d.ts
-|       |-- tsconfig.json
-|       |-- tsconfig.node.json
-|       `-- vite.config.ts
-|-- bootstrap.sh
-|-- clients
-|   `-- lms-offline-avalonia
-|       |-- ApplyDynamicResources.ps1
-|       |-- FixSpacing.ps1
-|       |-- LmsOffline.Application
-|       |   |-- Features
-|       |   |   |-- Analytics
-|       |   |   |   `-- LogxApiEventCommand.cs
-|       |   |   |-- Auth
-|       |   |   |   `-- AuthenticateStudentCommandHandler.cs
-|       |   |   |-- AuthenticateStudent
-|       |   |   |   |-- AuthenticateStudentCommand.cs
-|       |   |   |   |-- AuthenticateStudentCommandHandler.cs
-|       |   |   |   `-- AuthenticateStudentResult.cs
-|       |   |   |-- Dashboard
-|       |   |   |   |-- GetStudentDashboardStatsQuery.cs
-|       |   |   |   `-- GetStudentDashboardStatsQueryHandler.cs
-|       |   |   |-- Diagnostics
-|       |   |   |   `-- GetSystemHealthQuery.cs
-|       |   |   |-- DownloadModulePackage
-|       |   |   |   |-- DownloadModulePackageCommand.cs
-|       |   |   |   `-- DownloadModulePackageCommandHandler.cs
-|       |   |   |-- Grades
-|       |   |   |   |-- GetLocalGradesQuery.cs
-|       |   |   |   `-- SyncGradesFromBackendCommand.cs
-|       |   |   |-- PackageManager
-|       |   |   |   |-- GetInstalledPackagesQuery.cs
-|       |   |   |   |-- VerifyPackageCommand.cs
-|       |   |   |   `-- VerifyPackageIntegrityCommand.cs
-|       |   |   |-- StartOfflineAssessment
-|       |   |   |   |-- StartOfflineAssessmentCommand.cs
-|       |   |   |   `-- StartOfflineAssessmentCommandHandler.cs
-|       |   |   |-- SubmitOfflineAssessment
-|       |   |   |   |-- SubmitOfflineAssessmentCommand.cs
-|       |   |   |   `-- SubmitOfflineAssessmentCommandHandler.cs
-|       |   |   |-- SubmitOfflineAssignment
-|       |   |   |   |-- SubmitOfflineAssignmentCommand.cs
-|       |   |   |   `-- SubmitOfflineAssignmentCommandHandler.cs
-|       |   |   `-- SyncPendingSubmissions
-|       |   |       |-- SyncPendingSubmissionsCommand.cs
-|       |   |       `-- SyncPendingSubmissionsCommandHandler.cs
-|       |   |-- Interfaces
-|       |   |   |-- IDashboardRepository.cs
-|       |   |   |-- IExamIntegrityService.cs
-|       |   |   |-- IExternalIdentityService.cs
-|       |   |   |-- ILocalGradeRepository.cs
-|       |   |   |-- ILocalLearningRecordStore.cs
-|       |   |   |-- ILocalPackageRepository.cs
-|       |   |   |-- ILocalStorageDiagnostics.cs
-|       |   |   |-- IOfflineAssessmentRepository.cs
-|       |   |   |-- IOfflineAssignmentRepository.cs
-|       |   |   |-- IOfflineIdentityRepository.cs
-|       |   |   |-- IOfflineModuleRepository.cs
-|       |   |   |-- IPackageSecurityService.cs
-|       |   |   |-- IPackageVerifier.cs
-|       |   |   `-- IPasswordHasher.cs
-|       |   |-- LmsOffline.Application.csproj
-|       |   |-- ModuleRegistration.cs
-|       |   `-- Validators
-|       |       `-- StartOfflineAssessmentCommandValidator.cs
-|       |-- LmsOffline.Contracts
-|       |   |-- IntegrationEvents
-|       |   |   |-- LearningAnalyticsBatchReadyEvent.cs
-|       |   |   |-- OfflineAssessmentSubmitted.cs
-|       |   |   |-- OfflineAssignmentSubmitted.cs
-|       |   |   `-- PackageVerifiedEvent.cs
-|       |   `-- LmsOffline.Contracts.csproj
-|       |-- LmsOffline.Domain
-|       |   |-- Aggregates
-|       |   |   |-- CoursePackage.cs
-|       |   |   |-- GradeRecord.cs
-|       |   |   |-- LearningEvent.cs
-|       |   |   |-- OfflineAssessment.cs
-|       |   |   |-- OfflineAssignment.cs
-|       |   |   |-- OfflineModule.cs
-|       |   |   `-- StudentUser.cs
-|       |   |-- Entities
-|       |   |   `-- StudentUser.cs
-|       |   |-- Exceptions
-|       |   |   `-- AssessmentWindowClosedException.cs
-|       |   |-- LmsOffline.Domain.csproj
-|       |   |-- Policies
-|       |   |   `-- WindowEnforcementPolicy.cs
-|       |   `-- ValueObjects
-|       |       |-- AttemptToken.cs
-|       |       |-- AvailabilityWindow.cs
-|       |       `-- SyncStatus.cs
-|       |-- LmsOffline.Infrastructure
-|       |   |-- Auth
-|       |   |   |-- ExternalIdentityService.cs
-|       |   |   `-- OfflineTokenCache.cs
-|       |   |-- Data
-|       |   |   |-- EncryptedSqliteContext.cs
-|       |   |   `-- SqliteStorageDiagnostics.cs
-|       |   |-- LmsOffline.Infrastructure.csproj
-|       |   |-- Persistence
-|       |   |   |-- EncryptedSqliteContext.cs
-|       |   |   |-- Migrations
-|       |   |   `-- Repositories
-|       |   |       |-- DashboardRepository.cs
-|       |   |       `-- OfflineIdentityRepository.cs
-|       |   |-- Repositories
-|       |   |   |-- GradeRepository.cs
-|       |   |   |-- LocalPackageRepository.cs
-|       |   |   |-- OfflineAssessmentRepository.cs
-|       |   |   |-- OfflineAssignmentRepository.cs
-|       |   |   |-- OfflineIdentityRepository.cs
-|       |   |   `-- OfflineModuleRepository.cs
-|       |   |-- Security
-|       |   |   |-- EcdsaPackageSecurityService.cs
-|       |   |   |-- EcdsaPackageVerifier.cs
-|       |   |   `-- Pbkdf2PasswordHasher.cs
-|       |   `-- Sync
-|       |       |-- OutboxBackgroundService.cs
-|       |       |-- OutboxSyncProcessor.cs
-|       |       `-- ScheduleTokenVerifier.cs
-|       |-- LmsOffline.Presentation
-|       |   |-- App.axaml
-|       |   |-- App.axaml.cs
-|       |   |-- DesignSystem
-|       |   |   |-- Foundations
-|       |   |   |   |-- Borders.axaml
-|       |   |   |   |-- Colors.axaml
-|       |   |   |   |-- Elevation.axaml
-|       |   |   |   |-- Motion.axaml
-|       |   |   |   |-- Radius.axaml
-|       |   |   |   |-- Spacing.axaml
-|       |   |   |   |-- Typography.axaml
-|       |   |   |   `-- ZIndex.axaml
-|       |   |   |-- Themes
-|       |   |   |   |-- Dark.axaml
-|       |   |   |   `-- Light.axaml
-|       |   |   `-- Tokens
-|       |   |       |-- BadgeTokens.axaml
-|       |   |       |-- ButtonTokens.axaml
-|       |   |       |-- CardTokens.axaml
-|       |   |       `-- InputTokens.axaml
-|       |   |-- Features
-|       |   |   |-- Assessments
-|       |   |   |   |-- AssessmentView.axaml
-|       |   |   |   |-- AssessmentView.axaml.cs
-|       |   |   |   |-- AssessmentViewModel.cs
-|       |   |   |   |-- AssignmentSubmissionView.axaml
-|       |   |   |   |-- AssignmentSubmissionView.axaml.cs
-|       |   |   |   |-- AssignmentSubmissionViewModel.cs
-|       |   |   |   |-- LogicQuizView.axaml
-|       |   |   |   |-- LogicQuizView.axaml.cs
-|       |   |   |   `-- LogicQuizViewModel.cs
-|       |   |   |-- Auth
-|       |   |   |   |-- LoginView.axaml
-|       |   |   |   |-- LoginView.axaml.cs
-|       |   |   |   `-- LoginViewModel.cs
-|       |   |   |-- Calendar
-|       |   |   |   |-- TimelineScheduleView.axaml
-|       |   |   |   |-- TimelineScheduleView.axaml.cs
-|       |   |   |   `-- TimelineScheduleViewModel.cs
-|       |   |   |-- Courses
-|       |   |   |   |-- ActivityHubView.axaml
-|       |   |   |   |-- ActivityHubView.axaml.cs
-|       |   |   |   |-- ActivityHubViewModel.cs
-|       |   |   |   |-- CourseContentView.axaml
-|       |   |   |   |-- CourseContentView.axaml.cs
-|       |   |   |   |-- CourseContentViewModel.cs
-|       |   |   |   |-- CourseViewerView.axaml
-|       |   |   |   |-- CourseViewerView.axaml.cs
-|       |   |   |   |-- CourseViewerViewModel.cs
-|       |   |   |   |-- ModuleTimelineView.axaml
-|       |   |   |   |-- ModuleTimelineView.axaml.cs
-|       |   |   |   |-- ModuleTimelineViewModel.cs
-|       |   |   |   |-- ResourcesView.axaml
-|       |   |   |   |-- ResourcesView.axaml.cs
-|       |   |   |   `-- ResourcesViewModel.cs
-|       |   |   |-- Dashboard
-|       |   |   |   |-- StudentDashboardView.axaml
-|       |   |   |   |-- StudentDashboardView.axaml.cs
-|       |   |   |   `-- StudentDashboardViewModel.cs
-|       |   |   |-- Diagnostics
-|       |   |   |   |-- DiagnosticsView.axaml
-|       |   |   |   |-- DiagnosticsView.axaml.cs
-|       |   |   |   `-- DiagnosticsViewModel.cs
-|       |   |   |-- Grades
-|       |   |   |   |-- GradesView.axaml
-|       |   |   |   |-- GradesView.axaml.cs
-|       |   |   |   `-- GradesViewModel.cs
-|       |   |   |-- LearningTimeline
-|       |   |   |   |-- LearningTimelineView.axaml
-|       |   |   |   |-- LearningTimelineView.axaml.cs
-|       |   |   |   `-- LearningTimelineViewModel.cs
-|       |   |   |-- PackageManager
-|       |   |   |   |-- PackageManagerView.axaml
-|       |   |   |   |-- PackageManagerView.axaml.cs
-|       |   |   |   `-- PackageManagerViewModel.cs
-|       |   |   `-- SyncHub
-|       |   |       |-- SyncHubView.axaml
-|       |   |       |-- SyncHubView.axaml.cs
-|       |   |       `-- SyncHubViewModel.cs
-|       |   |-- LmsOffline.Presentation.csproj
-|       |   |-- MainWindow.axaml
-|       |   |-- MainWindow.axaml.cs
-|       |   |-- Program.cs
-|       |   |-- Services
-|       |   |   |-- AvaloniaExamIntegrityService.cs
-|       |   |   `-- FileLogger.cs
-|       |   |-- Shared
-|       |   |   `-- Controls
-|       |   |       |-- AppCard.axaml
-|       |   |       |-- AppCard.axaml.cs
-|       |   |       |-- NavigationItem.axaml
-|       |   |       |-- NavigationItem.axaml.cs
-|       |   |       |-- StatusBadge.axaml
-|       |   |       `-- StatusBadge.axaml.cs
-|       |   |-- Shell
-|       |   |   |-- AppSidebar.axaml
-|       |   |   |-- AppSidebar.axaml.cs
-|       |   |   |-- AppStatusBar.axaml
-|       |   |   `-- AppStatusBar.axaml.cs
-|       |   |-- ViewLocator.cs
-|       |   |-- ViewModels
-|       |   |   |-- AssessmentViewModel.cs
-|       |   |   |-- AssignmentSubmissionViewModel.cs
-|       |   |   |-- LogicQuizViewModel.cs
-|       |   |   `-- MainWindowViewModel.cs
-|       |   |-- Views
-|       |   |   |-- AssessmentView.axaml
-|       |   |   |-- AssessmentView.axaml.cs
-|       |   |   |-- AssignmentSubmissionView.axaml
-|       |   |   |-- AssignmentSubmissionView.axaml.cs
-|       |   |   |-- CustomControls
-|       |   |   |   |-- CustomTitleBar.axaml
-|       |   |   |   `-- CustomTitleBar.axaml.cs
-|       |   |   |-- LogicQuizView.axaml
-|       |   |   `-- LogicQuizView.axaml.cs
-|       |   `-- app.manifest
-|       |-- LmsOffline.Tests
-|       |   |-- LmsOffline.Tests.csproj
-|       |   |-- OfflineTokenCacheTests.cs
-|       |   |-- SyncConflictResolutionTests.cs
-|       |   |-- UnitTest1.cs
-|       |   `-- WindowEnforcementPolicyTests.cs
-|       |-- LmsOfflineClient.slnx
-|       |-- MigrateOpticalSystem.ps1
-|       |-- UpdateTokens.ps1
-|       |-- app.log
-|       |-- build-and-publish.bat
-|       |-- crash.log
-|       `-- lms_offline.db
-|-- domain
-|   |-- adr
-|   |-- model
-|   `-- runbooks
-|-- libs
-|   |-- api-clients
-|   |   |-- academic
-|   |   |   |-- advisingApi.ts
-|   |   |   |-- analyticsApi.ts
-|   |   |   |-- assessmentApi.ts
-|   |   |   |-- communicationApi.ts
-|   |   |   |-- documentsApi.ts
-|   |   |   |-- examinationResultApi.ts
-|   |   |   |-- facultyStudentsApi.ts
-|   |   |   |-- libraryCatalogApi.ts
-|   |   |   |-- lmsApi.ts
-|   |   |   |-- registrarApi.ts
-|   |   |   |-- registrarCurriculumApi.ts
-|   |   |   |-- researchApi.ts
-|   |   |   |-- scheduleApi.ts
-|   |   |   |-- studentInformationApi.ts
-|   |   |   `-- teachingApi.ts
-|   |   |-- administration
-|   |   |   |-- assetManagementApi.ts
-|   |   |   |-- financeApi.ts
-|   |   |   |-- financeBillingApi.ts
-|   |   |   |-- hrApi.ts
-|   |   |   |-- inventoryApi.ts
-|   |   |   `-- procurementApi.ts
-|   |   |-- apiClient.ts
-|   |   |-- campus-life
-|   |   |   |-- canteenApi.ts
-|   |   |   `-- transportApi.ts
-|   |   |-- governance
-|   |   |   |-- facilitiesApi.ts
-|   |   |   |-- facilitiesAvailabilityApi.ts
-|   |   |   `-- governanceApi.ts
-|   |   |-- index.ts
-|   |   |-- package.json
-|   |   |-- platform
-|   |   |   |-- facultySettingsApi.ts
-|   |   |   |-- identityAccessAuthorizationApi.ts
-|   |   |   `-- identityApi.ts
-|   |   `-- student-lifecycle
-|   |       |-- admissionsApi.ts
-|   |       |-- alumniApi.ts
-|   |       |-- careerApi.ts
-|   |       |-- facultyAdmissionsApi.ts
-|   |       |-- guidanceApi.ts
-|   |       |-- healthCenterApi.ts
-|   |       |-- hostelApi.ts
-|   |       |-- interviewsApi.ts
-|   |       |-- studentInformationApi.ts
-|   |       `-- studentInformationReadModel.ts
-|   |-- auth-sdk
-|   |   |-- dotnet
-|   |   |   `-- OidcClient.cs
-|   |   |-- index.ts
-|   |   |-- package.json
-|   |   |-- react
-|   |   |   |-- AuthContext.ts
-|   |   |   |-- AuthProvider.tsx
-|   |   |   |-- silentRefresh.ts
-|   |   |   `-- useAuth.ts
-|   |   `-- src
-|   |       `-- guards
-|   |           |-- FacultyGuard.tsx
-|   |           |-- FinanceGuard.tsx
-|   |           |-- IdentityGuard.tsx
-|   |           |-- LMSGuard.tsx
-|   |           `-- RegistrarGuard.tsx
-|   |-- core-logger
-|   |   |-- index.ts
-|   |   `-- package.json
-|   |-- domain-viewmodels
-|   |   |-- AdministrationViewModels.ts
-|   |   |-- CampusLifeViewModels.ts
-|   |   |-- FinanceViewModels.ts
-|   |   |-- GovernanceViewModels.ts
-|   |   |-- GrievanceCaseViewModel.ts
-|   |   |-- IdentityViewModels.ts
-|   |   |-- InvoiceSummaryViewModel.ts
-|   |   |-- LibraryViewModels.ts
-|   |   |-- StudentLifecycleViewModels.ts
-|   |   |-- StudentProfileViewModel.ts
-|   |   |-- index.ts
-|   |   `-- package.json
-|   |-- offline-sync
-|   |   `-- syncEngineContracts.ts
-|   |-- shell-kit
-|   |   |-- AuthGuard.tsx
-|   |   |-- authConfig.ts
-|   |   |-- bootstrap.tsx
-|   |   |-- index.ts
-|   |   |-- package.json
-|   |   |-- portalRegistry.ts
-|   |   `-- queryClient.ts
-|   |-- ui-kit
-|   |   |-- components
-|   |   |-- package.json
-|   |   |-- src
-|   |   |   |-- components
-|   |   |   |   |-- Badge.tsx
-|   |   |   |   |-- Button.tsx
-|   |   |   |   |-- Card.tsx
-|   |   |   |   |-- DocumentPreviewModal.tsx
-|   |   |   |   |-- EmptyState.tsx
-|   |   |   |   |-- FormInput.tsx
-|   |   |   |   |-- Modal.tsx
-|   |   |   |   |-- PageHeader.tsx
-|   |   |   |   `-- Table.tsx
-|   |   |   |-- index.ts
-|   |   |   `-- styles.css
-|   |   |-- theming
-|   |   `-- tokens
-|   |-- vite-config
-|   |   |-- index.ts
-|   |   `-- package.json
-|   `-- workflow-sdk
-|       |-- index.ts
-|       |-- package.json
-|       |-- src
-|       |   |-- AcademicRecordWorkflow.ts
-|       |   |-- AdmissionWorkflow.ts
-|       |   |-- AuditWorkflow.ts
-|       |   |-- CertificationWorkflow.ts
-|       |   |-- EnrollmentWorkflow.ts
-|       |   |-- FinanceWorkflow.ts
-|       |   |-- GraduationWorkflow.ts
-|       |   |-- IdentityWorkflow.ts
-|       |   |-- LMSWorkflow.ts
-|       |   |-- LibraryWorkflow.ts
-|       |   |-- NotificationWorkflow.ts
-|       |   |-- StudentLifecycleWorkflow.ts
-|       |   `-- index.ts
-|       `-- tsconfig.json
-|-- package-lock.json
-|-- package.json
-|-- repair-npm.sh
-|-- scaffold_features.ps1
-|-- tests
-|   |-- AccessibilityTests
-|   |   `-- wcag-audit.spec.ts
-|   |-- ArchitectureTests
-|   |-- ComponentTests
-|   |   |-- admin-portal
-|   |   |-- faculty-portal
-|   |   |-- finance-console
-|   |   |-- governance-console
-|   |   |-- identity-portal
-|   |   |-- library-portal
-|   |   |-- lms-web
-|   |   `-- student-portal
-|   |-- E2ETests
-|   |   |-- HostelBillingFlow.spec.ts
-|   |   |-- OfflineQuizWindowFlow.spec.ts
-|   |   `-- StudentEnrollmentFlow.spec.ts
-|   |-- PerformanceTests
-|   |   `-- lighthouse-budgets.json
-|   `-- SecurityTests
-|       |-- cspComplianceTests.ts
-|       `-- tokenStorageAuditTests.ts
-|-- tsconfig.app.base.json
-|-- tsconfig.json
-`-- tsconfig.node.base.json
+/api/v1/transfers​Copy link
 
-388 directories, 1231 files
+Auth Required
+Headers
+Idempotency-KeyCopy link to Idempotency-Key
+Type:string
+Body
+·InternalTransferRequest
+required
+application/json
+Request payload for internal fund transfers
+
+amountCopy link to amount
+Type:number
+min:  
+0.01
+required
+Example
+Amount to transfer in base currency
+
+destinationAccountNumberCopy link to destinationAccountNumber
+Type:string
+required
+Example
+The destination account number
+
+idempotencyKeyCopy link to idempotencyKey
+Type:string
+required
+Example
+Unique idempotency key to prevent duplicate processing
+
+sourceAccountNumberCopy link to sourceAccountNumber
+Type:string
+required
+Example
+The source account number
+
+descriptionCopy link to description
+Type:string
+Example
+Optional transfer description
+
+scheduledDateCopy link to scheduledDate
+Type:string
+Example
+Optional scheduled execution date (ISO-8601)
+
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/transfers
+Shell Curl
+curl https://paym.**********.com/api/v1/transfers \
+  --request POST \
+  --header 'Idempotency-Key: ' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "sourceAccountNumber": "4859228705057459",
+  "destinationAccountNumber": "4859228705057460",
+  "amount": 150,
+  "idempotencyKey": "idemp_8f7b231c-9a4d-4e99-8b1c-3b9c7d4a2f81",
+  "description": "Payment for consulting services",
+  "scheduledDate": "2026-09-01T10:00:00Z"
+}'
+
+
+Test Request
+(post /api/v1/transfers)
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "transactionReference": "string",
+    "sourceAccountNumber": "string",
+    "destinationAccountNumber": "string",
+    "amount": 1,
+    "currency": "string",
+    "status": "PENDING",
+    "description": "string",
+    "createdAt": "2026-09-13T07:36:55.594Z",
+    "scheduledExecutionAt": "2026-09-13T07:36:55.594Z",
+    "senderName": "string",
+    "recipientName": "string",
+    "entryType": "string"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/transfers/internal/​Copy link
+
+Auth Required
+Headers
+Idempotency-KeyCopy link to Idempotency-Key
+Type:string
+Body
+·InternalTransferRequest
+required
+application/json
+Request payload for internal fund transfers
+
+amountCopy link to amount
+Type:number
+min:  
+0.01
+required
+Example
+Amount to transfer in base currency
+
+destinationAccountNumberCopy link to destinationAccountNumber
+Type:string
+required
+Example
+The destination account number
+
+idempotencyKeyCopy link to idempotencyKey
+Type:string
+required
+Example
+Unique idempotency key to prevent duplicate processing
+
+sourceAccountNumberCopy link to sourceAccountNumber
+Type:string
+required
+Example
+The source account number
+
+descriptionCopy link to description
+Type:string
+Example
+Optional transfer description
+
+scheduledDateCopy link to scheduledDate
+Type:string
+Example
+Optional scheduled execution date (ISO-8601)
+
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/transfers/internal/
+Shell Curl
+curl https://paym.**********.com/api/v1/transfers/internal/ \
+  --request POST \
+  --header 'Idempotency-Key: ' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "sourceAccountNumber": "4859228705057459",
+  "destinationAccountNumber": "4859228705057460",
+  "amount": 150,
+  "idempotencyKey": "idemp_8f7b231c-9a4d-4e99-8b1c-3b9c7d4a2f81",
+  "description": "Payment for consulting services",
+  "scheduledDate": "2026-09-01T10:00:00Z"
+}'
+
+
+Test Request
+(post /api/v1/transfers/internal/)
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "transactionReference": "string",
+    "sourceAccountNumber": "string",
+    "destinationAccountNumber": "string",
+    "amount": 1,
+    "currency": "string",
+    "status": "PENDING",
+    "description": "string",
+    "createdAt": "2026-09-13T07:36:55.594Z",
+    "scheduledExecutionAt": "2026-09-13T07:36:55.594Z",
+    "senderName": "string",
+    "recipientName": "string",
+    "entryType": "string"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/transfers/internal​Copy link
+
+Auth Required
+Headers
+Idempotency-KeyCopy link to Idempotency-Key
+Type:string
+Body
+·InternalTransferRequest
+required
+application/json
+Request payload for internal fund transfers
+
+amountCopy link to amount
+Type:number
+min:  
+0.01
+required
+Example
+Amount to transfer in base currency
+
+destinationAccountNumberCopy link to destinationAccountNumber
+Type:string
+required
+Example
+The destination account number
+
+idempotencyKeyCopy link to idempotencyKey
+Type:string
+required
+Example
+Unique idempotency key to prevent duplicate processing
+
+sourceAccountNumberCopy link to sourceAccountNumber
+Type:string
+required
+Example
+The source account number
+
+descriptionCopy link to description
+Type:string
+Example
+Optional transfer description
+
+scheduledDateCopy link to scheduledDate
+Type:string
+Example
+Optional scheduled execution date (ISO-8601)
+
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/transfers/internal
+Shell Curl
+curl https://paym.**********.com/api/v1/transfers/internal \
+  --request POST \
+  --header 'Idempotency-Key: ' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "sourceAccountNumber": "4859228705057459",
+  "destinationAccountNumber": "4859228705057460",
+  "amount": 150,
+  "idempotencyKey": "idemp_8f7b231c-9a4d-4e99-8b1c-3b9c7d4a2f81",
+  "description": "Payment for consulting services",
+  "scheduledDate": "2026-09-01T10:00:00Z"
+}'
+
+
+Test Request
+(post /api/v1/transfers/internal)
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "transactionReference": "string",
+    "sourceAccountNumber": "string",
+    "destinationAccountNumber": "string",
+    "amount": 1,
+    "currency": "string",
+    "status": "PENDING",
+    "description": "string",
+    "createdAt": "2026-09-13T07:36:55.594Z",
+    "scheduledExecutionAt": "2026-09-13T07:36:55.594Z",
+    "senderName": "string",
+    "recipientName": "string",
+    "entryType": "string"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/transfers/​Copy link
+
+Auth Required
+Headers
+Idempotency-KeyCopy link to Idempotency-Key
+Type:string
+Body
+·InternalTransferRequest
+required
+application/json
+Request payload for internal fund transfers
+
+amountCopy link to amount
+Type:number
+min:  
+0.01
+required
+Example
+Amount to transfer in base currency
+
+destinationAccountNumberCopy link to destinationAccountNumber
+Type:string
+required
+Example
+The destination account number
+
+idempotencyKeyCopy link to idempotencyKey
+Type:string
+required
+Example
+Unique idempotency key to prevent duplicate processing
+
+sourceAccountNumberCopy link to sourceAccountNumber
+Type:string
+required
+Example
+The source account number
+
+descriptionCopy link to description
+Type:string
+Example
+Optional transfer description
+
+scheduledDateCopy link to scheduledDate
+Type:string
+Example
+Optional scheduled execution date (ISO-8601)
+
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/transfers/
+Shell Curl
+curl https://paym.**********.com/api/v1/transfers/ \
+  --request POST \
+  --header 'Idempotency-Key: ' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "sourceAccountNumber": "4859228705057459",
+  "destinationAccountNumber": "4859228705057460",
+  "amount": 150,
+  "idempotencyKey": "idemp_8f7b231c-9a4d-4e99-8b1c-3b9c7d4a2f81",
+  "description": "Payment for consulting services",
+  "scheduledDate": "2026-09-01T10:00:00Z"
+}'
+
+
+Test Request
+(post /api/v1/transfers/)
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "transactionReference": "string",
+    "sourceAccountNumber": "string",
+    "destinationAccountNumber": "string",
+    "amount": 1,
+    "currency": "string",
+    "status": "PENDING",
+    "description": "string",
+    "createdAt": "2026-09-13T07:36:55.594Z",
+    "scheduledExecutionAt": "2026-09-13T07:36:55.594Z",
+    "senderName": "string",
+    "recipientName": "string",
+    "entryType": "string"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/transfers/external​Copy link
+
+Auth Required
+Headers
+Idempotency-KeyCopy link to Idempotency-Key
+Type:string
+Body
+·ExternalPaymentRequest
+required
+application/json
+Request payload for external wire and ACH payments
+
+amountCopy link to amount
+Type:number
+min:  
+0.01
+required
+Example
+Amount to transfer
+
+destinationAccountNumberCopy link to destinationAccountNumber
+Type:string
+required
+Example
+The destination account number outside the bank
+
+idempotencyKeyCopy link to idempotencyKey
+Type:string
+required
+Example
+Unique idempotency key to prevent duplicate processing
+
+railNameCopy link to railName
+Type:string
+required
+Example
+The specific payment rail to use (e.g., SWIFT, ACH)
+
+recipientNameCopy link to recipientName
+Type:string
+required
+Example
+Name of the recipient
+
+routingNumberCopy link to routingNumber
+Type:string
+required
+Example
+Routing number of the destination bank
+
+sourceAccountNumberCopy link to sourceAccountNumber
+Type:string
+required
+Example
+The source account number
+
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/transfers/external
+Shell Curl
+curl https://paym.**********.com/api/v1/transfers/external \
+  --request POST \
+  --header 'Idempotency-Key: ' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "sourceAccountNumber": "ACC-EXT-100200300",
+  "destinationAccountNumber": "EXT-NOVA-999",
+  "routingNumber": "ROUTING-1234",
+  "recipientName": "Nova Global",
+  "amount": 1000,
+  "railName": "SWIFT",
+  "idempotencyKey": "idemp_ext_b2a3c4"
+}'
+
+
+Test Request
+(post /api/v1/transfers/external)
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "transactionReference": "string",
+    "sourceAccountNumber": "string",
+    "destinationAccountNumber": "string",
+    "amount": 1,
+    "currency": "string",
+    "status": "PENDING",
+    "description": "string",
+    "createdAt": "2026-09-13T07:36:55.594Z",
+    "scheduledExecutionAt": "2026-09-13T07:36:55.594Z",
+    "senderName": "string",
+    "recipientName": "string",
+    "entryType": "string"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/transfers/external/​Copy link
+
+Auth Required
+Headers
+Idempotency-KeyCopy link to Idempotency-Key
+Type:string
+Body
+·ExternalPaymentRequest
+required
+application/json
+Request payload for external wire and ACH payments
+
+amountCopy link to amount
+Type:number
+min:  
+0.01
+required
+Example
+Amount to transfer
+
+destinationAccountNumberCopy link to destinationAccountNumber
+Type:string
+required
+Example
+The destination account number outside the bank
+
+idempotencyKeyCopy link to idempotencyKey
+Type:string
+required
+Example
+Unique idempotency key to prevent duplicate processing
+
+railNameCopy link to railName
+Type:string
+required
+Example
+The specific payment rail to use (e.g., SWIFT, ACH)
+
+recipientNameCopy link to recipientName
+Type:string
+required
+Example
+Name of the recipient
+
+routingNumberCopy link to routingNumber
+Type:string
+required
+Example
+Routing number of the destination bank
+
+sourceAccountNumberCopy link to sourceAccountNumber
+Type:string
+required
+Example
+The source account number
+
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/transfers/external/
+Shell Curl
+curl https://paym.**********.com/api/v1/transfers/external/ \
+  --request POST \
+  --header 'Idempotency-Key: ' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "sourceAccountNumber": "ACC-EXT-100200300",
+  "destinationAccountNumber": "EXT-NOVA-999",
+  "routingNumber": "ROUTING-1234",
+  "recipientName": "Nova Global",
+  "amount": 1000,
+  "railName": "SWIFT",
+  "idempotencyKey": "idemp_ext_b2a3c4"
+}'
+
+
+Test Request
+(post /api/v1/transfers/external/)
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "transactionReference": "string",
+    "sourceAccountNumber": "string",
+    "destinationAccountNumber": "string",
+    "amount": 1,
+    "currency": "string",
+    "status": "PENDING",
+    "description": "string",
+    "createdAt": "2026-09-13T07:36:55.594Z",
+    "scheduledExecutionAt": "2026-09-13T07:36:55.594Z",
+    "senderName": "string",
+    "recipientName": "string",
+    "entryType": "string"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+transaction-controller ​Copy link
+transaction-controllerOperations
+post
+/api/v1/transactions/{id}/dispute
+post
+/api/v1/transactions/withdraw
+post
+/api/v1/transactions/receipt/send
+post
+/api/v1/transactions/external-payment
+post
+/api/v1/transactions/deposit
+get
+/api/v1/transactions/trace/{keyPrefix}
+get
+/api/v1/transactions/history
+/api/v1/transactions/{id}/dispute​Copy link
+
+Auth Required
+Path Parameters
+idCopy link to id
+Type:integer
+Format:int64
+required
+Signed 64-bit integers (long type).
+
+Body
+·DisputeReasonRequest
+required
+application/json
+reasonCodeCopy link to reasonCode
+Type:string
+required
+notesCopy link to notes
+Type:string
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/transactions/{id}/dispute
+Shell Curl
+curl https://paym.**********.com/api/v1/transactions/1/dispute \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "reasonCode": "",
+  "notes": ""
+}'
+
+
+Test Request
+(post /api/v1/transactions/{id}/dispute)
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "transactionReference": "string",
+    "sourceAccountNumber": "string",
+    "destinationAccountNumber": "string",
+    "amount": 1,
+    "currency": "string",
+    "status": "PENDING",
+    "description": "string",
+    "createdAt": "2026-09-13T07:36:55.594Z",
+    "scheduledExecutionAt": "2026-09-13T07:36:55.594Z",
+    "senderName": "string",
+    "recipientName": "string",
+    "entryType": "string"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/transactions/withdraw​Copy link
+
+Auth Required
+Body
+·WithdrawRequest
+required
+application/json
+Request payload for withdrawing funds from a NovaBank virtual account.
+
+accountNumberCopy link to accountNumber
+Type:string
+min length:  
+10
+max length:  
+20
+required
+Example
+The virtual account number to withdraw funds from.
+
+amountCopy link to amount
+Type:number
+min:  
+0.01
+required
+Example
+The withdrawal amount in the account's base currency.
+
+idempotencyKeyCopy link to idempotencyKey
+Type:string
+max length:  
+100
+required
+Example
+A unique client-generated key to safely retry the withdrawal without duplication.
+
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/transactions/withdraw
+Shell Curl
+curl https://paym.**********.com/api/v1/transactions/withdraw \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "accountNumber": "4859228705057459",
+  "amount": 100,
+  "idempotencyKey": "idemp-withdraw-9b4c2"
+}'
+
+
+Test Request
+(post /api/v1/transactions/withdraw)
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "transactionReference": "string",
+    "sourceAccountNumber": "string",
+    "destinationAccountNumber": "string",
+    "amount": 1,
+    "currency": "string",
+    "status": "PENDING",
+    "description": "string",
+    "createdAt": "2026-09-13T07:36:55.594Z",
+    "scheduledExecutionAt": "2026-09-13T07:36:55.594Z",
+    "senderName": "string",
+    "recipientName": "string",
+    "entryType": "string"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/transactions/receipt/send​Copy link
+
+Auth Required
+Body
+·ReceiptNotificationRequest
+required
+application/json
+amountCopy link to amount
+Type:number
+dateCopy link to date
+Type:string
+recipientEmailCopy link to recipientEmail
+Type:string
+sourceEmailCopy link to sourceEmail
+Type:string
+transactionReferenceCopy link to transactionReference
+Type:string
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/transactions/receipt/send
+Shell Curl
+curl https://paym.**********.com/api/v1/transactions/receipt/send \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "transactionReference": "",
+  "amount": 1,
+  "date": "",
+  "sourceEmail": "",
+  "recipientEmail": ""
+}'
+
+
+Test Request
+(post /api/v1/transactions/receipt/send)
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {},
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/transactions/external-payment​Copy link
+
+Auth Required
+Body
+·ExternalPaymentRequest
+required
+application/json
+Request payload for external wire and ACH payments
+
+amountCopy link to amount
+Type:number
+min:  
+0.01
+required
+Example
+Amount to transfer
+
+destinationAccountNumberCopy link to destinationAccountNumber
+Type:string
+required
+Example
+The destination account number outside the bank
+
+idempotencyKeyCopy link to idempotencyKey
+Type:string
+required
+Example
+Unique idempotency key to prevent duplicate processing
+
+railNameCopy link to railName
+Type:string
+required
+Example
+The specific payment rail to use (e.g., SWIFT, ACH)
+
+recipientNameCopy link to recipientName
+Type:string
+required
+Example
+Name of the recipient
+
+routingNumberCopy link to routingNumber
+Type:string
+required
+Example
+Routing number of the destination bank
+
+sourceAccountNumberCopy link to sourceAccountNumber
+Type:string
+required
+Example
+The source account number
+
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/transactions/external-payment
+Shell Curl
+curl https://paym.**********.com/api/v1/transactions/external-payment \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "sourceAccountNumber": "ACC-EXT-100200300",
+  "destinationAccountNumber": "EXT-NOVA-999",
+  "routingNumber": "ROUTING-1234",
+  "recipientName": "Nova Global",
+  "amount": 1000,
+  "railName": "SWIFT",
+  "idempotencyKey": "idemp_ext_b2a3c4"
+}'
+
+
+Test Request
+(post /api/v1/transactions/external-payment)
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "transactionReference": "string",
+    "sourceAccountNumber": "string",
+    "destinationAccountNumber": "string",
+    "amount": 1,
+    "currency": "string",
+    "status": "PENDING",
+    "description": "string",
+    "createdAt": "2026-09-13T07:36:55.594Z",
+    "scheduledExecutionAt": "2026-09-13T07:36:55.594Z",
+    "senderName": "string",
+    "recipientName": "string",
+    "entryType": "string"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/transactions/deposit​Copy link
+
+Auth Required
+Body
+·DepositRequest
+required
+application/json
+Request payload for depositing funds into a NovaBank virtual account.
+
+accountNumberCopy link to accountNumber
+Type:string
+min length:  
+10
+max length:  
+20
+required
+Example
+The virtual account number receiving the deposit.
+
+amountCopy link to amount
+Type:number
+min:  
+0.01
+required
+Example
+The deposit amount in the account's base currency.
+
+idempotencyKeyCopy link to idempotencyKey
+Type:string
+max length:  
+100
+required
+Example
+A unique client-generated key to safely retry the deposit without duplication.
+
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/transactions/deposit
+Shell Curl
+curl https://paym.**********.com/api/v1/transactions/deposit \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "accountNumber": "4859228705057459",
+  "amount": 250,
+  "idempotencyKey": "idemp-deposit-8f92a"
+}'
+
+
+Test Request
+(post /api/v1/transactions/deposit)
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "transactionReference": "string",
+    "sourceAccountNumber": "string",
+    "destinationAccountNumber": "string",
+    "amount": 1,
+    "currency": "string",
+    "status": "PENDING",
+    "description": "string",
+    "createdAt": "2026-09-13T07:36:55.594Z",
+    "scheduledExecutionAt": "2026-09-13T07:36:55.594Z",
+    "senderName": "string",
+    "recipientName": "string",
+    "entryType": "string"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/transactions/trace/{keyPrefix}​Copy link
+
+Auth Required
+Path Parameters
+keyPrefixCopy link to keyPrefix
+Type:string
+required
+Responses
+
+200
+OK
+*/*
+Request Example forget/api/v1/transactions/trace/{keyPrefix}
+Shell Curl
+curl 'https://paym.**********.com/api/v1/transactions/trace/{keyPrefix}' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN'
+
+
+Test Request
+(get /api/v1/transactions/trace/{keyPrefix})
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "transactionReference": "string",
+    "sourceAccountNumber": "string",
+    "destinationAccountNumber": "string",
+    "amount": 1,
+    "currency": "string",
+    "status": "PENDING",
+    "description": "string",
+    "createdAt": "2026-09-13T07:36:55.594Z",
+    "scheduledExecutionAt": "2026-09-13T07:36:55.594Z",
+    "senderName": "string",
+    "recipientName": "string",
+    "entryType": "string"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/transactions/history​Copy link
+
+Auth Required
+Query Parameters
+accountNumberCopy link to accountNumber
+Type:string
+required
+directionCopy link to direction
+Type:string
+Default
+pageCopy link to page
+Type:integer
+Format:int32
+Default
+Signed 32-bit integers (commonly used integer type).
+
+sizeCopy link to size
+Type:integer
+Format:int32
+Default
+Signed 32-bit integers (commonly used integer type).
+
+Responses
+
+200
+OK
+*/*
+Request Example forget/api/v1/transactions/history
+Shell Curl
+curl 'https://paym.**********.com/api/v1/transactions/history?accountNumber=&direction=ALL&page=0&size=10' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN'
+
+
+Test Request
+(get /api/v1/transactions/history)
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "content": [
+      {
+        "transactionReference": "string",
+        "sourceAccountNumber": "string",
+        "destinationAccountNumber": "string",
+        "amount": 1,
+        "currency": "string",
+        "status": "PENDING",
+        "description": "string",
+        "createdAt": "2026-09-13T07:36:55.594Z",
+        "scheduledExecutionAt": "2026-09-13T07:36:55.594Z",
+        "senderName": "string",
+        "recipientName": "string",
+        "entryType": "string"
+      }
+    ],
+    "pageNumber": 1,
+    "pageSize": 1,
+    "totalElements": 1,
+    "totalPages": 1,
+    "last": true
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+transaction-intent-controller ​Copy link
+transaction-intent-controllerOperations
+post
+/api/v1/transactions/intents
+post
+/api/v1/transactions/intents/{intentId}/execute
+post
+/api/v1/transactions/intents/{intentId}/authorization/verify
+post
+/api/v1/transactions/intents/{intentId}/authorization/push-request
+post
+/api/v1/transactions/intents/{intentId}/authorization/options
+post
+/api/v1/transactions/intents/{intentId}/authorization/deny
+post
+/api/v1/transactions/intents/{intentId}/authorization/approve
+get
+/api/v1/transactions/intents/{intentId}/authorization/status
+/api/v1/transactions/intents​Copy link
+
+Auth Required
+Body
+·TransactionIntent
+required
+application/json
+amountCopy link to amount
+Type:number
+createdAtCopy link to createdAt
+Type:string
+Format:date-time
+the date-time notation as defined by RFC 3339, section 5.6, for example, 2017-07-21T17:32:28Z
+
+currencyCopy link to currency
+Type:string
+executedTransactionIdCopy link to executedTransactionId
+Type:integer
+Format:int64
+Signed 64-bit integers (long type).
+
+expiresAtCopy link to expiresAt
+Type:string
+Format:date-time
+the date-time notation as defined by RFC 3339, section 5.6, for example, 2017-07-21T17:32:28Z
+
+feeCopy link to fee
+Type:number
+idCopy link to id
+Type:integer
+Format:int64
+Signed 64-bit integers (long type).
+
+idempotencyKeyCopy link to idempotencyKey
+Type:string
+railCopy link to rail
+Type:string
+recipientCopy link to recipient
+Type:string
+sourceAccountIdCopy link to sourceAccountId
+Type:string
+statusCopy link to status
+Type:string
+enum
+values
+DRAFT
+PENDING_AUTH
+AUTHENTICATING
+AUTHORIZED
+PROCESSING
+Show all values
+Show additional propertiesfor Request Body
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/transactions/intents
+Shell Curl
+curl https://paym.**********.com/api/v1/transactions/intents \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "id": 1,
+  "userId": 1,
+  "rail": "",
+  "sourceAccountId": "",
+  "recipient": "",
+  "amount": 1,
+  "currency": "",
+  "fee": 1,
+  "total": 1,
+  "idempotencyKey": "",
+  "status": "DRAFT",
+  "createdAt": "",
+  "expiresAt": "",
+  "executedTransactionId": 1
+}'
+
+
+Test Request
+(post /api/v1/transactions/intents)
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "id": 1,
+    "userId": 1,
+    "rail": "string",
+    "sourceAccountId": "string",
+    "recipient": "string",
+    "amount": 1,
+    "currency": "string",
+    "fee": 1,
+    "total": 1,
+    "idempotencyKey": "string",
+    "status": "DRAFT",
+    "createdAt": "2026-09-13T07:36:55.594Z",
+    "expiresAt": "2026-09-13T07:36:55.594Z",
+    "executedTransactionId": 1
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/transactions/intents/{intentId}/execute​Copy link
+
+Auth Required
+Path Parameters
+intentIdCopy link to intentId
+Type:integer
+Format:int64
+required
+Signed 64-bit integers (long type).
+
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/transactions/intents/{intentId}/execute
+Shell Curl
+curl https://paym.**********.com/api/v1/transactions/intents/1/execute \
+  --request POST \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN'
+
+
+Test Request
+(post /api/v1/transactions/intents/{intentId}/execute)
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "transactionReference": "string",
+    "sourceAccountNumber": "string",
+    "destinationAccountNumber": "string",
+    "amount": 1,
+    "currency": "string",
+    "status": "PENDING",
+    "description": "string",
+    "createdAt": "2026-09-13T07:36:55.594Z",
+    "scheduledExecutionAt": "2026-09-13T07:36:55.594Z",
+    "senderName": "string",
+    "recipientName": "string",
+    "entryType": "string"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/transactions/intents/{intentId}/authorization/verify​Copy link
+
+Auth Required
+Path Parameters
+intentIdCopy link to intentId
+Type:integer
+Format:int64
+required
+Signed 64-bit integers (long type).
+
+Body
+·WebAuthnVerificationRequest
+required
+application/json
+assertionPayloadCopy link to assertionPayload
+Type:string
+challengeCopy link to challenge
+Type:string
+Responses
+
+200
+OK
+*/*
+Request Example for
+Shell Curl
+curl https://paym.**********.com/api/v1/transactions/intents/1/authorization/verify \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "challenge": "",
+  "assertionPayload": ""
+}'
+
+
+Test Request
+(post /api/v1/transactions/intents/{intentId}/authorization/verify)
+Status:
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {},
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/transactions/intents/{intentId}/authorization/push-request​Copy link
+
+Auth Required
+Path Parameters
+intentIdCopy link to intentId
+Type:integer
+Format:int64
+required
+Signed 64-bit integers (long type).
+
+Body
+·PushAuthRequest
+required
+application/json
+amountCopy link to amount
+Type:number
+destinationAccountCopy link to destinationAccount
+Type:string
+sourceAccountCopy link to sourceAccount
+Type:string
+Responses
+
+200
+OK
+*/*
+Request Example for
+Shell Curl
+curl https://paym.**********.com/api/v1/transactions/intents/1/authorization/push-request \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "amount": 1,
+  "sourceAccount": "",
+  "destinationAccount": ""
+}'
+
+
+Test Request
+(post /api/v1/transactions/intents/{intentId}/authorization/push-request)
+Status:
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "id": 1,
+    "transactionIntentId": 1,
+    "challenge": "string",
+    "credentialId": "string",
+    "status": "string",
+    "createdAt": "2026-09-13T07:36:55.594Z",
+    "expiresAt": "2026-09-13T07:36:55.594Z",
+    "verifiedAt": "2026-09-13T07:36:55.594Z",
+    "authType": "string",
+    "ipAddress": "string",
+    "amount": 1,
+    "sourceAccount": "string",
+    "destinationAccount": "string"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/transactions/intents/{intentId}/authorization/options​Copy link
+
+Auth Required
+Path Parameters
+intentIdCopy link to intentId
+Type:integer
+Format:int64
+required
+Signed 64-bit integers (long type).
+
+Responses
+
+200
+OK
+*/*
+Request Example for
+Shell Curl
+curl https://paym.**********.com/api/v1/transactions/intents/1/authorization/options \
+  --request POST \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN'
+
+
+Test Request
+(post /api/v1/transactions/intents/{intentId}/authorization/options)
+Status:
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "id": 1,
+    "transactionIntentId": 1,
+    "challenge": "string",
+    "credentialId": "string",
+    "status": "string",
+    "createdAt": "2026-09-13T07:36:55.594Z",
+    "expiresAt": "2026-09-13T07:36:55.594Z",
+    "verifiedAt": "2026-09-13T07:36:55.594Z",
+    "authType": "string",
+    "ipAddress": "string",
+    "amount": 1,
+    "sourceAccount": "string",
+    "destinationAccount": "string"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/transactions/intents/{intentId}/authorization/deny​Copy link
+
+Auth Required
+Path Parameters
+intentIdCopy link to intentId
+Type:integer
+Format:int64
+required
+Signed 64-bit integers (long type).
+
+Responses
+
+200
+OK
+*/*
+Request Example for
+Shell Curl
+curl https://paym.**********.com/api/v1/transactions/intents/1/authorization/deny \
+  --request POST \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN'
+
+
+Test Request
+(post /api/v1/transactions/intents/{intentId}/authorization/deny)
+Status:
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {},
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/transactions/intents/{intentId}/authorization/approve​Copy link
+
+Auth Required
+Path Parameters
+intentIdCopy link to intentId
+Type:integer
+Format:int64
+required
+Signed 64-bit integers (long type).
+
+Responses
+
+200
+OK
+*/*
+Request Example for
+Shell Curl
+curl https://paym.**********.com/api/v1/transactions/intents/1/authorization/approve \
+  --request POST \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN'
+
+
+Test Request
+(post /api/v1/transactions/intents/{intentId}/authorization/approve)
+Status:
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {},
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/transactions/intents/{intentId}/authorization/status​Copy link
+
+Auth Required
+Path Parameters
+intentIdCopy link to intentId
+Type:integer
+Format:int64
+required
+Signed 64-bit integers (long type).
+
+Responses
+
+200
+OK
+*/*
+Request Example for
+Shell Curl
+curl https://paym.**********.com/api/v1/transactions/intents/1/authorization/status \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN'
+
+
+Test Request
+(get /api/v1/transactions/intents/{intentId}/authorization/status)
+Status:
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "additionalProperty": "string"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+statement-controller ​Copy link
+statement-controllerOperations
+post
+/api/v1/statements/generate
+get
+/api/v1/statements/account/{accountNumber}
+/api/v1/statements/generate​Copy link
+
+Auth Required
+Query Parameters
+accountNumberCopy link to accountNumber
+Type:string
+required
+startDateCopy link to startDate
+Type:string
+Format:date
+required
+full-date notation as defined by RFC 3339, section 5.6, for example, 2017-07-21
+
+endDateCopy link to endDate
+Type:string
+Format:date
+required
+full-date notation as defined by RFC 3339, section 5.6, for example, 2017-07-21
+
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/statements/generate
+Shell Curl
+curl 'https://paym.**********.com/api/v1/statements/generate?accountNumber=&startDate=&endDate=' \
+  --request POST \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN'
+
+
+Test Request
+(post /api/v1/statements/generate)
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "id": 1,
+    "accountNumber": "string",
+    "startDate": "2026-09-13",
+    "endDate": "2026-09-13",
+    "pdfUrl": "string",
+    "generatedAt": "2026-09-13T07:36:55.594Z"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/statements/account/{accountNumber}​Copy link
+
+Auth Required
+Path Parameters
+accountNumberCopy link to accountNumber
+Type:string
+required
+Responses
+
+200
+OK
+*/*
+Request Example forget/api/v1/statements/account/{accountNumber}
+Shell Curl
+curl 'https://paym.**********.com/api/v1/statements/account/{accountNumber}' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN'
+
+
+Test Request
+(get /api/v1/statements/account/{accountNumber})
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": [
+    {
+      "id": 1,
+      "accountNumber": "string",
+      "startDate": "2026-09-13",
+      "endDate": "2026-09-13",
+      "pdfUrl": "string",
+      "generatedAt": "2026-09-13T07:36:55.594Z"
+    }
+  ],
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+merchant-gateway-controller ​Copy link
+merchant-gateway-controllerOperations
+post
+/api/v1/gateway/payments/{intentId}/refund
+post
+/api/v1/gateway/checkout/sessions
+get
+/api/v1/gateway/payments/{intentId}
+/api/v1/gateway/payments/{intentId}/refund​Copy link
+
+Auth Required
+Path Parameters
+intentIdCopy link to intentId
+Type:string
+required
+Headers
+Idempotency-KeyCopy link to Idempotency-Key
+Type:string
+required
+Body
+·MerchantRefundRequest
+required
+application/json
+amountCopy link to amount
+Type:number
+required
+reasonCopy link to reason
+Type:string
+required
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/gateway/payments/{intentId}/refund
+Shell Curl
+curl 'https://paym.**********.com/api/v1/gateway/payments/{intentId}/refund' \
+  --request POST \
+  --header 'Idempotency-Key: ' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "amount": 1,
+  "reason": ""
+}'
+
+
+Test Request
+(post /api/v1/gateway/payments/{intentId}/refund)
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "id": "string",
+    "status": "string",
+    "amount": 1,
+    "currency": "string",
+    "reference": "string",
+    "environment": "string",
+    "createdAt": "2026-09-13T07:36:55.594Z",
+    "updatedAt": "2026-09-13T07:36:55.594Z"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/gateway/checkout/sessions​Copy link
+
+Auth Required
+Headers
+Idempotency-KeyCopy link to Idempotency-Key
+Type:string
+required
+Body
+·MerchantCheckoutRequest
+required
+application/json
+currencyCopy link to currency
+Type:string
+Pattern:^(?!null$).*
+required
+lineItemsCopy link to lineItems
+Type:array object[] · LineItem[]
+required
+Show Child Attributesfor lineItems
+referenceCopy link to reference
+Type:string
+Pattern:^(?!null$).*
+required
+successUrlCopy link to successUrl
+Type:string
+Pattern:^(?!null$).*
+required
+cancelUrlCopy link to cancelUrl
+Type:string
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/gateway/checkout/sessions
+Shell Curl
+curl https://paym.**********.com/api/v1/gateway/checkout/sessions \
+  --request POST \
+  --header 'Idempotency-Key: ' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "reference": "",
+  "currency": "",
+  "successUrl": "",
+  "cancelUrl": "",
+  "lineItems": [
+    {
+      "name": "",
+      "quantity": 1,
+      "unitAmount": 1
+    }
+  ]
+}'
+
+
+Test Request
+(post /api/v1/gateway/checkout/sessions)
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "id": "string",
+    "status": "string",
+    "amount": 1,
+    "currency": "string"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/gateway/payments/{intentId}​Copy link
+
+Auth Required
+Path Parameters
+intentIdCopy link to intentId
+Type:string
+required
+Responses
+
+200
+OK
+*/*
+Request Example forget/api/v1/gateway/payments/{intentId}
+Shell Curl
+curl 'https://paym.**********.com/api/v1/gateway/payments/{intentId}' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN'
+
+
+Test Request
+(get /api/v1/gateway/payments/{intentId})
+Status:200
+{
+  "success": true,
+  "status": 1,
+  "message": "string",
+  "data": {
+    "id": "string",
+    "status": "string",
+    "amount": 1,
+    "currency": "string",
+    "reference": "string",
+    "environment": "string",
+    "createdAt": "2026-09-13T07:36:55.594Z",
+    "updatedAt": "2026-09-13T07:36:55.594Z"
+  },
+  "errorCode": "string",
+  "correlationId": "string",
+  "timestamp": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+payment-gateway-controller ​Copy link
+payment-gateway-controllerOperations
+post
+/api/v1/gateway/payments/intents
+get
+/api/v1/gateway/payments/intents/{intentId}
+/api/v1/gateway/payments/intents​Copy link
+
+Auth Required
+Headers
+Idempotency-KeyCopy link to Idempotency-Key
+Type:string
+X-Client-IdCopy link to X-Client-Id
+Type:string
+X-Linked-AccountCopy link to X-Linked-Account
+Type:string
+Body
+·CreatePaymentIntentRequest
+required
+application/json
+sourceAccountIdCopy link to sourceAccountId
+Type:string
+Pattern:^(?!null$).*
+required
+amountCopy link to amount
+Type:number
+cancelUrlCopy link to cancelUrl
+Type:string
+currencyCopy link to currency
+Type:string
+descriptionCopy link to description
+Type:string
+idempotencyKeyCopy link to idempotencyKey
+Type:string
+merchantReferenceCopy link to merchantReference
+Type:string
+returnUrlCopy link to returnUrl
+Type:string
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/gateway/payments/intents
+Shell Curl
+curl https://paym.**********.com/api/v1/gateway/payments/intents \
+  --request POST \
+  --header 'Idempotency-Key: ' \
+  --header 'X-Client-Id: ' \
+  --header 'X-Linked-Account: ' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+  --data '{
+  "sourceAccountId": "",
+  "amount": 1,
+  "currency": "",
+  "description": "",
+  "merchantReference": "",
+  "idempotencyKey": "",
+  "returnUrl": "",
+  "cancelUrl": ""
+}'
+
+
+Test Request
+(post /api/v1/gateway/payments/intents)
+Status:200
+{
+  "additionalProperty": {}
+}
+
+OK
+
+/api/v1/gateway/payments/intents/{intentId}​Copy link
+
+Auth Required
+Path Parameters
+intentIdCopy link to intentId
+Type:string
+required
+Headers
+X-Client-IdCopy link to X-Client-Id
+Type:string
+X-Linked-AccountCopy link to X-Linked-Account
+Type:string
+Responses
+
+200
+OK
+application/json
+Request Example forget/api/v1/gateway/payments/intents/{intentId}
+Shell Curl
+curl 'https://paym.**********.com/api/v1/gateway/payments/intents/{intentId}' \
+  --header 'X-Client-Id: ' \
+  --header 'X-Linked-Account: ' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN'
+
+
+Test Request
+(get /api/v1/gateway/payments/intents/{intentId})
+Status:200
+{
+  "additionalProperty": {}
+}
+
+OK
+
+dynamic-qr-controller ​Copy link
+dynamic-qr-controllerOperations
+post
+/api/v1/gateway/payment-intents/{intentId}/qr
+post
+/api/v1/gateway/payment-intents/qr/{qrReference}/scan
+/api/v1/gateway/payment-intents/{intentId}/qr​Copy link
+
+Auth Required
+Path Parameters
+intentIdCopy link to intentId
+Type:string
+required
+Headers
+X-Merchant-IdCopy link to X-Merchant-Id
+Type:integer
+Format:int64
+required
+Signed 64-bit integers (long type).
+
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/gateway/payment-intents/{intentId}/qr
+Shell Curl
+curl 'https://paym.**********.com/api/v1/gateway/payment-intents/{intentId}/qr' \
+  --request POST \
+  --header 'X-Merchant-Id: 1' \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN'
+
+
+Test Request
+(post /api/v1/gateway/payment-intents/{intentId}/qr)
+Status:200
+{
+  "id": 1,
+  "qrReference": "string",
+  "paymentIntentId": 1,
+  "qrPayload": "string",
+  "status": "string",
+  "expiresAt": "2026-09-13T07:36:55.594Z",
+  "scannedAt": "2026-09-13T07:36:55.594Z",
+  "createdAt": "2026-09-13T07:36:55.594Z",
+  "updatedAt": "2026-09-13T07:36:55.594Z"
+}
+
+OK
+
+/api/v1/gateway/payment-intents/qr/{qrReference}/scan​Copy link
+
+Auth Required
+Path Parameters
+qrReferenceCopy link to qrReference
+Type:string
+required
+Responses
+
+200
+OK
+*/*
+Request Example forpost/api/v1/gateway/payment-intents/qr/{qrReference}/scan
+Shell Curl
+curl 'https://paym.**********.com/api/v1/gateway/payment-intents/qr/{qrReference}/scan' \
+  --request POST \
+  --header 'Authorization: Bearer YOUR_SECRET_TOKEN'
+
+
+Test Request
+(post /api/v1/gateway/payment-intents/qr/{qrReference}/scan)
+Status:200
+{
+  "id": 1,
+  "version": 1,
+  "intentId": "string",
+  "merchantId": 1,
+  "customerAccountNumber": "string",
+  "amount": 1,
+  "currency": "string",
+  "feeAmount": 1,
+  "status": "CREATED",
+  "description": "string",
+  "idempotencyKey": "string",
+  "qrGenerationStartedAt": "2026-09-13T07:36:55.594Z",
+  "createdAt": "2026-09-13T07:36:55.594Z",
+  "updatedAt": "2026-09-13T07:36:55.594Z"
+}
+
+OK

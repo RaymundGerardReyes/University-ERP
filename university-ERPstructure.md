@@ -1,10 +1,12 @@
-﻿.
+.
 |-- ERPstructure.md
+|-- GEMINI.md
 |-- PORT_REGISTRY.md
 |-- README.md
 |-- SEMANTIC_VERSIONING_PROMPT.md
 |-- University-ERP-Backend
 |   |-- Directory.Build.props
+|   |-- GEMINI.md
 |   |-- Rebuild_Dependencies.ps1
 |   |-- domain
 |   |   |-- adr
@@ -345,26 +347,38 @@
 |   |   |   |   |-- Curriculum
 |   |   |   |   |   |-- Curriculum.Application
 |   |   |   |   |   |   |-- Abstractions
-|   |   |   |   |   |   |   `-- ICourseDefinitionRepository.cs
+|   |   |   |   |   |   |   |-- ICourseDefinitionRepository.cs
+|   |   |   |   |   |   |   `-- ICurriculumPlanRepositories.cs
+|   |   |   |   |   |   |-- Curriculum.Application.csproj
 |   |   |   |   |   |   `-- Features
 |   |   |   |   |   |       |-- BrowseCourses
 |   |   |   |   |   |       |   `-- BrowseCoursesQuery.cs
 |   |   |   |   |   |       |-- GetAllCourses
 |   |   |   |   |   |       |   `-- GetAllCoursesQuery.cs
+|   |   |   |   |   |       |-- GetAllPrograms
+|   |   |   |   |   |       |   `-- GetAllProgramsQuery.cs
+|   |   |   |   |   |       |-- GetCurriculumByProgram
+|   |   |   |   |   |       |   `-- GetCurriculumByProgramQuery.cs
 |   |   |   |   |   |       |-- UpdateMasterData
 |   |   |   |   |   |       |   `-- UpdateCourseMasterDataCommand.cs
 |   |   |   |   |   |       `-- UpdatePrerequisite
 |   |   |   |   |   |           `-- UpdatePrerequisiteEnforcementCommand.cs
 |   |   |   |   |   |-- Curriculum.Domain
-|   |   |   |   |   |   `-- Aggregates
-|   |   |   |   |   |       `-- CourseDefinition.cs
+|   |   |   |   |   |   |-- Aggregates
+|   |   |   |   |   |   |   |-- AcademicCurriculum.cs
+|   |   |   |   |   |   |   |-- AcademicProgram.cs
+|   |   |   |   |   |   |   `-- CourseDefinition.cs
+|   |   |   |   |   |   `-- Curriculum.Domain.csproj
 |   |   |   |   |   |-- Curriculum.Infrastructure
+|   |   |   |   |   |   |-- Curriculum.Infrastructure.csproj
 |   |   |   |   |   |   |-- CurriculumModuleRegistration.cs
 |   |   |   |   |   |   |-- Persistence
 |   |   |   |   |   |   |   `-- CurriculumDbContext.cs
 |   |   |   |   |   |   `-- Repositories
-|   |   |   |   |   |       `-- CourseDefinitionRepository.cs
+|   |   |   |   |   |       |-- CourseDefinitionRepository.cs
+|   |   |   |   |   |       `-- CurriculumPlanRepositories.cs
 |   |   |   |   |   |-- Curriculum.Presentation
+|   |   |   |   |   |   |-- Curriculum.Presentation.csproj
 |   |   |   |   |   |   `-- Endpoints
 |   |   |   |   |   |       `-- CurriculumEndpoint.cs
 |   |   |   |   |   `-- Curriculum.Tests
@@ -400,6 +414,8 @@
 |   |   |   |   |           |-- Application
 |   |   |   |   |           |   |-- BrowseCoursesQueryHandlerTests.cs
 |   |   |   |   |           |   |-- GetAllCoursesQueryHandlerTests.cs
+|   |   |   |   |           |   |-- GetAllProgramsQueryHandlerTests.cs
+|   |   |   |   |           |   |-- GetCurriculumByProgramQueryHandlerTests.cs
 |   |   |   |   |           |   |-- UpdateCourseMasterDataCommandHandlerTests.cs
 |   |   |   |   |           |   `-- UpdatePrerequisiteEnforcementCommandHandlerTests.cs
 |   |   |   |   |           `-- Domain
@@ -1220,13 +1236,23 @@
 |   |   |   |   |   |-- Finance.Presentation
 |   |   |   |   |   |   |-- Endpoints
 |   |   |   |   |   |   |   |-- BankingCallbackEndpoint.cs
+|   |   |   |   |   |   |   |-- BudgetsEndpoint.cs
 |   |   |   |   |   |   |   |-- CashTransactionsEndpoint.cs
+|   |   |   |   |   |   |   |-- CashierQueueEndpoint.cs
+|   |   |   |   |   |   |   |-- ClearanceEndpoint.cs
+|   |   |   |   |   |   |   |-- DashboardEndpoint.cs
+|   |   |   |   |   |   |   |-- EnrollmentFinanceEndpoint.cs
+|   |   |   |   |   |   |   |-- FinancialReportsEndpoint.cs
 |   |   |   |   |   |   |   |-- InvoicesEndpoint.cs
 |   |   |   |   |   |   |   |-- IssueInvoiceEndpoint.cs
 |   |   |   |   |   |   |   |-- PaymentSessionEndpoint.cs
 |   |   |   |   |   |   |   |-- PaymentWebhookEndpoint.cs
+|   |   |   |   |   |   |   |-- ScholarshipsEndpoint.cs
+|   |   |   |   |   |   |   |-- SemesterBillingEndpoint.cs
+|   |   |   |   |   |   |   |-- StatementsEndpoint.cs
 |   |   |   |   |   |   |   |-- StudentBillingEndpoint.cs
-|   |   |   |   |   |   |   `-- StudentFinancialsEndpoint.cs
+|   |   |   |   |   |   |   |-- StudentFinancialsEndpoint.cs
+|   |   |   |   |   |   |   `-- TuitionAssessmentEndpoint.cs
 |   |   |   |   |   |   `-- Finance.Presentation.csproj
 |   |   |   |   |   `-- Finance.Tests
 |   |   |   |   |       |-- Finance.Tests.csproj
@@ -1531,7 +1557,8 @@
 |   |   |   |   |   |   `-- Payroll.Infrastructure.csproj
 |   |   |   |   |   |-- Payroll.Presentation
 |   |   |   |   |   |   |-- Endpoints
-|   |   |   |   |   |   |   `-- GeneratePayslipEndpoint.cs
+|   |   |   |   |   |   |   |-- GeneratePayslipEndpoint.cs
+|   |   |   |   |   |   |   `-- PayrollRunsEndpoint.cs
 |   |   |   |   |   |   `-- Payroll.Presentation.csproj
 |   |   |   |   |   `-- Payroll.Tests
 |   |   |   |   |       |-- Integration
@@ -2841,12 +2868,13 @@
 |   |-- Dockerfile.applicant
 |   |-- Dockerfile.build-all
 |   |-- Dockerfile.portal
+|   |-- GEMINI.md
 |   |-- apps
 |   |   |-- admin-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
 |   |   |   |   |   |-- index-CmnkJuXB.css
-|   |   |   |   |   `-- index-fa44ciig.js
+|   |   |   |   |   `-- index-DAvWPO5r.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -2862,6 +2890,7 @@
 |   |   |   |   |   |   `-- AcademicConfiguration.types.ts
 |   |   |   |   |   |-- AdmissionsProcessing
 |   |   |   |   |   |   |-- AdmissionsProcessing.hooks.ts
+|   |   |   |   |   |   |-- AdmissionsProcessing.page.tsx
 |   |   |   |   |   |   |-- AdmissionsWorkspace.page.tsx
 |   |   |   |   |   |   `-- components
 |   |   |   |   |   |       |-- ChairpersonEvaluationView.tsx
@@ -2976,7 +3005,7 @@
 |   |   |   |-- dist
 |   |   |   |   |-- assets
 |   |   |   |   |   |-- index-CmnkJuXB.css
-|   |   |   |   |   `-- index-DimZ4ETb.js
+|   |   |   |   |   `-- index-hSbXBDFI.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -3045,7 +3074,7 @@
 |   |   |-- applicant-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   |-- index-7TJ7Ms84.js
+|   |   |   |   |   |-- index-Bt0UyTJU.js
 |   |   |   |   |   `-- index-CmnkJuXB.css
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
@@ -3137,8 +3166,8 @@
 |   |   |-- faculty-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   |-- index-Dgt8zfi3.js
-|   |   |   |   |   `-- index-cJBQpNUN.css
+|   |   |   |   |   |-- index-CGRexAvH.css
+|   |   |   |   |   `-- index-CkeVUVkJ.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -3239,7 +3268,8 @@
 |   |   |-- finance-console
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-D4VupJRD.js
+|   |   |   |   |   |-- index-CGRexAvH.css
+|   |   |   |   |   `-- index-DvPw8unX.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -3254,8 +3284,17 @@
 |   |   |   |   |   |   |-- Budgeting.page.tsx
 |   |   |   |   |   |   `-- Budgeting.types.ts
 |   |   |   |   |   |-- Cashier
+|   |   |   |   |   |   |-- Cashier.api.ts
+|   |   |   |   |   |   |-- Cashier.hooks.ts
+|   |   |   |   |   |   |-- Cashier.types.ts
+|   |   |   |   |   |   |-- ClearanceApproval.api.ts
+|   |   |   |   |   |   |-- ClearanceApproval.hooks.ts
 |   |   |   |   |   |   |-- ClearanceApproval.page.tsx
-|   |   |   |   |   |   `-- PaymentGateway.page.tsx
+|   |   |   |   |   |   |-- ClearanceApproval.types.ts
+|   |   |   |   |   |   |-- PaymentGateway.api.ts
+|   |   |   |   |   |   |-- PaymentGateway.hooks.ts
+|   |   |   |   |   |   |-- PaymentGateway.page.tsx
+|   |   |   |   |   |   `-- PaymentGateway.types.ts
 |   |   |   |   |   |-- Dashboard
 |   |   |   |   |   |   |-- Dashboard.api.ts
 |   |   |   |   |   |   |-- Dashboard.hooks.ts
@@ -3298,8 +3337,10 @@
 |   |   |   |   |   |   |-- Payroll.page.tsx
 |   |   |   |   |   |   `-- Payroll.types.ts
 |   |   |   |   |   |-- PayrollProcessing
+|   |   |   |   |   |   |-- PayrollProcessing.api.ts
 |   |   |   |   |   |   |-- PayrollProcessing.hooks.ts
-|   |   |   |   |   |   `-- PayrollProcessing.page.tsx
+|   |   |   |   |   |   |-- PayrollProcessing.page.tsx
+|   |   |   |   |   |   `-- PayrollProcessing.types.ts
 |   |   |   |   |   |-- SemesterBilling
 |   |   |   |   |   |   |-- SemesterBilling.api.ts
 |   |   |   |   |   |   |-- SemesterBilling.hooks.ts
@@ -3307,18 +3348,29 @@
 |   |   |   |   |   |   `-- SemesterBilling.types.ts
 |   |   |   |   |   |-- StudentBilling
 |   |   |   |   |   |   |-- ScholarshipGrants.page.tsx
+|   |   |   |   |   |   |-- Scholarships.api.ts
+|   |   |   |   |   |   |-- Scholarships.hooks.ts
+|   |   |   |   |   |   |-- Scholarships.types.ts
+|   |   |   |   |   |   |-- StatementOfAccount.api.ts
+|   |   |   |   |   |   |-- StatementOfAccount.hooks.ts
 |   |   |   |   |   |   |-- StatementOfAccount.page.tsx
+|   |   |   |   |   |   |-- StatementOfAccount.types.ts
 |   |   |   |   |   |   |-- StudentBilling.api.ts
 |   |   |   |   |   |   |-- StudentBilling.hooks.ts
 |   |   |   |   |   |   |-- StudentBilling.page.tsx
 |   |   |   |   |   |   `-- StudentBilling.types.ts
 |   |   |   |   |   `-- TuitionAssessment
-|   |   |   |   |       `-- TuitionAssessment.page.tsx
+|   |   |   |   |       |-- TuitionAssessment.api.ts
+|   |   |   |   |       |-- TuitionAssessment.hooks.ts
+|   |   |   |   |       |-- TuitionAssessment.page.tsx
+|   |   |   |   |       `-- TuitionAssessment.types.ts
 |   |   |   |   |-- main.tsx
 |   |   |   |   |-- shell
 |   |   |   |   |   |-- AppShell.tsx
 |   |   |   |   |   `-- Routing.tsx
 |   |   |   |   |-- state
+|   |   |   |   |-- utils
+|   |   |   |   |   `-- arrayUtils.ts
 |   |   |   |   `-- vite-env.d.ts
 |   |   |   |-- tsconfig.json
 |   |   |   |-- tsconfig.node.json
@@ -3326,7 +3378,7 @@
 |   |   |-- governance-console
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-MesTFSc4.js
+|   |   |   |   |   `-- index-B-0r_2_c.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -3387,7 +3439,7 @@
 |   |   |-- identity-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-BapRoB-Z.js
+|   |   |   |   |   `-- index-B5WZLcxB.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -3456,7 +3508,7 @@
 |   |   |-- library-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-Cg4XXSgl.js
+|   |   |   |   |   `-- index-DFEO1ncW.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -3504,7 +3556,7 @@
 |   |   |-- lms-web
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-B27XvGfG.js
+|   |   |   |   |   `-- index-D3RSKpQY.js
 |   |   |   |   |-- index.html
 |   |   |   |   |-- manifest.webmanifest
 |   |   |   |   `-- service-worker.ts
@@ -3529,7 +3581,10 @@
 |   |   |   |   |   |   |-- Calendar.page.tsx
 |   |   |   |   |   |   `-- Calendar.types.ts
 |   |   |   |   |   |-- CourseAdministration
-|   |   |   |   |   |   `-- CoursePackaging.page.tsx
+|   |   |   |   |   |   |-- CoursePackaging.api.ts
+|   |   |   |   |   |   |-- CoursePackaging.hooks.ts
+|   |   |   |   |   |   |-- CoursePackaging.page.tsx
+|   |   |   |   |   |   `-- CoursePackaging.types.ts
 |   |   |   |   |   |-- CourseContent
 |   |   |   |   |   |   |-- CourseContent.api.ts
 |   |   |   |   |   |   |-- CourseContent.hooks.ts
@@ -3546,16 +3601,25 @@
 |   |   |   |   |   |   |-- Discussions.page.tsx
 |   |   |   |   |   |   `-- Discussions.types.ts
 |   |   |   |   |   |-- GradebookOrchestration
-|   |   |   |   |   |   `-- GradebookSync.page.tsx
+|   |   |   |   |   |   |-- GradebookSync.api.ts
+|   |   |   |   |   |   |-- GradebookSync.hooks.ts
+|   |   |   |   |   |   |-- GradebookSync.page.tsx
+|   |   |   |   |   |   `-- GradebookSync.types.ts
 |   |   |   |   |   |-- Grades
 |   |   |   |   |   |   |-- Grades.api.ts
 |   |   |   |   |   |   |-- Grades.hooks.ts
 |   |   |   |   |   |   |-- Grades.page.tsx
 |   |   |   |   |   |   `-- Grades.types.ts
 |   |   |   |   |   |-- ModuleTimeline
-|   |   |   |   |   |   `-- ModuleTimeline.page.tsx
+|   |   |   |   |   |   |-- ModuleTimeline.api.ts
+|   |   |   |   |   |   |-- ModuleTimeline.hooks.ts
+|   |   |   |   |   |   |-- ModuleTimeline.page.tsx
+|   |   |   |   |   |   `-- ModuleTimeline.types.ts
 |   |   |   |   |   |-- OfflineSubmissionReview
-|   |   |   |   |   |   `-- SubmissionReview.page.tsx
+|   |   |   |   |   |   |-- SubmissionReview.api.ts
+|   |   |   |   |   |   |-- SubmissionReview.hooks.ts
+|   |   |   |   |   |   |-- SubmissionReview.page.tsx
+|   |   |   |   |   |   `-- SubmissionReview.types.ts
 |   |   |   |   |   |-- QuizWindowGuard
 |   |   |   |   |   `-- Quizzes
 |   |   |   |   |       |-- Quizzes.api.ts
@@ -3578,8 +3642,8 @@
 |   |   |-- payment-gateway
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   |-- index-DnpdxvTm.js
-|   |   |   |   |   `-- index-cJBQpNUN.css
+|   |   |   |   |   |-- index-CGRexAvH.css
+|   |   |   |   |   `-- index-DhYfTMZc.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -3592,7 +3656,7 @@
 |   |   |-- platform-console
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   `-- index-CDXWAHcf.js
+|   |   |   |   |   `-- index-CAj-utz9.js
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -3650,8 +3714,8 @@
 |   |   |-- registrar-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   |-- index-CmnkJuXB.css
-|   |   |   |   |   `-- index-qmryzBB_.js
+|   |   |   |   |   |-- index-CbYcMCdF.js
+|   |   |   |   |   `-- index-CmnkJuXB.css
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -3702,6 +3766,7 @@
 |   |   |   |   |   |   |-- Curriculum.api.ts
 |   |   |   |   |   |   |-- Curriculum.hooks.ts
 |   |   |   |   |   |   |-- Curriculum.types.ts
+|   |   |   |   |   |   |-- CurriculumDivision.page.tsx
 |   |   |   |   |   |   |-- Prerequisites.page.tsx
 |   |   |   |   |   |   `-- SubjectCatalog.page.tsx
 |   |   |   |   |   |-- EnrollmentDivision
@@ -3762,8 +3827,8 @@
 |   |   |-- security-portal
 |   |   |   |-- dist
 |   |   |   |   |-- assets
-|   |   |   |   |   |-- index-Dfxy4O-t.js
-|   |   |   |   |   `-- index-cJBQpNUN.css
+|   |   |   |   |   |-- index-BjHy9tIj.js
+|   |   |   |   |   `-- index-CGRexAvH.css
 |   |   |   |   `-- index.html
 |   |   |   |-- index.html
 |   |   |   |-- package.json
@@ -3780,8 +3845,8 @@
 |   |   `-- student-portal
 |   |       |-- dist
 |   |       |   |-- assets
-|   |       |   |   |-- index-CT34Fv1n.js
-|   |       |   |   `-- index-cJBQpNUN.css
+|   |       |   |   |-- index-CGRexAvH.css
+|   |       |   |   `-- index-DYAfw_ff.js
 |   |       |   `-- index.html
 |   |       |-- index.html
 |   |       |-- package.json
@@ -4310,6 +4375,7 @@
 |   |-- scaffold_features.ps1
 |   |-- tests
 |   |   |-- EndToEnd
+|   |   |   |-- CrossPortalUnifiedLifecycle.e2e.spec.tsx
 |   |   |   |-- admin-portal
 |   |   |   |   |-- AcademicConfiguration.e2e.spec.ts
 |   |   |   |   |-- AdmissionsProcessing.e2e.spec.ts
@@ -4425,17 +4491,18 @@
 |   |   |   |   `-- Reservations.e2e.spec.ts
 |   |   |   |-- lighthouse-budgets.json
 |   |   |   |-- lms-web
-|   |   |   |   |-- Assignments.e2e.spec.ts
-|   |   |   |   |-- Calendar.e2e.spec.ts
-|   |   |   |   |-- CourseAdministration.e2e.spec.ts
-|   |   |   |   |-- CourseContent.e2e.spec.ts
-|   |   |   |   |-- Dashboard.e2e.spec.ts
-|   |   |   |   |-- Discussions.e2e.spec.ts
-|   |   |   |   |-- GradebookOrchestration.e2e.spec.ts
-|   |   |   |   |-- Grades.e2e.spec.ts
-|   |   |   |   |-- ModuleTimeline.e2e.spec.ts
-|   |   |   |   |-- OfflineSubmissionReview.e2e.spec.ts
-|   |   |   |   `-- Quizzes.e2e.spec.ts
+|   |   |   |   |-- Assignments.e2e.spec.tsx
+|   |   |   |   |-- Calendar.e2e.spec.tsx
+|   |   |   |   |-- CourseAdministration.e2e.spec.tsx
+|   |   |   |   |-- CourseContent.e2e.spec.tsx
+|   |   |   |   |-- Dashboard.e2e.spec.tsx
+|   |   |   |   |-- Discussions.e2e.spec.tsx
+|   |   |   |   |-- GradebookOrchestration.e2e.spec.tsx
+|   |   |   |   |-- Grades.e2e.spec.tsx
+|   |   |   |   |-- LmsCrossPortalLifecycle.e2e.spec.tsx
+|   |   |   |   |-- ModuleTimeline.e2e.spec.tsx
+|   |   |   |   |-- OfflineSubmissionReview.e2e.spec.tsx
+|   |   |   |   `-- Quizzes.e2e.spec.tsx
 |   |   |   |-- platform-console
 |   |   |   |   |-- APIKeys.e2e.spec.ts
 |   |   |   |   |-- AnalyticsBI.e2e.spec.ts
@@ -5386,304 +5453,311 @@
 |   |   |       |-- Schedule.security.test.tsx
 |   |   |       |-- StudentProfile.security.test.tsx
 |   |   |       `-- Timetable.security.test.tsx
-|   |   `-- Unit
-|   |       |-- admin-portal
-|   |       |   |-- AcademicConfiguration.unit.test.tsx
-|   |       |   |-- AdmissionsProcessing.unit.test.tsx
-|   |       |   |-- AssetRegistry.unit.test.tsx
-|   |       |   |-- AuditCompliance.unit.test.tsx
-|   |       |   |-- CanteenOrders.unit.test.tsx
-|   |       |   |-- Dashboard.unit.test.tsx
-|   |       |   |-- EmployeeManagement.unit.test.tsx
-|   |       |   |-- FacilityBooking.unit.test.tsx
-|   |       |   |-- FleetManagement.unit.test.tsx
-|   |       |   |-- IdentitySecurity.unit.test.tsx
-|   |       |   |-- IntegrationManagement.unit.test.tsx
-|   |       |   |-- OrganizationManagement.unit.test.tsx
-|   |       |   |-- PlatformMonitoring.unit.test.tsx
-|   |       |   |-- PurchaseOrders.unit.test.tsx
-|   |       |   |-- RegistrarWorkspace.unit.test.tsx
-|   |       |   |-- Reports.unit.test.tsx
-|   |       |   |-- RoleAdministration.unit.test.tsx
-|   |       |   |-- StockManagement.unit.test.tsx
-|   |       |   |-- SystemAdministration.unit.test.tsx
-|   |       |   |-- UserAdministration.unit.test.tsx
-|   |       |   `-- WorkflowManagement.unit.test.tsx
-|   |       |-- admissions-portal
-|   |       |   |-- AdmissionCases.unit.test.tsx
-|   |       |   |-- AdmissionsDecision.unit.test.tsx
-|   |       |   |-- AdmissionsProcessing.unit.test.tsx
-|   |       |   |-- Applications.unit.test.tsx
-|   |       |   |-- Communication.unit.test.tsx
-|   |       |   |-- Dashboard.unit.test.tsx
-|   |       |   |-- EnrollmentHandoff.unit.test.tsx
-|   |       |   |-- Examination.unit.test.tsx
-|   |       |   |-- Fees.unit.test.tsx
-|   |       |   |-- Intake.unit.test.tsx
-|   |       |   |-- Interviews.unit.test.tsx
-|   |       |   |-- Queue.unit.test.tsx
-|   |       |   |-- Reports.unit.test.tsx
-|   |       |   |-- RequirementManagement.unit.test.tsx
-|   |       |   |-- Review.unit.test.tsx
-|   |       |   `-- Verification.unit.test.tsx
-|   |       |-- applicant-portal
-|   |       |   |-- AdmissionStatus.unit.test.tsx
-|   |       |   |-- ApplicantJourney.unit.test.tsx
-|   |       |   |-- ApplicationForm.unit.test.tsx
-|   |       |   |-- ApplicationStatus.unit.test.tsx
-|   |       |   |-- ApplicationTimeline.unit.test.tsx
-|   |       |   |-- ApplicationWizard.unit.test.tsx
-|   |       |   |-- Dashboard.unit.test.tsx
-|   |       |   |-- DocumentSubmission.unit.test.tsx
-|   |       |   |-- DocumentUpload.unit.test.tsx
-|   |       |   |-- EligibilityChecker.unit.test.tsx
-|   |       |   |-- EnrollmentPayment.unit.test.tsx
-|   |       |   |-- InterviewScheduling.unit.test.tsx
-|   |       |   |-- Offers.unit.test.tsx
-|   |       |   `-- ProgramExplorer.unit.test.tsx
-|   |       |-- faculty-portal
-|   |       |   |-- Advising.unit.test.tsx
-|   |       |   |-- Analytics.unit.test.tsx
-|   |       |   |-- Assessments.unit.test.tsx
-|   |       |   |-- ChairpersonWorkspace.unit.test.tsx
-|   |       |   |-- Communication.unit.test.tsx
-|   |       |   |-- Dashboard.unit.test.tsx
-|   |       |   |-- DeanWorkspace.unit.test.tsx
-|   |       |   |-- Documents.unit.test.tsx
-|   |       |   |-- FacultySecurity.unit.test.tsx
-|   |       |   |-- LMSManager.unit.test.tsx
-|   |       |   |-- Research.unit.test.tsx
-|   |       |   |-- Schedule.unit.test.tsx
-|   |       |   |-- SecretaryWorkspace.unit.test.tsx
-|   |       |   |-- SectionRoster.unit.test.tsx
-|   |       |   |-- Settings.unit.test.tsx
-|   |       |   |-- Students.unit.test.tsx
-|   |       |   `-- Teaching.unit.test.tsx
-|   |       |-- finance-console
-|   |       |   |-- AdmissionAssessment.unit.test.tsx
-|   |       |   |-- Budgeting.unit.test.tsx
-|   |       |   |-- Cashier.unit.test.tsx
-|   |       |   |-- Dashboard.unit.test.tsx
-|   |       |   |-- Downpayment.unit.test.tsx
-|   |       |   |-- EnrollmentFinance
-|   |       |   |   |-- AdmissionAssessment
-|   |       |   |   |   `-- AdmissionAssessment.unit.test.tsx
-|   |       |   |   |-- Downpayment
-|   |       |   |   |   `-- Downpayment.unit.test.tsx
-|   |       |   |   `-- FinancialClearance
-|   |       |   |       `-- FinancialClearance.unit.test.tsx
-|   |       |   |-- FinanceConsole.unit.test.tsx
-|   |       |   |-- FinancialClearance.unit.test.tsx
-|   |       |   |-- FinancialReports.unit.test.tsx
-|   |       |   |-- Invoicing.unit.test.tsx
-|   |       |   |-- PaymentGateway.unit.test.tsx
-|   |       |   |-- Payroll.unit.test.tsx
-|   |       |   |-- PayrollProcessing.unit.test.tsx
-|   |       |   |-- SemesterBilling.unit.test.tsx
-|   |       |   |-- StudentBilling.unit.test.tsx
-|   |       |   `-- TuitionAssessment.unit.test.tsx
-|   |       |-- governance-console
-|   |       |   |-- Accreditation.unit.test.tsx
-|   |       |   |-- Audits.unit.test.tsx
-|   |       |   |-- Committees.unit.test.tsx
-|   |       |   |-- Compliance.unit.test.tsx
-|   |       |   |-- Events.unit.test.tsx
-|   |       |   |-- Grievances.unit.test.tsx
-|   |       |   |-- Helpdesk.unit.test.tsx
-|   |       |   |-- Policies.unit.test.tsx
-|   |       |   |-- QualityAccreditation.unit.test.tsx
-|   |       |   |-- RiskManagement.unit.test.tsx
-|   |       |   `-- Visitors.unit.test.tsx
-|   |       |-- identity-portal
-|   |       |   |-- Email.unit.test.tsx
-|   |       |   |-- MFA.unit.test.tsx
-|   |       |   |-- MfaVerification.unit.test.tsx
-|   |       |   |-- MultiFactorAuth.unit.test.tsx
-|   |       |   |-- PasswordRecovery.unit.test.tsx
-|   |       |   |-- PasswordReset.unit.test.tsx
-|   |       |   |-- SecuritySettings.unit.test.tsx
-|   |       |   |-- SessionManagement.unit.test.tsx
-|   |       |   |-- UniversityAccount.unit.test.tsx
-|   |       |   |-- UserLogin.unit.test.tsx
-|   |       |   `-- UserRegistration.unit.test.tsx
-|   |       |-- library-portal
-|   |       |   |-- CatalogSearch.unit.test.tsx
-|   |       |   |-- Circulation.unit.test.tsx
-|   |       |   |-- DigitalResources.unit.test.tsx
-|   |       |   |-- Fines.unit.test.tsx
-|   |       |   |-- MyLoans.unit.test.tsx
-|   |       |   `-- Reservations.unit.test.tsx
-|   |       |-- libs
-|   |       |   |-- api-clients
-|   |       |   |   |-- admissionsApi.unit.test.tsx
-|   |       |   |   |-- advisingApi.unit.test.tsx
-|   |       |   |   |-- alumniApi.unit.test.tsx
-|   |       |   |   |-- analyticsApi.unit.test.tsx
-|   |       |   |   |-- apiClient.unit.test.tsx
-|   |       |   |   |-- assessmentApi.unit.test.tsx
-|   |       |   |   |-- assetManagementApi.unit.test.tsx
-|   |       |   |   |-- canteenApi.unit.test.tsx
-|   |       |   |   |-- careerApi.unit.test.tsx
-|   |       |   |   |-- communicationApi.unit.test.tsx
-|   |       |   |   |-- documentsApi.unit.test.tsx
-|   |       |   |   |-- examinationResultApi.unit.test.tsx
-|   |       |   |   |-- facilitiesApi.unit.test.tsx
-|   |       |   |   |-- facilitiesAvailabilityApi.unit.test.tsx
-|   |       |   |   |-- facultyAdmissionsApi.unit.test.tsx
-|   |       |   |   |-- facultySettingsApi.unit.test.tsx
-|   |       |   |   |-- facultyStudentsApi.unit.test.tsx
-|   |       |   |   |-- financeApi.unit.test.tsx
-|   |       |   |   |-- financeBillingApi.unit.test.tsx
-|   |       |   |   |-- governanceApi.unit.test.tsx
-|   |       |   |   |-- guidanceApi.unit.test.tsx
-|   |       |   |   |-- healthCenterApi.unit.test.tsx
-|   |       |   |   |-- hostelApi.unit.test.tsx
-|   |       |   |   |-- hrApi.unit.test.tsx
-|   |       |   |   |-- identityAccessAuthorizationApi.unit.test.tsx
-|   |       |   |   |-- identityApi.unit.test.tsx
-|   |       |   |   |-- interviewsApi.unit.test.tsx
-|   |       |   |   |-- inventoryApi.unit.test.tsx
-|   |       |   |   |-- libraryCatalogApi.unit.test.tsx
-|   |       |   |   |-- lmsApi.unit.test.tsx
-|   |       |   |   |-- procurementApi.unit.test.tsx
-|   |       |   |   |-- registrarApi.unit.test.tsx
-|   |       |   |   |-- registrarCurriculumApi.unit.test.tsx
-|   |       |   |   |-- researchApi.unit.test.tsx
-|   |       |   |   |-- scheduleApi.unit.test.tsx
-|   |       |   |   |-- studentInformationApi.unit.test.tsx
-|   |       |   |   |-- studentInformationReadModel.unit.test.tsx
-|   |       |   |   |-- teachingApi.unit.test.tsx
-|   |       |   |   `-- transportApi.unit.test.tsx
-|   |       |   |-- auth-sdk
-|   |       |   |   |-- FacultyGuard.unit.test.tsx
-|   |       |   |   |-- FinanceGuard.unit.test.tsx
-|   |       |   |   |-- IdentityGuard.unit.test.tsx
-|   |       |   |   |-- LMSGuard.unit.test.tsx
-|   |       |   |   `-- RegistrarGuard.unit.test.tsx
-|   |       |   |-- domain-viewmodels
-|   |       |   |   |-- AdministrationViewModels.unit.test.tsx
-|   |       |   |   |-- CampusLifeViewModels.unit.test.tsx
-|   |       |   |   |-- FinanceViewModels.unit.test.tsx
-|   |       |   |   |-- GovernanceViewModels.unit.test.tsx
-|   |       |   |   |-- GrievanceCaseViewModel.unit.test.tsx
-|   |       |   |   |-- IdentityViewModels.unit.test.tsx
-|   |       |   |   |-- InvoiceSummaryViewModel.unit.test.tsx
-|   |       |   |   |-- LibraryViewModels.unit.test.tsx
-|   |       |   |   |-- StudentLifecycleViewModels.unit.test.tsx
-|   |       |   |   `-- StudentProfileViewModel.unit.test.tsx
-|   |       |   |-- offline-sync
-|   |       |   |   `-- syncEngineContracts.unit.test.tsx
-|   |       |   |-- shell-kit
-|   |       |   |   |-- AuthGuard.unit.test.tsx
-|   |       |   |   |-- authConfig.unit.test.tsx
-|   |       |   |   |-- bootstrap.unit.test.tsx
-|   |       |   |   |-- portalRegistry.unit.test.tsx
-|   |       |   |   `-- queryClient.unit.test.tsx
-|   |       |   |-- ui-kit
-|   |       |   |   |-- Badge.unit.test.tsx
-|   |       |   |   |-- Button.unit.test.tsx
-|   |       |   |   |-- Card.unit.test.tsx
-|   |       |   |   |-- DocumentPreviewModal.unit.test.tsx
-|   |       |   |   |-- EmptyState.unit.test.tsx
-|   |       |   |   |-- FormInput.unit.test.tsx
-|   |       |   |   |-- Modal.unit.test.tsx
-|   |       |   |   |-- PageHeader.unit.test.tsx
-|   |       |   |   `-- Table.unit.test.tsx
-|   |       |   `-- workflow-sdk
-|   |       |       |-- AcademicRecordWorkflow.unit.test.tsx
-|   |       |       |-- AdmissionWorkflow.unit.test.tsx
-|   |       |       |-- AuditWorkflow.unit.test.tsx
-|   |       |       |-- CertificationWorkflow.unit.test.tsx
-|   |       |       |-- EnrollmentWorkflow.unit.test.tsx
-|   |       |       |-- FinanceWorkflow.unit.test.tsx
-|   |       |       |-- GraduationWorkflow.unit.test.tsx
-|   |       |       |-- IdentityWorkflow.unit.test.tsx
-|   |       |       |-- LMSWorkflow.unit.test.tsx
-|   |       |       |-- LibraryWorkflow.unit.test.tsx
-|   |       |       |-- NotificationWorkflow.unit.test.tsx
-|   |       |       `-- StudentLifecycleWorkflow.unit.test.tsx
-|   |       |-- lms-web
-|   |       |   |-- Assignments.unit.test.tsx
-|   |       |   |-- Calendar.unit.test.tsx
-|   |       |   |-- CourseAdministration.unit.test.tsx
-|   |       |   |-- CourseContent.unit.test.tsx
-|   |       |   |-- Dashboard.unit.test.tsx
-|   |       |   |-- Discussions.unit.test.tsx
-|   |       |   |-- GradebookOrchestration.unit.test.tsx
-|   |       |   |-- Grades.unit.test.tsx
-|   |       |   |-- ModuleTimeline.unit.test.tsx
-|   |       |   |-- OfflineSubmissionReview.unit.test.tsx
-|   |       |   `-- Quizzes.unit.test.tsx
-|   |       |-- platform-console
-|   |       |   |-- APIKeys.unit.test.tsx
-|   |       |   |-- AnalyticsBI.unit.test.tsx
-|   |       |   |-- CRM.unit.test.tsx
-|   |       |   |-- Communication.unit.test.tsx
-|   |       |   |-- DatabaseManagement.unit.test.tsx
-|   |       |   |-- DocumentManagement.unit.test.tsx
-|   |       |   |-- GlobalSettings.unit.test.tsx
-|   |       |   |-- MultiCampus.unit.test.tsx
-|   |       |   |-- Notification.unit.test.tsx
-|   |       |   |-- SecurityAudits.unit.test.tsx
-|   |       |   |-- SystemLogs.unit.test.tsx
-|   |       |   `-- TenantManagement.unit.test.tsx
-|   |       |-- registrar-portal
-|   |       |   |-- AcademicComplianceDivision.unit.test.tsx
-|   |       |   |-- AcademicRecordInitialization.unit.test.tsx
-|   |       |   |-- AcademicRecordsDivision.unit.test.tsx
-|   |       |   |-- AcademicSchedulingDivision.unit.test.tsx
-|   |       |   |-- AcademicStanding.unit.test.tsx
-|   |       |   |-- AddDropOversight.unit.test.tsx
-|   |       |   |-- Admissions.unit.test.tsx
-|   |       |   |-- AdmissionsDivision.unit.test.tsx
-|   |       |   |-- CertificationDivision.unit.test.tsx
-|   |       |   |-- CourseOfferings.unit.test.tsx
-|   |       |   |-- CrossEnrollmentDivision.unit.test.tsx
-|   |       |   |-- CurriculumDivision.unit.test.tsx
-|   |       |   |-- EnrollmentDivision.unit.test.tsx
-|   |       |   |-- EnrollmentValidation.unit.test.tsx
-|   |       |   |-- GraduationDivision.unit.test.tsx
-|   |       |   |-- MasterStudentList.unit.test.tsx
-|   |       |   |-- OfficialGrades.unit.test.tsx
-|   |       |   |-- Prerequisites.unit.test.tsx
-|   |       |   |-- RegistrarDashboard.unit.test.tsx
-|   |       |   |-- RegistrarEnrollmentValidation.unit.test.tsx
-|   |       |   |-- RegistrarIntegration.unit.test.tsx
-|   |       |   |-- RegistrarSecurity.unit.test.tsx
-|   |       |   |-- RegistrationExceptions.unit.test.tsx
-|   |       |   |-- RegistrationRequests.unit.test.tsx
-|   |       |   |-- RegistrationWindows.unit.test.tsx
-|   |       |   |-- StudentRegistryDivision.unit.test.tsx
-|   |       |   |-- StudentServicesDivision.unit.test.tsx
-|   |       |   |-- SubjectCatalog.unit.test.tsx
-|   |       |   |-- SubjectLoading.unit.test.tsx
-|   |       |   |-- TransferDivision.unit.test.tsx
-|   |       |   `-- Waitlists.unit.test.tsx
-|   |       `-- student-portal
-|   |           |-- AcademicRecord.unit.test.tsx
-|   |           |-- AlumniNetwork.unit.test.tsx
-|   |           |-- BrowseCourses.unit.test.tsx
-|   |           |-- CareerDashboard.unit.test.tsx
-|   |           |-- Clearance.unit.test.tsx
-|   |           |-- CrossEnrollment.unit.test.tsx
-|   |           |-- CurriculumProgress.unit.test.tsx
-|   |           |-- Dashboard.unit.test.tsx
-|   |           |-- Enrollment.unit.test.tsx
-|   |           |-- EnrollmentHistory.unit.test.tsx
-|   |           |-- Extracurriculars.unit.test.tsx
-|   |           |-- Financials.unit.test.tsx
-|   |           |-- Graduation.unit.test.tsx
-|   |           |-- GuidanceSessions.unit.test.tsx
-|   |           |-- HealthRecords.unit.test.tsx
-|   |           |-- HostelAllocation.unit.test.tsx
-|   |           |-- LearningManagement.unit.test.tsx
-|   |           |-- MyEnrollments.unit.test.tsx
-|   |           |-- MyRegistration.unit.test.tsx
-|   |           |-- Registration.unit.test.tsx
-|   |           |-- Schedule.unit.test.tsx
-|   |           |-- StudentProfile.unit.test.tsx
-|   |           |-- Timetable.unit.test.tsx
-|   |           `-- Waitlist.unit.test.tsx
+|   |   |-- Unit
+|   |   |   |-- admin-portal
+|   |   |   |   |-- AcademicConfiguration.unit.test.tsx
+|   |   |   |   |-- AdmissionsProcessing.unit.test.tsx
+|   |   |   |   |-- AssetRegistry.unit.test.tsx
+|   |   |   |   |-- AuditCompliance.unit.test.tsx
+|   |   |   |   |-- CanteenOrders.unit.test.tsx
+|   |   |   |   |-- Dashboard.unit.test.tsx
+|   |   |   |   |-- EmployeeManagement.unit.test.tsx
+|   |   |   |   |-- FacilityBooking.unit.test.tsx
+|   |   |   |   |-- FleetManagement.unit.test.tsx
+|   |   |   |   |-- IdentitySecurity.unit.test.tsx
+|   |   |   |   |-- IntegrationManagement.unit.test.tsx
+|   |   |   |   |-- OrganizationManagement.unit.test.tsx
+|   |   |   |   |-- PlatformMonitoring.unit.test.tsx
+|   |   |   |   |-- PurchaseOrders.unit.test.tsx
+|   |   |   |   |-- RegistrarWorkspace.unit.test.tsx
+|   |   |   |   |-- Reports.unit.test.tsx
+|   |   |   |   |-- RoleAdministration.unit.test.tsx
+|   |   |   |   |-- StockManagement.unit.test.tsx
+|   |   |   |   |-- SystemAdministration.unit.test.tsx
+|   |   |   |   |-- UserAdministration.unit.test.tsx
+|   |   |   |   `-- WorkflowManagement.unit.test.tsx
+|   |   |   |-- admissions-portal
+|   |   |   |   |-- AdmissionCases.unit.test.tsx
+|   |   |   |   |-- AdmissionFees.unit.test.tsx
+|   |   |   |   |-- AdmissionQueue.unit.test.tsx
+|   |   |   |   |-- AdmissionsDecision.unit.test.tsx
+|   |   |   |   |-- AdmissionsProcessing.unit.test.tsx
+|   |   |   |   |-- AdmissionsReports.unit.test.tsx
+|   |   |   |   |-- Applications.unit.test.tsx
+|   |   |   |   |-- Communication.unit.test.tsx
+|   |   |   |   |-- Dashboard.unit.test.tsx
+|   |   |   |   |-- EnrollmentHandoff.unit.test.tsx
+|   |   |   |   |-- Examination.unit.test.tsx
+|   |   |   |   |-- Fees.unit.test.tsx
+|   |   |   |   |-- Intake.unit.test.tsx
+|   |   |   |   |-- Interviews.unit.test.tsx
+|   |   |   |   |-- Queue.unit.test.tsx
+|   |   |   |   |-- Reports.unit.test.tsx
+|   |   |   |   |-- RequirementManagement.unit.test.tsx
+|   |   |   |   |-- Review.unit.test.tsx
+|   |   |   |   `-- Verification.unit.test.tsx
+|   |   |   |-- applicant-portal
+|   |   |   |   |-- AdmissionStatus.unit.test.tsx
+|   |   |   |   |-- ApplicantJourney.unit.test.tsx
+|   |   |   |   |-- ApplicationForm.unit.test.tsx
+|   |   |   |   |-- ApplicationStatus.unit.test.tsx
+|   |   |   |   |-- ApplicationTimeline.unit.test.tsx
+|   |   |   |   |-- ApplicationWizard.unit.test.tsx
+|   |   |   |   |-- Dashboard.unit.test.tsx
+|   |   |   |   |-- DocumentSubmission.unit.test.tsx
+|   |   |   |   |-- DocumentUpload.unit.test.tsx
+|   |   |   |   |-- EligibilityChecker.unit.test.tsx
+|   |   |   |   |-- EnrollmentPayment.unit.test.tsx
+|   |   |   |   |-- InterviewScheduling.unit.test.tsx
+|   |   |   |   |-- Offers.unit.test.tsx
+|   |   |   |   `-- ProgramExplorer.unit.test.tsx
+|   |   |   |-- faculty-portal
+|   |   |   |   |-- Advising.unit.test.tsx
+|   |   |   |   |-- Analytics.unit.test.tsx
+|   |   |   |   |-- Assessments.unit.test.tsx
+|   |   |   |   |-- ChairpersonWorkspace.unit.test.tsx
+|   |   |   |   |-- Communication.unit.test.tsx
+|   |   |   |   |-- Dashboard.unit.test.tsx
+|   |   |   |   |-- DeanWorkspace.unit.test.tsx
+|   |   |   |   |-- Documents.unit.test.tsx
+|   |   |   |   |-- FacultySecurity.unit.test.tsx
+|   |   |   |   |-- LMSManager.unit.test.tsx
+|   |   |   |   |-- Research.unit.test.tsx
+|   |   |   |   |-- Schedule.unit.test.tsx
+|   |   |   |   |-- SecretaryWorkspace.unit.test.tsx
+|   |   |   |   |-- SectionRoster.unit.test.tsx
+|   |   |   |   |-- Settings.unit.test.tsx
+|   |   |   |   |-- Students.unit.test.tsx
+|   |   |   |   `-- Teaching.unit.test.tsx
+|   |   |   |-- finance-console
+|   |   |   |   |-- AdmissionAssessment.unit.test.tsx
+|   |   |   |   |-- Budgeting.unit.test.tsx
+|   |   |   |   |-- Cashier.unit.test.tsx
+|   |   |   |   |-- ClearanceApproval.unit.test.tsx
+|   |   |   |   |-- Dashboard.unit.test.tsx
+|   |   |   |   |-- Downpayment.unit.test.tsx
+|   |   |   |   |-- EnrollmentFinance
+|   |   |   |   |   |-- AdmissionAssessment
+|   |   |   |   |   |   `-- AdmissionAssessment.unit.test.tsx
+|   |   |   |   |   |-- Downpayment
+|   |   |   |   |   |   `-- Downpayment.unit.test.tsx
+|   |   |   |   |   `-- FinancialClearance
+|   |   |   |   |       `-- FinancialClearance.unit.test.tsx
+|   |   |   |   |-- FinanceConsole.unit.test.tsx
+|   |   |   |   |-- FinancialClearance.unit.test.tsx
+|   |   |   |   |-- FinancialReports.unit.test.tsx
+|   |   |   |   |-- Invoicing.unit.test.tsx
+|   |   |   |   |-- PaymentGateway.unit.test.tsx
+|   |   |   |   |-- Payroll.unit.test.tsx
+|   |   |   |   |-- PayrollProcessing.unit.test.tsx
+|   |   |   |   |-- ScholarshipGrants.unit.test.tsx
+|   |   |   |   |-- SemesterBilling.unit.test.tsx
+|   |   |   |   |-- StatementOfAccount.unit.test.tsx
+|   |   |   |   |-- StudentBilling.unit.test.tsx
+|   |   |   |   `-- TuitionAssessment.unit.test.tsx
+|   |   |   |-- governance-console
+|   |   |   |   |-- Accreditation.unit.test.tsx
+|   |   |   |   |-- Audits.unit.test.tsx
+|   |   |   |   |-- Committees.unit.test.tsx
+|   |   |   |   |-- Compliance.unit.test.tsx
+|   |   |   |   |-- Events.unit.test.tsx
+|   |   |   |   |-- Grievances.unit.test.tsx
+|   |   |   |   |-- Helpdesk.unit.test.tsx
+|   |   |   |   |-- Policies.unit.test.tsx
+|   |   |   |   |-- QualityAccreditation.unit.test.tsx
+|   |   |   |   |-- RiskManagement.unit.test.tsx
+|   |   |   |   `-- Visitors.unit.test.tsx
+|   |   |   |-- identity-portal
+|   |   |   |   |-- Email.unit.test.tsx
+|   |   |   |   |-- MFA.unit.test.tsx
+|   |   |   |   |-- MfaVerification.unit.test.tsx
+|   |   |   |   |-- MultiFactorAuth.unit.test.tsx
+|   |   |   |   |-- PasswordRecovery.unit.test.tsx
+|   |   |   |   |-- PasswordReset.unit.test.tsx
+|   |   |   |   |-- SecuritySettings.unit.test.tsx
+|   |   |   |   |-- SessionManagement.unit.test.tsx
+|   |   |   |   |-- UniversityAccount.unit.test.tsx
+|   |   |   |   |-- UserLogin.unit.test.tsx
+|   |   |   |   `-- UserRegistration.unit.test.tsx
+|   |   |   |-- library-portal
+|   |   |   |   |-- CatalogSearch.unit.test.tsx
+|   |   |   |   |-- Circulation.unit.test.tsx
+|   |   |   |   |-- DigitalResources.unit.test.tsx
+|   |   |   |   |-- Fines.unit.test.tsx
+|   |   |   |   |-- MyLoans.unit.test.tsx
+|   |   |   |   `-- Reservations.unit.test.tsx
+|   |   |   |-- libs
+|   |   |   |   |-- api-clients
+|   |   |   |   |   |-- admissionsApi.unit.test.tsx
+|   |   |   |   |   |-- advisingApi.unit.test.tsx
+|   |   |   |   |   |-- alumniApi.unit.test.tsx
+|   |   |   |   |   |-- analyticsApi.unit.test.tsx
+|   |   |   |   |   |-- apiClient.unit.test.tsx
+|   |   |   |   |   |-- assessmentApi.unit.test.tsx
+|   |   |   |   |   |-- assetManagementApi.unit.test.tsx
+|   |   |   |   |   |-- canteenApi.unit.test.tsx
+|   |   |   |   |   |-- careerApi.unit.test.tsx
+|   |   |   |   |   |-- communicationApi.unit.test.tsx
+|   |   |   |   |   |-- documentsApi.unit.test.tsx
+|   |   |   |   |   |-- examinationResultApi.unit.test.tsx
+|   |   |   |   |   |-- facilitiesApi.unit.test.tsx
+|   |   |   |   |   |-- facilitiesAvailabilityApi.unit.test.tsx
+|   |   |   |   |   |-- facultyAdmissionsApi.unit.test.tsx
+|   |   |   |   |   |-- facultySettingsApi.unit.test.tsx
+|   |   |   |   |   |-- facultyStudentsApi.unit.test.tsx
+|   |   |   |   |   |-- financeApi.unit.test.tsx
+|   |   |   |   |   |-- financeBillingApi.unit.test.tsx
+|   |   |   |   |   |-- governanceApi.unit.test.tsx
+|   |   |   |   |   |-- guidanceApi.unit.test.tsx
+|   |   |   |   |   |-- healthCenterApi.unit.test.tsx
+|   |   |   |   |   |-- hostelApi.unit.test.tsx
+|   |   |   |   |   |-- hrApi.unit.test.tsx
+|   |   |   |   |   |-- identityAccessAuthorizationApi.unit.test.tsx
+|   |   |   |   |   |-- identityApi.unit.test.tsx
+|   |   |   |   |   |-- interviewsApi.unit.test.tsx
+|   |   |   |   |   |-- inventoryApi.unit.test.tsx
+|   |   |   |   |   |-- libraryCatalogApi.unit.test.tsx
+|   |   |   |   |   |-- lmsApi.unit.test.tsx
+|   |   |   |   |   |-- procurementApi.unit.test.tsx
+|   |   |   |   |   |-- registrarApi.unit.test.tsx
+|   |   |   |   |   |-- registrarCurriculumApi.unit.test.tsx
+|   |   |   |   |   |-- researchApi.unit.test.tsx
+|   |   |   |   |   |-- scheduleApi.unit.test.tsx
+|   |   |   |   |   |-- studentInformationApi.unit.test.tsx
+|   |   |   |   |   |-- studentInformationReadModel.unit.test.tsx
+|   |   |   |   |   |-- teachingApi.unit.test.tsx
+|   |   |   |   |   `-- transportApi.unit.test.tsx
+|   |   |   |   |-- auth-sdk
+|   |   |   |   |   |-- FacultyGuard.unit.test.tsx
+|   |   |   |   |   |-- FinanceGuard.unit.test.tsx
+|   |   |   |   |   |-- IdentityGuard.unit.test.tsx
+|   |   |   |   |   |-- LMSGuard.unit.test.tsx
+|   |   |   |   |   `-- RegistrarGuard.unit.test.tsx
+|   |   |   |   |-- domain-viewmodels
+|   |   |   |   |   |-- AdministrationViewModels.unit.test.tsx
+|   |   |   |   |   |-- CampusLifeViewModels.unit.test.tsx
+|   |   |   |   |   |-- FinanceViewModels.unit.test.tsx
+|   |   |   |   |   |-- GovernanceViewModels.unit.test.tsx
+|   |   |   |   |   |-- GrievanceCaseViewModel.unit.test.tsx
+|   |   |   |   |   |-- IdentityViewModels.unit.test.tsx
+|   |   |   |   |   |-- InvoiceSummaryViewModel.unit.test.tsx
+|   |   |   |   |   |-- LibraryViewModels.unit.test.tsx
+|   |   |   |   |   |-- StudentLifecycleViewModels.unit.test.tsx
+|   |   |   |   |   `-- StudentProfileViewModel.unit.test.tsx
+|   |   |   |   |-- offline-sync
+|   |   |   |   |   `-- syncEngineContracts.unit.test.tsx
+|   |   |   |   |-- shell-kit
+|   |   |   |   |   |-- AuthGuard.unit.test.tsx
+|   |   |   |   |   |-- authConfig.unit.test.tsx
+|   |   |   |   |   |-- bootstrap.unit.test.tsx
+|   |   |   |   |   |-- portalRegistry.unit.test.tsx
+|   |   |   |   |   `-- queryClient.unit.test.tsx
+|   |   |   |   |-- ui-kit
+|   |   |   |   |   |-- Badge.unit.test.tsx
+|   |   |   |   |   |-- Button.unit.test.tsx
+|   |   |   |   |   |-- Card.unit.test.tsx
+|   |   |   |   |   |-- DocumentPreviewModal.unit.test.tsx
+|   |   |   |   |   |-- EmptyState.unit.test.tsx
+|   |   |   |   |   |-- FormInput.unit.test.tsx
+|   |   |   |   |   |-- Modal.unit.test.tsx
+|   |   |   |   |   |-- PageHeader.unit.test.tsx
+|   |   |   |   |   `-- Table.unit.test.tsx
+|   |   |   |   `-- workflow-sdk
+|   |   |   |       |-- AcademicRecordWorkflow.unit.test.tsx
+|   |   |   |       |-- AdmissionWorkflow.unit.test.tsx
+|   |   |   |       |-- AuditWorkflow.unit.test.tsx
+|   |   |   |       |-- CertificationWorkflow.unit.test.tsx
+|   |   |   |       |-- EnrollmentWorkflow.unit.test.tsx
+|   |   |   |       |-- FinanceWorkflow.unit.test.tsx
+|   |   |   |       |-- GraduationWorkflow.unit.test.tsx
+|   |   |   |       |-- IdentityWorkflow.unit.test.tsx
+|   |   |   |       |-- LMSWorkflow.unit.test.tsx
+|   |   |   |       |-- LibraryWorkflow.unit.test.tsx
+|   |   |   |       |-- NotificationWorkflow.unit.test.tsx
+|   |   |   |       `-- StudentLifecycleWorkflow.unit.test.tsx
+|   |   |   |-- lms-web
+|   |   |   |   |-- Assignments.unit.test.tsx
+|   |   |   |   |-- Calendar.unit.test.tsx
+|   |   |   |   |-- CourseAdministration.unit.test.tsx
+|   |   |   |   |-- CourseContent.unit.test.tsx
+|   |   |   |   |-- Dashboard.unit.test.tsx
+|   |   |   |   |-- Discussions.unit.test.tsx
+|   |   |   |   |-- GradebookOrchestration.unit.test.tsx
+|   |   |   |   |-- Grades.unit.test.tsx
+|   |   |   |   |-- ModuleTimeline.unit.test.tsx
+|   |   |   |   |-- OfflineSubmissionReview.unit.test.tsx
+|   |   |   |   `-- Quizzes.unit.test.tsx
+|   |   |   |-- platform-console
+|   |   |   |   |-- APIKeys.unit.test.tsx
+|   |   |   |   |-- AnalyticsBI.unit.test.tsx
+|   |   |   |   |-- CRM.unit.test.tsx
+|   |   |   |   |-- Communication.unit.test.tsx
+|   |   |   |   |-- DatabaseManagement.unit.test.tsx
+|   |   |   |   |-- DocumentManagement.unit.test.tsx
+|   |   |   |   |-- GlobalSettings.unit.test.tsx
+|   |   |   |   |-- MultiCampus.unit.test.tsx
+|   |   |   |   |-- Notification.unit.test.tsx
+|   |   |   |   |-- SecurityAudits.unit.test.tsx
+|   |   |   |   |-- SystemLogs.unit.test.tsx
+|   |   |   |   `-- TenantManagement.unit.test.tsx
+|   |   |   |-- registrar-portal
+|   |   |   |   |-- AcademicComplianceDivision.unit.test.tsx
+|   |   |   |   |-- AcademicRecordInitialization.unit.test.tsx
+|   |   |   |   |-- AcademicRecordsDivision.unit.test.tsx
+|   |   |   |   |-- AcademicSchedulingDivision.unit.test.tsx
+|   |   |   |   |-- AcademicStanding.unit.test.tsx
+|   |   |   |   |-- AddDropOversight.unit.test.tsx
+|   |   |   |   |-- Admissions.unit.test.tsx
+|   |   |   |   |-- AdmissionsDivision.unit.test.tsx
+|   |   |   |   |-- CertificationDivision.unit.test.tsx
+|   |   |   |   |-- CourseOfferings.unit.test.tsx
+|   |   |   |   |-- CrossEnrollmentDivision.unit.test.tsx
+|   |   |   |   |-- CurriculumDivision.unit.test.tsx
+|   |   |   |   |-- EnrollmentDivision.unit.test.tsx
+|   |   |   |   |-- EnrollmentValidation.unit.test.tsx
+|   |   |   |   |-- GraduationDivision.unit.test.tsx
+|   |   |   |   |-- MasterStudentList.unit.test.tsx
+|   |   |   |   |-- OfficialGrades.unit.test.tsx
+|   |   |   |   |-- Prerequisites.unit.test.tsx
+|   |   |   |   |-- RegistrarDashboard.unit.test.tsx
+|   |   |   |   |-- RegistrarEnrollmentValidation.unit.test.tsx
+|   |   |   |   |-- RegistrarIntegration.unit.test.tsx
+|   |   |   |   |-- RegistrarSecurity.unit.test.tsx
+|   |   |   |   |-- RegistrationExceptions.unit.test.tsx
+|   |   |   |   |-- RegistrationRequests.unit.test.tsx
+|   |   |   |   |-- RegistrationWindows.unit.test.tsx
+|   |   |   |   |-- StudentRegistryDivision.unit.test.tsx
+|   |   |   |   |-- StudentServicesDivision.unit.test.tsx
+|   |   |   |   |-- SubjectCatalog.unit.test.tsx
+|   |   |   |   |-- SubjectLoading.unit.test.tsx
+|   |   |   |   |-- TransferDivision.unit.test.tsx
+|   |   |   |   `-- Waitlists.unit.test.tsx
+|   |   |   `-- student-portal
+|   |   |       |-- AcademicRecord.unit.test.tsx
+|   |   |       |-- AlumniNetwork.unit.test.tsx
+|   |   |       |-- BrowseCourses.unit.test.tsx
+|   |   |       |-- CareerDashboard.unit.test.tsx
+|   |   |       |-- Clearance.unit.test.tsx
+|   |   |       |-- CrossEnrollment.unit.test.tsx
+|   |   |       |-- CurriculumProgress.unit.test.tsx
+|   |   |       |-- Dashboard.unit.test.tsx
+|   |   |       |-- Enrollment.unit.test.tsx
+|   |   |       |-- EnrollmentHistory.unit.test.tsx
+|   |   |       |-- Extracurriculars.unit.test.tsx
+|   |   |       |-- Financials.unit.test.tsx
+|   |   |       |-- Graduation.unit.test.tsx
+|   |   |       |-- GuidanceSessions.unit.test.tsx
+|   |   |       |-- HealthRecords.unit.test.tsx
+|   |   |       |-- HostelAllocation.unit.test.tsx
+|   |   |       |-- LearningManagement.unit.test.tsx
+|   |   |       |-- MyEnrollments.unit.test.tsx
+|   |   |       |-- MyRegistration.unit.test.tsx
+|   |   |       |-- Registration.unit.test.tsx
+|   |   |       |-- Schedule.unit.test.tsx
+|   |   |       |-- StudentProfile.unit.test.tsx
+|   |   |       |-- Timetable.unit.test.tsx
+|   |   |       `-- Waitlist.unit.test.tsx
+|   |   `-- setup.ts
 |   |-- tsconfig.app.base.json
 |   |-- tsconfig.json
 |   |-- tsconfig.node.base.json
@@ -5716,7 +5790,6 @@
 |-- setup_structure.ps1
 |-- setup_structure.sh
 |-- tests.logs
-|-- universal-semantic-versioning-prompt.md
 |-- university-ERPstructure.md
 |-- university-erp-cloudflare-tunnel-zero-trust-security-addendum.md
 |-- university-erp-docker-compose-orchestration-prompt.md
@@ -5725,4 +5798,4 @@
 |-- university-erp-frontend-features-ddd-dbma-prompt.md
 `-- university-erp-scaffolding-script-review.md
 
-1522 directories, 4203 files
+1525 directories, 4273 files
