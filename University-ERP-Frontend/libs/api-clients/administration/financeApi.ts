@@ -7,6 +7,8 @@ export interface CreatePaymentSessionRequest {
   amount: number;
   purpose: string;
   currency?: string;
+  /** URL the payment gateway will redirect the browser to after checkout */
+  returnUrl?: string;
 }
 
 export interface PaymentSessionResponse {
