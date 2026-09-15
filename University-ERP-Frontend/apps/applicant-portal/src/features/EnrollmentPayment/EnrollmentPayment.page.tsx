@@ -23,7 +23,8 @@ interface ClientInvoiceDto {
 
 const getInvoiceId = (inv: ClientInvoiceDto) => inv.id || inv.invoiceId || '';
 const getInvoiceAmount = (inv: ClientInvoiceDto) => inv.amount ?? inv.amountDue ?? inv.totalAmount ?? 0;
-const isInvoicePaid = (inv: ClientInvoiceDto) => (inv.status || '').toUpperCase() === 'PAID';
+const PAID_INVOICE_STATUSES = new Set(['PAID', 'COMPLETED', 'SETTLED', 'VERIFIED', 'PAYMENT_VERIFIED']);
+export const isInvoicePaid = (inv: ClientInvoiceDto) => PAID_INVOICE_STATUSES.has((inv.status || '').toUpperCase());
 
 const isEnrollmentDownpaymentInvoice = (inv: ClientInvoiceDto, identityId: string) => {
     const ownerId = inv.studentId || inv.applicantId;
@@ -82,11 +83,13 @@ export const EnrollmentPaymentPage: React.FC = () => {
     const onlinePaymentMutation = useMutation({
         mutationFn: async () => {
             if (!enrollmentInvoice) throw new Error("No active invoice found.");
+            const returnUrl = `${window.location.origin}/payment-return?type=enrollment&invoiceId=${encodeURIComponent(invoiceId)}`;
             return await financeApi.createPaymentSession({
                 invoiceId,
                 applicantId: effectiveId,
                 amount: invoiceAmount,
-                purpose: enrollmentInvoice.description || 'Enrollment Downpayment'
+                purpose: enrollmentInvoice.description || 'Enrollment Downpayment',
+                returnUrl
             });
         },
         onSuccess: (data) => {
@@ -147,6 +150,8 @@ export const EnrollmentPaymentPage: React.FC = () => {
 
     // STATE A: Officially Enrolled (Terminal State derived purely from Admissions Status Read Model)
     if (activeApp?.status === 'Enrolled') {
+        const studentNumber = (activeApp as any)?.studentNumber || journey?.applicantId || effectiveId;
+        const studentPortalUrl = (import.meta as any).env?.VITE_STUDENT_PORTAL_URL || '/student-portal';
         return (
             <div className="fade-in">
                 <PageHeader title="Official Enrollment Complete" subtitle="Your university registration is finalized." />
@@ -154,7 +159,22 @@ export const EnrollmentPaymentPage: React.FC = () => {
                     <div style={{ fontSize: '3rem', marginBottom: 'var(--space-4)' }}>🎉</div>
                     <h3 style={{ marginBottom: 'var(--space-2)' }}>Welcome to the University</h3>
                     <p style={{ color: 'var(--text-secondary)' }}>The Registrar has successfully activated your official enrollment.</p>
-                    <Badge colorScheme="success" style={{ marginTop: 'var(--space-4)' }}>Officially Enrolled</Badge>
+                    <div style={{ margin: 'var(--space-4) auto', maxWidth: '360px', background: 'var(--bg-elevated)', padding: 'var(--space-4)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Your Official University ID</div>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--brand-primary)', fontFamily: "'JetBrains Mono', monospace", marginTop: 'var(--space-1)' }}>
+                            {studentNumber}
+                        </div>
+                    </div>
+                    <Badge colorScheme="success" style={{ marginTop: 'var(--space-2)', marginBottom: 'var(--space-6)' }}>Officially Enrolled</Badge>
+                    <div>
+                        <Button
+                            variant="primary"
+                            size="large"
+                            onClick={() => { window.location.href = studentPortalUrl; }}
+                        >
+                            Proceed to Student Portal →
+                        </Button>
+                    </div>
                 </Card>
             </div>
         );

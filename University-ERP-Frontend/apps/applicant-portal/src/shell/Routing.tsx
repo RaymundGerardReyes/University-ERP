@@ -18,6 +18,7 @@ import { OffersPage } from '../features/Offers/Offers.page';
 // New Enrollment Payment step
 import { EnrollmentPaymentPage } from '../features/EnrollmentPayment/EnrollmentPayment.page';
 import { ApplicationFeePaymentPage } from '../features/EnrollmentPayment/ApplicationFeePayment.page';
+import { PaymentReturnPage } from '../features/EnrollmentPayment/PaymentReturn.page';
 
 export const Routing: React.FC = () => {
   return (
@@ -41,6 +42,7 @@ export const Routing: React.FC = () => {
           <Route path="/enrollment-payment" element={<EnrollmentPaymentPage />} />
           <Route path="/payment" element={<ApplicationFeePaymentPage />} />
           <Route path="/application-fee" element={<ApplicationFeePaymentPage />} />
+          <Route path="/payment-return" element={<PaymentReturnPage />} />
 
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Route>

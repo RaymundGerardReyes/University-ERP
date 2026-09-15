@@ -1,6 +1,20 @@
 import { apiClient } from '@university-erp/api-clients';
 import { EnrollmentPaymentDto, InitiatePaymentRequest } from './EnrollmentPayment.types';
 
+/** Canonical set of status strings that indicate a completed/settled payment */
+const PAID_STATUSES = new Set([
+    'completed',
+    'paid',
+    'settled',
+    'verified',
+    'payment_verified',
+]);
+
+const normalizePaymentStatus = (raw?: string): EnrollmentPaymentDto['status'] => {
+    if (!raw) return 'PAYMENT_PENDING';
+    return PAID_STATUSES.has(raw.toLowerCase()) ? 'PAYMENT_VERIFIED' : 'PAYMENT_PENDING';
+};
+
 export const enrollmentPaymentApi = {
     getAssessmentDetails: async (assessmentId: string): Promise<any> => {
         try {
@@ -18,7 +32,8 @@ export const enrollmentPaymentApi = {
             invoiceId: request.assessmentId,
             applicantId: request.applicantId || 'APP-2026-0042',
             amount: request.amount,
-            purpose: 'Admissions Downpayment'
+            purpose: 'Admissions Downpayment',
+            returnUrl: request.returnUrl,
         });
         const data = response.data;
         const sessionId = data?.sessionId || data?.SessionId || `PAY-${Date.now()}`;
@@ -40,8 +55,7 @@ export const enrollmentPaymentApi = {
     getPaymentStatus: async (paymentId: string): Promise<EnrollmentPaymentDto> => {
         const response = await apiClient.get(`/finance/payment-sessions/${paymentId}`);
         const data = response.data;
-        const status = data?.Status || data?.status;
-        const isVerified = status === 'Completed' || status === 'Paid';
+        const rawStatus: string | undefined = data?.Status || data?.status;
         return {
             paymentId: data?.SessionId || data?.sessionId || paymentId,
             assessmentId: data?.InvoiceId || data?.invoiceId || 'ASS-2026',
@@ -49,7 +63,7 @@ export const enrollmentPaymentApi = {
             amount: Number(data?.Amount ?? data?.amount ?? 0),
             method: 'ONLINE_GATEWAY',
             paymentMethod: 'ONLINE_GATEWAY',
-            status: isVerified ? 'PAYMENT_VERIFIED' : 'PAYMENT_PENDING',
+            status: normalizePaymentStatus(rawStatus),
             referenceNumber: data?.SessionId || data?.sessionId || paymentId,
             transactionReference: data?.SessionId || data?.sessionId || paymentId,
             paidAt: data?.CreatedAtUtc || data?.createdAtUtc || new Date().toISOString(),

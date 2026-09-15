@@ -23,12 +23,14 @@ export const ApplicationFeePaymentPage: React.FC = () => {
     const onlinePaymentMutation = useMutation({
         mutationFn: async () => {
             const invoiceId = journey?.applicantId || effectiveId;
+            const returnUrl = `${window.location.origin}/payment-return?type=application-fee&invoiceId=${encodeURIComponent(invoiceId)}`;
             
             return await financeApi.createPaymentSession({
                 invoiceId, 
                 applicantId: effectiveId,
                 amount: 50.00, 
-                purpose: 'Application Processing Fee'
+                purpose: 'Application Processing Fee',
+                returnUrl
             });
         },
         onSuccess: (data) => {
@@ -88,7 +90,10 @@ export const ApplicationFeePaymentPage: React.FC = () => {
         );
     }
 
-    if (journey.applicationFeeStatus === 'Paid') {
+    const feeStatus = (journey.applicationFeeStatus || '').toUpperCase();
+    const isFeePaid = feeStatus === 'PAID' || feeStatus === 'COMPLETED' || feeStatus === 'SETTLED' || feeStatus === 'VERIFIED';
+
+    if (isFeePaid) {
         return (
             <div className="fade-in stub-page">
                 <div className="stub-title" style={{ color: 'var(--success-text)' }}>Payment Settled</div>
