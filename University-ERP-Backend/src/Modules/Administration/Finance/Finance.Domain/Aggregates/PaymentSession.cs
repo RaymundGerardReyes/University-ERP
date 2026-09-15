@@ -15,26 +15,28 @@ public sealed class PaymentSession : AggregateRoot<Guid>
     public string? IdempotencyKey { get; private set; }
     public string? BankReference { get; private set; }
     public string? GatewayTransactionId { get; private set; }
+    public string? ReturnUrl { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime ExpiresAtUtc { get; private set; }
     public DateTime? ConsumedAtUtc { get; private set; }
 
     private PaymentSession() { }
 
-    private PaymentSession(Guid id, string sessionId, string invoiceId, string applicantId, decimal amount, string purpose) : base(id)
+    private PaymentSession(Guid id, string sessionId, string invoiceId, string applicantId, decimal amount, string purpose, string? returnUrl = null) : base(id)
     {
         SessionId = sessionId;
         InvoiceId = invoiceId;
         ApplicantId = applicantId;
         Amount = amount;
         Purpose = purpose;
+        ReturnUrl = returnUrl;
         Status = "AwaitingPayment";
         CreatedAtUtc = DateTime.UtcNow;
         // Session valid for 30 minutes
         ExpiresAtUtc = DateTime.UtcNow.AddMinutes(30);
     }
 
-    public static Result<PaymentSession> Create(string invoiceId, string applicantId, decimal amount, string purpose)
+    public static Result<PaymentSession> Create(string invoiceId, string applicantId, decimal amount, string purpose, string? returnUrl = null)
     {
         if (amount <= 0) return Result<PaymentSession>.Failure(new Error("PaymentSession.InvalidAmount", "Amount must be greater than zero."));
         
@@ -44,7 +46,7 @@ public sealed class PaymentSession : AggregateRoot<Guid>
             .Replace("+", "-")
             .Substring(0, 22);
 
-        return Result<PaymentSession>.Success(new PaymentSession(Guid.NewGuid(), sessionId, invoiceId, applicantId, amount, purpose));
+        return Result<PaymentSession>.Success(new PaymentSession(Guid.NewGuid(), sessionId, invoiceId, applicantId, amount, purpose, returnUrl));
     }
 
     public Result<bool> InitiatePayment(string idempotencyKey, string gatewayTransactionId)

@@ -42,7 +42,7 @@ public class CreatePaymentSessionCommandHandlerTests
     {
         // Arrange (HC-02)
         _gatewayMock
-            .Setup(g => g.CreateCheckoutSessionAsync(It.IsAny<string>(), It.IsAny<decimal>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
+            .Setup(g => g.CreateCheckoutSessionAsync(It.IsAny<string>(), It.IsAny<decimal>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result<string>.Failure(new Error("Gateway.Rejected", "Card declined by processor")));
 
         var handler = new CreatePaymentSessionCommandHandler(_repositoryMock.Object, _gatewayMock.Object, _options);
@@ -64,7 +64,7 @@ public class CreatePaymentSessionCommandHandlerTests
         // Arrange (HC-03)
         var expectedCheckoutUrl = "https://novabank.internal/checkout/sess-123";
         _gatewayMock
-            .Setup(g => g.CreateCheckoutSessionAsync(It.IsAny<string>(), It.IsAny<decimal>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
+            .Setup(g => g.CreateCheckoutSessionAsync(It.IsAny<string>(), It.IsAny<decimal>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result<string>.Success(expectedCheckoutUrl));
 
         var handler = new CreatePaymentSessionCommandHandler(_repositoryMock.Object, _gatewayMock.Object, _options);
@@ -80,5 +80,24 @@ public class CreatePaymentSessionCommandHandlerTests
 
         _repositoryMock.Verify(r => r.AddAsync(It.Is<PaymentSession>(s => s.Amount == 1500m && s.InvoiceId == "INV-001"), It.IsAny<CancellationToken>()), Times.Once);
         _repositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_WhenReturnUrlIsSpecified_PassesReturnUrlToGatewayAndPersistsOnSession()
+    {
+        var expectedCheckoutUrl = "https://novabank.internal/checkout/sess-456";
+        var customReturnUrl = "https://portal.university.edu/payment-return?type=enrollment";
+        
+        _gatewayMock
+            .Setup(g => g.CreateCheckoutSessionAsync(It.IsAny<string>(), It.IsAny<decimal>(), It.IsAny<string>(), It.IsAny<string?>(), customReturnUrl, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result<string>.Success(expectedCheckoutUrl));
+
+        var handler = new CreatePaymentSessionCommandHandler(_repositoryMock.Object, _gatewayMock.Object, _options);
+        var command = new CreatePaymentSessionCommand("INV-002", "APP-002", 2000m, "Enrollment", "idem-key-2", customReturnUrl);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        _repositoryMock.Verify(r => r.AddAsync(It.Is<PaymentSession>(s => s.ReturnUrl == customReturnUrl), It.IsAny<CancellationToken>()), Times.Once);
     }
 }

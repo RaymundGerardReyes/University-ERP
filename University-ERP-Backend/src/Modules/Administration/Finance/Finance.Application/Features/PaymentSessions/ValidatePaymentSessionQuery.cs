@@ -7,7 +7,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-public sealed record PaymentSessionDto(string SessionId, string InvoiceId, string ApplicantId, decimal Amount, string Purpose, string Currency, DateTime ExpiresAtUtc);
+public sealed record PaymentSessionDto(string SessionId, string InvoiceId, string ApplicantId, decimal Amount, string Purpose, string Currency, DateTime ExpiresAtUtc, string Status);
 
 public sealed record ValidatePaymentSessionQuery(string SessionId) : IRequest<Result<PaymentSessionDto>>;
 
@@ -27,9 +27,6 @@ public sealed class ValidatePaymentSessionQueryHandler : IRequestHandler<Validat
         if (session == null)
             return Result<PaymentSessionDto>.Failure(new Error("PaymentSession.NotFound", "Invalid or unrecognized payment session."));
 
-        if ((session.Status != "AwaitingPayment" && session.Status != "PendingBankConfirmation") || DateTime.UtcNow > session.ExpiresAtUtc)
-            return Result<PaymentSessionDto>.Failure(new Error("PaymentSession.Expired", "This payment session is expired or already consumed."));
-
         var dto = new PaymentSessionDto(
             session.SessionId,
             session.InvoiceId,
@@ -37,7 +34,8 @@ public sealed class ValidatePaymentSessionQueryHandler : IRequestHandler<Validat
             session.Amount,
             session.Purpose,
             session.Currency,
-            session.ExpiresAtUtc
+            session.ExpiresAtUtc,
+            session.Status
         );
 
         return Result<PaymentSessionDto>.Success(dto);

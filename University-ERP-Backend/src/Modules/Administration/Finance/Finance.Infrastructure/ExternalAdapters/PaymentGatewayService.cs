@@ -21,10 +21,20 @@ public class PaymentGatewayService : IPaymentGatewayService
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task<Result<string>> CreateCheckoutSessionAsync(
+    public Task<Result<string>> CreateCheckoutSessionAsync(
         string transactionId, 
         decimal amount, 
         string gatewayName, 
+        CancellationToken cancellationToken)
+    {
+        return CreateGatewayCheckoutSessionAsync(transactionId, amount, gatewayName, null, cancellationToken);
+    }
+
+    private async Task<Result<string>> CreateGatewayCheckoutSessionAsync(
+        string transactionId, 
+        decimal amount, 
+        string gatewayName, 
+        string? returnUrl,
         CancellationToken cancellationToken)
     {
         // 1. Dynamically fetch the URL format and credentials based on the standard naming convention
@@ -34,7 +44,8 @@ public class PaymentGatewayService : IPaymentGatewayService
         if (string.IsNullOrWhiteSpace(urlFormat))
         {
             // Development / Sandbox Fallback: If no live gateway endpoint is configured in environment, return simulated checkout URL
-            return Result<string>.Success($"https://checkout.sandbox.paynamics.com/pay/{transactionId}");
+            var returnParam = !string.IsNullOrWhiteSpace(returnUrl) ? $"?returnUrl={Uri.EscapeDataString(returnUrl)}" : string.Empty;
+            return Result<string>.Success($"https://checkout.sandbox.paynamics.com/pay/{transactionId}{returnParam}");
         }
 
         string publicKey = _configuration[$"PaymentGateways:{gatewayName}:PublicKey"] ?? string.Empty;
@@ -46,7 +57,8 @@ public class PaymentGatewayService : IPaymentGatewayService
         { 
             transactionId = transactionId, 
             amount = amount,
-            currency = "PHP" 
+            currency = "PHP",
+            returnUrl = returnUrl
         };
 
         string targetEndpoint = string.Format(urlFormat, transactionId);
@@ -95,7 +107,12 @@ public class PaymentGatewayService : IPaymentGatewayService
 
     public Task<Result<string>> CreateCheckoutSessionAsync(string sessionId, decimal amount, string currency, string? idempotencyKey = null, CancellationToken cancellationToken = default)
     {
-        return CreateCheckoutSessionAsync(sessionId, amount, "Paynamics", cancellationToken);
+        return CreateGatewayCheckoutSessionAsync(sessionId, amount, "Paynamics", null, cancellationToken);
+    }
+
+    public Task<Result<string>> CreateCheckoutSessionAsync(string sessionId, decimal amount, string currency, string? idempotencyKey, string? returnUrl, CancellationToken cancellationToken)
+    {
+        return CreateGatewayCheckoutSessionAsync(sessionId, amount, "Paynamics", returnUrl, cancellationToken);
     }
 
     public Task<Result<string>> GeneratePaymentInstrumentAsync(string sessionId, decimal amount, string currency, CancellationToken cancellationToken)

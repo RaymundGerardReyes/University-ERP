@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 public sealed record CreatePaymentSessionResponse(string SessionId, string CheckoutUrl);
 
-public sealed record CreatePaymentSessionCommand(string InvoiceId, string ApplicantId, decimal Amount, string Purpose, string? IdempotencyKey = null) : IRequest<Result<CreatePaymentSessionResponse>>;
+public sealed record CreatePaymentSessionCommand(string InvoiceId, string ApplicantId, decimal Amount, string Purpose, string? IdempotencyKey = null, string? ReturnUrl = null) : IRequest<Result<CreatePaymentSessionResponse>>;
 
 public sealed class CreatePaymentSessionCommandHandler : IRequestHandler<CreatePaymentSessionCommand, Result<CreatePaymentSessionResponse>>
 {
@@ -26,7 +26,7 @@ public sealed class CreatePaymentSessionCommandHandler : IRequestHandler<CreateP
 
     public async Task<Result<CreatePaymentSessionResponse>> Handle(CreatePaymentSessionCommand request, CancellationToken cancellationToken)
     {
-        var sessionResult = PaymentSession.Create(request.InvoiceId, request.ApplicantId, request.Amount, request.Purpose);
+        var sessionResult = PaymentSession.Create(request.InvoiceId, request.ApplicantId, request.Amount, request.Purpose, request.ReturnUrl);
 
         if (sessionResult.IsFailure)
         {
@@ -35,14 +35,16 @@ public sealed class CreatePaymentSessionCommandHandler : IRequestHandler<CreateP
 
         var session = sessionResult.Value;
 
-        var successUrl = _options.Value.SuccessUrl;
-        var cancelUrl = _options.Value.CancelUrl;
+        var effectiveReturnUrl = !string.IsNullOrWhiteSpace(request.ReturnUrl) 
+            ? request.ReturnUrl 
+            : _options.Value.SuccessUrl;
 
         var checkoutResult = await _gatewayService.CreateCheckoutSessionAsync(
             session.SessionId, 
             session.Amount, 
             session.Currency, 
             request.IdempotencyKey,
+            effectiveReturnUrl,
             cancellationToken);
         
         if (checkoutResult.IsFailure)

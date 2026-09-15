@@ -68,15 +68,24 @@ public sealed class BankingIntegrationService : IPaymentGatewayService
         }
     }
     
-    public async Task<Result<string>> CreateCheckoutSessionAsync(string sessionId, decimal amount, string currency, string? idempotencyKey = null, CancellationToken cancellationToken = default)
+    public Task<Result<string>> CreateCheckoutSessionAsync(string sessionId, decimal amount, string currency, string? idempotencyKey = null, CancellationToken cancellationToken = default)
+    {
+        return CreateCheckoutSessionAsync(sessionId, amount, currency, idempotencyKey, null, cancellationToken);
+    }
+
+    public async Task<Result<string>> CreateCheckoutSessionAsync(string sessionId, decimal amount, string currency, string? idempotencyKey, string? returnUrl, CancellationToken cancellationToken)
     {
         try
         {
+            var effectiveSuccessUrl = !string.IsNullOrWhiteSpace(returnUrl)
+                ? returnUrl
+                : (!string.IsNullOrWhiteSpace(_options.SuccessUrl) ? _options.SuccessUrl : "https://erp.university.edu/finance/success");
+
             var payload = new
             {
                 reference = sessionId,
                 currency = currency ?? "PHP",
-                successUrl = !string.IsNullOrWhiteSpace(_options.SuccessUrl) ? _options.SuccessUrl : "https://erp.university.edu/finance/success",
+                successUrl = effectiveSuccessUrl,
                 cancelUrl = !string.IsNullOrWhiteSpace(_options.CancelUrl) ? _options.CancelUrl : "https://erp.university.edu/finance/cancel",
                 lineItems = new[]
                 {

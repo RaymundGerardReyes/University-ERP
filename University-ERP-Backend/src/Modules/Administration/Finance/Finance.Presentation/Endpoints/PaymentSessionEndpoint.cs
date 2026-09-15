@@ -46,7 +46,8 @@ public sealed class PaymentSessionEndpoint : ControllerBase
             request.ApplicantId,
             request.Amount,
             request.Purpose,
-            idempotencyKey);
+            idempotencyKey,
+            request.ReturnUrl);
 
         var result = await _sender.Send(command, cancellationToken);
         
@@ -130,5 +131,5 @@ public sealed class PaymentSessionEndpoint : ControllerBase
 }
 
 public sealed record ReconcilePaymentSessionRequest(string CashierId, string Remarks);
-public sealed record CreatePaymentSessionRequest(string InvoiceId, string ApplicantId, decimal Amount, string Purpose);
+public sealed record CreatePaymentSessionRequest(string InvoiceId, string ApplicantId, decimal Amount, string Purpose, string? ReturnUrl = null);
 

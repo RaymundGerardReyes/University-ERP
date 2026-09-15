@@ -103,6 +103,7 @@ public sealed class FinanceDbContext : DbContext
             entity.Property(e => e.CreatedAtUtc).IsRequired();
             entity.Property(e => e.ExpiresAtUtc).IsRequired();
             entity.Property(e => e.ConsumedAtUtc).IsRequired(false);
+            entity.Property(e => e.ReturnUrl).IsRequired(false);
         });
 
         base.OnModelCreating(modelBuilder);
