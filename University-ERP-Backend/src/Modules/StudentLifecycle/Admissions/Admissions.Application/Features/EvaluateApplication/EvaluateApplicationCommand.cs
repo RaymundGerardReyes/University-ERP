@@ -25,18 +25,25 @@ public sealed class EvaluateApplicationCommandHandler : IRequestHandler<Evaluate
         if (application == null)
             return Result<bool>.Failure(new Error("Admissions.NotFound", "Application not found."));
 
-        var mappedStatus = request.Decision switch
+        if (request.Decision == "Reject")
         {
-            "Accept" => "Accepted",
-            "Reject" => "Rejected",
-            _ => request.Decision
-        };
-        application.UpdateStatus(mappedStatus);
-        application.AddTimelineEvent($"Academic Evaluation: {mappedStatus}", request.Notes, "Completed", System.DateTime.UtcNow);
+            var rejectResult = application.Reject(request.Notes);
+            if (rejectResult.IsFailure) return rejectResult;
+        }
+        else if (request.Decision == "Waitlist")
+        {
+            var waitlistResult = application.Waitlist(request.Notes);
+            if (waitlistResult.IsFailure) return waitlistResult;
+        }
+        else
+        {
+            var acceptResult = application.Accept(request.Notes);
+            if (acceptResult.IsFailure) return acceptResult;
+        }
 
         await _repository.SaveChangesAsync(cancellationToken);
 
-        if (mappedStatus == "Accepted" && _publisher != null)
+        if (request.Decision == "Accept" && _publisher != null)
         {
             var integrationEvent = new Contracts.IntegrationEvents.StudentLifecycle.ApplicantAcceptedIntegrationEvent(
                 Guid.NewGuid(),

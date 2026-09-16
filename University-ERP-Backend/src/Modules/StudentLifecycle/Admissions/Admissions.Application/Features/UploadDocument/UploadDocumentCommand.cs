@@ -47,7 +47,7 @@ public sealed class UploadDocumentCommandHandler : IRequestHandler<UploadDocumen
         var verificationEvent = application.TimelineEvents.FirstOrDefault(t => t.Title == "Document Verification");
         verificationEvent?.Activate();
 
-        application.UpdateStatus("Under Review");
+        application.MarkUnderReview();
 
         await _repository.SaveChangesAsync(cancellationToken);
 

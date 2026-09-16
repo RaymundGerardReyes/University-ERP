@@ -35,7 +35,7 @@ public sealed class FacultyAdmissionsEndpoint : ControllerBase
         [FromBody] ApproveRequest payload, 
         CancellationToken cancellationToken)
     {
-        var command = new ApproveApplicationCommand(id, payload.Action);
+        var command = new ApproveApplicationCommand(id, payload.Action, payload.Notes);
         var result = await _sender.Send(command, cancellationToken);
         
         return result.IsSuccess 
@@ -44,4 +44,4 @@ public sealed class FacultyAdmissionsEndpoint : ControllerBase
     }
 }
 
-public sealed record ApproveRequest(string Action);
+public sealed record ApproveRequest(string Action, string? Notes = null);

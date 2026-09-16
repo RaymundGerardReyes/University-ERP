@@ -10,4 +10,9 @@
     <ProjectReference Include="..\..\..\..\SharedKernel\SharedKernel.Domain\SharedKernel.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Admissions.Tests" />
+    <InternalsVisibleTo Include="UniversityErp.EndToEndTests" />
+  </ItemGroup>
+
 </Project>

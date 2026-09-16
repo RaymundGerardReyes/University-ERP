@@ -140,7 +140,50 @@ public sealed class AdmissionApplication : AggregateRoot<string>
         return Result<bool>.Success(true);
     }
 
-    public void UpdateStatus(string newStatus)
+    public Result<bool> MarkUnderReview()
+    {
+        if (Status == "Enrolled" || Status == "Rejected")
+            return Result<bool>.Failure(new Error("Admissions.InvalidState", "Cannot place an enrolled or rejected application under review."));
+
+        Status = "Under Review";
+        return Result<bool>.Success(true);
+    }
+
+    public Result<bool> Accept(string remarks)
+    {
+        if (Status != "UnderAcademicEvaluation" && Status != "InterviewPending" && Status != "InterviewScheduled" && Status != "Submitted")
+            return Result<bool>.Failure(new Error("Admissions.InvalidState", "Application is not in an eligible state for acceptance."));
+
+        Status = "Accepted";
+        FacultyRemarks = remarks;
+        AddTimelineEvent("Academic Evaluation: Accepted", remarks, "Completed", DateTime.UtcNow);
+        return Result<bool>.Success(true);
+    }
+
+    public Result<bool> Reject(string remarks)
+    {
+        if (Status == "Enrolled")
+            return Result<bool>.Failure(new Error("Admissions.InvalidState", "Cannot reject an already enrolled applicant."));
+
+        Status = "Rejected";
+        FacultyRemarks = remarks;
+        AddTimelineEvent("Application Rejected", remarks, "Completed", DateTime.UtcNow);
+        return Result<bool>.Success(true);
+    }
+
+    public Result<bool> Waitlist(string reason)
+    {
+        if (Status == "Enrolled" || Status == "Rejected")
+            return Result<bool>.Failure(new Error("Admissions.InvalidState", "Cannot waitlist an enrolled or rejected applicant."));
+
+        Status = "Waitlist";
+        FacultyRemarks = reason;
+        AddTimelineEvent("Application Waitlisted", reason, "Completed", DateTime.UtcNow);
+        return Result<bool>.Success(true);
+    }
+
+    [Obsolete("Use explicit domain methods. Retained internally for test fixture setup only.")]
+    internal void UpdateStatus(string newStatus)
     {
         Status = newStatus;
     }
