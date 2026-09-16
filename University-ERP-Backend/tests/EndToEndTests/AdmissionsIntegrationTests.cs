@@ -443,7 +443,7 @@ namespace UniversityErp.Tests.Integration.Admissions
 
         // --- Scenarios 35-40: Miscellaneous Features & Approvals ---
         [Fact]
-        public async Task S35_ApproveApplication_VerifyAction_UpdatesToVerified()
+        public async Task S35_ApproveApplication_VerifyAction_UpdatesToInterviewPending()
         {
             var app = new AdmissionApplication(Guid.NewGuid().ToString(), "APP-800", "BSCS");
             _appRepo.Add(app);
@@ -453,7 +453,7 @@ namespace UniversityErp.Tests.Integration.Admissions
             var result = await handler.Handle(new ApproveApplicationCommand(app.Id, "Verify"), CancellationToken.None);
 
             Assert.True(result.IsSuccess);
-            Assert.Equal("Verified", app.Status);
+            Assert.Equal("InterviewPending", app.Status);
         }
 
         [Fact]

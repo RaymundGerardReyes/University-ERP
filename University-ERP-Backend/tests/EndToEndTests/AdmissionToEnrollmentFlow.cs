@@ -211,6 +211,40 @@ public class AdmissionToEnrollmentFlow
         profile.Should().NotBeNull();
         profile.Id.Should().Be(generatedStudentId);
     }
+
+    [Fact]
+    public async Task Regression_BypassingSteps_FailsInEndToEndWorkflow()
+    {
+        // Setup isolated in-memory DB
+        var dbId = Guid.NewGuid().ToString();
+        var admissionsOptions = new DbContextOptionsBuilder<AdmissionsDbContext>()
+            .UseInMemoryDatabase($"Admissions_Reg_{dbId}")
+            .Options;
+        var admissionsDb = new AdmissionsDbContext(admissionsOptions);
+        var appRepo = new AdmissionApplicationRepository(admissionsDb);
+
+        var publishedEvents = new List<object>();
+        var testPublisher = new TestPublisher(publishedEvents, (evt, ct) => Task.CompletedTask);
+
+        // 1. Submit application
+        var submitHandler = new SubmitApplicationCommandHandler(appRepo);
+        var appId = await submitHandler.Handle(new SubmitApplicationCommand(
+            "APP-REG-BYPASS-01", "BSCS", "Alice", "Tester", "2000-01-01", "Filipino"), CancellationToken.None);
+
+        // 2. Attempt direct ActivateEnrollmentCommand without DocumentVerification or Dean Endorsement
+        var activateHandler = new ActivateEnrollmentCommandHandler(appRepo, testPublisher);
+        var result = await activateHandler.Handle(new ActivateEnrollmentCommand(appId), CancellationToken.None);
+
+        // Invariant: Must fail with Admissions.InvalidState
+        result.IsFailure.Should().BeTrue();
+        result.Error.Code.Should().Be("Admissions.InvalidState");
+
+        // Verify state remains Submitted and zero downstream events were emitted
+        var app = await appRepo.GetByIdAsync(appId);
+        app!.Status.Should().Be("Submitted");
+        app.OfficialStudentId.Should().BeEmpty();
+        publishedEvents.Should().BeEmpty("no integration or domain events may be published on failed workflow bypass");
+    }
 }
 
 // ─── Test Helper Publisher & Sender ──────────────────────────────────────────
