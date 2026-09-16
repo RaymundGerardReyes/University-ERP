@@ -2,7 +2,7 @@
 trigger: glob
 glob: "University-ERP-Backend/**"
 description: >-
-  Rules for .NET 9 Clean Architecture, DDD, CQRS with MediatR, and Entity Framework Core domain modeling across the 22 backend bounded contexts.
+  Rules for .NET 10 Clean Architecture, DDD, CQRS with MediatR, and Entity Framework Core domain modeling across the 22 backend bounded contexts.
 ---
 
 # Backend Clean Architecture & Domain-Driven Design (DDD) Rules
@@ -34,7 +34,7 @@ src/Modules/<Domain>/<Module>/
 │   ├── Repositories/           # Repository implementations
 │   └── ModuleRegistration.cs   # DI container service registration extension method
 ├── <Module>.Presentation/      # HTTP interface
-│   └── Endpoints/              # ASP.NET Core 9 Minimal API endpoint mappings
+│   └── Endpoints/              # ASP.NET Core 10 Minimal API endpoint mappings
 └── <Module>.Tests/             # 4-Tier Test Suite
     ├── Unit/                   # Fast isolated tests (Application & Domain)
     ├── Integration/            # Real DbContext & Endpoint pipeline tests
@@ -101,3 +101,30 @@ src/Modules/<Domain>/<Module>/
 - Each module has its own dedicated `DbContext` and migration history.
 - Never inject another module's `DbContext`.
 - Database schema changes are executed centrally by `UniversityErp.Migrator` via `PerModuleMigrationRunner.cs`.
+
+---
+
+## 6. Payment Session & Gateway Integration Invariants
+
+1. **Dynamic Return URL Propagation**:
+   - `CreatePaymentSessionCommand` and `CreatePaymentSessionRequest` must accept an optional `ReturnUrl`.
+   - The `PaymentSession` aggregate root must store `ReturnUrl` to maintain an audit trail of the client redirection target.
+   - `IPaymentGatewayService.CreateCheckoutSessionAsync` must pass the client-provided `ReturnUrl` to the payment provider (falling back to configured `SuccessUrl` only if not specified).
+
+2. **Session Validation Status Exposure**:
+   - `ValidatePaymentSessionQuery` must include the current `Status` string in `PaymentSessionDto`.
+   - The validation query handler must NOT reject completed or paid sessions with a 404 error; it must return the session DTO with its `Status` so the frontend redirect callback can verify completion after asynchronous webhook processing.
+
+---
+
+## 7. Solution Target Framework & Multi-Runtime Parity Invariants
+
+1. **Monolith-Wide .NET 10 (`net10.0`) Parity**:
+   - All backend bounded context source projects (`Domain`, `Application`, `Infrastructure`, `Presentation`, `Contracts`, `Bootstrap`) and test projects (`*.Tests.csproj`) must target `.NET 10` (`net10.0`).
+   - Never mix `net9.0` with `net10.0` across module layers or test runners, and avoid duplicate `<TargetFramework>` entries in project property groups.
+   - Run solution-wide compilation checks using `dotnet build UniversityErp.slnx` to guarantee clean dependencies across all 22 bounded contexts.
+
+2. **Test Scaffolding & Code Generation Invariants**:
+   - All scripts and tools that scaffold backend modules, test templates, or project files (e.g., `generate-test-templates-v2.sh`, `scaffold-backend-tests.sh`, and `backend-cqrs-scaffolder`) must generate `<TargetFramework>net10.0</TargetFramework>` and package references compatible with .NET 10.
+   - Never commit or leave outdated target frameworks in automation scripts.
+

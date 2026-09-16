@@ -38,7 +38,7 @@ The core philosophy of this system is **Strict Modular Isolation via DBMA**. Tra
 
 ## ⚙️ Backend Services (`University-ERP-Backend`)
 
-Built with **.NET 9**, **MediatR (CQRS)**, **Entity Framework Core**, and **PostgreSQL**. The backend is divided into 5 Core Clusters, containing 22 strict Bounded Contexts.
+Built with **.NET 10**, **MediatR (CQRS)**, **Entity Framework Core**, and **PostgreSQL**. The backend is divided into 5 Core Clusters, containing 22 strict Bounded Contexts.
 
 ### 1. Academic Cluster
 * **`AcademicScheduling`**: Allocates rooms, manages faculty courses, and generates student timetables. Resolves complex room conflicts.
@@ -114,7 +114,7 @@ A cross-platform desktop application designed specifically for students in low-c
 ## 🚀 Quick Start & Local Execution
 
 ### Prerequisites
-* **.NET 9 SDK**
+* **.NET 10 SDK**
 * **Node.js 20+** & **npm**
 * **PostgreSQL**
 

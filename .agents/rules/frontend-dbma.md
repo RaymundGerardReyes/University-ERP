@@ -33,7 +33,7 @@ The frontend contains 14 role-dedicated web portals in `apps/`:
 | `student-portal` | Enrolled University Students | Course registration, schedule/timetable, grades, tuition payment, student clearance |
 
 Plus the cross-platform desktop application:
-- `clients/lms-offline-avalonia`: Avalonia C# .NET 9 desktop application with encrypted SQLite storage for air-gapped LMS operation.
+- `clients/lms-offline-avalonia`: Avalonia C# .NET 10 desktop application with encrypted SQLite storage for air-gapped LMS operation.
 
 ---
 
@@ -172,3 +172,29 @@ export const [FeatureName]Page: React.FC = () => {
 - Cache invalidation MUST be explicitly handled in mutation `onSuccess` handlers.
 - Never duplicate server data into local `useState` unless it is an active, unsubmitted draft or edit buffer.
 - When rendering modals, forms, or drawers, pass data through props or read directly from the query cache.
+
+---
+
+## 5. Payment Gateway & Two-Way Reconciliation Invariants
+
+1. **Explicit Return URL Transmission**:
+   - Whenever an app creates an external payment gateway session (via `financeApi.createPaymentSession` or module-specific API clients), it **MUST** include an explicit `returnUrl` indicating where the payment gateway redirects the browser after checkout (e.g. `${window.location.origin}/payment-return?type=...`).
+   - Never rely on static server-side default redirect URLs for browser callbacks.
+
+2. **Dedicated Payment Return Route**:
+   - Any portal invoking online checkout must register a dedicated `/payment-return` route (e.g., `PaymentReturn.page.tsx`).
+   - The return page must:
+     - Extract `sessionId` from query params (`?sessionId=...` or `?paymentSessionId=...`).
+     - Query `financePaymentSessionApi.validateSession(sessionId)` to verify final ledger status.
+     - Invalidate relevant query keys (`['finance']`, `['admissions']`, `['academic']`) upon verification.
+     - Display clear contextual messaging and routing based on the transaction type (`enrollment` vs `application-fee`).
+
+3. **Status Normalization**:
+   - External gateways and backend ledger processors return varied casing and synonyms for completed transactions (`'PAID'`, `'COMPLETED'`, `'SETTLED'`, `'VERIFIED'`, `'PAYMENT_VERIFIED'`).
+   - Always normalize statuses case-insensitively using canonical lookup sets rather than strict single-string equality checks.
+
+4. **Applicant-to-Student Enrollment Transition**:
+   - When an applicant's status reaches `'Enrolled'` (via admissions evaluation or registrar handoff):
+     - The applicant view must display their assigned official **University ID / Student Number**.
+     - Provide a direct link or transition button to the **Student Portal** (`VITE_STUDENT_PORTAL_URL`).
+

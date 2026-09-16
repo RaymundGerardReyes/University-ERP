@@ -1,12 +1,12 @@
 ---
 name: backend-test-runner
 description: >-
-  Executes, filters, and debugs .NET 9 unit, integration, architecture, and regression tests across the 22 modular monolith backend modules in University-ERP-Backend.
+  Executes, filters, and debugs .NET 10 unit, integration, architecture, and regression tests across the 22 modular monolith backend modules in University-ERP-Backend.
 ---
 
 # Backend Test Runner Skill
 
-This skill provides precise commands and procedures for running .NET 9 tests across the 5 domain clusters, 22 bounded contexts, and centralized architecture suites in `University-ERP-Backend`.
+This skill provides precise commands and procedures for running .NET 10 tests across the 5 domain clusters, 22 bounded contexts, and centralized architecture suites in `University-ERP-Backend`.
 
 ---
 

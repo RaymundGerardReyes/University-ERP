@@ -10,7 +10,7 @@ The repository is divided into two primary sub-systems and shared orchestration 
 
 ```
 University-ERP/
-├── University-ERP-Backend/        # .NET 9 Modular Monolith (C#, Clean Architecture, DDD)
+├── University-ERP-Backend/        # .NET 10 Modular Monolith (C#, Clean Architecture, DDD)
 │   ├── src/
 │   │   ├── Bootstrap/             # Host API (UniversityErp.Api) & Migrator
 │   │   ├── Modules/               # Isolated domain modules (Academic, Administration, etc.)
@@ -121,7 +121,7 @@ Each module under `University-ERP-Backend/src/Modules/<Domain>/<Module>/` follow
 ### Registered Skills (`.agents/skills/`)
 - `frontend-unit-tester`: Executes, filters, and diagnoses Vitest tests across all 14 portals and 9 shared libraries with automated error resolution.
 - `portal-feature-scaffolder`: Scaffolds full DBMA vertical slices (`.page.tsx`, `.api.ts`, `.hooks.ts`, `.types.ts`) and companion unit tests.
-- `backend-test-runner`: Runs and filters .NET 9 tests across all 22 module test suites, architecture tests, and multi-module E2E flows.
+- `backend-test-runner`: Runs and filters .NET 10 tests across all 22 module test suites, architecture tests, and multi-module E2E flows.
 - `backend-cqrs-scaffolder`: Generates CQRS Command/Query, Handler, FluentValidator, Minimal API endpoint, and unit tests for any module.
 - `cross-module-event-tracer`: Catalogs, traces, and scaffolds cross-module asynchronous integration events between domains via Outbox.
 - `port-and-env-manager`: Audits and validates port allocations against `PORT_REGISTRY.md`, runs port collision checks, and configures dev environments.

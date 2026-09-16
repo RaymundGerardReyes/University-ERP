@@ -213,14 +213,16 @@ process_module "academic" "backend-academic" "feat" \
 # CATEGORY A: BACKEND / ADMINISTRATION DOMAIN
 # Runtime Scope: University-ERP-Backend/src/Modules/Administration/
 # ==============================================================================
-process_module "administration" "backend-administration" "fix" \
-  "harden payment reconciliation and gateway URLs" \
-  "- resolve hardcoded success and cancel URLs in BankingIntegrationService to use options
-- add CheckoutBaseUrl option and add MarkFailed and Cancel states to PaymentSession
-- update ProcessBankingCallbackCommandHandler to record payments on student billing invoices
-- route payment gateway webhooks directly to banking callback command handler
-- update CashierQueueEndpoint to update student billing and emit PaymentVerifiedIntegrationEvent
-- add 27-branch Basis Path test suite covering all BankingIntegrationService HTTP paths" \
+process_module "administration" "backend-administration" "feat" \
+  "support dynamic returnUrl and expose session status in payment validation" \
+  "- add ReturnUrl property and constructor parameter to PaymentSession aggregate
+- configure ReturnUrl EF Core mapping in FinanceDbContext
+- extend CreatePaymentSessionCommand and CreatePaymentSessionRequest with optional ReturnUrl
+- add 6-parameter CreateCheckoutSessionAsync overload in IPaymentGatewayService
+- inject dynamic returnUrl into external gateway payload and sandbox redirect URLs
+- forward returnUrl through BankingIntegrationService checkout session payload
+- include Status in PaymentSessionDto and permit validation of Paid and Completed sessions
+- add unit test coverage for returnUrl persistence and session status reporting" \
   "Refs: Category A - Backend / Administration Domain (universal-semantic-versioning-prompt.md)" \
   "University-ERP-Backend/src/Modules/Administration"
 
@@ -276,11 +278,9 @@ process_module "backend-tests" "backend-tests" "test" \
 # Runtime Scope: University-ERP-Frontend/libs/api-clients/
 # ==============================================================================
 process_module "api-clients" "api-clients" "feat" \
-  "standardize apiClient instance and expand curriculum and cashier APIs" \
-  "- migrate all API client methods to centralized apiClient Axios instance with auth
-- add registrarCurriculumApi methods for program offerings and subject catalog
-- add financeBillingApi methods for OTC cash tokens and fee checkout
-- expand admissionsApi with scheduleInterview and journey applicationId mapping" \
+  "add optional returnUrl to CreatePaymentSessionRequest in financeApi" \
+  "- extend CreatePaymentSessionRequest with optional returnUrl parameter
+- support dynamic post-checkout redirection callback URLs for external gateways" \
   "Refs: Category B - Shared Libraries (universal-semantic-versioning-prompt.md)" \
   "University-ERP-Frontend/libs/api-clients"
 
@@ -288,11 +288,14 @@ process_module "api-clients" "api-clients" "feat" \
 # CATEGORY B: APPLICANT PORTAL
 # Runtime Scope: University-ERP-Frontend/apps/applicant-portal/
 # ==============================================================================
-process_module "applicant-portal" "applicant-portal" "fix" \
-  "resolve payment gateway redirects with fallback" \
-  "- implement resolveCheckoutRedirectUrl to safely handle absolute banking gateway URLs
-- support VITE_PAYMENT_GATEWAY_URL fallback resolution for relative checkout session endpoints
-- update ApplicationFeePayment and EnrollmentPayment pages with redirect validation" \
+process_module "applicant-portal" "applicant-portal" "feat" \
+  "implement payment return reconciliation and student portal handoff" \
+  "- implement PaymentReturn.page.tsx route handler with dynamic session verification
+- register /payment-return route in Routing.tsx
+- pass origin-aware returnUrl to payment gateway for downpayment and application fee
+- normalize payment and invoice statuses across PAID, COMPLETED, SETTLED, and VERIFIED
+- update usePaymentStatus hook to poll on PENDING, PAYMENT_PENDING, and PROCESSING
+- display official University Student ID and Student Portal navigation button upon enrollment" \
   "Refs: Category B - Web Frontend (applicant-portal)" \
   "University-ERP-Frontend/apps/applicant-portal"
 
@@ -374,10 +377,10 @@ process_module "frontend-infra" "frontend-infra" "build" \
 # Runtime Scope: University-ERP-Frontend/tests/
 # ==============================================================================
 process_module "frontend-tests" "frontend-tests" "test" \
-  "stabilize 17 unit test suites across applicant, finance, and registrar" \
-  "- add and stabilize unit test suites for ClearanceApproval, Scholarships, and SOA
-- stabilize Cashier, FinancialReports, Payroll, and CurriculumDivision test suites
-- update applicant-portal test suites with apiClient and payment flow mocks" \
+  "add unit test coverage for PaymentReturn feature in applicant-portal" \
+  "- add PaymentReturn.unit.test.tsx testing verification, cancellation, and pending states
+- mock auth-sdk and api-clients for isolated component test execution
+- verify query cache invalidation on successful payment return" \
   "Refs: Category B - Web Frontend Unit Testing (unit-testing.md)" \
   "University-ERP-Frontend/tests"
 
