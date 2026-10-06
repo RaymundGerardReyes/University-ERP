@@ -1,7 +1,7 @@
-import axios from 'axios';
+import { apiClient } from '@university-erp/api-clients';
 import { WorkflowDto } from './WorkflowManagement.types';
 
 export const fetchActiveWorkflows = async (): Promise<WorkflowDto[]> => {
-    const response = await axios.get('/api/v1/governance/workflows/active');
+    const response = await apiClient.get<WorkflowDto[]>('/governance/workflows/active');
     return response.data;
 };

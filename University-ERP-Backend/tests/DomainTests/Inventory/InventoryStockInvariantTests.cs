@@ -1,4 +1,4 @@
-namespace DomainTests.Inventory;
+namespace UniversityErp.Tests.Domain;
 
 using Xunit;
 using Inventory.Domain.Aggregates;

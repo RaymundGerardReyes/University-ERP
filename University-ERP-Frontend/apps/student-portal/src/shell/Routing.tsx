@@ -24,6 +24,13 @@ import { EnrollmentHistoryPage } from '../features/EnrollmentHistory/EnrollmentH
 import { GraduationPage } from '../features/Graduation/Graduation.page';
 import { SchedulePage } from '../features/Schedule/Schedule.page';
 import { FinancialsPage } from '../features/Financials/Financials.page';
+import { DashboardPage } from '../features/Dashboard/Dashboard.page';
+import { ClearancePage } from '../features/Clearance/Clearance.page';
+import { EnrollmentPage } from '../features/Enrollment/Enrollment.page';
+import { MyEnrollmentsPage } from '../features/MyEnrollments/MyEnrollments.page';
+import { TimetablePage } from '../features/Timetable/Timetable.page';
+import { LearningManagementPage } from '../features/LearningManagement/LearningManagement.page';
+import { ExtracurricularsPage } from '../features/Extracurriculars/Extracurriculars.page';
 
 const logger = createLogger('student-portal', 'Routing');
 
@@ -37,8 +44,10 @@ export const Routing: React.FC = () => {
 
         {/* PROTECTED ROUTES */}
         <Route element={<AuthGuard><AppShell /></AuthGuard>}>
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/profile" element={<StudentProfilePage />} />
           <Route path="/records" element={<AcademicRecordPage />} />
+          <Route path="/clearance" element={<ClearancePage />} />
           <Route path="/hostel" element={<HostelAllocationPage />} />
           <Route path="/health" element={<HealthRecordsPage />} />
           <Route path="/guidance" element={<GuidanceSessionsPage />} />
@@ -47,6 +56,11 @@ export const Routing: React.FC = () => {
 
           {/* New Self-Service Routes */}
           <Route path="/registration" element={<RegistrationPage />} />
+          <Route path="/enrollment" element={<EnrollmentPage />} />
+          <Route path="/my-enrollments" element={<MyEnrollmentsPage />} />
+          <Route path="/timetable" element={<TimetablePage />} />
+          <Route path="/lms" element={<LearningManagementPage />} />
+          <Route path="/extracurriculars" element={<ExtracurricularsPage />} />
           <Route path="/cross-enrollment" element={<CrossEnrollmentPage />} />
           <Route path="/curriculum-progress" element={<CurriculumProgressPage />} />
           <Route path="/enrollment-history" element={<EnrollmentHistoryPage />} />
@@ -55,7 +69,7 @@ export const Routing: React.FC = () => {
           <Route path="/financials" element={<FinancialsPage />} />
 
           {/* Default Route */}
-          <Route path="/" element={<Navigate to="/profile" replace />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Route>
 
       </Routes>

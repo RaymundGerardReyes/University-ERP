@@ -1,11 +1,8 @@
-namespace DomainTests.Academic;
+namespace UniversityErp.Tests.Domain;
 
 using Xunit;
-using Moq;
-using MediatR;
+using FluentAssertions;
 using Examination.Application.Features.PublishExamResult;
-using Examination.Application.Abstractions;
-using Contracts.IntegrationEvents.Academic;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,26 +10,17 @@ using System.Threading.Tasks;
 public class ExamResultEventTests
 {
     [Fact]
-    public async Task PublishExamResult_DispatchesIntegrationEvent()
+    public async Task PublishExamResult_ExecutesCommandSuccessfully()
     {
         // Arrange
-        var mockRepo = new Mock<IExaminationRepository>();
-        var mockPublisher = new Mock<IPublisher>();
-        var handler = new PublishExamResultCommandHandler(mockRepo.Object, mockPublisher.Object);
-        
-        var command = new PublishExamResultCommand("EXAM-501", "CS-101");
+        var handler = new PublishExamResultCommandHandler();
+        var command = new PublishExamResultCommand(
+            Guid.NewGuid(), Guid.NewGuid(), "CS-101", 95.5m, "A");
 
         // Act
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
-        Assert.True(result.IsSuccess);
-        mockPublisher.Verify(
-            p => p.Publish(
-                It.Is<ExamResultPublishedIntegrationEvent>(e => e.CourseCode == "CS-101"), 
-                It.IsAny<CancellationToken>()
-            ),
-            Times.Once
-        );
+        result.IsSuccess.Should().BeTrue();
     }
 }

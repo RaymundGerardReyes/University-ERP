@@ -46,7 +46,6 @@ describe('ApplicationTimeline Integration', () => {
 
   it('renders timeline page header and structure correctly', async () => {
     renderComponent();
-    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
     });

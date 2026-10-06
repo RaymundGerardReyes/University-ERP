@@ -44,6 +44,11 @@ dotnet test UniversityErp.slnx
 dotnet test University-ERP-Backend/tests/ArchitectureTests/UniversityErp.ArchitectureTests.csproj
 ```
 
+### Run Domain Invariant Tests (Core Aggregate Business Rules)
+```powershell
+dotnet test University-ERP-Backend/tests/DomainTests/UniversityErp.DomainTests.csproj
+```
+
 ### Run Multi-Module End-to-End Tests
 ```powershell
 dotnet test University-ERP-Backend/tests/EndToEndTests/UniversityErp.EndToEndTests.csproj

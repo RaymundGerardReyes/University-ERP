@@ -1,4 +1,4 @@
-namespace DomainTests.EventManagement;
+namespace UniversityErp.Tests.Domain;
 
 using Xunit;
 using EventManagement.Domain.Aggregates;

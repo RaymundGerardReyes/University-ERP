@@ -42,6 +42,7 @@ import { CHEDCompliancePage } from '../features/AcademicComplianceDivision/CHEDC
 import { ResidencyRulesPage } from '../features/AcademicComplianceDivision/ResidencyRules.page';
 import { RecordAccessAuditPage } from '../features/RegistrarSecurity/RecordAccessAudit.page';
 import { SensitiveVaultPage } from '../features/RegistrarSecurity/SensitiveVault.page';
+import { PendingClearancesView } from '../features/ClearanceProcessing/PendingClearancesView';
 
 const Stub = ({ title }: { title: string }) => (
     <div className="stub-page fade-in">
@@ -103,6 +104,7 @@ export const Routing: React.FC = () => {
                     <Route element={<RegistrarGuard allowedRoles={['ROLE_GRADUATION_OFFICER']} />}>
                         <Route path="/graduation" element={<GraduationCandidatesPage />} />
                         <Route path="/graduation/honors" element={<LatinHonorsPage />} />
+                        <Route path="/graduation/clearances" element={<PendingClearancesView />} />
                     </Route>
 
                     {/* 7. Certification Division */}

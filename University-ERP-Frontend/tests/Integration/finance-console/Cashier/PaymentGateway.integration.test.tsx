@@ -4,13 +4,16 @@ import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { PaymentGatewayPage } from '../../../../apps/finance-console/src/features/Cashier/PaymentGateway.page';
-import { financeBillingApi } from '@university-erp/api-clients';
+import { paymentGatewayApi } from '../../../../apps/finance-console/src/features/Cashier/Cashier.api';
 
-vi.mock('@university-erp/api-clients', () => ({
-    financeBillingApi: {
-        getPendingCashToken: vi.fn(),
-        completeCashTransaction: vi.fn(),
-        payApplicationFee: vi.fn(),
+vi.mock('../../../../apps/finance-console/src/features/Cashier/Cashier.api', () => ({
+    paymentGatewayApi: {
+        getQueue: vi.fn(),
+        processPayment: vi.fn(),
+    },
+    cashierTerminalApi: {
+        getQueue: vi.fn(),
+        processPayment: vi.fn(),
     }
 }));
 
@@ -18,39 +21,55 @@ describe('Finance Console - Cashier Payment Gateway Integration', () => {
     let queryClient: QueryClient;
 
     beforeEach(() => {
-        queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+        queryClient = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
         vi.clearAllMocks();
         window.alert = vi.fn();
     });
 
     it('IT-FIN-005 & IT-FIN-006: Should search token, display details, and settle transaction safely', async () => {
         const user = userEvent.setup();
-        const mockTransaction = { transactionToken: 'TXN-CSH-123', referenceId: 'APP-101', amount: 50.00, status: 'Pending' };
+        const mockTransaction = { 
+            transactionToken: 'TXN-CSH-123', 
+            referenceId: 'APP-101', 
+            payerName: 'Alice Smith',
+            amount: 50.00, 
+            status: 'PENDING' as const,
+            purpose: 'Tuition Fee'
+        };
         
-        (financeBillingApi.getPendingCashToken as any).mockResolvedValue(mockTransaction);
-        (financeBillingApi.completeCashTransaction as any).mockResolvedValue(true);
-        (financeBillingApi.payApplicationFee as any).mockResolvedValue(true);
+        vi.mocked(paymentGatewayApi.getQueue).mockResolvedValue([mockTransaction]);
+        vi.mocked(paymentGatewayApi.processPayment).mockResolvedValue(undefined);
 
         render(<QueryClientProvider client={queryClient}><PaymentGatewayPage /></QueryClientProvider>);
 
-        // 1. Search for token
-        await user.type(screen.getByPlaceholderText(/Enter Transaction Token/i), 'TXN-CSH-123');
-        await user.click(screen.getByRole('button', { name: /Lookup Token/i }));
-
-        // 2. Verify details render
+        // 1. Verify queue loaded
         await waitFor(() => {
-            expect(financeBillingApi.getPendingCashToken).toHaveBeenCalledWith('TXN-CSH-123');
-            expect(screen.getByText('APP-101')).toBeDefined();
-            expect(screen.getByText('$50.00')).toBeDefined();
+            expect(screen.getByText('TXN-CSH-123')).toBeInTheDocument();
+            expect(screen.getByText('Alice Smith')).toBeInTheDocument();
+            expect(screen.getByText('$50.00')).toBeInTheDocument();
         });
 
-        // 3. Confirm Cash Received
-        await user.click(screen.getByRole('button', { name: /Confirm Cash Received/i }));
+        // 2. Select transaction to inspect details
+        const processButton = screen.getByRole('button', { name: /Process/i });
+        await user.click(processButton);
 
-        // 4. Verify Settlement and UI Reset
+        // 3. Verify details render in right panel
         await waitFor(() => {
-            expect(financeBillingApi.completeCashTransaction).toHaveBeenCalledWith('TXN-CSH-123');
-            expect(screen.queryByText('APP-101')).toBeNull(); // Token cleared on success
+            expect(screen.getAllByText('APP-101').length).toBeGreaterThan(0);
+            expect(screen.getByText('TOTAL DUE')).toBeInTheDocument();
+        });
+
+        // 4. Confirm Cash Received
+        const confirmButton = screen.getByRole('button', { name: /Confirm Cash Received/i });
+        await user.click(confirmButton);
+
+        // 5. Verify Mutation dispatch
+        await waitFor(() => {
+            expect(paymentGatewayApi.processPayment).toHaveBeenCalledWith({
+                transactionToken: 'TXN-CSH-123',
+                referenceId: 'APP-101',
+                amount: 50.00
+            });
         });
     });
 });

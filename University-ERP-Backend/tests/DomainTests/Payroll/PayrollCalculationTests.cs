@@ -1,4 +1,4 @@
-namespace DomainTests.Payroll;
+namespace UniversityErp.Tests.Domain;
 
 using Xunit;
 using Payroll.Domain.Aggregates;

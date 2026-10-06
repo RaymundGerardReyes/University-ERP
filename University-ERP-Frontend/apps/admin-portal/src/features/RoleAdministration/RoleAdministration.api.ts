@@ -1,7 +1,7 @@
-import axios from 'axios';
+import { apiClient } from '@university-erp/api-clients';
 
 // The IdentityAccess bounded context handles role administration
-const BASE_URL = '/api/v1/platform/identity/roles';
+const BASE_URL = '/platform/identity/roles';
 
 export interface SecurityRole {
     id: string;
@@ -22,7 +22,7 @@ export const fetchSystemRoles = async () => {
 export const roleApi = {
     getRoles: async (): Promise<SecurityRole[]> => {
         try {
-            const response = await axios.get<SecurityRole[]>(BASE_URL);
+            const response = await apiClient.get<SecurityRole[]>(BASE_URL);
             return response.data;
         } catch (error) {
             // Throw error to TanStack React Query boundary

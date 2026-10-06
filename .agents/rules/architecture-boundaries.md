@@ -106,3 +106,17 @@ The frontend comprises 14 role-dedicated web portals (`apps/`) and 1 offline des
   - Workflows: `@university-erp/workflow-sdk`
 - Never duplicate shared components across different `apps/*` directories.
 
+---
+
+## 4. Architecture Tests & Repository Path Traversal Invariants
+
+### Rule 7: Unique Repo Root Anchor
+When authoring architectural or reflection-based tests in C# that inspect `.csproj` files or file trees:
+- Traversal MUST look exclusively for root-unique solution markers (`UniversityErp.slnx`).
+- Never anchor upward traversal on files that exist in multiple directories (e.g. `GEMINI.md` exists in both repo root and backend root, which causes erroneous path doubling).
+- Traversal MUST check `AppContext.BaseDirectory` before `Directory.GetCurrentDirectory()` to handle execution from test runner bin folders.
+
+### Rule 8: Active Bounded Context Scoping
+Convention tests verifying modular monolith assemblies (e.g., verifying `ModuleRegistration.cs` existence) must verify that an active project file exists (`File.Exists(Path.Combine(appDir, $"{moduleName}.Application.csproj"))`) before asserting convention presence. This prevents false failures on uncompiled directories or dormant domain scaffolds.
+
+

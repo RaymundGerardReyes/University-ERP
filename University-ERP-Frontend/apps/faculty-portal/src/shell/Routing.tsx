@@ -17,6 +17,7 @@ import { SettingsPage } from '../features/Settings/Settings.page';
 import { StudentsPage } from '../features/Students/Students.page';
 import { TeachingPage } from '../features/Teaching/Teaching.page';
 import { SectionRosterPage } from '../features/Teaching/SectionRoster.page';
+import { LMSManagerPage } from '../features/LMSManager/LMSManager.page';
 
 // --- Role Workspace Features ---
 import { AdmissionQueuePage } from '../features/SecretaryWorkspace/AdmissionQueue.page';
@@ -53,6 +54,8 @@ export const Routing: React.FC = () => {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/teaching" element={<TeachingPage />} />
           <Route path="/teaching/roster/:sectionId" element={<SectionRosterPage />} />
+          <Route path="/teaching/lms/:sectionId" element={<LMSManagerPage />} />
+          <Route path="/lms/:sectionId" element={<LMSManagerPage />} />
           <Route path="/students" element={<StudentsPage />} />
           <Route path="/assessments" element={<AssessmentsPage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />

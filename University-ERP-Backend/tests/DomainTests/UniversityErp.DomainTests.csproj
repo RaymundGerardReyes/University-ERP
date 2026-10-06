@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit" Version="2.9.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageReference Include="FluentAssertions" Version="6.12.0" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SharedKernel\SharedKernel.Domain\SharedKernel.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Contracts\UniversityErp.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Academic\Registrar\Registrar.Domain\Registrar.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Academic\Registrar\Registrar.Application\Registrar.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Academic\AcademicScheduling\AcademicScheduling.Domain\AcademicScheduling.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Academic\AcademicScheduling\AcademicScheduling.Application\AcademicScheduling.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Academic\Examination\Examination.Domain\Examination.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Academic\Examination\Examination.Application\Examination.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Academic\StudentInformation\StudentInformation.Domain\StudentInformation.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Academic\StudentInformation\StudentInformation.Application\StudentInformation.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Administration\Finance\Finance.Domain\Finance.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Administration\Finance\Finance.Application\Finance.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Administration\Inventory\Inventory.Domain\Inventory.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Administration\Inventory\Inventory.Application\Inventory.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Administration\Payroll\Payroll.Domain\Payroll.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Administration\Payroll\Payroll.Application\Payroll.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Governance\EventManagement\EventManagement.Domain\EventManagement.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Governance\EventManagement\EventManagement.Application\EventManagement.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Governance\GrievanceManagement\GrievanceManagement.Domain\GrievanceManagement.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Governance\GrievanceManagement\GrievanceManagement.Application\GrievanceManagement.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Platform\IdentityAccess\IdentityAccess.Domain\IdentityAccess.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Platform\IdentityAccess\IdentityAccess.Application\IdentityAccess.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\StudentLifecycle\Hostel\Hostel.Domain\Hostel.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\StudentLifecycle\Hostel\Hostel.Application\Hostel.Application.csproj" />
+  </ItemGroup>
+</Project>
+

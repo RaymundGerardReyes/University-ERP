@@ -27,6 +27,12 @@
     <ProjectReference Include="..\..\src\Modules\Academic\StudentInformation\StudentInformation.Application\StudentInformation.Application.csproj" />
     <ProjectReference Include="..\..\src\Modules\Academic\StudentInformation\StudentInformation.Domain\StudentInformation.Domain.csproj" />
     <ProjectReference Include="..\..\src\Modules\Academic\StudentInformation\StudentInformation.Infrastructure\StudentInformation.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Modules\StudentLifecycle\Hostel\Hostel.Application\Hostel.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\StudentLifecycle\Hostel\Hostel.Domain\Hostel.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Governance\GrievanceManagement\GrievanceManagement.Application\GrievanceManagement.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Governance\GrievanceManagement\GrievanceManagement.Domain\GrievanceManagement.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Administration\Facilities\Facilities.Application\Facilities.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Administration\Facilities\Facilities.Domain\Facilities.Domain.csproj" />
   </ItemGroup>
 </Project>
 

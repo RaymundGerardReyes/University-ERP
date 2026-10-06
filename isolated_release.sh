@@ -241,6 +241,12 @@ process_module "platform" "backend-platform" "fix" \
 # CATEGORY A: BACKEND / STUDENT LIFECYCLE DOMAIN
 # Runtime Scope: University-ERP-Backend/src/Modules/StudentLifecycle/
 # ==============================================================================
+process_module "student-lifecycle" "backend-studentlifecycle" "feat" \
+  "implement application fee payment endpoint and expand lifecycle states" \
+  "- implement POST /api/v1/admissions/applications/{id}/pay-fee endpoint
+- add PayApplicationFeeCommand with transaction logging and status progression
+- expand AdmissionApplication aggregate status transitions for review and interview states
+- implement PaymentVerifiedIntegrationEventConsumer for automated fee reconciliation" \
 process_module "student-lifecycle" "backend-studentlifecycle" "fix" \
   "harden admissions aggregate invariants and faculty approval routing" \
   "- deprecate public UpdateStatus backdoor and restrict to internal obsolete for test fixtures
@@ -268,6 +274,9 @@ process_module "bootstrap" "backend-bootstrap" "fix" \
 # Runtime Scope: University-ERP-Backend/tests/
 # ==============================================================================
 process_module "backend-tests" "backend-tests" "test" \
+  "implement multi-module admission-to-enrollment end-to-end tests" \
+  "- add 41 multi-module integration tests in UniversityErp.EndToEndTests
+- verify admissions qualification, payment verification, and registrar handoff sagas" \
   "align end-to-end integration flows with domain encapsulation rules" \
   "- update AdmissionToEnrollmentFlow to use explicit domain state transition methods
 - align AdmissionsIntegrationTests with aggregate encapsulation rules
@@ -379,6 +388,9 @@ process_module "frontend-infra" "frontend-infra" "build" \
 # Runtime Scope: University-ERP-Frontend/tests/
 # ==============================================================================
 process_module "frontend-tests" "frontend-tests" "test" \
+  "add unit test coverage for PaymentReturn feature in applicant-portal" \
+  "- add PaymentReturn.unit.test.tsx testing verification, cancellation, and pending states
+- mock auth-sdk and api-clients for isolated component test execution
   "update admin portal admissions processing and payment return unit tests" \
   "- update AdmissionsProcessing.unit.test.tsx with role-based auth mocking
 - verify workspace rendering across admissions processing queues
@@ -400,14 +412,19 @@ process_module "docker" "ops-docker" "build" \
 
 # ==============================================================================
 # CATEGORY D: ARCHITECTURE & MONOREPO DOCUMENTATION
+# Runtime Scope: university-ERPstructure.md, University-ERP-Frontend/university-ERPstructure.md
 # Runtime Scope: university-ERPstructure.md, University-ERP-Frontend/university-ERPstructure.md, .agents/rules/
 # ==============================================================================
 process_module "docs" "ops-docs" "docs" \
+  "update frontend structure and feature boundary catalog" \
+  "- document feature directories for finance-console and cashier DBMA slices
+- update component registry and structure documentation" \
   "document monorepo regression testing strategy and change impact analysis" \
   "- add canonical regression-testing-strategy.md rule establishing Change Impact Analysis protocol
 - codify cross-module workflow boundaries for Admissions, Finance, SIS, and Identity
 - document forbidden testing anti-patterns including hollow scaffold tests and InMemory DB false confidence" \
   "Refs: Category D - Documentation (universal-semantic-versioning-prompt.md)" \
+  "university-ERPstructure.md" "University-ERP-Frontend/university-ERPstructure.md"
   "university-ERPstructure.md" "University-ERP-Frontend/university-ERPstructure.md" ".agents/rules/regression-testing-strategy.md"
 
 # ==============================================================================

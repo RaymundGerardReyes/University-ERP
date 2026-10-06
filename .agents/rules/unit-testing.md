@@ -109,3 +109,33 @@ it.todo('should verify the applicant's submitted documents');
    `screen.getByRole('button', { name: /accept admission/i })`
 3. **Async Elements**:
    Use `await screen.findByRole(...)` or `waitFor()` when asserting on elements rendered after React Query resolves.
+
+---
+
+## 6. Asynchronous Skeleton Handling & Router Scope Invariants
+
+### 1. Skeleton Loaders Preclude Synchronous Assertions
+Components utilizing React Query hooks often render skeleton placeholders (`<div className="skeleton" />`) on initial mount.
+- ❌ **Anti-Pattern**: Placing synchronous assertions before `waitFor`:
+  ```tsx
+  renderComponent();
+  expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument(); // FAILS: DOM only contains skeleton
+  await waitFor(() => { ... });
+  ```
+- ✅ **Required Pattern**: Always place assertions on async elements inside `waitFor()`:
+  ```tsx
+  renderComponent();
+  await waitFor(() => {
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+  });
+  ```
+
+### 2. Ambiguity in Master-Detail & Table Workbenches
+Identifiers (e.g. `APP-101`, `TXN-CSH-123`) frequently render in both summary tables and detail inspector panels.
+- ❌ **Anti-Pattern**: `screen.getByText('APP-101')` throws `Found multiple elements with the text: APP-101`.
+- ✅ **Required Pattern**: Use `expect(screen.getAllByText('APP-101').length).toBeGreaterThan(0)` or scope queries via `within(panel).getByText('APP-101')`.
+
+### 3. Mandatory Router Wrapping for URL Param Hooks
+Any component consuming `useSearchParams()` or `useLocation()` will throw `useLocation() may be used only in the context of a <Router> component` if rendered without a router.
+- Always wrap test renders in `<MemoryRouter>` even for isolated page tests.
+

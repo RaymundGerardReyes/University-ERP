@@ -23,6 +23,7 @@ public static class AcademicModulesRegistration
     public static IServiceCollection AddAcademicModules(this IServiceCollection services, IConfiguration configuration)
     {
         // 1. Student Information
+        services.AddStudentInformationApplicationModule();
         services.AddStudentInformationModule(configuration);
 
         // 2. Academic Scheduling

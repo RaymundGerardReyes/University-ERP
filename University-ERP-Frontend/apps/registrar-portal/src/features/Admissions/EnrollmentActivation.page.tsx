@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AdmissionWorkflow } from '@university-erp/workflow-sdk';
 import { Button, Card, Table, Badge, Modal, FormInput, PageHeader, EmptyState } from '@university-erp/ui-kit';
 import { createLogger } from '@university-erp/core-logger';
-import axios from 'axios';
 import React, { useState } from 'react';
 import { useAdmissionsQueue } from '../AdmissionsDivision/Admissions.hooks';
 import { AdmissionsQueueItem } from '../AdmissionsDivision/Admissions.types';
@@ -28,7 +27,8 @@ export const EnrollmentActivationPage: React.FC = () => {
         },
         onError: (error: unknown) => {
             let msg = "Failed to activate enrollment. Verify backend connectivity.";
-            if (axios.isAxiosError(error)) msg = error.response?.data?.message || error.message;
+            const err = error as { response?: { data?: { message?: string } }; message?: string };
+            if (err?.response?.data?.message) msg = err.response.data.message;
             else if (error instanceof Error) msg = error.message;
             logger.error('Failed to activate enrollment', error);
             setActionError(msg);

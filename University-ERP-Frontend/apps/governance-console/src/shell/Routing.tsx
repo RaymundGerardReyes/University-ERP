@@ -5,6 +5,11 @@ import { HelpdeskPage } from '../features/Helpdesk/Helpdesk.page';
 import { EventsPage } from '../features/Events/Events.page';
 import { VisitorsPage } from '../features/Visitors/Visitors.page';
 import { QualityAccreditationPage } from '../features/QualityAccreditation/QualityAccreditation.page';
+import { AuditsPage } from '../features/Audits/Audits.page';
+import { CommitteesPage } from '../features/Committees/Committees.page';
+import { CompliancePage } from '../features/Compliance/Compliance.page';
+import { PoliciesPage } from '../features/Policies/Policies.page';
+import { RiskManagementPage } from '../features/RiskManagement/RiskManagement.page';
 
 const AppShell = ({ children }: { children: React.ReactNode }) => (
     <div className="flex h-screen bg-gray-50">
@@ -16,6 +21,11 @@ const AppShell = ({ children }: { children: React.ReactNode }) => (
                 <li><Link to="/events" className="block p-2 rounded hover:bg-slate-800 text-indigo-300">Events</Link></li>
                 <li><Link to="/visitors" className="block p-2 rounded hover:bg-slate-800 text-emerald-300">Visitors</Link></li>
                 <li><Link to="/accreditation" className="block p-2 rounded hover:bg-slate-800 text-purple-300">Quality QA</Link></li>
+                <li><Link to="/audits" className="block p-2 rounded hover:bg-slate-800 text-amber-300">Audits</Link></li>
+                <li><Link to="/committees" className="block p-2 rounded hover:bg-slate-800 text-cyan-300">Committees</Link></li>
+                <li><Link to="/compliance" className="block p-2 rounded hover:bg-slate-800 text-teal-300">Compliance</Link></li>
+                <li><Link to="/policies" className="block p-2 rounded hover:bg-slate-800 text-sky-300">Policies</Link></li>
+                <li><Link to="/risks" className="block p-2 rounded hover:bg-slate-800 text-orange-300">Risk Management</Link></li>
             </ul>
         </nav>
         <main className="flex-1 overflow-auto">
@@ -34,6 +44,12 @@ export const Routing: React.FC = () => {
                     <Route path="/events" element={<EventsPage />} />
                     <Route path="/visitors" element={<VisitorsPage />} />
                     <Route path="/accreditation" element={<QualityAccreditationPage />} />
+                    <Route path="/audits" element={<AuditsPage />} />
+                    <Route path="/committees" element={<CommitteesPage />} />
+                    <Route path="/compliance" element={<CompliancePage />} />
+                    <Route path="/policies" element={<PoliciesPage />} />
+                    <Route path="/risks" element={<RiskManagementPage />} />
+                    <Route path="/risk-management" element={<RiskManagementPage />} />
                     <Route path="*" element={<div className="p-6">Select a module from the sidebar.</div>} />
                 </Routes>
             </AppShell>

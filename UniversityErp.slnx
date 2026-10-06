@@ -270,5 +270,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="University-ERP-Backend/tests/EndToEndTests/UniversityErp.EndToEndTests.csproj" />
+    <Project Path="University-ERP-Backend/tests/DomainTests/UniversityErp.DomainTests.csproj" />
+    <Project Path="University-ERP-Backend/tests/ArchitectureTests/UniversityErp.ArchitectureTests.csproj" />
   </Folder>
 </Solution>

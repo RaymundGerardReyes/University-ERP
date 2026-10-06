@@ -113,6 +113,8 @@ Each module under `University-ERP-Backend/src/Modules/<Domain>/<Module>/` follow
 
 ### Registered Rules (`.agents/rules/`)
 - `architecture-boundaries.md` (`always_on`): Enforces modular monolith domain isolation, ADR compliance, and forbidden cross-module references.
+- `regression-testing-strategy.md` (`always_on`): Mandatory protocol for protecting business workflows against regressions and eliminating false-confidence testing anti-patterns.
+- `frontend-feature-establishment.md` (`glob: University-ERP-Frontend/**`): Enforces Rule 4 axios prohibition, routing of orphan slices, eliminating 0-byte hollow features, and progressive it.todo test resolution.
 - `frontend-dbma.md` (`glob: University-ERP-Frontend/**`): 14 portals, 9 shared libraries, vertical slices, TanStack Query cache rules.
 - `backend-clean-architecture.md` (`glob: University-ERP-Backend/**`): 5 domain clusters, 22 bounded contexts, CQRS, MediatR, and Aggregate invariants.
 - `unit-testing.md` (`glob: University-ERP-Frontend/tests/**`): Vitest mocking templates, auth SDK mock, string escaping, and DOM assertion safety.

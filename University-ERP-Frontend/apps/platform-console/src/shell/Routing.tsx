@@ -1,13 +1,19 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 
-// We will implement these pages next
+// Platform Core Feature Slices
 import NotificationPage from '../features/Notification/Notification.page';
 import CommunicationPage from '../features/Communication/Communication.page';
 import DocumentManagementPage from '../features/DocumentManagement/DocumentManagement.page';
 import AnalyticsBIPage from '../features/AnalyticsBI/AnalyticsBI.page';
 import CRMPage from '../features/CRM/CRM.page';
 import MultiCampusPage from '../features/MultiCampus/MultiCampus.page';
+import APIKeysPage from '../features/APIKeys/APIKeys.page';
+import DatabaseManagementPage from '../features/DatabaseManagement/DatabaseManagement.page';
+import GlobalSettingsPage from '../features/GlobalSettings/GlobalSettings.page';
+import SecurityAuditsPage from '../features/SecurityAudits/SecurityAudits.page';
+import SystemLogsPage from '../features/SystemLogs/SystemLogs.page';
+import TenantManagementPage from '../features/TenantManagement/TenantManagement.page';
 
 const AppShell = ({ children }: { children: React.ReactNode }) => (
   <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'sans-serif' }}>
@@ -20,6 +26,12 @@ const AppShell = ({ children }: { children: React.ReactNode }) => (
         <li><Link to="/analytics" style={{ color: 'white', textDecoration: 'none' }}>Analytics & BI</Link></li>
         <li><Link to="/crm" style={{ color: 'white', textDecoration: 'none' }}>CRM</Link></li>
         <li><Link to="/campus" style={{ color: 'white', textDecoration: 'none' }}>Multi-Campus</Link></li>
+        <li><Link to="/api-keys" style={{ color: 'white', textDecoration: 'none' }}>API Keys</Link></li>
+        <li><Link to="/database" style={{ color: 'white', textDecoration: 'none' }}>Database Management</Link></li>
+        <li><Link to="/settings" style={{ color: 'white', textDecoration: 'none' }}>Global Settings</Link></li>
+        <li><Link to="/security-audits" style={{ color: 'white', textDecoration: 'none' }}>Security Audits</Link></li>
+        <li><Link to="/logs" style={{ color: 'white', textDecoration: 'none' }}>System Logs</Link></li>
+        <li><Link to="/tenants" style={{ color: 'white', textDecoration: 'none' }}>Tenant Management</Link></li>
       </ul>
     </nav>
     <main style={{ flex: 1, padding: '2rem', backgroundColor: '#f8fafc' }}>
@@ -40,6 +52,12 @@ export const Routing = () => {
           <Route path="/analytics" element={<AnalyticsBIPage />} />
           <Route path="/crm" element={<CRMPage />} />
           <Route path="/campus" element={<MultiCampusPage />} />
+          <Route path="/api-keys" element={<APIKeysPage />} />
+          <Route path="/database" element={<DatabaseManagementPage />} />
+          <Route path="/settings" element={<GlobalSettingsPage />} />
+          <Route path="/security-audits" element={<SecurityAuditsPage />} />
+          <Route path="/logs" element={<SystemLogsPage />} />
+          <Route path="/tenants" element={<TenantManagementPage />} />
         </Routes>
       </AppShell>
     </BrowserRouter>

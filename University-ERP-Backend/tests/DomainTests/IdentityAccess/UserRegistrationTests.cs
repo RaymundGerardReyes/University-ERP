@@ -1,4 +1,4 @@
-namespace DomainTests.IdentityAccess;
+namespace UniversityErp.Tests.Domain;
 
 using Xunit;
 using Moq;

@@ -2,12 +2,12 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { ApplicationWizardPage } from '../../../../apps/applicant-portal/src/features/ApplicationWizard/ApplicationWizard.page';
 import { fetchProgramCatalog, submitNewApplication } from '../../../../apps/applicant-portal/src/features/ApplicationWizard/ApplicationWizard.api';
 import { useAuth } from '@university-erp/auth-sdk';
 
-vi.mock('./ApplicationWizard.api', () => ({
 vi.mock('../../../../apps/applicant-portal/src/features/ApplicationWizard/ApplicationWizard.api', () => ({
     fetchProgramCatalog: vi.fn(),
     submitNewApplication: vi.fn(),
@@ -33,7 +33,9 @@ describe('Applicant Portal - Application Wizard Multi-Step Integration', () => {
 
     const renderComponent = () => render(
         <QueryClientProvider client={queryClient}>
-            <ApplicationWizardPage />
+            <MemoryRouter>
+                <ApplicationWizardPage />
+            </MemoryRouter>
         </QueryClientProvider>
     );
 
