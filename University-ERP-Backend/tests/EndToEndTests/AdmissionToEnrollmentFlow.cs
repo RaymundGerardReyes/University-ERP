@@ -39,6 +39,14 @@ using StudentInformation.Application.Features.GetStudentInformation;
 using Contracts.IntegrationEvents.StudentLifecycle;
 using Contracts.IntegrationEvents.Administration;
 
+using Admissions.Domain.Events;
+using Admissions.Application.EventHandlers.DomainEventHandlers;
+
+using IdentityAccess.Domain.Aggregates;
+using IdentityAccess.Infrastructure.Persistence;
+using IdentityAccess.Infrastructure.Repositories;
+using IdentityAccess.Application.Features.RegisterUser;
+
 public class AdmissionToEnrollmentFlow
 {
     [Fact]
@@ -67,12 +75,26 @@ public class AdmissionToEnrollmentFlow
         var studentInfoDb = new StudentInformationDbContext(studentInfoOptions);
         var studentRecordRepo = new StudentAcademicRecordRepository(studentInfoDb);
 
+        var identityOptions = new DbContextOptionsBuilder<IdentityAccessDbContext>()
+            .UseInMemoryDatabase($"Identity_{dbId}")
+            .Options;
+        var identityDb = new IdentityAccessDbContext(identityOptions);
+        var userRepo = new UserRepository(identityDb);
+        var registerHandler = new RegisterUserCommandHandler(NullLogger<RegisterUserCommandHandler>.Instance, userRepo);
+
         // ─── 2. Setup Real-time In-Process Event Dispatcher ───────────────────
         var publishedEvents = new List<object>();
 
-        var testPublisher = new TestPublisher(publishedEvents, async (evt, ct) =>
+        TestPublisher? testPublisher = null;
+        testPublisher = new TestPublisher(publishedEvents, async (evt, ct) =>
         {
-            if (evt is ApplicantAcceptedIntegrationEvent acceptedEvent)
+            if (evt is StudentEnrolledDomainEvent domainEvent)
+            {
+                // Translate internal domain event to cross-module integration event via MediatR handler
+                var domainHandler = new StudentEnrolledDomainEventHandler(testPublisher!);
+                await domainHandler.Handle(domainEvent, ct);
+            }
+            else if (evt is ApplicantAcceptedIntegrationEvent acceptedEvent)
             {
                 var consumer = new Finance.Application.Consumers.ApplicantAcceptedIntegrationEventConsumer(
                     billingRepo, 
@@ -85,6 +107,19 @@ public class AdmissionToEnrollmentFlow
                     studentRecordRepo, 
                     NullLogger<StudentInformation.Application.Consumers.StudentEnrolledIntegrationEventConsumer>.Instance);
                 await studentInfoConsumer.Handle(enrolledEvent, ct);
+
+                var identitySender = new TestSender(async (req, cancel) =>
+                {
+                    if (req is RegisterUserCommand regCmd)
+                    {
+                        return await registerHandler.Handle(regCmd, cancel);
+                    }
+                    return null;
+                });
+                var identityConsumer = new IdentityAccess.Application.EventHandlers.IntegrationEventHandlers.StudentEnrolledIntegrationEventConsumer(
+                    identitySender,
+                    NullLogger<IdentityAccess.Application.EventHandlers.IntegrationEventHandlers.StudentEnrolledIntegrationEventConsumer>.Instance);
+                await identityConsumer.Handle(enrolledEvent, ct);
 
                 var senderMock = new TestSender();
                 var financeConsumer = new Finance.Application.Consumers.StudentEnrolledIntegrationEventConsumer(
@@ -171,7 +206,7 @@ public class AdmissionToEnrollmentFlow
         publishedEvents.Should().ContainSingle(e => e is PaymentVerifiedIntegrationEvent);
 
         // ─── STEP 6: Registrar Activates Official Enrollment ───────────────────
-        var activateHandler = new ActivateEnrollmentCommandHandler(appRepo);
+        var activateHandler = new ActivateEnrollmentCommandHandler(appRepo, testPublisher!);
         var activateResult = await activateHandler.Handle(new ActivateEnrollmentCommand(appId), CancellationToken.None);
         activateResult.IsSuccess.Should().BeTrue();
         var generatedStudentId = activateResult.Value;
@@ -181,14 +216,9 @@ public class AdmissionToEnrollmentFlow
         enrolledApp!.Status.Should().Be("Enrolled");
         enrolledApp.OfficialStudentId.Should().Be(generatedStudentId);
 
-        // Dispatch StudentEnrolledIntegrationEvent from Admissions
-        var enrollmentEvent = new StudentEnrolledIntegrationEvent(
-            Guid.NewGuid(),
-            DateTime.UtcNow,
-            appId,
-            generatedStudentId
-        );
-        await testPublisher.Publish(enrollmentEvent, CancellationToken.None);
+        // Assert domain event was raised and automatically translated into cross-module integration event
+        publishedEvents.Should().Contain(e => e is StudentEnrolledDomainEvent);
+        publishedEvents.Should().Contain(e => e is StudentEnrolledIntegrationEvent);
 
         // ─── STEP 7: StudentInformation Auto-Provisions Academic Record ─────────
         var studentRecord = await studentRecordRepo.GetByStudentIdAsync(generatedStudentId);
@@ -196,6 +226,15 @@ public class AdmissionToEnrollmentFlow
         studentRecord!.StudentId.Should().Be(generatedStudentId);
         studentRecord.AcademicStanding.Should().Be("GOOD");
         studentRecord.CumulativeGpa.Should().Be(0.00m);
+
+        // ─── STEP 7b: IdentityAccess Auto-Provisions Institutional Student User ─
+        var expectedEmail = $"student.{generatedStudentId.ToLower()}@university.edu";
+        var provisionedUser = await userRepo.FindByEmailAsync(expectedEmail, CancellationToken.None);
+        provisionedUser.Should().NotBeNull();
+        provisionedUser!.Email.Should().Be(expectedEmail);
+        provisionedUser.FirstName.Should().Be("New");
+        provisionedUser.LastName.Should().Be("Student");
+        provisionedUser.IsActive.Should().BeTrue();
 
         // ─── STEP 8: Verification of Statements & Student Information Queries ──
         var statementsEndpoint = new StatementsEndpoint(billingRepo);
@@ -210,6 +249,16 @@ public class AdmissionToEnrollmentFlow
         var profile = await studentProfileHandler.Handle(new GetStudentProfileQuery(generatedStudentId), CancellationToken.None);
         profile.Should().NotBeNull();
         profile.Id.Should().Be(generatedStudentId);
+
+        // ─── STEP 9: Idempotency & Duplicate Action Invariant Verification ─────
+        // Re-verifying downpayment should remain successful without double credit
+        var secondVerifyResult = await financeEndpoint.VerifyDownpayment(session.SessionId, CancellationToken.None);
+        secondVerifyResult.Should().BeOfType<Microsoft.AspNetCore.Mvc.OkObjectResult>();
+
+        // Re-activating an already enrolled application must fail with Admissions.InvalidState
+        var duplicateActivateResult = await activateHandler.Handle(new ActivateEnrollmentCommand(appId), CancellationToken.None);
+        duplicateActivateResult.IsFailure.Should().BeTrue();
+        duplicateActivateResult.Error.Code.Should().Be("Admissions.InvalidState");
     }
 
     [Fact]
@@ -274,19 +323,38 @@ internal sealed class TestPublisher : IPublisher
 
 internal sealed class TestSender : ISender
 {
-    public Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
+    private readonly Func<object, CancellationToken, Task<object?>>? _handler;
+
+    public TestSender(Func<object, CancellationToken, Task<object?>>? handler = null)
     {
-        return Task.FromResult(default(TResponse)!);
+        _handler = handler;
     }
 
-    public Task Send<TRequest>(TRequest request, CancellationToken cancellationToken = default) where TRequest : IRequest
+    public async Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
-        return Task.CompletedTask;
+        if (_handler != null)
+        {
+            var res = await _handler(request, cancellationToken);
+            if (res is TResponse typed) return typed;
+        }
+        return default!;
     }
 
-    public Task<object?> Send(object request, CancellationToken cancellationToken = default)
+    public async Task Send<TRequest>(TRequest request, CancellationToken cancellationToken = default) where TRequest : IRequest
     {
-        return Task.FromResult<object?>(null);
+        if (_handler != null)
+        {
+            await _handler(request, cancellationToken);
+        }
+    }
+
+    public async Task<object?> Send(object request, CancellationToken cancellationToken = default)
+    {
+        if (_handler != null)
+        {
+            return await _handler(request, cancellationToken);
+        }
+        return null;
     }
 
     public IAsyncEnumerable<TResponse> CreateStream<TResponse>(IStreamRequest<TResponse> request, CancellationToken cancellationToken = default)
